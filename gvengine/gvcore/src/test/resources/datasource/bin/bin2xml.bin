@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<BinaryBuffer Size="90">
+    <Field FieldType="Single" FieldOffset="0" FieldLength="20" XPath="/list[1]/entry[1]/@name" ElementType="Element">
+        <StringField type="conversion" class="it.greenvulcano.gvesb.gvdte.transformers.bin.converters.StringConversion"
+                     name="name" FieldLength="20" Encoding="UTF-8" Terminated="false" TerminationChar=""
+                     Padding="true" PaddingChar=" " Alignment="Left" isNumeric="false"/>
+    </Field>
+    <Field FieldType="Single" FieldOffset="20" FieldLength="20" XPath="/list[1]/entry[1]/@city" ElementType="Element">
+        <StringField type="conversion" class="it.greenvulcano.gvesb.gvdte.transformers.bin.converters.StringConversion"
+                     name="city" FieldLength="20" Encoding="UTF-8" Terminated="false" TerminationChar=""
+                     Padding="true" PaddingChar=" " Alignment="Left" isNumeric="false"/>
+    </Field>
+    <Field FieldType="Single" FieldOffset="40" FieldLength="50" XPath="/list[1]/entry[1]/@street" ElementType="Element">
+        <StringField type="conversion" class="it.greenvulcano.gvesb.gvdte.transformers.bin.converters.StringConversion"
+                     name="street" FieldLength="50" Encoding="UTF-8" Terminated="false" TerminationChar=""
+                     Padding="true" PaddingChar=" " Alignment="Left" isNumeric="false"/>
+    </Field>
+</BinaryBuffer>

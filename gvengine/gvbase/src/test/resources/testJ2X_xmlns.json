@@ -1,0 +1,29 @@
+{
+  "Envelope": {
+    "Header": "",
+    "Body": {
+      "Pay": [
+        {
+          "amount": 10,
+          "cnumber": [
+            1111222233334444,
+            1111222233337777
+          ]
+        },
+        {
+          "amount": 20,
+          "cnumber": [
+            {
+              "type": "master",
+              "contentText": 1111222233335555
+            },
+            {
+              "type": "secondary",
+              "contentText": 1111222233336666
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+    <bean id="FakeFtpServer" class="org.mockftpserver.fake.FakeFtpServer">
+        <property name="serverControlPort" value="13021"/>
+        <property name="userAccounts">
+            <list>
+                <bean class="org.mockftpserver.fake.UserAccount">
+                    <property name="username" value="test_user"/>
+                    <property name="password" value="test_user"/>
+                    <property name="homeDirectory" value="/home/test_user"/>
+                </bean>
+            </list>
+        </property>
+
+        <property name="fileSystem">
+            <bean class="org.mockftpserver.fake.filesystem.UnixFakeFileSystem">
+                <property name="createParentDirectoriesAutomatically" value="true"/>
+                <property name="entries">
+                    <list>
+                        <bean class="org.mockftpserver.fake.filesystem.FileEntry">
+                            <property name="path" value="/home/test_user/Test0.txt"/>
+                            <property name="contents" value="1234567890"/>
+                            <property name="permissionsFromString" value="rw-rw-rw-"/>
+                            <property name="lastModified">
+                                <bean class="java.util.Date">
+                                    <constructor-arg value="2010/01/05 10:00:00"/>
+                                </bean>
+                            </property>
+                            <property name="owner" value="test_user"/>
+                            <property name="group" value="users"/>
+                        </bean>
+                        <bean class="org.mockftpserver.fake.filesystem.FileEntry">
+                            <property name="path" value="/home/test_user/Test1.txt"/>
+                            <property name="contents" value="12345678901234567890"/>
+                            <property name="permissionsFromString" value="rw-rw-rw-"/>
+                            <property name="lastModified">
+                                <bean class="java.util.Date">
+                                    <constructor-arg value="2010/01/01 10:30:00"/>
+                                </bean>
+                            </property>
+                            <property name="owner" value="test_user"/>
+                            <property name="group" value="users"/>
+                        </bean>
+                        <bean class="org.mockftpserver.fake.filesystem.FileEntry">
+                            <property name="path" value="/home/test_user/TestA.xml"/>
+                            <property name="contents" value="&lt;doc&gt;&lt;/doc&gt;"/>
+                            <property name="permissionsFromString" value="rw-rw-rw-"/>
+                            <property name="lastModified">
+                                <bean class="java.util.Date">
+                                    <constructor-arg value="2010/01/07 11:30:40"/>
+                                </bean>
+                            </property>
+                            <property name="owner" value="test_user"/>
+                            <property name="group" value="users"/>
+                        </bean>
+                        <bean class="org.mockftpserver.fake.filesystem.FileEntry">
+                            <property name="path" value="/home/test_user/TestB.xml"/>
+                            <property name="contents" value="&lt;doc&gt;&lt;elem&gt;pippo&lt;/elem&gt;&lt;/doc&gt;"/>
+                            <property name="permissionsFromString" value="rw-rw-rw-"/>
+                            <property name="lastModified">
+                                <bean class="java.util.Date">
+                                    <constructor-arg value="2010/01/10 00:00:00"/>
+                                </bean>
+                            </property>
+                            <property name="owner" value="test_user"/>
+                            <property name="group" value="users"/>
+                        </bean>
+                        <bean class="org.mockftpserver.fake.filesystem.DirectoryEntry">
+                            <property name="path" value="/home/test_user/dir0"/>
+                            <property name="permissionsFromString" value="rwxrwxrwx"/>
+                            <property name="lastModified">
+                                <bean class="java.util.Date">
+                                    <constructor-arg value="2010/01/03 01:15:35"/>
+                                </bean>
+                            </property>
+                            <property name="owner" value="test_user"/>
+                            <property name="group" value="users"/>
+                        </bean>
+                        <bean class="org.mockftpserver.fake.filesystem.FileEntry">
+                            <property name="path" value="/home/test_user/dir0/Test1.txt"/>
+                            <property name="contents" value="12345678901234567890"/>
+                            <property name="permissionsFromString" value="rw-rw-rw-"/>
+                            <property name="lastModified">
+                                <bean class="java.util.Date">
+                                    <constructor-arg value="2010/01/03 02:00:00"/>
+                                </bean>
+                            </property>
+                            <property name="owner" value="test_user"/>
+                            <property name="group" value="users"/>
+                        </bean>
+                    </list>
+                </property>
+            </bean>
+        </property>
+
+    </bean>
+</beans>

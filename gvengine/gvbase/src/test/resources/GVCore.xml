@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE GVCore SYSTEM "http://www.greenvulcano.com/gvesb/dtds/GVCore.dtd">
+
+<GVCore version="1.0">
+  <GVCryptoHelper name="CRYPTO_HELPER" type="module">
+        <KeyStoreID id="testKS" key-store-name="teststore.jks" key-store-pwd="testpwd"/>
+        <KeyID id="test" key-alias="testalias" key-pwd="keypwd" key-store-id="testKS" key-type="3DES"/>
+        <!-- KeyID id="test1" key-alias="testalias" key-pwd="keypwd" key-store-id="testKS" key-type="3DES" key-type-mode="CBC" key-type-padding="NoPadding"/>
+        <KeyID id="test2" key-alias="testalias" key-pwd="keypwd" key-store-id="testKS" key-type="3DES" key-type-mode="OFB32" key-type-padding="PKCS5Padding"/-->
+        <KeyID id="test1" key-alias="XMLConfigKey" key-pwd="XMLConfigPassword" key-store-id="GVEsb" key-type="3DES" key-type-mode="CFB8" key-type-padding="NoPadding"/>
+        <KeyID id="test2" key-alias="XMLConfigKey" key-pwd="XMLConfigPassword" key-store-id="GVEsb" key-type="3DES" key-type-mode="CFB8" key-type-padding="NoPadding">
+            <AlgorithmParameters>BAjK0G7M3ZZjIQ==</AlgorithmParameters>
+        </KeyID>
+        <KeyID id="test3" key-alias="XMLConfigKey" key-pwd="XMLConfigPassword" key-store-id="GVEsb" key-type="3DES" key-type-mode="OFB32" key-type-padding="PKCS5Padding">
+            <AlgorithmParameters>BAjK0G7M3ZZjIQ==</AlgorithmParameters>
+        </KeyID>
+  </GVCryptoHelper>
+  <GVXPath name="XPATH" type="module">
+    <XPath xpath-factory="it.greenvulcano.util.xpath.search.jaxen.JaxenXPathAPIFactoryImpl">
+      <Description>Funzioni estese e namespaces per l&apos;XPath.</Description>
+      <XPathExtension class="it.greenvulcano.util.xpath.search.extension.ExternalDocumentXPathFunction"
+                      function-name="document">
+            <Description>Accede ad un documento esterno. Uso: gvf:document('xml file path')</Description>
+      </XPathExtension>
+      <XPathNamespace namespace="http://www.w3.org/2001/XMLSchema" prefix="xsd" />
+      <XPathNamespace namespace="http://www.w3.org/2001/XMLSchema-instance" prefix="xsi" />
+      <XPathNamespace namespace="http://schemas.xmlsoap.org/wsdl/soap/" prefix="soap" />
+      <XPathNamespace namespace="http://schemas.xmlsoap.org/wsdl/" prefix="wsdl" />
+      <XPathNamespace namespace="http://jakarta.apache.org/log4j/" prefix="log4j" />
+      <XPathNamespace namespace="http://www.w3.org/XML/1998/namespace" prefix="xml" />
+      <XPathNamespace namespace="http://www.greenvulcano.it/greenvulcano" prefix="gvesbws"/>
+      <XPathNamespace namespace="http://www.greenvulcano.it/jca/xml" prefix="jca" />
+      <XPathNamespace namespace="http://www.greenvulcano.it/ldap" prefix="ldapc" />
+      <XPathNamespace namespace="http://drools.org/drools-5.0/change-set" prefix="drools-cs"/>
+    </XPath>
+  </GVXPath>
+  <GVServices name="SERVICES" type="module">
+    <Management call-administration-on-init="no"/>
+    <Groups>
+      <Group group-activation="on" id-group="DEFAULT_GRP"/>
+    </Groups>
+    <Services>
+      <Service group-name="DEFAULT_GRP" id-service="TestScript"
+               service-activation="on" statistics="off">
+        <Operation class="it.greenvulcano.gvesb.core.flow.GVFlowWF" name="Request"
+                   operation-activation="on" out-check-type="sys-svc-id" type="operation">
+          <Participant id-channel="TEST_CHANNEL" id-system="GVESB"/>
+          <Flow first-node="testJS" point-x="20" point-y="150">
+            <ChangeGVBufferNode class="it.greenvulcano.gvesb.core.flow.ChangeGVBufferNode"
+                                dump-in-out="true" id="testJS"
+                                input="data" next-node-id="end"
+                                op-type="change GVBuffer" point-x="150"
+                                point-y="151" type="flow-node">
+              <ChangeGVBuffer clear-data="false">
+                <Script lang="js"><![CDATA[var services = {"LIST_EXCEL":"1", "LIST_PDF":"1", "LIST_BIRT":"1"};
+var svc = data.getProperty("SVC");
+("1" == services[svc]);]]></Script>
+              </ChangeGVBuffer>
+            </ChangeGVBufferNode>
+            <ChangeGVBufferNode class="it.greenvulcano.gvesb.core.flow.ChangeGVBufferNode"
+                                dump-in-out="true" id="testOGNL"
+                                input="data" next-node-id="end"
+                                op-type="change GVBuffer" point-x="150"
+                                point-y="151" type="flow-node">
+              <ChangeGVBuffer clear-data="false">
+                <Script lang="ognl"><![CDATA[#services = #{"LIST_EXCEL":"1", "LIST_PDF":"1", "LIST_BIRT":"1"},
+#svc = #data.property["SVC"],
+("1" == #services[#svc])]]></Script>
+              </ChangeGVBuffer>
+            </ChangeGVBufferNode>
+            <ChangeGVBufferNode class="it.greenvulcano.gvesb.core.flow.ChangeGVBufferNode"
+                                dump-in-out="true" id="testGroovy"
+                                input="data" next-node-id="end"
+                                op-type="change GVBuffer" point-x="150"
+                                point-y="151" type="flow-node">
+              <ChangeGVBuffer clear-data="false">
+                <Script lang="groovy"><![CDATA[services = ["LIST_EXCEL":"1", "LIST_PDF":"1", "LIST_BIRT":"1"]
+svc = data.getProperty("SVC")
+("1" == services[svc])]]></Script>
+              </ChangeGVBuffer>
+            </ChangeGVBufferNode>
+            <ChangeGVBufferNode class="it.greenvulcano.gvesb.core.flow.ChangeGVBufferNode"
+                                dump-in-out="true" id="testJRuby"
+                                input="data" next-node-id="end"
+                                op-type="change GVBuffer" point-x="150"
+                                point-y="151" type="flow-node">
+              <ChangeGVBuffer clear-data="false">
+                <Script lang="jruby"><![CDATA[services = {"LIST_EXCEL"=>"1", "LIST_PDF"=>"1", "LIST_BIRT"=>"1"}
+svc = $data.getProperty("SVC")
+("1" == services[svc])]]></Script>
+              </ChangeGVBuffer>
+            </ChangeGVBufferNode>
+            <ChangeGVBufferNode class="it.greenvulcano.gvesb.core.flow.ChangeGVBufferNode"
+                                dump-in-out="true" id="testJython"
+                                input="data" next-node-id="end"
+                                op-type="change GVBuffer" point-x="150"
+                                point-y="151" type="flow-node">
+              <ChangeGVBuffer clear-data="false">
+                <Script lang="jython"><![CDATA[services = {"LIST_EXCEL":"1", "LIST_PDF":"1", "LIST_BIRT":"1"}
+svc = data.getProperty("SVC")
+RESULT = "1" == services.get(svc,"0")]]></Script>
+              </ChangeGVBuffer>
+            </ChangeGVBufferNode>
+
+            <ChangeGVBufferNode class="it.greenvulcano.gvesb.core.flow.ChangeGVBufferNode"
+                                dump-in-out="true" id="testJS_props"
+                                input="data" next-node-id="end"
+                                op-type="change GVBuffer" point-x="150"
+                                point-y="151" type="flow-node">
+              <ChangeGVBuffer clear-data="false">
+                <Script lang="js"><![CDATA[var services = {"LIST_EXCEL":"1", "LIST_PDF":"1", "LIST_BIRT":"1"};
+("1" == services["@{{SVC}}"]);]]></Script>
+              </ChangeGVBuffer>
+            </ChangeGVBufferNode>
+            <ChangeGVBufferNode class="it.greenvulcano.gvesb.core.flow.ChangeGVBufferNode"
+                                dump-in-out="true" id="testOGNL_props"
+                                input="data" next-node-id="end"
+                                op-type="change GVBuffer" point-x="150"
+                                point-y="151" type="flow-node">
+              <ChangeGVBuffer clear-data="false">
+                <Script lang="ognl"><![CDATA[#services = #{"LIST_EXCEL":"1", "LIST_PDF":"1", "LIST_BIRT":"1"},
+("1" == #services["@{{SVC}}"])]]></Script>
+              </ChangeGVBuffer>
+            </ChangeGVBufferNode>
+            <ChangeGVBufferNode class="it.greenvulcano.gvesb.core.flow.ChangeGVBufferNode"
+                                dump-in-out="true" id="testGroovy_props"
+                                input="data" next-node-id="end"
+                                op-type="change GVBuffer" point-x="150"
+                                point-y="151" type="flow-node">
+              <ChangeGVBuffer clear-data="false">
+                <Script lang="groovy"><![CDATA[services = ["LIST_EXCEL":"1", "LIST_PDF":"1", "LIST_BIRT":"1"]
+("1" == services["@{{SVC}}"])]]></Script>
+              </ChangeGVBuffer>
+            </ChangeGVBufferNode>
+            <ChangeGVBufferNode class="it.greenvulcano.gvesb.core.flow.ChangeGVBufferNode"
+                                dump-in-out="true" id="testJRuby_props"
+                                input="data" next-node-id="end"
+                                op-type="change GVBuffer" point-x="150"
+                                point-y="151" type="flow-node">
+              <ChangeGVBuffer clear-data="false">
+                <Script lang="jruby"><![CDATA[services = {"LIST_EXCEL"=>"1", "LIST_PDF"=>"1", "LIST_BIRT"=>"1"}
+("1" == services["@{{SVC}}"])]]></Script>
+              </ChangeGVBuffer>
+            </ChangeGVBufferNode>
+            <ChangeGVBufferNode class="it.greenvulcano.gvesb.core.flow.ChangeGVBufferNode"
+                                dump-in-out="true" id="testJython_props"
+                                input="data" next-node-id="end"
+                                op-type="change GVBuffer" point-x="150"
+                                point-y="151" type="flow-node">
+              <ChangeGVBuffer clear-data="false">
+                <Script lang="jython"><![CDATA[services = {"LIST_EXCEL":"1", "LIST_PDF":"1", "LIST_BIRT":"1"}
+RESULT = "1" == services.get("@{{SVC}}","0")]]></Script>
+              </ChangeGVBuffer>
+            </ChangeGVBufferNode>
+
+            <ChangeGVBufferNode class="it.greenvulcano.gvesb.core.flow.ChangeGVBufferNode"
+                                dump-in-out="true" id="testJS_file"
+                                input="data" next-node-id="end"
+                                op-type="change GVBuffer" point-x="150"
+                                point-y="151" type="flow-node">
+              <ChangeGVBuffer clear-data="false">
+                <Script lang="js" file="test.js"/>
+              </ChangeGVBuffer>
+            </ChangeGVBufferNode>
+            <ChangeGVBufferNode class="it.greenvulcano.gvesb.core.flow.ChangeGVBufferNode"
+                                dump-in-out="true" id="testOGNL_file"
+                                input="data" next-node-id="end"
+                                op-type="change GVBuffer" point-x="150"
+                                point-y="151" type="flow-node">
+              <ChangeGVBuffer clear-data="false">
+                <Script lang="ognl" file="test.ognl"/>
+              </ChangeGVBuffer>
+            </ChangeGVBufferNode>
+            <ChangeGVBufferNode class="it.greenvulcano.gvesb.core.flow.ChangeGVBufferNode"
+                                dump-in-out="true" id="testGroovy_file"
+                                input="data" next-node-id="end"
+                                op-type="change GVBuffer" point-x="150"
+                                point-y="151" type="flow-node">
+              <ChangeGVBuffer clear-data="false">
+                <Script lang="groovy" file="test.groovy"/>
+              </ChangeGVBuffer>
+            </ChangeGVBufferNode>
+            <ChangeGVBufferNode class="it.greenvulcano.gvesb.core.flow.ChangeGVBufferNode"
+                                dump-in-out="true" id="testJRuby_file"
+                                input="data" next-node-id="end"
+                                op-type="change GVBuffer" point-x="150"
+                                point-y="151" type="flow-node">
+              <ChangeGVBuffer clear-data="false">
+                <Script lang="jruby" file="test.rb"/>
+              </ChangeGVBuffer>
+            </ChangeGVBufferNode>
+            <ChangeGVBufferNode class="it.greenvulcano.gvesb.core.flow.ChangeGVBufferNode"
+                                dump-in-out="true" id="testJython_file"
+                                input="data" next-node-id="end"
+                                op-type="change GVBuffer" point-x="150"
+                                point-y="151" type="flow-node">
+              <ChangeGVBuffer clear-data="false">
+                <Script lang="jython" file="test.py"/>
+              </ChangeGVBuffer>
+            </ChangeGVBufferNode>
+
+            <ChangeGVBufferNode class="it.greenvulcano.gvesb.core.flow.ChangeGVBufferNode"
+                                dump-in-out="true" id="testJS_inc_file"
+                                input="data" next-node-id="end"
+                                op-type="change GVBuffer" point-x="150"
+                                point-y="151" type="flow-node">
+              <ChangeGVBuffer clear-data="false">
+                <Script lang="js" file="test_inc.js"/>
+              </ChangeGVBuffer>
+            </ChangeGVBufferNode>
+            <ChangeGVBufferNode class="it.greenvulcano.gvesb.core.flow.ChangeGVBufferNode"
+                                dump-in-out="true" id="testOGNL_inc_file"
+                                input="data" next-node-id="end"
+                                op-type="change GVBuffer" point-x="150"
+                                point-y="151" type="flow-node">
+              <ChangeGVBuffer clear-data="false">
+                <Script lang="ognl" file="test_inc.ognl"/>
+              </ChangeGVBuffer>
+            </ChangeGVBufferNode>
+            <ChangeGVBufferNode class="it.greenvulcano.gvesb.core.flow.ChangeGVBufferNode"
+                                dump-in-out="true" id="testGroovy_inc_file"
+                                input="data" next-node-id="end"
+                                op-type="change GVBuffer" point-x="150"
+                                point-y="151" type="flow-node">
+              <ChangeGVBuffer clear-data="false">
+                <Script lang="groovy" file="test_inc.groovy"/>
+              </ChangeGVBuffer>
+            </ChangeGVBufferNode>
+            <ChangeGVBufferNode class="it.greenvulcano.gvesb.core.flow.ChangeGVBufferNode"
+                                dump-in-out="true" id="testJRuby_inc_file"
+                                input="data" next-node-id="end"
+                                op-type="change GVBuffer" point-x="150"
+                                point-y="151" type="flow-node">
+              <ChangeGVBuffer clear-data="false">
+                <Script lang="jruby" file="test_inc.rb"/>
+              </ChangeGVBuffer>
+            </ChangeGVBufferNode>
+            <ChangeGVBufferNode class="it.greenvulcano.gvesb.core.flow.ChangeGVBufferNode"
+                                dump-in-out="true" id="testJython_inc_file"
+                                input="data" next-node-id="end"
+                                op-type="change GVBuffer" point-x="150"
+                                point-y="151" type="flow-node">
+              <ChangeGVBuffer clear-data="false">
+                <Script lang="jython" file="test_inc.py"/>
+              </ChangeGVBuffer>
+            </ChangeGVBufferNode>
+
+            <GVEndNode class="it.greenvulcano.gvesb.core.flow.GVEndNode"
+                       end-business-process="yes" id="end" op-type="end"
+                       output="data" point-x="345" point-y="151"
+                       type="flow-node"/>
+          </Flow>
+        </Operation>
+      </Service>
+    </Services>
+  </GVServices>
+  <GVSystems name="SYSTEMS" type="module">
+    <Systems>
+      <System id-system="GVESB" system-activation="on">
+        <Channel id-channel="TEST_CHANNEL">
+          <fsmonitor-call class="it.greenvulcano.gvesb.virtual.file.reader.AnalyzeDirCall"
+                          name="dirScan" type="call">
+              <LocalFileSystemMonitor class="it.greenvulcano.util.file.monitor.LocalFileSystemMonitor"
+                                      path="${{java.io.tmpdir}}/TESTFS/TestSearch"
+                                      type="fs-monitor">
+                  <FileMonitorStatus class="it.greenvulcano.util.file.monitor.status.FileMonitorStatus"
+                                     errorOnInvalidFile="true"
+                                     statusFilePath="${{java.io.tmpdir}}/TESTFS/dirScan.state"
+                                     type="fs-monitor-status"/>
+                  <FileFilter file-mask="[\w].*" file-type="all"/>
+                  <ResultFilter created="true" deleted="true" existing="true"
+                                modified="true" sort-ascending="false"
+                                sort-mode="by-time"/>
+              </LocalFileSystemMonitor>
+          </fsmonitor-call>
+          <fsmonitor-call class="it.greenvulcano.gvesb.virtual.file.reader.AnalyzeDirCall"
+                          name="dirScanMulti" type="call">
+              <LocalFileSystemMonitor class="it.greenvulcano.util.file.monitor.LocalFileSystemMonitor"
+                                      path="${{java.io.tmpdir}}/TESTFS/@{{PATH}}"
+                                      type="fs-monitor">
+                  <FileMonitorStatus class="it.greenvulcano.util.file.monitor.status.FileMonitorStatus"
+                                     errorOnInvalidFile="true"
+                                     statusFilePath="${{java.io.tmpdir}}/TESTFS/dirScan_@{{PATH}}.state"
+                                     type="fs-monitor-status"/>
+                  <FileFilter file-mask="[\w].*" file-type="all"/>
+                  <ResultFilter created="true" deleted="true" existing="true"
+                                modified="true" sort-ascending="false"
+                                sort-mode="by-time"/>
+              </LocalFileSystemMonitor>
+          </fsmonitor-call>
+          <fsmonitor-call class="it.greenvulcano.gvesb.virtual.file.reader.AnalyzeDirCall"
+                          name="dirScanMem" type="call">
+              <LocalFileSystemMonitor class="it.greenvulcano.util.file.monitor.LocalFileSystemMonitor"
+                                      path="${{java.io.tmpdir}}/TESTFS/TestSearch"
+                                      type="fs-monitor">
+                  <InMemoryMonitorStatus class="it.greenvulcano.util.file.monitor.status.InMemoryMonitorStatus"
+                                         dumpStatus="true" type="fs-monitor-status"/>
+                  <FileFilter file-mask="[\w].*" file-type="all"/>
+                  <ResultFilter created="true" deleted="true" existing="true"
+                                modified="true" sort-ascending="false"
+                                sort-mode="by-time"/>
+              </LocalFileSystemMonitor>
+          </fsmonitor-call>
+          <fsmonitor-call class="it.greenvulcano.gvesb.virtual.file.reader.AnalyzeDirCall"
+                          name="dirScanMemMulti" type="call">
+              <LocalFileSystemMonitor class="it.greenvulcano.util.file.monitor.LocalFileSystemMonitor"
+                                      path="${{java.io.tmpdir}}/TESTFS/@{{PATH}}"
+                                      type="fs-monitor">
+                  <InMemoryMonitorStatus class="it.greenvulcano.util.file.monitor.status.InMemoryMonitorStatus"
+                                         dumpStatus="true" type="fs-monitor-status"/>
+                  <FileFilter file-mask="[\w].*" file-type="all"/>
+                  <ResultFilter created="true" deleted="true" existing="true"
+                                modified="true" sort-ascending="false"
+                                sort-mode="by-time"/>
+              </LocalFileSystemMonitor>
+          </fsmonitor-call>
+          <fsmonitor-call class="it.greenvulcano.gvesb.virtual.file.reader.AnalyzeDirCall"
+                          name="dirScanFilterProps" type="call">
+              <LocalFileSystemMonitor class="it.greenvulcano.util.file.monitor.LocalFileSystemMonitor"
+                                      path="${{java.io.tmpdir}}/TESTFS/TestSearch"
+                                      type="fs-monitor">
+                  <FileMonitorStatus class="it.greenvulcano.util.file.monitor.status.FileMonitorStatus"
+                                     errorOnInvalidFile="true"
+                                     statusFilePath="${{java.io.tmpdir}}/TESTFS/dirScan_@{{FILTER}}.state"
+                                     type="fs-monitor-status"/>
+                  <FileFilter file-mask="@{{FILTER}}.*" file-type="all"/>
+                  <ResultFilter created="true" deleted="true" existing="true"
+                                modified="true" sort-ascending="false"
+                                sort-mode="by-time"/>
+              </LocalFileSystemMonitor>
+          </fsmonitor-call>
+          <fsmonitor-call class="it.greenvulcano.gvesb.virtual.file.reader.AnalyzeDirCall"
+                          name="dirScanFilterPropsMulti" type="call">
+              <LocalFileSystemMonitor class="it.greenvulcano.util.file.monitor.LocalFileSystemMonitor"
+                                      path="${{java.io.tmpdir}}/TESTFS/@{{PATH}}"
+                                      type="fs-monitor">
+                  <FileMonitorStatus class="it.greenvulcano.util.file.monitor.status.FileMonitorStatus"
+                                     errorOnInvalidFile="true"
+                                     statusFilePath="${{java.io.tmpdir}}/TESTFS/dirScan_@{{PATH}}_@{{FILTER}}.state"
+                                     type="fs-monitor-status"/>
+                  <FileFilter file-mask="@{{FILTER}}.*" file-type="all"/>
+                  <ResultFilter created="true" deleted="true" existing="true"
+                                modified="true" sort-ascending="false"
+                                sort-mode="by-time"/>
+              </LocalFileSystemMonitor>
+          </fsmonitor-call>
+
+          <remotemanager-call name="testConnectOnly" class="it.greenvulcano.gvesb.virtual.file.remote.RemoteManagerCall"
+                              type="call">
+            <FTPManager hostname="localhost" port="13021" password="{3DES}pl1YKFjWlqMfdTIbxY17Mg==" username="test_user" hostType="UNIX"
+                        autoConnect="false" type="remote-manager" class="it.greenvulcano.util.remotefs.ftp.FTPManager"/>
+          </remotemanager-call>
+          <remotemanager-call name="testConnectOnlyProps" class="it.greenvulcano.gvesb.virtual.file.remote.RemoteManagerCall"
+                              type="call">
+            <FTPManager hostname="@{{HOST}}" port="13021" password="@{{PASSWORD}}" username="@{{USER}}" hostType="UNIX"
+                        autoConnect="false" type="remote-manager" class="it.greenvulcano.util.remotefs.ftp.FTPManager"/>
+          </remotemanager-call>
+
+        </Channel>
+      </System>
+    </Systems>
+  </GVSystems>
+  <GVConcurrencyHandler name="CONCURRENCY_HANDLER" type="module">
+    <SubSystems>
+      <SubSystem name="Core" />
+    </SubSystems>
+  </GVConcurrencyHandler>
+  <GVBufferDump log-dump-size="-1" name="BUFFER_DUMP" type="module" />
+
+  <GVTaskManagerConfiguration name="GVTASKS" type="module">
+        <Description>Configurazione dei Task temporizzati.</Description>
+        <GVSchedulerBuilder maxThreads="3" class="it.greenvulcano.scheduler.util.quartz.impl.GVSchedulerBuilder"
+                            type="scheduler-builder" >
+            <RamStore type="quartz-store"/>
+        </GVSchedulerBuilder>
+        <TaskGroups>
+            <TaskGroup name="BaseGroup">
+                <TestTask name="TestTask120s/240s" auto-start="true" enabled="true" type="task"
+                          class="it.greenvulcano.scheduler.util.test.TestTask"
+                          message="Executing TestTask 120s/240s" sleep="1000">
+                    <Triggers>
+                        <CronTriggerBuilder type="cron-trigger" class="it.greenvulcano.scheduler.util.quartz.impl.trigger.CronTriggerBuilder"
+                                            name="Trg_120s" cronExpression="0 /2 * * * ?">
+                            <TgProperties>
+                                <PropertyDef name="TgProp1" value="TgValue1"/>
+                                <PropertyDef name="Prop2" value="Value2Tg_1"/>
+                            </TgProperties>
+                        </CronTriggerBuilder>
+                        <CronTriggerBuilder type="cron-trigger" class="it.greenvulcano.scheduler.util.quartz.impl.trigger.CronTriggerBuilder"
+                                            name="Trg_240s" cronExpression="0 /4 * * * ?">
+                            <TgProperties>
+                                <PropertyDef name="TgProp2" value="TgValue2"/>
+                                <PropertyDef name="Prop2" value="Value2Tg_2"/>
+                            </TgProperties>
+                        </CronTriggerBuilder>
+                    </Triggers>
+                    <JbProperties>
+                        <PropertyDef name="Prop1" value="Value1"/>
+                        <PropertyDef name="Prop2" value="Value2"/>
+                    </JbProperties>
+                </TestTask>
+            </TaskGroup>
+            <TaskGroup name="TestGroup">
+                <TestTask name="TestTask10s/Odd_m" auto-start="true" enabled="true" type="task"
+                          class="it.greenvulcano.scheduler.util.test.TestTask"
+                          message="Executing TestTask 10s/Odd_m" sleep="1000">
+                    <Triggers>
+                        <CronTriggerBuilder type="cron-trigger" class="it.greenvulcano.scheduler.util.quartz.impl.trigger.CronTriggerBuilder"
+                                            name="Trg_10s_Odd_m" cronExpression="0/10 1/2 * * * ?">
+                            <TgProperties>
+                                <PropertyDef name="TgProp1_A" value="TgValue1_A"/>
+                                <PropertyDef name="Prop2_A" value="Value2Tg_A_1"/>
+                            </TgProperties>
+                        </CronTriggerBuilder>
+                    </Triggers>
+                    <JbProperties>
+                        <PropertyDef name="Prop1_A" value="Value1_A"/>
+                        <PropertyDef name="Prop2_A" value="Value2_A"/>
+                    </JbProperties>
+                </TestTask>
+            </TaskGroup>
+        </TaskGroups>
+    </GVTaskManagerConfiguration>
+</GVCore>

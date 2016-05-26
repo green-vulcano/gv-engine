@@ -1,0 +1,1052 @@
+<!ENTITY % gvcommons SYSTEM "http://www.greenvulcano.com/gvesb/dtds/GVCommons.dtd">
+
+%gvcommons;
+
+<!ENTITY % log4j_module SYSTEM "http://www.greenvulcano.com/gvesb/dtds/gv-log4j.dtd">
+%log4j_module;
+
+<!ENTITY % statistics-writers    "JDBCStatisticsWriter|JMSStatisticsWriter|DUMMYStatisticsWriter">
+
+<!ENTITY % data-wrappers "(GVBufferProperty|GVBuffer|Metadata)">
+
+<!--
+    GreenVulcano ESB Support Configuration File.
+-->
+<!ELEMENT GVSupport (GVLog4JConfiguration?,GVScriptConfig?,GVDateUtils?,GVJNDIBuildersConfig?,GVStatisticsConfig?,GVMonitoringConfig?,GVWorkbenchConfig?,GVHTTPClientProtocolConfig?,GVHeartBeatConfig?,GVTaskManagerFactory?)>
+<!--
+    Current GreenVulcano ESB version.
+-->
+<!ATTLIST GVSupport version    CDATA   #FIXED  "1.0">
+
+<!ELEMENT GVLog4JConfiguration (log4j:configuration)>
+<!--
+    Element type 'module'.
+-->
+<!ATTLIST GVLog4JConfiguration type    CDATA   #FIXED  "module">
+<!--
+    Module Id always set to 'LOG4J'.
+-->
+<!ATTLIST GVLog4JConfiguration name    CDATA   #FIXED  "LOG4J">
+
+
+<!--
+    Defines the Script engine/context initializers.
+
+-->
+<!ELEMENT GVScriptConfig (Description?, ScriptCache?, ScriptEngines)>
+<!--
+    Element type 'module'.
+-->
+<!ATTLIST GVScriptConfig type    CDATA   #FIXED  "module">
+<!--
+    Module id always set to 'SCRIPT'.
+-->
+<!ATTLIST GVScriptConfig name    CDATA   #FIXED  "SCRIPT">
+
+<!--
+    Defines the script file cache configuration.
+
+-->
+<!ELEMENT ScriptCache (Description?)>
+<!--
+    Base path for script files access.
+    Default to $GV_HOME/scripts.
+    
+    #NotNull
+-->
+<!ATTLIST ScriptCache base-path   CDATA #IMPLIED>
+
+<!--
+    Defines the engine/context initializers.
+-->
+<!ELEMENT ScriptEngines (Description?, ScriptEngine*)>
+
+<!--
+    Script Engine Initializer.
+
+    #Label: @lang
+-->
+<!ELEMENT ScriptEngine (Description?, BaseContext*)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST ScriptEngine type         CDATA #FIXED "script-engine">
+<!--
+    Script Engine language.
+
+    #NotNull
+    #Unique: ../*[@type='script-engine']/@lang
+-->
+<!ATTLIST ScriptEngine lang         CDATA #REQUIRED>
+<!--
+    If defined, refers to an included BaseContext to be used as default context 
+    initialized for the given language scripts.
+
+    #NotNull
+    #References: BaseContext/@name
+-->
+<!ATTLIST ScriptEngine default-context CDATA #IMPLIED>
+
+<!--
+    Basic Context Initializer.
+
+    #Label: @name
+-->
+<!ELEMENT BaseContext (Description?)>
+<!--
+    Initializer name.
+
+    #NotNull
+    #Unique: ../BaseContext/@name
+-->
+<!ATTLIST BaseContext name         CDATA #REQUIRED>
+<!--
+    This attribute is the name of a file containing the script to parse/execute
+    for initializing the context.
+    The file path must be relative to $GV_HOME/scripts.
+
+    #NotNull
+-->
+<!ATTLIST BaseContext file CDATA #IMPLIED>
+
+<!ELEMENT GVMonitoringConfig (Description?, MonitoredProcesses)>
+<!--
+    Element type 'module'.
+-->
+<!ATTLIST GVMonitoringConfig type    CDATA   #FIXED  "module">
+<!--
+    Module id always set to 'MONITORING'.
+-->
+<!ATTLIST GVMonitoringConfig name    CDATA   #FIXED  "MONITORING">
+
+<!--
+
+-->
+<!ELEMENT MonitoredProcesses (Description?,MonitoredProcess+)>
+
+<!--
+    #Label: @name
+-->
+<!ELEMENT MonitoredProcess (Description?)>
+
+<!--
+    #NotNull
+    #Unique: parent::GVMonitoringConfig/MonitoredProcess/@name
+-->
+<!ATTLIST MonitoredProcess name CDATA #REQUIRED>
+
+<!--
+    #NotNull
+-->
+<!ATTLIST MonitoredProcess url CDATA #IMPLIED>
+
+<!--
+    #NotNull
+-->
+<!ATTLIST MonitoredProcess user CDATA #IMPLIED>
+
+<!--
+    #NotNull
+-->
+<!ATTLIST MonitoredProcess password CDATA #IMPLIED>
+
+
+<!--
+    Root element for GreenVulcano ESB Statistics.
+
+-->
+<!ELEMENT GVStatisticsConfig (Description?, Writers, ExtendedDataMappings?)>
+<!--
+    Element type 'module'.
+-->
+<!ATTLIST GVStatisticsConfig type    CDATA   #FIXED  "module">
+<!--
+    Module ID always set to 'STATISTICS'.
+-->
+<!ATTLIST GVStatisticsConfig name    CDATA   #FIXED  "STATISTICS">
+
+<!--
+    #Template:
+
+        <xsl:template match="Writers">
+            <xsl:if test="Description">
+                <small><xsl:value-of select="Description"/></small><p/>
+            </xsl:if>
+        </xsl:template>
+-->
+<!ELEMENT Writers (Description?, (%statistics-writers;)*) >
+<!--
+    Default Statistics writer.
+
+    #References: *[@type='stat-writer']/@id
+-->
+<!ATTLIST Writers default CDATA #REQUIRED>
+
+<!--
+     DUMMY Writer plug-in parameters.
+
+    Default plug-in for statistics.
+    It's can be used when are problem on other statistics writers.
+    It DON'T makes historicization of data.
+
+    #SelectOnInsert
+    #Label: @id
+-->
+<!ELEMENT DUMMYStatisticsWriter (Description?) >
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST DUMMYStatisticsWriter type CDATA #FIXED "stat-writer">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST DUMMYStatisticsWriter class CDATA #FIXED "it.greenvulcano.gvesb.statistics.plugin.DUMMYStatisticsWriter">
+<!--
+    Unmodifiable.
+-->
+<!ATTLIST DUMMYStatisticsWriter id CDATA #FIXED "DUMMY_STORE">
+
+<!--
+    JDBC Writer plug-in connection parameters.
+
+    It's can be used for writing statistics information on DB.
+
+    #SelectOnInsert
+    #Label: @id
+-->
+<!ELEMENT JDBCStatisticsWriter (Description?, JNDIHelper?) >
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST JDBCStatisticsWriter type CDATA #FIXED "stat-writer">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST JDBCStatisticsWriter class CDATA #FIXED "it.greenvulcano.gvesb.statistics.plugin.JDBCStatisticsWriter">
+<!--
+    Writer id.
+
+    #NotNull
+    #Unique: ../*[@type='stat-writer']/@id
+-->
+<!ATTLIST JDBCStatisticsWriter id CDATA #REQUIRED>
+<!--
+    JDBC Connection name.
+
+    #NotNull
+-->
+<!ATTLIST JDBCStatisticsWriter dataSource CDATA #REQUIRED>
+
+<!--
+    JMS Writer plug-in connection parameters.
+
+    It's can be used for writing statistics information on a JMS Queue.
+
+    #SelectOnInsert
+    #Label: @id
+-->
+<!ELEMENT JMSStatisticsWriter (Description?, JNDIHelper?) >
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST JMSStatisticsWriter type CDATA #FIXED "stat-writer">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST JMSStatisticsWriter class CDATA #FIXED "it.greenvulcano.gvesb.statistics.plugin.JMSStatisticsWriter">
+<!--
+    Writer id.
+
+    #NotNull
+    #Unique: ../*[@type='stat-writer']/@id
+-->
+<!ATTLIST JMSStatisticsWriter id CDATA #REQUIRED>
+<!--
+    JMS QueueConnectionFactory  JNDI name.
+
+    #NotNull
+-->
+<!ATTLIST JMSStatisticsWriter connectionFactory CDATA #REQUIRED>
+<!--
+    JMS Queue JNDI name.
+
+    #NotNull
+-->
+<!ATTLIST JMSStatisticsWriter queue CDATA #REQUIRED>
+
+
+<!--
+    #SelectOnInsert
+-->
+<!ELEMENT ExtendedDataMappings (Description?, ExtendedData*)>
+
+<!--
+    This element defines for each couple System / Service further data typologies to use for statistics, as:
+        - properties of GVBuffer
+        - part of a buffer of GVBuffer
+        - the value of a property of the JVM
+        - current date
+
+    #SelectOnInsert
+    #CompositeLabel: ||@system|::|@service
+    #Warn: {{self::ExtendedData[count(//ExtendedData[@system=current()/@system and @service=current()/@service]) > 1]}} Attenzione: coppia sistema-servizio duplicata
+    #Template:
+        <xsl:template match="ExtendedData">
+            <xsl:if test="Description">
+                <small><xsl:value-of select="Description"/></small><p/>
+            </xsl:if>
+        </xsl:template>
+-->
+<!ELEMENT ExtendedData (Description?, (%data-wrappers;)*)>
+<!--
+    GreenVulcano ESB system.
+
+    #References: gvesb:document('GVCore')/GVCore/GVSystems/Systems/System/@id-system
+    #NotNull
+-->
+<!ATTLIST ExtendedData system CDATA #REQUIRED>
+<!--
+     GreenVulcano ESB system's service.
+
+    #References: gvesb:document('GVCore')/GVCore/GVServices/Services/Service[Clients/Client/@id-system=current()/@system]/@id-service
+    #NotNull
+-->
+<!ATTLIST ExtendedData service CDATA #REQUIRED>
+
+<!--
+    Defines a GVBuffer property to save in the statistics storage.
+
+    #SelectOnInsert
+    #Label: @storeField
+    #Template:
+        <xsl:template match="GVBufferProperty">
+            <table cellpadding="0" cellspacing="0">
+                <tr>
+                    <td>Store Field:</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="@storeField"/></b></td>
+                </tr>
+                <tr>
+                    <td>Property:</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="@property"/></b></td>
+                </tr>
+            </table>
+            <xsl:if test="Description">
+                <br/>
+                <small><xsl:value-of select="Description"/></small><p/>
+            </xsl:if>
+        </xsl:template>
+-->
+<!ELEMENT GVBufferProperty (Description?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST GVBufferProperty type CDATA #FIXED "data-mapping">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST GVBufferProperty class CDATA #FIXED "it.greenvulcano.gvesb.statistics.datawrapper.GVBufferPropertyWrapper">
+<!--
+    Defines the store object name.
+    In case of JDBC Store the field mapa table column.
+
+    #Unique: ../*[@type='data-mapping']/@storeField
+    #NotNull
+-->
+<!ATTLIST GVBufferProperty storeField CDATA #REQUIRED>
+<!--
+    The property name.
+
+    #NotNull
+-->
+<!ATTLIST GVBufferProperty property CDATA #REQUIRED>
+
+<!--
+    Defines rule to extract data from GVBuffer body and store it in the statistics storage.
+
+    #SelectOnInsert
+    #Template:
+        <xsl:template match="GVBufferBody">
+            <table cellpadding="0" cellspacing="0">
+                <tr>
+                    <td>Store Field:</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="@storeField"/></b></td>
+                </tr>
+                <tr>
+                    <td>Regular Expression:</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="@regular-expression"/></b></td>
+                </tr>
+                <tr>
+                	<td>Groups:</td>
+                	<td width="20"></td>
+                	<td><b><xsl:value-of select="@groups"/></b></td>
+                </tr>
+                <tr>
+                	<td>Encoding:</td>
+                	<td width="20"></td>
+                	<td><b><xsl:value-of select="@encoding"/></b></td>
+                </tr>
+            </table>
+            <xsl:if test="Description">
+                <br/>
+                <small><xsl:value-of select="Description"/></small><p/>
+            </xsl:if>
+        </xsl:template>
+-->
+<!ELEMENT GVBufferBody (Description?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST GVBufferBody type CDATA #FIXED "data-mapping">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST GVBufferBody class CDATA #FIXED "it.greenvulcano.gvesb.statistics.datawrapper.GVBufferBodyWrapper">
+<!--
+    Defines the store object name.
+    In case of JDBC Store the field mapa table column.
+
+    #Unique: ../*[@type='data-mapping']/@storeField
+    #NotNull
+-->
+<!ATTLIST GVBufferBody storeField CDATA #REQUIRED>
+<!--
+    Encoding to be used to read the body.
+
+    #NotNull
+-->
+<!ATTLIST GVBufferBody encoding CDATA #IMPLIED>
+<!--
+    Regular expression to extract data from the body.
+
+    #NotNull
+-->
+<!ATTLIST GVBufferBody regularExpression CDATA #REQUIRED>
+<!--
+    Pattern matching group.
+    If specified more than one group then the extracted values are chained
+    in the given order.
+    Groups must be separated by: , ; : .
+
+    #NotNull
+-->
+<!ATTLIST GVBufferBody groups CDATA #IMPLIED>
+
+<!--
+    Defines rule to eprocess a metadata and store it in the statistics storage.
+
+    #SelectOnInsert
+    #Template:
+        <xsl:template match="Metadata">
+            <table cellpadding="0" cellspacing="0">
+                <tr>
+                    <td>Store Field:</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="@storeField"/></b></td>
+                </tr>
+                <tr>
+                    <td>Expression:</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="@expression"/></b></td>
+                </tr>
+            </table>
+            <xsl:if test="Description">
+                <br/>
+                <small><xsl:value-of select="Description"/></small><p/>
+            </xsl:if>
+        </xsl:template>
+-->
+<!ELEMENT Metadata (Description?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST Metadata type CDATA #FIXED "data-mapping">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST Metadata class CDATA #FIXED "it.greenvulcano.gvesb.statistics.datawrapper.MetadataWrapper">
+<!--
+    Defines the store object name.
+    In case of JDBC Store the field mapa table column.
+
+    #Unique: ../*[@type='data-mapping']/@storeField
+    #NotNull
+-->
+<!ATTLIST Metadata storeField CDATA #REQUIRED>
+<!--
+    The expression can be a combination of:
+     - fixed : a text string;
+     - %{{class}}         : the obj class name;
+     - %{{fqclass}}       : the obj fully qualified class name;
+     - %{{package}}       : the obj package name;
+     - ${{propname}}      : a System property name;
+     - sp{{propname}}     : a System property name;
+     - env{{varname}}     : an Environment variable value;
+     - @{{propname}}      : a inProperties property name;
+     - timestamp{{pattern}} : return the current timestamp formatted as 'pattern'
+     - dateformat{{date::source-pattern::dest-pattern}} : reformat 'date' from 'source-pattern' to 'dest-pattern'
+     - decode{{field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                               evaluate as if-then-else; if 'field' is equal to cond1...n,
+                               return the value of val1...n, otherwise 'default'
+     - decodeL{{sep::field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                               is equivalent to 'decode', with the difference that 'condX'
+                               can be a list of values separated by 'sep'
+     - script{{lang::[scope::]script}} : evaluate a 'lang' script, using the base context 'scope',
+                               the object is added to the context as 'object',
+     - js{{[scope::]script}} : evaluate a JavaScript script, using the context 'scope',
+                               the object is added to the context as 'object',
+     - ognl{{script}}        : evaluate a OGNL script,
+                               the object is added to the context as 'object' (and is also the object on which execute the script !! NO MORE FROM 3.5 !!),
+     - sql{{conn::statement}}      : execute a select sql statement sql and return the value of
+                                     the first field of the first selected record.
+                                     The 'conn' parameter is the JNDI name of a DataSource
+     - sqllist{{conn::statement}}  : execute a select sql statement sql and return the value of
+                                     the first field of all selected records as a comma separated list.
+                                     The 'conn' parameter is the JNDI name of a DataSource
+     - sqltable{{conn::statement}} : executes a select sql statement and returns all values of
+                                     returned cursor as an XML.
+                                     The 'conn' parameter is the JNDI name of a DataSource
+
+
+    #NotNull
+-->
+<!ATTLIST Metadata expression CDATA #REQUIRED>
+
+<!ENTITY % inputObject "GVBuffer">
+
+<!--
+
+-->
+<!ELEMENT GVWorkbenchConfig (EJBTest*, LogConsole?)>
+<!--
+    Element type 'module'.
+-->
+<!ATTLIST GVWorkbenchConfig type    CDATA   #FIXED  "module">
+<!--
+    Module ID always set to 'WORKBENCH'.
+-->
+<!ATTLIST GVWorkbenchConfig name    CDATA   #FIXED  "WORKBENCH">
+<!--
+    This elements defines the Test details. Every test uses a specific element for initialization.
+
+    #Label: @id
+    #Template:
+
+        <xsl:template match="EJBTest">
+            <table cellpadding="0" cellspacing="0">
+                <tr valign="top">
+                    <td>Id</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="@id"/></b></td>
+                </tr>
+                <tr valign="top">
+                    <td>Class Name</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="@class"/></b></td>
+                </tr>
+                <xsl:if test="@jndiName">
+                    <tr valign="top">
+                        <td>Jndi Name</td>
+                        <td width="20"></td>
+                        <td><b><xsl:value-of select="@jndiName"/></b></td>
+                    </tr>
+                </xsl:if>
+                <xsl:if test="defaultInternalField">
+                    <tr valign="top">
+                        <td>Default Internal Field Name</td>
+                        <td width="20"></td>
+                        <td>
+                            <xsl:for-each select="defaultInternalField">
+                                <b><xsl:value-of select="@fieldName"/></b><br/>
+                                <b><xsl:value-of select="@fieldValue"/></b><br/>
+                            </xsl:for-each>
+                        </td>
+                    </tr>
+                </xsl:if>
+                <xsl:if test="Description">
+                    <tr valign="top">
+                        <td>Description</td>
+                        <td width="20"></td>
+                        <td><b><xsl:value-of select="Description"/></b><xsl:text></xsl:text></td>
+                    </tr>
+                </xsl:if>
+            </table>
+      </xsl:template>
+-->
+<!ELEMENT EJBTest (Description?, defaultInternalField*, JNDIHelper?, Loop?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST EJBTest    type CDATA #FIXED "test">
+<!--
+    Test unique id.
+
+    #Unique: //*[@type='test']/@id
+    #NotNull
+-->
+<!ATTLIST EJBTest    id CDATA #REQUIRED>
+<!--
+    Plug-in class invoking the EJB.
+
+    #NotNull
+-->
+<!ATTLIST EJBTest    class CDATA #REQUIRED>
+<!--
+    JNDI name of the EJB to invoke.
+
+    #NotNull
+-->
+<!ATTLIST EJBTest    jndiName CDATA #REQUIRED>
+<!--
+    This attribute defines the absolute path of the file where Test program writes the test results
+-->
+<!ATTLIST EJBTest    fileNameOutput CDATA #IMPLIED>
+<!--
+    This attribute defines the absolute path of the file where Test program writes the test input data
+-->
+<!ATTLIST EJBTest    fileNameInput CDATA #IMPLIED>
+<!--
+    This element defines the internal fields that by default are assigned to the Input GVBuffer.
+
+    #Template:
+
+        <xsl:template match="defaultInternalField">
+            <table cellpadding="0" cellspacing="0">
+                <tr valign="top">
+                    <td>Field Name</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="@fieldName"/></b></td>
+                </tr>
+                <tr valign="top">
+                    <td>Field Value</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="@fieldValue"/></b></td>
+                </tr>
+            </table>
+            <xsl:if test="Description">
+                <small><br/><xsl:value-of select="Description"/></small>
+            </xsl:if>
+        </xsl:template>
+-->
+<!ELEMENT defaultInternalField (Description?)>
+<!--
+    Internal field definition.
+-->
+<!ATTLIST defaultInternalField    fieldName CDATA #REQUIRED>
+<!--
+    Internal field value.
+-->
+<!ATTLIST defaultInternalField    fieldValue CDATA #REQUIRED>
+
+<!--
+    Element for multiple tests on GreenVulcano ESB.
+
+    #Label: @id
+    #Table: | Test | Test | Description | Description | Enabled | @enabled
+-->
+<!ELEMENT Loop (Description?, Test+)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST Loop    type CDATA #FIXED "loop">
+<!--
+    This attribute must correspond to the id of the relative EJBTest.
+
+    #Unique: //*[@type='loop']/@id
+    #NotNull
+-->
+<!ATTLIST Loop    id CDATA #REQUIRED>
+<!--
+    Class name that contains the test object identified.
+
+    #NotNull
+-->
+<!ATTLIST Loop    className CDATA #REQUIRED>
+<!--
+    Complete file path of the output file for the multiple test
+
+    A fully qualified name is mandatory.
+
+    #NotNull
+-->
+<!ATTLIST Loop    fileName CDATA #REQUIRED>
+<!--
+    Test to be executed within the loop.
+
+    #Label: @id
+-->
+<!ELEMENT Test (Description?, JNDIHelper?, Input)>
+<!--
+    Flag to enable the test in the loop. If set to 'No' the test will not be executed.
+-->
+<!ATTLIST Test    enabled (yes | no) #REQUIRED>
+<!--
+    This attribute specifies whether to insert the test in a transaction and how.
+-->
+<!ATTLIST Test
+    transaction (NoTransaction | Commit | Rollback) "NoTransaction"
+>
+<!--
+    This element is the input type of the test to be performed
+-->
+<!ELEMENT Input (Description?, (%inputObject;))>
+<!--
+    EJB JNDI name
+
+    #NotNull
+-->
+<!ATTLIST Input   jndiName CDATA #REQUIRED>
+<!--
+  This element represents the input object GVBuffer
+-->
+<!ELEMENT GVBuffer (Description?, Data, TestProperties?, TestFlow)>
+<!--
+  This attribute defines the name of the System
+-->
+<!ATTLIST GVBuffer  system CDATA #REQUIRED>
+<!--
+    This attribute defines the name of the Service
+-->
+<!ATTLIST GVBuffer  service CDATA #REQUIRED>
+<!--
+    This attribute defines the l'ID. If not valued it's automatically generated.
+-->
+<!ATTLIST GVBuffer   id CDATA #IMPLIED>
+<!--
+    This attribute defines the routing. If not valued defaults to "0"
+-->
+<!ELEMENT Data (Description?)>
+<!--
+    This attribute defines the data encoding
+-->
+<!ATTLIST Data  encoding (Binary | US-ASCII | ISO-8859-1 | UTF-8 | UTF-16BE | UTF-16LE | UTF-16) "UTF-8">
+<!--
+  This attribute defines the value of the input data
+-->
+<!ATTLIST Data   value CDATA #IMPLIED>
+<!--
+    This attribute defines the properties of GVBuffer
+-->
+<!ELEMENT TestProperties (Description?)>
+<!--
+    This attribute defines the name of the property.
+-->
+<!ATTLIST TestProperties  name CDATA #REQUIRED>
+<!--
+    This attribute defines the value of the property.
+-->
+<!ATTLIST TestProperties  value CDATA #REQUIRED>
+
+<!--
+    This element represents the flow of methods to be run to execute the services in the list of multiple testing
+-->
+<!ELEMENT TestFlow (Description?)>
+<!--
+    This attribute defines the Forward name
+-->
+<!ATTLIST TestFlow    forwardName CDATA #IMPLIED>
+<!--
+    This attribute defines the method to call
+-->
+<!ATTLIST TestFlow    method CDATA #REQUIRED>
+
+<!--
+    #SelectOnInsert
+-->
+<!ELEMENT LogConsole (Description?, LogFilter, Message, LogDownload)>
+<!--
+    DataSource JNDI name.
+
+    #NotNull
+-->
+<!ATTLIST LogConsole    jdbc-connection-name CDATA #REQUIRED>
+<!--
+    #SelectOnInsert
+    #NotNull
+-->
+<!ELEMENT LogFilter (#PCDATA)>
+<!--
+    #SelectOnInsert
+    #NotNull
+-->
+<!ELEMENT Message (#PCDATA)>
+<!--
+    Log files download component.
+-->
+<!ELEMENT LogDownload EMPTY>
+<!--
+    The GV ESB log directory to be searched for files.
+    Default to: sp{{gv.app.home}}/log.
+
+    #NotNull
+-->
+<!ATTLIST LogDownload gv-log-dir      CDATA #IMPLIED>
+<!--
+    Search pattern for log file to compress.
+    Default to: (.*\.@{{DATE_A}}\.log$)|(.*\.@{{DATE_A}}\.log\.zip$)|(.*\.@{{DATE_A}}\.log\.gz$)
+    (@{{DATE_A}} is the requested log date)
+
+    #NotNull
+-->
+<!ATTLIST LogDownload gv-log-filter    CDATA #IMPLIED>
+<!--
+    The JBoss log directory to be searched for files.
+    Default to: sp{{jboss.server.log.dir}}.
+
+    #NotNull
+-->
+<!ATTLIST LogDownload jboss-log-dir      CDATA #IMPLIED>
+<!--
+    Search pattern for log file to compress.
+    Default to: (boot\.log$)|(boot\.log\.zip$)|(boot\.log\.gz$)|(server\.log\.@{{DATE_A}}$)|(server\.log\.@{{DATE_A}}\.zip$)|(server\.log\.@{{DATE_A}}\.gz$)
+    If search date is today: (boot\.log$)|(boot\.log\.zip$)|(boot\.log\.gz$)|(server\.log$)
+    (@{{DATE_A}} is the requested log date)
+
+    #NotNull
+-->
+<!ATTLIST LogDownload jboss-log-filter    CDATA #IMPLIED>
+
+<!--
+    Defines standard Locale, TimeZone and holydays for it.greenvulcano.util.txt.DateUtils utility class.
+-->
+<!ELEMENT GVDateUtils (Description?, Locale, Holidays)>
+<!--
+ Element type 'module'.
+-->
+<!ATTLIST GVDateUtils type    CDATA   #FIXED  "module">
+<!--
+    Module ID always set to 'DATE_UTILS'.
+-->
+<!ATTLIST GVDateUtils name    CDATA   #FIXED  "DATE_UTILS">
+
+<!ELEMENT Locale (Description?, DayLightSaving?)>
+<!--
+    #NotNull
+-->
+<!ATTLIST Locale lang         CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST Locale country      CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST Locale timezone     CDATA #REQUIRED>
+
+<!ELEMENT DayLightSaving (Description?)>
+<!--
+    #NotNull
+-->
+<!ATTLIST DayLightSaving startMonth       CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST DayLightSaving startDay         CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST DayLightSaving startDayOfWeek   CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST DayLightSaving startTime        CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST DayLightSaving endMonth         CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST DayLightSaving endDay           CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST DayLightSaving endDayOfWeek     CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST DayLightSaving endTime          CDATA #REQUIRED>
+
+<!ELEMENT Holidays (Description?, Holiday*)>
+<!--
+    #NotNull
+-->
+<!ATTLIST Holidays have-easter-day (true|false) #REQUIRED>
+
+<!ELEMENT Holiday (Description?)>
+<!--
+    #Pattern: ! [1-9][0-9]* ! Enter a number
+    #NotNull
+-->
+<!ATTLIST Holiday month        CDATA #REQUIRED>
+<!--
+    #Pattern: ! [1-9][0-9]* ! Enter a number
+    #NotNull
+-->
+<!ATTLIST Holiday day          CDATA #REQUIRED>
+
+
+
+<!--
+    Defines the configuration of helper objects to manage JNDI tree.
+-->
+<!ELEMENT GVJNDIBuildersConfig (Description?, (Rebind)*)>
+<!--
+     Element type 'module'.
+-->
+<!ATTLIST GVJNDIBuildersConfig type    CDATA   #FIXED  "module">
+<!--
+    Module ID always set to 'JNDI_BUILDER'.
+-->
+<!ATTLIST GVJNDIBuildersConfig name    CDATA   #FIXED  "JNDI_BUILDER">
+
+
+<!ELEMENT Rebind (Description?,JNDIHelper?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST Rebind type CDATA #FIXED "jndi-builder">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST Rebind class CDATA #FIXED "it.greenvulcano.gvesb.j2ee.jndi.impl.Rebind">
+<!--
+    #NotNull
+-->
+<!ATTLIST Rebind name    CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST Rebind oldJndiName    CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST Rebind newJndiName    CDATA #REQUIRED>
+
+
+<!--
+    Defines the configuration of HttpClient custom protocols handler, globally defined for the GV Server.
+
+    #Table: ! Custom Protocols ! CustomProtocol ! Name ! @name ! Scheme ! @protocol-scheme ! Factory ! @protocol-socket-factory ! DefaultPort ! @protocol-default-port ! VirtualScheme ! @protocol-virtual-scheme
+-->
+<!ELEMENT GVHTTPClientProtocolConfig (Description?, CustomProtocol*)>
+<!--
+    Element type 'module'.
+-->
+<!ATTLIST GVHTTPClientProtocolConfig type    CDATA   #FIXED  "module">
+<!--
+    Module ID always set to 'JNDI_BUILDER'.
+-->
+<!ATTLIST GVHTTPClientProtocolConfig name    CDATA   #FIXED  "HTTP_CLIENT_PROTOCOLS">
+
+<!--
+    Defines the configuration of the GreenVulcanoESB heartbeat framework.
+-->
+<!ELEMENT GVHeartBeatConfig (Description?, (SimpleHeartBeat|JDBCHeartBeat))>
+<!--
+    Element type 'module'.
+-->
+<!ATTLIST GVHeartBeatConfig type    CDATA   #FIXED  "module">
+<!--
+    Module ID always set to 'HEART_BEAT'.
+-->
+<!ATTLIST GVHeartBeatConfig name    CDATA   #FIXED  "HEART_BEAT">
+
+<!--
+    Simple HeartBeat implementation, logs event in Log4J it.greenvulcano.util.heartbeat logger.
+-->
+<!ELEMENT SimpleHeartBeat (Description?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST SimpleHeartBeat type  CDATA #FIXED "heartbeat">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST SimpleHeartBeat class CDATA #FIXED "it.greenvulcano.util.heartbeat.impl.SimpleHeartBeat">
+<!--
+    JDBC HeartBeat implementation, logs event in DB table.
+-->
+<!ELEMENT JDBCHeartBeat (Description?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST JDBCHeartBeat type                 CDATA #FIXED "heartbeat">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST JDBCHeartBeat class                CDATA #FIXED "it.greenvulcano.util.heartbeat.impl.JDBCHeartBeat">
+<!--
+    The connection name to use.
+    Default to using the 'HeartBeat'
+
+    #NotNull
+-->
+<!ATTLIST JDBCHeartBeat jdbc-connection-name CDATA #IMPLIED>
+
+
+<!--
+    Defines the configuration of the GreenVulcanoESB Timer task framework.
+-->
+<!ELEMENT GVTaskManagerFactory (Description?, TaskManager)>
+<!--
+    Element type 'module'.
+-->
+<!ATTLIST GVTaskManagerFactory type    CDATA   #FIXED  "module">
+<!--
+    Module ID always set to 'TASK_MANAGER_FACTORY'.
+-->
+<!ATTLIST GVTaskManagerFactory name    CDATA   #FIXED  "TASK_MANAGER_FACTORY">
+
+<!--
+    Standard TaskManager implementation.
+
+    #CompositeLabel: || @name | : | @config-file
+-->
+<!ELEMENT TaskManager (Description?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST TaskManager type           CDATA #FIXED "task-manager">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST TaskManager class          CDATA #FIXED "it.greenvulcano.scheduler.TaskManager">
+<!--
+    The TaskManager name.
+
+    #NotNull
+-->
+<!ATTLIST TaskManager name           CDATA #FIXED "GVTaskManager">
+<!--
+    The configuration file name.
+
+    #NotNull
+-->
+<!ATTLIST TaskManager config-file    CDATA #FIXED "GVTaskManager-Configuration.xml">

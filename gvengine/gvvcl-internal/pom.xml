@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>it.greenvulcano.gvesb</groupId>
+		<artifactId>gvengine</artifactId>
+		<version>4.0.0</version>
+	</parent>
+
+	<artifactId>gvvcl-internal</artifactId>
+	<packaging>bundle</packaging>
+	<name>GreenVulcano VCL Internal Plugin</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>it.greenvulcano.gvesb</groupId>
+			<artifactId>gvbase</artifactId>
+			<version>${project.version}</version>
+			<type>bundle</type>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>it.greenvulcano.gvesb</groupId>
+			<artifactId>gvdte</artifactId>
+			<version>${project.version}</version>
+			<type>bundle</type>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>it.greenvulcano.gvesb</groupId>
+			<artifactId>gvvcl</artifactId>
+			<version>${project.version}</version>
+			<type>bundle</type>
+			<scope>provided</scope>
+		</dependency>
+	    <dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20151123</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>xml-resolver</groupId>
+			<artifactId>xml-resolver</artifactId>
+			<version>1.2</version>
+			<scope>test|provided</scope>
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.ws.commons.axiom</groupId>
+		    <artifactId>axiom-api</artifactId>
+		    <version>1.2.18</version>
+		    <scope>test|provided</scope>
+		</dependency>
+
+	    <dependency>
+            <groupId>com.github.fge</groupId>
+            <artifactId>json-schema-validator</artifactId>
+            <version>2.2.6</version>
+	    </dependency>
+
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>${maven-bundle-plugin.version}</version>
+				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+						<Bundle-Version>${project.version}</Bundle-Version>
+						<Private-Package>
+								it.greenvulcano.gvesb.virtual.internal*;version=${project.version},!org.w3c.dom
+						</Private-Package>
+						<Import-Package>
+										org.slf4j;version="[1.6,2)";provider=paxlogging,
+										org.w3c.dom;version="[1.0,2)",
+										org.osgi.framework;version="[1.7,2)",
+										org.osgi.service.blueprint;version="[1.0.0,2.0.0)",
+										org.json,
+										it.greenvulcano.configuration,
+										it.greenvulcano.gvesb.buffer,
+										it.greenvulcano.gvesb.gvdp,
+										it.greenvulcano.gvesb.gvdte.controller,
+										it.greenvulcano.gvesb.internal.data,
+										it.greenvulcano.gvesb.internal.log,
+										it.greenvulcano.gvesb.internal,
+										it.greenvulcano.gvesb.virtual,
+										it.greenvulcano.script,
+										it.greenvulcano.util.metadata,
+										it.greenvulcano.util.thread,
+										it.greenvulcano.util.xml,
+										it.greenvulcano.util.xpath
+						</Import-Package>
+						<Embed-Dependency>*;scope=compile;type=jar;artifactId=!xml-api</Embed-Dependency>
+						<Embed-Transitive>true</Embed-Transitive>
+						<Bundle-Activator>it.greenvulcano.gvesb.virtual.internal.Activator</Bundle-Activator>
+					</instructions>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

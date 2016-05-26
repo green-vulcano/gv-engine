@@ -1,0 +1,393 @@
+
+<!--
+    OPENSPCOOP plugin.
+
+    The output GVBuffer.object field contains a MessageContext built from the PD response.default output
+    The input GVBuffer property SPC_RETURN_TYPE can be set to override the output format:
+    - context         : the MessageContext
+    - envelope        : the envelope as XML serialized as string
+    - body            : the body as XML serialized as string
+    - body-element    : the first child of body as XML serialized as string
+    - header          : the header as XML serialized as string
+    - envelope-om     : the envelope as OMMessage
+    - body-om         : the body as OMMessage
+    - body-element-om : the first child of body as OMMessage
+    - header-om       : the header as OMMessage
+
+    #Label: @name
+    #Icon: GVopenspcoopCall.png
+    #Category: Custom
+    #SelectOnInsert
+    #Template:
+
+        <xsl:template match="openspcoop-call">
+                <xsl:if test="Description">
+                <small><xsl:value-of select="Description"/></small><p/>
+            </xsl:if>
+        </xsl:template>
+-->
+<!ELEMENT openspcoop-call (Description?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST openspcoop-call  type CDATA #FIXED "call">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+
+-->
+<!ATTLIST openspcoop-call class CDATA #FIXED "it.greenvulcano.gvesb.virtual.openspcoop.OpenSpCoopCallOperation">
+<!--
+    Operation name.
+    Used in the 'Flow' section to associate workflow nodes to VCL operations.
+
+    #NotNull
+    #Unique: ../*[@type='enqueue' or @type='dequeue' or @type='call']/@name
+-->
+<!ATTLIST openspcoop-call  name CDATA #REQUIRED>
+<!--
+    locationPD openspcoop.
+
+    #NotNull
+-->
+<!ATTLIST openspcoop-call locationPD CDATA #REQUIRED>
+<!--
+    username openspcoop.
+
+    #NotNull
+-->
+<!ATTLIST openspcoop-call username CDATA #REQUIRED>
+<!--
+    password openspcoop.
+
+    #NotNull
+-->
+<!ATTLIST openspcoop-call password CDATA #REQUIRED>
+<!--
+    url openspcoop.
+
+    #NotNull
+-->
+<!ATTLIST openspcoop-call url CDATA #REQUIRED>
+<!--
+    Operazione di openspcoop da invocare.
+
+-->
+<!ATTLIST openspcoop-call comando (deleteAllMessages| deleteMessage| deleteMessageByReference| getAllMessagesId| getAllMessagesIdByService| getMessage| getMessageByReference| getNextMessagesId| getNextMessagesIdByService| invocazionePortaDelegata| invocazionePortaDelegataPerRiferimento| sendRichiestaStatoAsincronaAsimmetrica| sendRispostaAsincronaSimmetrica )  #REQUIRED>
+<!--
+    tipoDestinatario openspcoop.
+
+    #NotNull
+-->
+<!ATTLIST openspcoop-call tipoDestinatario CDATA #REQUIRED>
+<!--
+    destinatario openspcoop.
+
+    #NotNull
+-->
+<!ATTLIST openspcoop-call destinatario CDATA #REQUIRED>
+<!--
+    tipoServizio openspcoop.
+
+    #NotNull
+-->
+<!ATTLIST openspcoop-call tipoServizio CDATA #REQUIRED>
+<!--
+    servizio openspcoop.
+
+    #NotNull
+-->
+<!ATTLIST openspcoop-call servizio CDATA #REQUIRED>
+<!--
+    azione openspcoop.
+
+    #NotNull
+-->
+<!ATTLIST openspcoop-call azione CDATA #REQUIRED>
+
+<!--
+    idCorrelazioneApplicativa openspcoop.
+
+    This idCorrelazioneApplicativa can be static or may contain placeholders that are replaced at runtime.
+
+    Can contains the following placeholders:
+     - fixed : a text string;
+     - ${{propname}}      : a System property name;
+     - sp{{propname}}     : a System property name;
+     - env{{varname}}     : an Environment variable value;
+     - @{{propname}}      : a inProperties property name;
+     - timestamp{{pattern[::tZone]]}} : return the current timestamp, in optional tZone value,
+                                        formatted as 'pattern'
+     - dateformat{{date::source-pattern::dest-pattern[::source-tZone::dest-tZone]}} :
+                               reformat 'date' from 'source-pattern' to 'dest-pattern',
+                               and optionally from 'source-tZone' to 'dest-tZone'
+     - decode{{field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                               evaluate as if-then-else; if 'field' is equal to cond1...n,
+                               return the value of val1...n, otherwise 'default'
+     - decodeL{{sep::field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                               is equivalent to 'decode', with the difference that 'condX'
+                               can be a list of values separated by 'sep'
+     - script{{lang::[scope::]script}} : evaluate a 'lang' script, using the base context 'scope'
+     - js{{[scope::]script}} : evaluate a JavaScript script, using the context 'scope'
+     - ognl{{script}}        : evaluate a OGNL script
+     - sql{{conn::statement}}            : execute a select sql statement sql and return the value of
+                                           the first field of the first selected record.
+                                           The 'conn' parameter is the JNDI name of a DataSource
+     - sqllist{{conn[::sep]::statement}} : execute a select sql statement sql and return the value of
+                                           the first field of all selected records as a 'sep' separated list.
+                                           The 'conn' parameter is the JNDI name of a DataSource
+                                           The 'sep' parameter defaults to comma
+
+    If this attribute is not present, the command is executed
+    within the current working directory.
+
+    #NotNull
+-->
+<!ATTLIST openspcoop-call idCorrelazioneApplicativa CDATA #IMPLIED>
+<!--
+    nomeServizioApplicativo openspcoop.
+-->
+<!ATTLIST openspcoop-call nomeServizioApplicativo CDATA #IMPLIED>
+<!--
+    riferimentoMessaggio openspcoop.
+-->
+<!ATTLIST openspcoop-call riferimentoMessaggio CDATA #IMPLIED>
+<!--
+    idMessaggio openspcoop.
+
+    This idMessaggio can be static or may contain placeholders that are replaced at runtime.
+
+    Can contains the following placeholders:
+     - fixed : a text string;
+     - ${{propname}}      : a System property name;
+     - sp{{propname}}     : a System property name;
+     - env{{varname}}     : an Environment variable value;
+     - @{{propname}}      : a inProperties property name;
+     - timestamp{{pattern[::tZone]]}} : return the current timestamp, in optional tZone value,
+                                        formatted as 'pattern'
+     - dateformat{{date::source-pattern::dest-pattern[::source-tZone::dest-tZone]}} :
+                               reformat 'date' from 'source-pattern' to 'dest-pattern',
+                               and optionally from 'source-tZone' to 'dest-tZone'
+     - decode{{field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                               evaluate as if-then-else; if 'field' is equal to cond1...n,
+                               return the value of val1...n, otherwise 'default'
+     - decodeL{{sep::field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                               is equivalent to 'decode', with the difference that 'condX'
+                               can be a list of values separated by 'sep'
+     - script{{lang::[scope::]script}} : evaluate a 'lang' script, using the base context 'scope'
+     - js{{[scope::]script}} : evaluate a JavaScript script, using the context 'scope'
+     - ognl{{script}}        : evaluate a OGNL script
+     - sql{{conn::statement}}            : execute a select sql statement sql and return the value of
+                                           the first field of the first selected record.
+                                           The 'conn' parameter is the JNDI name of a DataSource
+     - sqllist{{conn[::sep]::statement}} : execute a select sql statement sql and return the value of
+                                           the first field of all selected records as a 'sep' separated list.
+                                           The 'conn' parameter is the JNDI name of a DataSource
+                                           The 'sep' parameter defaults to comma
+
+    If this attribute is not present, the command is executed
+    within the current working directory.
+
+    #NotNull
+-->
+<!ATTLIST openspcoop-call idMessaggio CDATA #IMPLIED>
+
+<!--
+    counter openspcoop.
+-->
+<!ATTLIST openspcoop-call counter CDATA #IMPLIED>
+<!--
+    offset openspcoop.
+-->
+<!ATTLIST openspcoop-call offset CDATA #IMPLIED>
+<!--
+    imbustamento openspcoop.
+-->
+<!ATTLIST openspcoop-call imbustamento CDATA #IMPLIED>
+
+
+
+<!ELEMENT openspcoop:openspcoop (openspcoop:soggetto-spcoop+, openspcoop:configurazione)>
+<!ATTLIST openspcoop:openspcoop xmlns:openspcoop CDATA #FIXED "http://www.openspcoop.org/dao/config">
+<!ELEMENT openspcoop:soggetto-spcoop (openspcoop:porta-delegata*, openspcoop:porta-applicativa*, openspcoop:servizio-applicativo*, openspcoop:connettore*)>
+<!ATTLIST openspcoop:soggetto-spcoop
+          openspcoop:tipo CDATA #REQUIRED
+          openspcoop:nome CDATA #REQUIRED
+          openspcoop:identificativo-porta CDATA #IMPLIED
+          openspcoop:descrizione CDATA #IMPLIED
+          openspcoop:router (true | false) "false">
+<!ELEMENT openspcoop:porta-delegata (openspcoop:soggetto-spcoop-erogatore, openspcoop:servizio, openspcoop:azione?, openspcoop:servizio-applicativo*, openspcoop:ws-security?, openspcoop:validazione-contenuti-applicativi?, openspcoop:correlazione-applicativa?)>
+<!ATTLIST openspcoop:porta-delegata
+          openspcoop:nome CDATA #REQUIRED
+          openspcoop:descrizione CDATA #IMPLIED
+          openspcoop:location CDATA #IMPLIED
+          openspcoop:autenticazione CDATA "ssl"
+          openspcoop:autorizzazione CDATA "openspcoop"
+          openspcoop:autorizzazione-contenuto CDATA #IMPLIED
+          openspcoop:ricevuta-asincrona-simmetrica (abilitato | disabilitato) "abilitato"
+          openspcoop:ricevuta-asincrona-asimmetrica (abilitato | disabilitato) "abilitato"
+          openspcoop:integrazione CDATA #IMPLIED
+          openspcoop:allega-body (abilitato | disabilitato) "disabilitato"
+          openspcoop:scarta-body (abilitato | disabilitato) "disabilitato"
+          openspcoop:gestione-manifest (abilitato | disabilitato) #IMPLIED
+          openspcoop:stateless (abilitato | disabilitato) "abilitato">
+<!ELEMENT openspcoop:soggetto-spcoop-erogatore EMPTY>
+<!ATTLIST openspcoop:soggetto-spcoop-erogatore
+          openspcoop:identificazione (static | urlBased | contentBased | inputBased) "static"
+          openspcoop:pattern CDATA #IMPLIED
+          openspcoop:tipo CDATA #REQUIRED
+          openspcoop:nome CDATA #IMPLIED>
+<!ELEMENT openspcoop:servizio EMPTY>
+<!ATTLIST openspcoop:servizio
+          openspcoop:identificazione (static | urlBased | contentBased | inputBased) "static"
+          openspcoop:pattern CDATA #IMPLIED
+          openspcoop:tipo CDATA #REQUIRED
+          openspcoop:nome CDATA #IMPLIED>
+<!ELEMENT openspcoop:azione EMPTY>
+<!ATTLIST openspcoop:azione
+          openspcoop:identificazione (static | urlBased | contentBased | inputBased) "static"
+          openspcoop:pattern CDATA #IMPLIED
+          openspcoop:nome CDATA #IMPLIED>
+<!ELEMENT openspcoop:servizio-applicativo (openspcoop:invocazione-porta?, openspcoop:invocazione-servizio?, openspcoop:risposta-asincrona?)>
+<!ATTLIST openspcoop:servizio-applicativo
+          openspcoop:nome CDATA #REQUIRED
+          openspcoop:descrizione CDATA #IMPLIED>
+<!ELEMENT openspcoop:invocazione-porta (openspcoop:credenziali*, openspcoop:gestione-errore?)>
+<!ATTLIST openspcoop:invocazione-porta
+          openspcoop:invio-per-riferimento (abilitato | disabilitato) "disabilitato">
+<!ELEMENT openspcoop:credenziali EMPTY>
+<!ATTLIST openspcoop:credenziali
+          openspcoop:tipo (basic | ssl) "ssl"
+          openspcoop:user CDATA #IMPLIED
+          openspcoop:password CDATA #IMPLIED
+          openspcoop:subject CDATA #IMPLIED>
+<!ELEMENT openspcoop:gestione-errore EMPTY>
+<!ATTLIST openspcoop:gestione-errore
+          openspcoop:fault (soap | xml) "soap"
+          openspcoop:fault-actor CDATA #IMPLIED
+          openspcoop:generic-fault-code (abilitato | disabilitato) "disabilitato"
+          openspcoop:prefix-fault-code CDATA #IMPLIED>
+<!ELEMENT openspcoop:invocazione-servizio (openspcoop:credenziali?, openspcoop:connettore?, openspcoop:gestione-errore?)>
+<!ATTLIST openspcoop:invocazione-servizio
+          openspcoop:sbustamento-soap (true | false) "false"
+          openspcoop:get-message (abilitato | disabilitato) "disabilitato"
+          openspcoop:autenticazione (basic | ssl | none) "none"
+          openspcoop:invio-per-riferimento (abilitato | disabilitato) "disabilitato"
+          openspcoop:risposta-per-riferimento (abilitato | disabilitato) "disabilitato">
+<!ELEMENT openspcoop:connettore (openspcoop:property*)>
+<!ATTLIST openspcoop:connettore
+          openspcoop:tipo CDATA #IMPLIED
+          openspcoop:nome CDATA #REQUIRED>
+<!ELEMENT openspcoop:property EMPTY>
+<!ATTLIST openspcoop:property
+          openspcoop:nome CDATA #REQUIRED
+          openspcoop:valore CDATA #REQUIRED>
+<!ELEMENT openspcoop:risposta-asincrona (openspcoop:credenziali?, openspcoop:connettore?, openspcoop:gestione-errore?)>
+<!ATTLIST openspcoop:risposta-asincrona
+          openspcoop:sbustamento-soap (true | false) "false"
+          openspcoop:get-message (abilitato | disabilitato) "disabilitato"
+          openspcoop:autenticazione (basic | ssl | none) "none"
+          openspcoop:invio-per-riferimento (abilitato | disabilitato) "disabilitato"
+          openspcoop:risposta-per-riferimento (abilitato | disabilitato) "disabilitato">
+<!ELEMENT openspcoop:ws-security (openspcoop:request-flow?, openspcoop:response-flow?)>
+<!--
+	request-flow.
+-->
+<!ELEMENT openspcoop:request-flow (openspcoop:parameter+)>
+<!--
+    Specify a constructor parameter.
+-->
+<!ELEMENT openspcoop:parameter EMPTY>
+<!ATTLIST openspcoop:parameter
+          openspcoop:nome CDATA #REQUIRED
+          openspcoop:valore CDATA #REQUIRED>
+<!ELEMENT openspcoop:response-flow (openspcoop:parameter+)>
+<!ELEMENT openspcoop:validazione-contenuti-applicativi EMPTY>
+<!ATTLIST openspcoop:validazione-contenuti-applicativi
+          openspcoop:stato (abilitato | disabilitato | warningOnly) "disabilitato"
+          openspcoop:tipo (wsdl | openspcoop | xsd) "xsd">
+<!ELEMENT openspcoop:correlazione-applicativa (openspcoop:elemento+)>
+<!ATTLIST openspcoop:correlazione-applicativa
+          openspcoop:scadenza CDATA #IMPLIED>
+<!ELEMENT openspcoop:elemento EMPTY>
+<!ATTLIST openspcoop:elemento
+          openspcoop:nome CDATA #IMPLIED
+          openspcoop:identificazione (urlBased | contentBased | inputBased | disabilitato) "contentBased"
+          openspcoop:pattern CDATA #IMPLIED
+          openspcoop:identificazione-fallita (blocca | accetta) "blocca"
+          openspcoop:riuso-id-egov (abilitato | disabilitato) "disabilitato">
+<!ELEMENT openspcoop:porta-applicativa (openspcoop:soggetto-virtuale?, openspcoop:servizio, openspcoop:azione?, openspcoop:servizio-applicativo+, openspcoop:set-spcoop-property*, openspcoop:ws-security?,openspcoop:validazione-contenuti-applicativi?, openspcoop:correlazione-applicativa?)>
+<!ATTLIST openspcoop:porta-applicativa
+          openspcoop:nome CDATA #REQUIRED
+          openspcoop:descrizione CDATA #IMPLIED
+          openspcoop:ricevuta-asincrona-simmetrica (abilitato | disabilitato) "abilitato"
+          openspcoop:ricevuta-asincrona-asimmetrica (abilitato | disabilitato) "abilitato"
+          openspcoop:integrazione CDATA #IMPLIED
+          openspcoop:allega-body (abilitato | disabilitato) "disabilitato"
+          openspcoop:scarta-body (abilitato | disabilitato) "disabilitato"
+          openspcoop:gestione-manifest (abilitato | disabilitato) #IMPLIED
+          openspcoop:stateless (abilitato | disabilitato) "abilitato"
+          openspcoop:autorizzazione-contenuto CDATA #IMPLIED>
+<!ELEMENT openspcoop:soggetto-virtuale EMPTY>
+<!ATTLIST openspcoop:soggetto-virtuale
+          openspcoop:tipo CDATA #REQUIRED
+          openspcoop:nome CDATA #REQUIRED>
+<!ELEMENT openspcoop:set-spcoop-property EMPTY>
+<!ATTLIST openspcoop:set-spcoop-property
+          openspcoop:nome CDATA #REQUIRED
+          openspcoop:valore (mittente | tipoMittente | destinatario | tipoDestinatario | servizio | tipoServizio | azione | idegov) #REQUIRED>
+<!ELEMENT openspcoop:configurazione (openspcoop:routing-table?, openspcoop:accesso-registro, openspcoop:validazione-buste-egov?, openspcoop:validazione-contenuti-applicativi?, openspcoop:indirizzo-telematico?, openspcoop:attachments?, openspcoop:risposte-spcoop?, openspcoop:inoltro-buste-non-riscontrate, openspcoop:messaggi-diagnostici, openspcoop:tracciamento?, openspcoop:gestione-errore?, openspcoop:integration-manager?)>
+<!ELEMENT openspcoop:routing-table (openspcoop:destinazione*, openspcoop:default)>
+<!ELEMENT openspcoop:destinazione (openspcoop:route+)>
+<!ATTLIST openspcoop:destinazione
+          openspcoop:tipo CDATA #REQUIRED
+          openspcoop:nome CDATA #REQUIRED>
+<!ELEMENT openspcoop:route (openspcoop:registro* | openspcoop:gateway*)>
+<!ELEMENT openspcoop:registro EMPTY>
+<!ATTLIST openspcoop:registro
+          openspcoop:nome CDATA #IMPLIED>
+<!ELEMENT openspcoop:gateway EMPTY>
+<!ATTLIST openspcoop:gateway
+          openspcoop:tipo CDATA #REQUIRED
+          openspcoop:nome CDATA #REQUIRED>
+<!ELEMENT openspcoop:default (openspcoop:route+)>
+<!ELEMENT openspcoop:accesso-registro (openspcoop:cache?, openspcoop:registro+)>
+<!ELEMENT openspcoop:cache EMPTY>
+<!ATTLIST openspcoop:cache
+          openspcoop:dimensione CDATA #IMPLIED
+          openspcoop:algoritmo (lru | mru) "lru"
+          openspcoop:item-idle-time CDATA #IMPLIED
+          openspcoop:item-life-second CDATA #IMPLIED>
+<!ELEMENT openspcoop:validazione-buste-egov EMPTY>
+<!ATTLIST openspcoop:validazione-buste-egov
+          openspcoop:stato (abilitato | disabilitato | warningOnly) "abilitato"
+          openspcoop:controllo (normale | rigido) "normale"
+          openspcoop:profiloCollaborazione (abilitato | disabilitato) "disabilitato"
+          openspcoop:manifestAttachments (abilitato | disabilitato) "abilitato">
+<!ELEMENT openspcoop:indirizzo-telematico EMPTY>
+<!ATTLIST openspcoop:indirizzo-telematico
+          openspcoop:utilizzo (disabilitato | abilitato) "disabilitato">
+<!ELEMENT openspcoop:attachments EMPTY>
+<!ATTLIST openspcoop:attachments
+          openspcoop:gestione-manifest (disabilitato | abilitato) "abilitato">
+<!ELEMENT openspcoop:risposte-spcoop EMPTY>
+<!ATTLIST openspcoop:risposte-spcoop
+          openspcoop:connessione (new | reply) "reply">
+<!ELEMENT openspcoop:inoltro-buste-non-riscontrate EMPTY>
+<!ATTLIST openspcoop:inoltro-buste-non-riscontrate
+          openspcoop:cadenza CDATA #REQUIRED>
+<!ELEMENT openspcoop:messaggi-diagnostici (openspcoop:openspcoop-appender*)>
+<!ATTLIST openspcoop:messaggi-diagnostici
+          openspcoop:spcoop (off | fatalOpenspcoop | errorSpcoop | errorOpenspcoop | infoSpcoop | infoOpenspcoop | debugLow | debugMedium | debugHigh | all) "infoSpcoop"
+          openspcoop:openspcoop (off | fatalOpenspcoop | errorSpcoop | errorOpenspcoop | infoSpcoop | infoOpenspcoop | debugLow | debugMedium | debugHigh | all) "infoSpcoop">
+<!ELEMENT openspcoop:openspcoop-appender (openspcoop:property*)>
+<!ATTLIST openspcoop:openspcoop-appender
+          openspcoop:tipo CDATA #REQUIRED>
+<!ELEMENT openspcoop:tracciamento (openspcoop:openspcoop-appender*)>
+<!ATTLIST openspcoop:tracciamento
+          openspcoop:buste-egov (disabilitato | abilitato) "abilitato"
+          openspcoop:dump (abilitato | disabilitato) "disabilitato">
+<!ELEMENT openspcoop:integration-manager EMPTY>
+<!ATTLIST openspcoop:integration-manager
+          openspcoop:autenticazione CDATA "basic,ssl">

@@ -1,0 +1,102 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>it.greenvulcano.gvesb</groupId>
+  <artifactId>gvengine</artifactId>
+  <version>4.0.0</version>
+  <packaging>pom</packaging>
+
+  <name>GreenVulcano Engine</name>
+
+  <organization>
+    <name>GreenVulcano Technologies</name>
+    <url>http://www.greenvulcanotechnologies.com</url>
+  </organization>
+
+  <repositories>
+    <repository>
+      <id>central</id>
+      <url>http://repo1.maven.org/maven2</url>
+    </repository>
+    <repository>
+      <id>java-net2</id>
+      <name>Java.net Maven Repository</name>
+      <url>http://download.java.net/maven/2</url>
+    </repository>
+    <repository>
+      <id>repository.jboss.com</id>
+      <name>Jboss Repository for Maven</name>
+      <url>http://repository.jboss.org/nexus/content/repositories/public</url>
+    </repository>
+  </repositories>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <maven-compiler-plugin.version>2.5.1</maven-compiler-plugin.version>
+    <maven-bundle-plugin.version>3.0.1</maven-bundle-plugin.version>
+
+    <version.osgi>5.0.0</version.osgi>
+    <version.slf4j>1.6.1</version.slf4j>
+    <version.junit>4.11</version.junit>
+
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.core</artifactId>
+      <version>${version.osgi}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.compendium</artifactId>
+      <version>${version.osgi}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <version>${version.slf4j}</version>
+      <scope>provided</scope>      
+    </dependency>    
+
+    <!-- *************** TEST *************** -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+      <version>${version.junit}</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${maven-compiler-plugin.version}</version>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <modules>
+    <module>gvapi</module>
+    <module>gvbase</module>
+    <module>gvbus</module>
+    <module>gvcommands</module>
+    <module>gvcore</module>
+    <module>gvdte</module>
+    <module>gvpolicy</module>
+    <module>gvstatistics</module>
+    <module>gvvcl</module>
+    <module>gvvcl-internal</module>  
+    <module>features</module>
+  </modules>
+
+</project>

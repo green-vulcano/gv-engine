@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE GVCore SYSTEM "http://www.greenvulcano.com/gvesb/dtds/GVCore.dtd">
+
+<GVCore version="1.0">
+  <GVXPath name="XPATH" type="module">
+    <XPath xpath-factory="it.greenvulcano.util.xpath.search.jaxen.JaxenXPathAPIFactoryImpl">
+      <Description>Funzioni estese e namespaces per l&apos;XPath.</Description>
+      <XPathExtension class="it.greenvulcano.util.xpath.search.extension.ExternalDocumentXPathFunction"
+                      function-name="document">
+            <Description>Accede ad un documento esterno. Uso: gvf:document('xml file path')</Description>
+      </XPathExtension>
+      <XPathNamespace namespace="http://www.w3.org/2001/XMLSchema" prefix="xsd" />
+      <XPathNamespace namespace="http://www.w3.org/2001/XMLSchema-instance" prefix="xsi" />
+      <XPathNamespace namespace="http://schemas.xmlsoap.org/wsdl/soap/" prefix="soap" />
+      <XPathNamespace namespace="http://schemas.xmlsoap.org/wsdl/" prefix="wsdl" />
+      <XPathNamespace namespace="http://jakarta.apache.org/log4j/" prefix="log4j" />
+      <XPathNamespace namespace="http://www.w3.org/XML/1998/namespace" prefix="xml" />
+      <XPathNamespace namespace="http://www.greenvulcano.it/greenvulcano" prefix="gvesbws"/>
+      <XPathNamespace namespace="http://www.greenvulcano.it/jca/xml" prefix="jca" />
+      <XPathNamespace namespace="http://www.greenvulcano.it/ldap" prefix="ldapc" />
+      <XPathNamespace namespace="http://drools.org/drools-5.0/change-set" prefix="drools-cs"/>
+    </XPath>
+  </GVXPath>
+  <GVPolicy name="POLICY_MANAGER" type="module">
+    <Roles>
+        <Role name="ROLA_A">
+            <Description>Descrizione ruolo</Description>
+        </Role>
+        <Role name="ROLA_B"/>
+        <Role name="ROLA_C"/>
+    </Roles>
+    <Addresses>
+        <AddressSet name="local">
+            <Description>Descrizione address</Description>
+            <Address address="127.0.0.1"/>
+            <Address address="192.174.100.10"/>
+        </AddressSet>
+    </Addresses>
+    <ACLGreenVulcano type="acl-manager" class="it.greenvulcano.gvesb.policy.impl.ACLGreenVulcano">
+        <DefaultRes type="resource">
+            <!--ACL>
+                <RoleRef name="ROLE_A"/>
+            </ACL-->
+        </DefaultRes>
+        <ServiceRes type="resource" group="GRP_A">
+            <ACL>
+                <RoleRef name="ROLE_A"/>
+                <RoleRef name="ROLE_B"/>
+            </ACL>
+        </ServiceRes>
+        <ServiceRes type="resource" group="GRP_B">
+            <ACL>
+                <RoleRef name="ROLE_B"/>
+            </ACL>
+        </ServiceRes>
+        <ServiceRes type="resource" group="GRP_A" service="SVC_A1">
+            <ACL>
+                <RoleRef name="ROLE_A"/>
+            </ACL>
+        </ServiceRes>
+        <ServiceRes type="resource" group="GRP_A" service="SVC_A2">
+            <ACL>
+                <RoleRef name="ROLE_C"/>
+            </ACL>
+        </ServiceRes>
+        <ServiceRes type="resource" group="GRP_A" service="SVC_A3" operation="OPER_1">
+            <ACL>
+                <RoleRef name="ROLE_C"/>
+            </ACL>
+        </ServiceRes>
+        <ServiceRes type="resource" service="SVC_B1"> <!-- GRP_B -->
+            <ACL>
+                <RoleRef name="ROLE_A"/>
+            </ACL>
+        </ServiceRes>
+        <ServiceRes type="resource" service="SVC_D1"> <!-- GRP_D -->
+            <ACL>
+                <RoleRef name="ROLE_A"/>
+                <AddressSetRef name="local"/>
+            </ACL>
+        </ServiceRes>
+        <ServiceRes type="resource" service="SVC_D2"> <!-- GRP_D -->
+            <ACL>
+                <AddressSetRef name="local"/>
+            </ACL>
+        </ServiceRes>
+        <!--<VCLOperationRes type="resource" system="" channel="" operation="">
+            <ACL>
+                <RoleRef name="ROLE_A"/>
+                <RoleRef name="ROLE_B"/>
+            </ACL>
+        </VCLOperationRes>-->
+    </ACLGreenVulcano>
+  </GVPolicy>
+</GVCore>

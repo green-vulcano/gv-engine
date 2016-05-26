@@ -1,0 +1,142 @@
+
+<!--
+    If the target directory is on a remote file system
+    accessible via HDFS protocol, this element encapsulates
+    the parameters required to connect.
+
+    The parameters hostname, username, password can contains the following placeholders:
+     - fixed : a text string;
+     - ${{propname}}      : a System property name;
+     - sp{{propname}}     : a System property name;
+     - @{{propname}}      : a inProperties property name;
+     - timestamp{{pattern[::tZone]]}} : return the current timestamp, in optional tZone value,
+                                        formatted as 'pattern'
+     - dateformat{{date::source-pattern::dest-pattern[::source-tZone::dest-tZone]}} :
+                               reformat 'date' from 'source-pattern' to 'dest-pattern',
+                               and optionally from 'source-tZone' to 'dest-tZone'
+     - decode{{field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                               evaluate as if-then-else; if 'field' is equal to cond1...n,
+                               return the value of val1...n, otherwise 'default'
+     - decodeL{{sep::field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                               is equivalent to 'decode', with the difference that 'condX'
+                               can be a list of values separated by 'sep'
+     - script{{lang::[scope::]script}} : evaluate a 'lang' script, using the base context 'scope'
+     - js{{[scope::]script}}   : evaluate a JavaScript script, using the context 'scope'
+     - ognl{{script}}          : evaluate a OGNL script
+     - sql{{[conn::]statement}}  : execute a select sql statement sql and return the value of
+                                   the first field of the first selected record.
+                                   The 'conn' parameter is the JNDI name of a DataSource,
+                                   if not defined is used the current connection
+     - sqllist{{[conn::]statement}}
+                                 : execute a select sql statement sql and return the value of
+                                   the first field of all selected records as a comma separated list.
+                                   The 'conn' parameter is the JNDI name of a DataSource,
+                                   if not defined is used the current connection
+     - sqltable{{conn::statement}}
+                                 : executes a select sql statement and returns all values of
+                                   returned cursor as an XML.
+                                   The 'conn' parameter is the JNDI name of a DataSource
+
+
+    #SelectOnInsert
+    #Template:
+        <xsl:template match="HDFSRemoteManager">
+            <table cellpadding="0" cellspacing="0">
+                <tr valign="top">
+                    <td width="200">Connection URL :</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="@connectionURL"/></b></td>
+                </tr>
+                <tr valign="top">
+                    <td width="200">HDFS Username:</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="@username"/></b></td>
+                </tr>
+                <tr valign="top">
+                    <td width="200">HDFS Password:</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="@password"/></b></td>
+                </tr>
+                <tr valign="top">
+                    <td width="200">Connect timeout:</td>
+                    <td width="20"></td>
+                    <xsl:choose>
+                        <xsl:when test="@connectTimeout">
+                            <td><b><xsl:value-of select="@connectTimeout"/></b></td>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <td><b>infinite</b></td>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </tr>
+                <tr valign="top">
+                    <td width="200">Data transfer timeout:</td>
+                    <td width="20"></td>
+                    <xsl:choose>
+                        <xsl:when test="@dataTimeout">
+                            <td><b><xsl:value-of select="@dataTimeout"/></b></td>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <td><b>infinite</b></td>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </tr>
+            </table>
+            <xsl:if test="Description">
+                <small><xsl:value-of select="Description"/></small><p/>
+            </xsl:if>
+        </xsl:template>
+-->
+<!ELEMENT HDFSRemoteManager (Description?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST HDFSRemoteManager type CDATA #FIXED "remote-manager">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST HDFSRemoteManager class CDATA #FIXED "it.greenvulcano.util.remotefs.hdfs.HDFSRemoteManager">
+<!--
+    Server HDFS connection URL.
+
+    #NotNull
+-->
+<!ATTLIST HDFSRemoteManager connectionURL CDATA #REQUIRED>
+<!--
+    User name.
+
+    #NotNull
+-->
+<!ATTLIST HDFSRemoteManager username CDATA #REQUIRED>
+<!--
+    User password.
+
+    #NotNull
+    #Encrypted
+-->
+<!ATTLIST HDFSRemoteManager password CDATA #REQUIRED>
+<!--
+    Connect timeout (in milliseconds).
+    Default: infinite.
+
+    #NotNull
+    #Pattern: ! [1-9][0-9]* ! set a integer value
+-->
+<!ATTLIST HDFSRemoteManager connectTimeout CDATA #IMPLIED>
+<!--
+    Data transfer timeout (in milliseconds)
+    Default: infinite.
+
+    #NotNull
+    #Pattern: ! [1-9][0-9]* ! set a integer value
+-->
+<!ATTLIST HDFSRemoteManager dataTimeout CDATA #IMPLIED>
+<!--
+    If true the instance use autoconnect/disconnect at each method invocation.
+    Default: false.
+
+    #NotNull
+-->
+<!ATTLIST HDFSRemoteManager autoConnect (true|false) #IMPLIED>

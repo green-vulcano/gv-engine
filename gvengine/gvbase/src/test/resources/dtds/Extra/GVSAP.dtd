@@ -1,0 +1,104 @@
+
+<!--
+    SAP VCL plugin to send BAPI RFC request or IDoc to remote SAP servers.
+
+    #Label: @name
+    #Icon: GVSAPCall.png
+    #Category: Custom
+    #SelectOnInsert
+    #Template:
+
+        <xsl:template match="sap-call">
+            <xsl:if test="Description">
+                <small><xsl:value-of select="Description"/></small><p/>
+            </xsl:if>
+        </xsl:template>
+-->
+<!ELEMENT sap-call (Description?, JCOCommunication)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST sap-call type CDATA #FIXED "call">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+
+-->
+<!ATTLIST sap-call  class CDATA #FIXED "it.greenvulcano.gvesb.gvsio.virtual.SAPCallOperation">
+<!--
+    Operation name.
+    Used in the 'Flow' section to associate workflow nodes to VCL operations.
+
+    #NotNull
+    #Unique: ../*[@type='enqueue' or @type='dequeue' or @type='call']/@name
+-->
+<!ATTLIST sap-call  name CDATA #REQUIRED>
+
+<!--
+    This element allows you to specify a JCO parameters to set to JCO environment.
+
+    #Label: @base
+-->
+<!ELEMENT JCOCommunication (Description?, JCOParameter+)>
+
+<!--
+    This attribute defines the base  of the condition.
+    Unique inside the 'Conditions' element.
+
+    #NotNull
+-->
+<!ATTLIST JCOCommunication base (jco.server. | jco.client.) #REQUIRED>
+<!--
+    To retrieve detailed parameters meaning:
+    - look at JCO'S Javadoc "com.sap.conn.jco.ext.DestinationDataProvider" interface for SAPConnector parameters, using jco.client as base parameter, like:
+      ashost: SAP application server address.
+      sysnr: SAP system number.
+      mshost: SAP message server address.
+      r3name: System ID of the SAP system
+      group: Group of SAP application servers.
+      gwhost: Gateway host.
+      gwserv: Gateway service.
+      client: SAP client code.
+      user: Logon user.
+      passwd: Logon password.
+      lang: Logon language.
+    - look at JCO'S Javadoc "com.sap.conn.jco.ext.ServerDataProvider" interface for SAPHandler parameters, using jco.server as base parameter, like:
+      gwhost: Gateway host on which the server should be registered.
+      gwserv: Gateway service, i.e. the port on which a registration can be done.
+      progid: The program ID with which the registration is done.
+      connection_count: The number of connections that should be registered at the gateway.
+
+    #Label: @name
+-->
+<!ELEMENT JCOParameter (Description?)>
+<!--
+    To retrieve detailed parameters meaning:
+    - look at JCO'S Javadoc "com.sap.conn.jco.ext.DestinationDataProvider" interface for SAPConnector parameters, using jco.client as base parameter, like:
+      ashost: SAP application server address.
+      sysnr: SAP system number.
+      mshost: SAP message server address.
+      r3name: System ID of the SAP system
+      group: Group of SAP application servers.
+      gwhost: Gateway host.
+      gwserv: Gateway service.
+      client: SAP client code.
+      user: Logon user.
+      passwd: Logon password.
+      lang: Logon language.
+    - look at JCO'S Javadoc "com.sap.conn.jco.ext.ServerDataProvider" interface for SAPListener parameters, using jco.server as base parameter, like:
+      gwhost: Gateway host on which the server should be registered.
+      gwserv: Gateway service, i.e. the port on which a registration can be done.
+      progid: The program ID with which the registration is done.
+      connection_count: The number of connections that should be registered at the gateway.
+
+    #NotNull
+-->
+<!ATTLIST JCOParameter  name CDATA #REQUIRED>
+<!--
+    Parameter's value.
+
+    #NotNull
+-->
+<!ATTLIST JCOParameter  value CDATA #REQUIRED>
+

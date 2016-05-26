@@ -1,0 +1,439 @@
+<!--
+-->
+<!ELEMENT GVHL7ListenerManager (Description?, HL7Listeners)>
+<!ATTLIST GVHL7ListenerManager version CDATA #FIXED "1.0">
+<!--
+    Element type 'module'.
+-->
+<!ATTLIST GVHL7ListenerManager type    CDATA   #FIXED  "module">
+<!--
+    Module id always set to 'HL7_LISTENERS'.
+-->
+<!ATTLIST GVHL7ListenerManager name    CDATA   #FIXED  "HL7_LISTENERS">
+
+<!--
+    #SortChild
+-->
+<!ELEMENT HL7Listeners (HL7Listener*)>
+
+<!--
+
+    #Label: @name
+-->
+<!ELEMENT HL7Listener (Description?, HL7Applications)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST HL7Listener type CDATA #FIXED "hl7listener">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST HL7Listener class CDATA #FIXED "it.greenvulcano.gvesb.gvhl7.listener.HL7Listener">
+<!--
+    #NotNull
+-->
+<!ATTLIST HL7Listener name CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST HL7Listener port CDATA #REQUIRED>
+<!--
+    Automatically starts listening for connection.
+    Default to true.
+-->
+<!ATTLIST HL7Listener autoStart (true|false) #IMPLIED>
+<!--
+    Force the Receiving Application MSH field value on automatic response generation.
+
+    #NotNull
+-->
+<!ATTLIST HL7Listener receivingApplication CDATA #IMPLIED>
+<!--
+    Force the Receiving Facility MSH field value on automatic response generation.
+    Used only if receivingApplication is set.
+
+    #NotNull
+-->
+<!ATTLIST HL7Listener receivingFacility CDATA #IMPLIED>
+
+<!--
+    #SortChild
+-->
+<!ELEMENT HL7Applications (GVCoreApplication+)>
+
+<!--
+
+    #Label: @name
+    #SortChild
+-->
+<!ELEMENT GVCoreApplication (Description?, HL7Activations)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST GVCoreApplication type CDATA #FIXED "hl7application">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST GVCoreApplication class CDATA #FIXED "it.greenvulcano.gvesb.gvhl7.listener.handler.GVCoreApplication">
+<!--
+    #NotNull
+-->
+<!ATTLIST GVCoreApplication name CDATA #REQUIRED>
+<!--
+    ID service with which to perform the invocation of GreenVulcano ESB.
+
+    #References: gvesb:document('GVCore')/GVCore/GVServices/Services/Service/@id-service
+-->
+<!ATTLIST GVCoreApplication gv-service CDATA #REQUIRED>
+<!--
+    ID system with which to perform the invocation of GreenVulcano ESB.
+
+    #References: gvesb:document('GVCore')/GVCore/GVSystems/Systems/System/@id-system
+-->
+<!ATTLIST GVCoreApplication gv-system CDATA #IMPLIED>
+<!--
+     GreenVulcano ESB operation to invoke.
+
+    #References: gvesb:document('GVCore')/GVCore/GVServices/Services/Service[@id-service=current()/@gv-service]/*/@name
+    #References: gvesb:document('GVCore')/GVCore/GVServices/Services/Service[@id-service=current()/@gv-service]/*/@forward-name
+-->
+<!ATTLIST GVCoreApplication gv-operation CDATA #REQUIRED>
+<!--
+    Indicates whether the invocation to be performed in GreenVulcano is transactional or not.
+    Default: false
+
+    A transaction is rolled back if:
+      - the service ends with exception
+      - the output GVBuffer contains the property HL7_FORCE_TX_ROLLBACK=Y
+-->
+<!ATTLIST GVCoreApplication transacted  (true|false) #IMPLIED>
+<!--
+    Transaction timeout in seconds.
+    Default: 30s
+
+    #Pattern: ! [1-9][0-9]* ! Enter the number of seconds
+    #Warn: {{self::GVCoreApplication[not(@transacted) or (@transacted='false')]}} In non-transactional mode must NOT be specified the timeout
+-->
+<!ATTLIST GVCoreApplication tx-timeout  CDATA   #IMPLIED>
+
+<!ELEMENT HL7Activations (HL7Activation+)>
+
+<!--
+    #CompositeLabel: ! messageType: ! @messageType !, triggerEvent: ! @triggerEvent
+-->
+<!ELEMENT HL7Activation (Description?)>
+<!--
+    #NotNull
+-->
+<!ATTLIST HL7Activation messageType CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST HL7Activation triggerEvent CDATA #REQUIRED>
+
+
+<!--
+    Defines a XML to HL7 string transformation.
+
+    #Label: @name
+    #Icon: GVXml2Hl7Transformation.png
+    #Template:
+
+        <xsl:template match="XML2HL7Transformation">
+            <xsl:if test="Description">
+                <small><xsl:value-of select="Description"/></small><p/>
+            </xsl:if>
+            <xsl:if test="TransformationAlias">
+                <table cellpadding="0" cellspacing="0">
+                    <tr valign="top">
+                        <td>TransformationAliases:</td>
+                        <td width="20"></td>
+                        <td>
+                            <xsl:for-each select="TransformationAlias">
+                                <b><xsl:value-of select="@name"/></b><br/>
+                            </xsl:for-each>
+                        </td>
+                    </tr>
+                </table>
+            </xsl:if>
+        </xsl:template>
+-->
+<!ELEMENT XML2HL7Transformation (Description?, TransformationAlias*,(%dte-transformer-helpers;)*)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST XML2HL7Transformation type CDATA #FIXED "transformation">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST XML2HL7Transformation class CDATA #FIXED "it.greenvulcano.gvesb.gvdte.transformers.hl7.XML2HL7Transformer">
+<!--
+    Transformation name.
+
+    #Unique: /GVCore/GVDataTransformation/Transformations/*[@type='transformation']/@name
+    #NotNull
+-->
+<!ATTLIST XML2HL7Transformation name CDATA #REQUIRED>
+<!--
+    Validation desired (true | false).
+-->
+<!ATTLIST XML2HL7Transformation validate %validateValues; #IMPLIED>
+<!--
+    Validation type (xsd | dtd).
+-->
+<!ATTLIST XML2HL7Transformation validationType %validationTypes; #IMPLIED>
+<!--
+    Style-sheet to be used in trasformation.
+
+    #NotNull
+-->
+<!ATTLIST XML2HL7Transformation InputXSLMapName CDATA #IMPLIED>
+<!--
+    XSD Schema that describe the input XML.
+
+-->
+<!ATTLIST XML2HL7Transformation SchemaInput CDATA #IMPLIED>
+
+<!--
+    DataSourceSet name from wich retrieve the transformation map and validation schema.
+
+    #References: /GVCore/GVDataTransformation/DataSourceSets/DataSourceSet/@name
+-->
+<!ATTLIST XML2HL7Transformation DataSourceSet CDATA #IMPLIED>
+
+
+<!--
+    Defines a HL7 string to XML trasformation.
+
+    #Label: @name
+    #Icon: GVHl72XmlTransformation.png
+    #Template:
+
+        <xsl:template match="HL72XMLTransformation">
+            <xsl:if test="Description">
+                <small><xsl:value-of select="Description"/></small><p/>
+            </xsl:if>
+            <xsl:if test="TransformationAlias">
+                <table cellpadding="0" cellspacing="0">
+                    <tr valign="top">
+                        <td>TransformationAliases:</td>
+                        <td width="20"></td>
+                        <td>
+                            <xsl:for-each select="TransformationAlias">
+                                <b><xsl:value-of select="@name"/></b><br/>
+                            </xsl:for-each>
+                        </td>
+                    </tr>
+                </table>
+            </xsl:if>
+        </xsl:template>
+-->
+<!ELEMENT HL72XMLTransformation (Description?, TransformationAlias*,(%dte-transformer-helpers;)*)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST HL72XMLTransformation type CDATA #FIXED "transformation">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST HL72XMLTransformation class CDATA #FIXED "it.greenvulcano.gvesb.gvdte.transformers.hl7.HL72XMLTransformer">
+<!--
+    Transformation name.
+
+    #Unique: /GVCore/GVDataTransformation/Transformations/*[@type='transformation']/@name
+    #NotNull
+-->
+<!ATTLIST HL72XMLTransformation name CDATA #REQUIRED>
+
+<!--
+    Validation desired (true | false).
+-->
+<!ATTLIST HL72XMLTransformation validate %validateValues; #IMPLIED>
+<!--
+    Validation type (xsd | dtd).
+-->
+<!ATTLIST HL72XMLTransformation validationType %validationTypes; #IMPLIED>
+
+<!--
+    Style-sheet to be used in trasformation.
+
+    #NotNull
+-->
+<!ATTLIST HL72XMLTransformation OutputXSLMapName CDATA #IMPLIED>
+<!--
+    XSD Schema that describe the input XML.
+
+-->
+<!ATTLIST HL72XMLTransformation SchemaOutput CDATA #IMPLIED>
+
+<!--
+    DataSourceSet name from wich retrieve the transformation map and validation schema.
+
+    #References: /GVCore/GVDataTransformation/DataSourceSets/DataSourceSet/@name
+-->
+<!ATTLIST HL72XMLTransformation DataSourceSet CDATA #IMPLIED>
+
+
+<!--
+    HL7 VCL plugin to send HL7 message on remote HL7 servers.
+
+    #Label: @name
+    #Icon: GVHl7Call.png
+    #Category: Medical
+    #SelectOnInsert
+    #Template:
+
+        <xsl:template match="hl7-call">
+                <xsl:if test="Description">
+                <small><xsl:value-of select="Description"/></small><p/>
+            </xsl:if>
+        </xsl:template>
+-->
+<!ELEMENT hl7-call (Description?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST hl7-call type CDATA #FIXED "call">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST hl7-call class CDATA #FIXED "it.greenvulcano.gvesb.virtual.hl7.HL7CallOperation">
+<!--
+    Operation name.
+    Used in the 'Flow' section to associate workflow nodes to VCL operations.
+
+    #NotNull
+    #Unique: ../*[@type='enqueue' or @type='dequeue' or @type='call']/@name
+-->
+<!ATTLIST hl7-call name CDATA #REQUIRED>
+<!--
+    Host to connect to.
+
+    #NotNull
+-->
+<!ATTLIST hl7-call host CDATA #REQUIRED>
+<!--
+    Port where the service is exposed.
+
+    #NotNull
+    #Pattern: ! ^(6553[0-5]|655[0-2]\d|65[0-4]\d\d|6[0-4]\d{3}|[1-5]\d{4}|[1-9]\d{0,3}|0)$ ! Insert a number between 0 and 65535
+-->
+<!ATTLIST hl7-call  port CDATA #REQUIRED>
+<!--
+    Timeout in seconds for a given interaction.
+    Default to 10 seconds.
+
+    #Pattern: @ \d+ @ specify a timeout in seconds
+-->
+<!ATTLIST hl7-call  timeout CDATA #IMPLIED>
+
+
+<!--
+    HL7 Forward plugin to validate remote HL7 servers connections prior to dequeue JMS message.
+
+    #Label: @name
+    #SelectOnInsert
+    #Template:
+
+        <xsl:template match="HL7ConnectionValidator">
+                <xsl:if test="Description">
+                <small><xsl:value-of select="Description"/></small><p/>
+            </xsl:if>
+        </xsl:template>
+-->
+<!ELEMENT HL7ConnectionValidator (Description?, HL7Server*, hl7-call-ref*, DBSelect?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST HL7ConnectionValidator type CDATA #FIXED "validator">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST HL7ConnectionValidator class CDATA #FIXED "it.greenvulcano.gvesb.core.forward.preprocess.hl7.HL7ConnectionValidator">
+<!--
+    Validator name.
+
+    #NotNull
+    #Unique: current()/ancestor::GVForwards/ForwardConfiguration/PreProcessor/Validators/*[@type='validator']/@name
+-->
+<!ATTLIST HL7ConnectionValidator name CDATA #REQUIRED>
+
+<!--
+    Remote HL7 server address.
+
+    #CompositeLabel: !! @host !:! @port
+    #SelectOnInsert
+    #Template:
+
+        <xsl:template match="HL7Server">
+            <xsl:if test="Description">
+                <small><xsl:value-of select="Description"/></small><p/>
+            </xsl:if>
+        </xsl:template>
+-->
+<!ELEMENT HL7Server (Description?)>
+<!--
+    Host to connect to.
+
+    #NotNull
+-->
+<!ATTLIST HL7Server host CDATA #REQUIRED>
+<!--
+    Port where the service is exposed.
+
+    #NotNull
+    #Pattern: ! ^(6553[0-5]|655[0-2]\d|65[0-4]\d\d|6[0-4]\d{3}|[1-5]\d{4}|[1-9]\d{0,3}|0)$ ! Insert a number between 0 and 65535
+-->
+<!ATTLIST HL7Server  port CDATA #REQUIRED>
+
+<!--
+    HL7 VCL operation reference.
+
+    #CompositeLabel: !! @id-system !:! @id-channel !:! @operation
+-->
+<!ELEMENT hl7-call-ref (Description?)>
+<!--
+    System providing the Call operation to call.
+
+    #References: /GVCore/GVSystems/Systems/System/@id-system
+-->
+<!ATTLIST hl7-call-ref   id-system CDATA #REQUIRED>
+<!--
+    System's channel.
+
+    #References: /GVCore/GVSystems/Systems/System[@id-system=current()/@id-system]/Channel/@id-channel
+-->
+<!ATTLIST hl7-call-ref   id-channel CDATA #REQUIRED>
+<!--
+    Channel's HL7 Call operation.
+
+    #References: /GVCore/GVSystems/Systems/System[@id-system=current()/@id-system]/Channel[@id-channel=current()/@id-channel]/hl7-call/@name
+-->
+<!ATTLIST hl7-call-ref   operation CDATA #REQUIRED>
+
+<!--
+    Select from a DB a list of HL7 server's host and port to check.
+    The select statement MUST return (at least) two fields per record: a string representing the
+    server's hostname (or IP) and an integer (or a valid integer as string) representing the server's port.
+    WARN!!! the list is read only once, if the DB data changes must be reloaded the GVCore.xml file.
+
+-->
+<!ELEMENT DBSelect (Description?, statement)>
+<!--
+    DataBase connection name.
+
+    #NotNull
+-->
+<!ATTLIST DBSelect jdbc-connection-name CDATA #REQUIRED >

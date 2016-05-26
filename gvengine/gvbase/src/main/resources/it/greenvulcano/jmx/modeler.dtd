@@ -1,0 +1,51 @@
+<!DOCTYPE mbeans-descriptors [
+    <!ELEMENT mbeans-descriptors (mbean*)>
+    <!ATTLIST mbeans-descriptors id          ID                     #IMPLIED>
+
+    <!ELEMENT attribute EMPTY>
+    <!ATTLIST attribute         id           ID                     #IMPLIED>
+    <!ATTLIST attribute         description  CDATA                  #IMPLIED>
+    <!ATTLIST attribute         displayName  CDATA                  #IMPLIED>
+    <!ATTLIST attribute         getMethod    CDATA                  #IMPLIED>
+    <!ATTLIST attribute         is           (true|false|yes|no)    #IMPLIED>
+    <!ATTLIST attribute         name         CDATA                  #IMPLIED>
+    <!ATTLIST attribute         readable     (true|false|yes|no)    #IMPLIED>
+    <!ATTLIST attribute         setMethod    CDATA                  #IMPLIED>
+    <!ATTLIST attribute         type         CDATA                  #IMPLIED>
+    <!ATTLIST attribute         writeable    (true|false|yes|no)    #IMPLIED>
+
+    <!ELEMENT constructor (parameter*)>
+    <!ATTLIST constructor       id           ID                     #IMPLIED>
+    <!ATTLIST constructor       displayName  CDATA                  #IMPLIED>
+    <!ATTLIST constructor       name         CDATA                  #IMPLIED>
+
+    <!ELEMENT mbean (attribute*, constructor*, notification*, operation*)>
+    <!ATTLIST mbean             id           ID                     #IMPLIED>
+    <!ATTLIST mbean             className    CDATA                  #IMPLIED>
+    <!ATTLIST mbean             description  CDATA                  #IMPLIED>
+    <!ATTLIST mbean             domain       CDATA                  #IMPLIED>
+    <!ATTLIST mbean             group        CDATA                  #IMPLIED>
+    <!ATTLIST mbean             name         CDATA                  #IMPLIED>
+    <!ATTLIST mbean             type         CDATA                  #IMPLIED>
+
+    <!ELEMENT notification (notification-type*)>
+    <!ATTLIST notification      id           ID                     #IMPLIED>
+    <!ATTLIST notification      description  CDATA                  #IMPLIED>
+    <!ATTLIST notification      name         CDATA                  #IMPLIED>
+
+    <!ELEMENT notification-type (#PCDATA)>
+    <!ATTLIST notification-type id           ID                     #IMPLIED>
+
+    <!ELEMENT operation   (parameter*)>
+    <!ATTLIST operation         id           ID                     #IMPLIED>
+    <!ATTLIST operation         description  CDATA                  #IMPLIED>
+    <!ATTLIST operation         impact       CDATA                  #IMPLIED>
+    <!ATTLIST operation         name         CDATA                  #IMPLIED>
+    <!ATTLIST operation         returnType   CDATA                  #IMPLIED>
+
+    <!ELEMENT parameter EMPTY>
+    <!ATTLIST parameter         id           ID                     #IMPLIED>
+    <!ATTLIST parameter         description  CDATA                  #IMPLIED>
+    <!ATTLIST parameter         name         CDATA                  #IMPLIED>
+    <!ATTLIST parameter         type         CDATA                  #IMPLIED>
+]>

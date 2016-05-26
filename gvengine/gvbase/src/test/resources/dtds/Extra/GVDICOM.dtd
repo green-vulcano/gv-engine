@@ -1,0 +1,381 @@
+
+<!ENTITY % dicom-calls  "dicom-echo-call|dicom-find-call|dicom-store-call|dicom-move-call">
+
+<!ELEMENT GVDicomAdapterConfiguration (Local,AssociationList)>
+<!ATTLIST GVDicomAdapterConfiguration version CDATA #FIXED "1.0">
+<!--
+    Element type 'module'.
+-->
+<!ATTLIST GVDicomAdapterConfiguration type    CDATA   #FIXED  "module">
+<!--
+    Module Id always set to 'GV_DICOM'.
+-->
+<!ATTLIST GVDicomAdapterConfiguration name    CDATA   #FIXED  "GV_DICOM">
+
+<!ELEMENT Local (Description?)>
+<!--
+    Local Application Entity name.
+
+    #NotNull
+-->
+<!ATTLIST Local applicationEntity CDATA #REQUIRED>
+<!--
+    DICOM local file store.
+
+    #NotNull
+-->
+<!ATTLIST Local dicomStoreDirectory CDATA #REQUIRED>
+<!--
+    Local Association Acceptor port.
+
+    #NotNull
+-->
+<!ATTLIST Local listenerPort CDATA #REQUIRED>
+
+<!ELEMENT AssociationList (Association*)>
+
+<!ELEMENT Association (Descrption?)>
+<!--
+    Association name.
+    
+    #NotNull
+-->
+<!ATTLIST Association name CDATA #REQUIRED>
+<!--
+    Association host.
+    
+    #NotNull
+-->
+<!ATTLIST Association host CDATA #REQUIRED>
+<!--
+    Association port.
+    
+    #NotNull
+-->
+<!ATTLIST Association port CDATA #REQUIRED>
+
+<!--
+    Defines the information to invoke a Echo service on a DICOM Server.
+    The attributes can contains metadata to be resolved at runtime.
+
+    #Label: @name
+    #Icon: GVDicomEchoCall.png
+    #Category: Medical
+    #Template:
+        <xsl:template match="dicom-echo-call">
+            <xsl:if test="Description">
+                <small><br/><xsl:value-of select="Description"/></small>
+            </xsl:if>
+        </xsl:template>
+-->
+<!ELEMENT dicom-echo-call (Description?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST dicom-echo-call type CDATA #FIXED "call">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST dicom-echo-call class CDATA #FIXED "it.greenvulcano.gvesb.virtual.dicom.DicomEchoCallOperation">
+<!--
+    Operation name.
+    Used in the 'Flow' section to associate workflow nodes to VCL operations.
+
+    #NotNull
+    #Unique: ../*[@type='call' or @type='enqueue' or @type='dequeue']/@name
+-->
+<!ATTLIST dicom-echo-call name CDATA #REQUIRED>
+<!--
+    DICOM Association name.
+    Is overridden by DICOM_ASSOCIATION property.
+    
+    #References: gvesb:document('GVAdapters')/GVAdapters/GVDicomAdapterConfiguration/AssociationList/Association/@name
+-->
+<!ATTLIST dicom-echo-call nameAssociation CDATA #IMPLIED>
+
+<!--
+    Defines the information to invoke a Find service on a DICOM Server.
+    The attributes can contains metadata to be resolved at runtime.
+
+    #Label: @name
+    #Icon: GVDicomFindCall.png
+    #Category: Medical
+    #Template:
+        <xsl:template match="dicom-find-call">
+            <xsl:if test="Description">
+                <small><br/><xsl:value-of select="Description"/></small>
+            </xsl:if>
+        </xsl:template>
+-->
+<!ELEMENT dicom-find-call (Description?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST dicom-find-call type CDATA #FIXED "call">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST dicom-find-call class CDATA #FIXED "it.greenvulcano.gvesb.virtual.dicom.DicomFindCallOperation">
+<!--
+    Operation name.
+    Used in the 'Flow' section to associate workflow nodes to VCL operations.
+
+    #NotNull
+    #Unique: ../*[@type='call' or @type='enqueue' or @type='dequeue']/@name
+-->
+<!ATTLIST dicom-find-call name CDATA #REQUIRED>
+<!--
+    DICOM Association name.
+    Is overridden by DICOM_ASSOCIATION property.
+    
+    #References: gvesb:document('GVAdapters')/GVAdapters/GVDicomAdapterConfiguration/AssociationList/Association/@name
+-->
+<!ATTLIST dicom-find-call nameAssociation CDATA #IMPLIED>
+<!--
+
+    Is overwritten by the value of the GVBuffer property DICOM_SOP_CLASS.
+    Admitted values:
+        - Patient Root Query/Retrieve Information Model - FIND 1.2.840.10008.5.1.4.1.2.1.1
+        - Study Root Query/Retrieve Information Model - FIND 1.2.840.10008.5.1.4.1.2.2.1
+        - Modality Worklist Information Model - FIND 1.2.840.10008.5.1.4.31
+        - Patient/Study Only Query/Retrieve Information Model - FIND 1.2.840.10008.5.1.4.1.2.3.1
+
+    #NotNull
+-->
+<!ATTLIST dicom-find-call sopClass (PATIENT_ROOT_QUERY_RIM|STUDY_ROOT_QUERY_RIM|MODALITY_WORKLIST_INFORMATION_MODEL|PATIENT_SOQ_RIM) #IMPLIED>
+<!--
+
+    Is overwritten by the value of the GVBuffer property DICOM_QUERY_LEVEL.
+
+    #NotNull
+-->
+<!ATTLIST dicom-find-call queryLevel CDATA #IMPLIED>
+<!--
+
+    Is overwritten by the value of the GVBuffer property DICOM_PATIENT_ID.
+
+    #NotNull
+-->
+<!ATTLIST dicom-find-call patientID CDATA #IMPLIED>
+<!--
+
+    Is overwritten by the value of the GVBuffer property DICOM_PATIENT_NAME.
+
+    #NotNull
+-->
+<!ATTLIST dicom-find-call patientName CDATA #IMPLIED>
+<!--
+
+    Is overwritten by the value of the GVBuffer property DICOM_PATIENT_SEX.
+
+    #NotNull
+-->
+<!ATTLIST dicom-find-call patientSex CDATA #IMPLIED>
+<!--
+
+    Is overwritten by the value of the GVBuffer property DICOM_SOP_INSTANCE_UID.
+
+    #NotNull
+-->
+<!ATTLIST dicom-find-call sopInstanceUID CDATA #IMPLIED>
+<!--
+
+    Is overwritten by the value of the GVBuffer property DICOM_SERIES_INSTANCE_UID.
+
+    #NotNull
+-->
+<!ATTLIST dicom-find-call seriesInstanceUID CDATA #IMPLIED>
+<!--
+
+    Is overwritten by the value of the GVBuffer property DICOM_AFFECTED_SOP_CLASS_UID.
+
+    #NotNull
+-->
+<!ATTLIST dicom-find-call affectedSopClassUID CDATA #IMPLIED>
+<!--
+
+    Is overwritten by the value of the GVBuffer property DICOM_AFFECTED_SOP_INSTANCE_UID.
+
+    #NotNull
+-->
+<!ATTLIST dicom-find-call affectedSopInstanceUID CDATA #IMPLIED>
+<!--
+
+    Is overwritten by the value of the GVBuffer property DICOM_STUDY_INSTANCE_UID.
+
+    #NotNull
+-->
+<!ATTLIST dicom-find-call studyInstanceUID CDATA #IMPLIED>
+<!--
+
+    Is overwritten by the value of the GVBuffer property DICOM_MODALITY_STUDY.
+
+    #NotNull
+-->
+<!ATTLIST dicom-find-call modalityStudy CDATA #IMPLIED>
+
+<!--
+    Defines the information to invoke a Store service on a DICOM Server.
+    The attributes can contains metadata to be resolved at runtime.
+
+    #Label: @name
+    #Icon: GVDicomStoreCall.png
+    #Category: Medical
+    #Template:
+        <xsl:template match="dicom-store-call">
+            <xsl:if test="Description">
+                <small><br/><xsl:value-of select="Description"/></small>
+            </xsl:if>
+        </xsl:template>
+-->
+<!ELEMENT dicom-store-call (Description?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST dicom-store-call type CDATA #FIXED "call">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST dicom-store-call class CDATA #FIXED "it.greenvulcano.gvesb.virtual.dicom.DicomStoreCallOperation">
+<!--
+    Operation name.
+    Used in the 'Flow' section to associate workflow nodes to VCL operations.
+
+    #NotNull
+    #Unique: ../*[@type='call' or @type='enqueue' or @type='dequeue']/@name
+-->
+<!ATTLIST dicom-store-call name CDATA #REQUIRED>
+<!--
+    DICOM Association name.
+    Is overridden by DICOM_ASSOCIATION property.
+    
+    #References: gvesb:document('GVAdapters')/GVAdapters/GVDicomAdapterConfiguration/AssociationList/Association/@name
+-->
+<!ATTLIST dicom-store-call nameAssociation CDATA #IMPLIED>
+<!--
+
+    Is overwritten by the value of the GVBuffer property DICOM_SOP_CLASS.
+    Admitted values:
+        - CT Image Storage - 1.2.840.10008.5.1.4.1.1.2
+        - Enhanced CT Image Storage - 1.2.840.10008.5.1.4.1.1.2.1
+        - MR Image Storage - 1.2.840.10008.5.1.4.1.1.4
+        - Enhanced MR Image Storage - 1.2.840.10008.5.1.4.1.1.4.1
+        - Secondary Capture Image Storage - 1.2.840.10008.5.1.4.1.1.7
+
+    #NotNull
+-->
+<!ATTLIST dicom-store-call sopClass (CT_IS|ENHANCED_CT_IS|MR_IS|ENHANCED_MR_IS|SECONDARY_CAPTURE_IS) #IMPLIED>
+<!--
+
+    Is overwritten by the value of the GVBuffer property DICOM_SOP_INSTANCE_UID.
+
+    #NotNull
+-->
+<!ATTLIST dicom-store-call sopInstanceUID CDATA #IMPLIED>
+<!--
+
+    Is overwritten by the value of the GVBuffer property DICOM_FILE_PATH.
+
+    #NotNull
+-->
+<!ATTLIST dicom-store-call dicomFile CDATA #IMPLIED>
+
+<!--
+    Defines the information to invoke a Move service on a DICOM Server.
+    The attributes can contains metadata to be resolved at runtime.
+
+    #Label: @name
+    #Icon: GVDicomMoveCall.png
+    #Category: Medical
+    #Template:
+        <xsl:template match="dicom-move-call">
+            <xsl:if test="Description">
+                <small><br/><xsl:value-of select="Description"/></small>
+            </xsl:if>
+        </xsl:template>
+-->
+<!ELEMENT dicom-move-call (Description?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST dicom-move-call type CDATA #FIXED "call">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST dicom-move-call class CDATA #FIXED "it.greenvulcano.gvesb.virtual.dicom.DicomMoveCallOperation">
+<!--
+    Operation name.
+    Used in the 'Flow' section to associate workflow nodes to VCL operations.
+
+    #NotNull
+    #Unique: ../*[@type='call' or @type='enqueue' or @type='dequeue']/@name
+-->
+<!ATTLIST dicom-move-call name CDATA #REQUIRED>
+<!--
+    DICOM Association name.
+    Is overridden by DICOM_ASSOCIATION property.
+    
+    #References: gvesb:document('GVAdapters')/GVAdapters/GVDicomAdapterConfiguration/AssociationList/Association/@name
+-->
+<!ATTLIST dicom-move-call nameAssociation CDATA #IMPLIED>
+<!--
+
+    Is overwritten by the value of the GVBuffer property DICOM_SOP_CLASS.
+    Admitted values:
+        - Patient Root Query/Retrieve Information Model - MOVE 1.2.840.10008.5.1.4.1.2.1.2
+        - Study Root Query/Retrieve Information Model - MOVE 1.2.840.10008.5.1.4.1.2.2.2
+        - Patient/Study Only Query/Retrieve Information Model - MOVE 1.2.840.10008.5.1.4.1.2.3.2
+
+    #NotNull
+-->
+<!ATTLIST dicom-move-call sopClass (PATIENT_ROOT_QUERY_RIM|STUDY_ROOT_QUERY_RIM|PATIENT_SOQ_RIM) #IMPLIED>
+<!--
+
+    Is overwritten by the value of the GVBuffer property DICOM_QUERY_LEVEL.
+
+    #NotNull
+-->
+<!ATTLIST dicom-move-call queryLevel CDATA #IMPLIED>
+<!--
+
+    Is overwritten by the value of the GVBuffer property DICOM_PATIENT_ID.
+
+    #NotNull
+-->
+<!ATTLIST dicom-move-call patientID CDATA #IMPLIED>
+<!--
+
+    Is overwritten by the value of the GVBuffer property DICOM_PATIENT_NAME.
+
+    #NotNull
+-->
+<!ATTLIST dicom-move-call patientName CDATA #IMPLIED>
+<!--
+
+    Is overwritten by the value of the GVBuffer property DICOM_SOP_CLASS_UID.
+
+    #NotNull
+-->
+<!ATTLIST dicom-move-call sopClassUID CDATA #IMPLIED>
+<!--
+
+    Is overwritten by the value of the GVBuffer property DICOM_SERIES_INSTANCE_UID.
+
+    #NotNull
+-->
+<!ATTLIST dicom-move-call seriesInstanceUID CDATA #IMPLIED>
+<!--
+
+    Is overwritten by the value of the GVBuffer property DICOM_STUDY_INSTANCE_UID.
+
+    #NotNull
+-->
+<!ATTLIST dicom-move-call studyInstanceUID CDATA #IMPLIED>

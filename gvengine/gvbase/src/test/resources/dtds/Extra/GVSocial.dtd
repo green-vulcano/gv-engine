@@ -1,0 +1,837 @@
+
+<!ENTITY % social-calls  "twitter-update-status|twitter-get-user-timeline|twitter-search|twitter-retweet-status|twitter-enable-notification|twitter-disable-notification|twitter-send-direct-message|twitter-get-friends-ids|twitter-get-followers-ids">
+
+<!--
+    Twitter Update Status call (Send tweet).
+
+    Dynamic fields can contains the following placeholders:
+     - fixed : a text string;
+     - ${{propname}}      : a System property name;
+     - sp{{propname}}     : a System property name;
+     - env{{varname}}     : an Environment variable value;
+     - @{{propname}}      : a inProperties property name;
+     - timestamp{{pattern[::tZone]]}} : return the current timestamp, in optional tZone value,
+                                        formatted as 'pattern'
+     - dateformat{{date::source-pattern::dest-pattern[::source-tZone::dest-tZone]}} :
+                               reformat 'date' from 'source-pattern' to 'dest-pattern',
+                               and optionally from 'source-tZone' to 'dest-tZone'
+     - decode{{field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                               evaluate as if-then-else; if 'field' is equal to cond1...n,
+                               return the value of val1...n, otherwise 'default'
+     - decodeL{{sep::field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                               is equivalent to 'decode', with the difference that 'condX'
+                               can be a list of values separated by 'sep'
+     - script{{lang::[scope::]script}} : evaluate a 'lang' script, using the base context 'scope',
+                                 the GVBuffer is added to the scope as 'object'
+     - js{{[scope::]script}}   : evaluate a JavaScript script, using the context 'scope',
+                                 the GVBuffer is added to the scope as 'object'
+     - ognl{{script}}          : evaluate a OGNL script,
+                                 the GVBuffer is added to the scope as 'object' (and is also the object on which execute the script !! NO MORE FROM 3.5 !!),
+     - sql{{conn::statement}}  : execute a select sql statement sql and return the value of
+                                 the first field of the first selected record.
+                                 The 'conn' parameter is the JNDI name of a DataSource
+
+    #Label: @name
+    #Icon: tweet.png
+-->
+<!ELEMENT twitter-update-status (Description?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST twitter-update-status type CDATA #FIXED "call">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST twitter-update-status class CDATA #FIXED "it.greenvulcano.gvesb.virtual.social.twitter.TwitterUpdateStatusCallOperation">
+<!--
+    Operation name.
+    Used in the 'Flow' section to associate workflow nodes to VCL operations.
+
+    #NotNull
+    #Unique: ../*[@type='enqueue' or @type='dequeue' or @type='call']/@name
+-->
+<!ATTLIST twitter-update-status name CDATA #REQUIRED>
+<!--
+    If 'true' then account attribute can contains placeholders to be resolved at runtime.
+    The default is 'false'.
+
+    #NotNull
+-->
+<!ATTLIST twitter-update-status dynamic (true | false) #IMPLIED>
+<!--
+    Account name for Twitter
+
+    #References: {{../twitter-update-status[not(@dynamic) or (@dynamic = 'false')]}} gvesb:document('GVAdapters')/GVAdapters/GVSocialAdapterManager/SocialAdapters/TwitterSocialAdapter/Accounts/Account/@name
+    #NotNull
+-->
+<!ATTLIST twitter-update-status account CDATA #REQUIRED>
+<!--
+    New status for Twitter (Tweet to send).
+    Can contains placeholders to be resolved at runtime.
+    ATTENTION: the final message is automatically truncated at a length of 140 characters.
+
+    #NotNull
+-->
+<!ATTLIST twitter-update-status statusText CDATA #REQUIRED>
+
+<!--
+    Twitter Get User Timeline call.
+    Return the found tweets as XML document.
+
+    Dynamic fields can contains the following placeholders:
+     - fixed : a text string;
+     - ${{propname}}      : a System property name;
+     - sp{{propname}}     : a System property name;
+     - env{{varname}}     : an Environment variable value;
+     - @{{propname}}      : a inProperties property name;
+     - timestamp{{pattern[::tZone]]}} : return the current timestamp, in optional tZone value,
+                                        formatted as 'pattern'
+     - dateformat{{date::source-pattern::dest-pattern[::source-tZone::dest-tZone]}} :
+                               reformat 'date' from 'source-pattern' to 'dest-pattern',
+                               and optionally from 'source-tZone' to 'dest-tZone'
+     - decode{{field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                               evaluate as if-then-else; if 'field' is equal to cond1...n,
+                               return the value of val1...n, otherwise 'default'
+     - decodeL{{sep::field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                               is equivalent to 'decode', with the difference that 'condX'
+                               can be a list of values separated by 'sep'
+     - script{{lang::[scope::]script}} : evaluate a 'lang' script, using the base context 'scope',
+                                 the GVBuffer is added to the scope as 'object'
+     - js{{[scope::]script}}   : evaluate a JavaScript script, using the context 'scope',
+                                 the GVBuffer is added to the scope as 'object'
+     - ognl{{script}}          : evaluate a OGNL script,
+                                 the GVBuffer is added to the scope as 'object' (and is also the object on which execute the script !! NO MORE FROM 3.5 !!),
+     - sql{{conn::statement}}  : execute a select sql statement sql and return the value of
+                                 the first field of the first selected record.
+                                 The 'conn' parameter is the JNDI name of a DataSource
+
+    #Label: @name
+    #Icon: tweet.png
+-->
+<!ELEMENT twitter-get-user-timeline (Description?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST twitter-get-user-timeline type CDATA #FIXED "call">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST twitter-get-user-timeline class CDATA #FIXED "it.greenvulcano.gvesb.virtual.social.twitter.TwitterGetUserTimelineCallOperation">
+<!--
+    Operation name.
+    Used in the 'Flow' section to associate workflow nodes to VCL operations.
+
+    #NotNull
+    #Unique: ../*[@type='enqueue' or @type='dequeue' or @type='call']/@name
+-->
+<!ATTLIST twitter-get-user-timeline name CDATA #REQUIRED>
+<!--
+    If 'true' then account attribute can contains placeholders to be resolved at runtime.
+    The default is 'false'.
+
+    #NotNull
+-->
+<!ATTLIST twitter-get-user-timeline dynamic (true | false) #IMPLIED>
+<!--
+    Account name for Twitter
+
+    #References: {{../twitter-get-user-timeline[not(@dynamic) or (@dynamic = 'false')]}} gvesb:document('GVAdapters')/GVAdapters/GVSocialAdapterManager/SocialAdapters/TwitterSocialAdapter/Accounts/Account/@name
+    #NotNull
+-->
+<!ATTLIST twitter-get-user-timeline account CDATA #REQUIRED>
+<!--
+    Id or name of the user from wich read the timeline.
+    If not defined, is assumed the @account user.
+    Can contains placeholders to be resolved at runtime.
+
+    #NotNull
+-->
+<!ATTLIST twitter-get-user-timeline userId CDATA #IMPLIED>
+<!--
+    Minimun status Id of the user's timeline to read from.
+    Can contains placeholders to be resolved at runtime.
+
+    #NotNull
+-->
+<!ATTLIST twitter-get-user-timeline sinceId CDATA #IMPLIED>
+<!--
+    Maximum status Id of the user's timeline to read from.
+    Can contains placeholders to be resolved at runtime.
+
+    #NotNull
+-->
+<!ATTLIST twitter-get-user-timeline maxId CDATA #IMPLIED>
+<!--
+    Number of status to read.
+    Default to 20.
+    Can contains placeholders to be resolved at runtime.
+
+    #NotNull
+-->
+<!ATTLIST twitter-get-user-timeline count CDATA #IMPLIED>
+
+<!--
+    Twitter Search call.
+    Return the found tweets as XML document.
+
+    Dynamic fields can contains the following placeholders:
+     - fixed : a text string;
+     - ${{propname}}      : a System property name;
+     - sp{{propname}}     : a System property name;
+     - env{{varname}}     : an Environment variable value;
+     - @{{propname}}      : a inProperties property name;
+     - timestamp{{pattern[::tZone]]}} : return the current timestamp, in optional tZone value,
+                                        formatted as 'pattern'
+     - dateformat{{date::source-pattern::dest-pattern[::source-tZone::dest-tZone]}} :
+                               reformat 'date' from 'source-pattern' to 'dest-pattern',
+                               and optionally from 'source-tZone' to 'dest-tZone'
+     - decode{{field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                               evaluate as if-then-else; if 'field' is equal to cond1...n,
+                               return the value of val1...n, otherwise 'default'
+     - decodeL{{sep::field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                               is equivalent to 'decode', with the difference that 'condX'
+                               can be a list of values separated by 'sep'
+     - script{{lang::[scope::]script}} : evaluate a 'lang' script, using the base context 'scope',
+                                 the GVBuffer is added to the scope as 'object'
+     - js{{[scope::]script}}   : evaluate a JavaScript script, using the context 'scope',
+                                 the GVBuffer is added to the scope as 'object'
+     - ognl{{script}}          : evaluate a OGNL script,
+                                 the GVBuffer is added to the scope as 'object' (and is also the object on which execute the script !! NO MORE FROM 3.5 !!),
+     - sql{{conn::statement}}  : execute a select sql statement sql and return the value of
+                                 the first field of the first selected record.
+                                 The 'conn' parameter is the JNDI name of a DataSource
+
+    #Label: @name
+    #Icon: tweet.png
+-->
+<!ELEMENT twitter-search (Description?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST twitter-search type CDATA #FIXED "call">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST twitter-search class CDATA #FIXED "it.greenvulcano.gvesb.virtual.social.twitter.TwitterSearchCallOperation">
+<!--
+    Operation name.
+    Used in the 'Flow' section to associate workflow nodes to VCL operations.
+
+    #NotNull
+    #Unique: ../*[@type='enqueue' or @type='dequeue' or @type='call']/@name
+-->
+<!ATTLIST twitter-search name CDATA #REQUIRED>
+<!--
+    If 'true' then account attribute can contains placeholders to be resolved at runtime.
+    The default is 'false'.
+
+    #NotNull
+-->
+<!ATTLIST twitter-search dynamic (true | false) #IMPLIED>
+<!--
+    Account name for Twitter
+
+    #References: {{../twitter-search[not(@dynamic) or (@dynamic = 'false')]}} gvesb:document('GVAdapters')/GVAdapters/GVSocialAdapterManager/SocialAdapters/TwitterSocialAdapter/Accounts/Account/@name
+    #NotNull
+-->
+<!ATTLIST twitter-search account CDATA #REQUIRED>
+<!--
+    Twitter query.
+    Can contains placeholders to be resolved at runtime.
+
+    #NotNull
+-->
+<!ATTLIST twitter-search query CDATA #REQUIRED>
+<!--
+    Minimun status Id to read from.
+    Can contains placeholders to be resolved at runtime.
+
+    #NotNull
+-->
+<!ATTLIST twitter-search sinceId CDATA #IMPLIED>
+<!--
+    Maximum status Id to read from.
+    Can contains placeholders to be resolved at runtime.
+
+    #NotNull
+-->
+<!ATTLIST twitter-search maxId CDATA #IMPLIED>
+<!--
+    Minimun status generation date to read from.
+    Must be in the format YYYY-MM-DD.
+    Can contains placeholders to be resolved at runtime.
+
+    #NotNull
+-->
+<!ATTLIST twitter-search since CDATA #IMPLIED>
+<!--
+    Maximum status generation date to read from.
+    Must be in the format YYYY-MM-DD.
+    Can contains placeholders to be resolved at runtime.
+
+    #NotNull
+-->
+<!ATTLIST twitter-search until CDATA #IMPLIED>
+<!--
+    Number of status to read.
+    Default to 20.
+    Can contains placeholders to be resolved at runtime.
+
+    #NotNull
+-->
+<!ATTLIST twitter-search count CDATA #IMPLIED>
+
+<!--
+    Twitter Retweet Status call (Retweet).
+
+    Dynamic fields can contains the following placeholders:
+     - fixed : a text string;
+     - ${{propname}}      : a System property name;
+     - sp{{propname}}     : a System property name;
+     - env{{varname}}     : an Environment variable value;
+     - @{{propname}}      : a inProperties property name;
+     - timestamp{{pattern[::tZone]]}} : return the current timestamp, in optional tZone value,
+                                        formatted as 'pattern'
+     - dateformat{{date::source-pattern::dest-pattern[::source-tZone::dest-tZone]}} :
+                               reformat 'date' from 'source-pattern' to 'dest-pattern',
+                               and optionally from 'source-tZone' to 'dest-tZone'
+     - decode{{field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                               evaluate as if-then-else; if 'field' is equal to cond1...n,
+                               return the value of val1...n, otherwise 'default'
+     - decodeL{{sep::field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                               is equivalent to 'decode', with the difference that 'condX'
+                               can be a list of values separated by 'sep'
+     - script{{lang::[scope::]script}} : evaluate a 'lang' script, using the base context 'scope',
+                                 the GVBuffer is added to the scope as 'object'
+     - js{{[scope::]script}}   : evaluate a JavaScript script, using the context 'scope',
+                                 the GVBuffer is added to the scope as 'object'
+     - ognl{{script}}          : evaluate a OGNL script,
+                                 the GVBuffer is added to the scope as 'object' (and is also the object on which execute the script !! NO MORE FROM 3.5 !!),
+     - sql{{conn::statement}}  : execute a select sql statement sql and return the value of
+                                 the first field of the first selected record.
+                                 The 'conn' parameter is the JNDI name of a DataSource
+
+    #Label: @name
+    #Icon: retweet.png
+-->
+<!ELEMENT twitter-retweet-status (Description?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST twitter-retweet-status type CDATA #FIXED "call">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST twitter-retweet-status class CDATA #FIXED "it.greenvulcano.gvesb.virtual.social.twitter.TwitterRetweetStatusCallOperation">
+<!--
+    Operation name.
+    Used in the 'Flow' section to associate workflow nodes to VCL operations.
+
+    #NotNull
+    #Unique: ../*[@type='enqueue' or @type='dequeue' or @type='call']/@name
+-->
+<!ATTLIST twitter-retweet-status name CDATA #REQUIRED>
+<!--
+    If 'true' then account attribute can contains placeholders to be resolved at runtime.
+    The default is 'false'.
+
+    #NotNull
+-->
+<!ATTLIST twitter-retweet-status dynamic (true | false) #IMPLIED>
+<!--
+    Account name for Twitter
+
+    #References: {{../twitter-retweet-status[not(@dynamic) or (@dynamic = 'false')]}} gvesb:document('GVAdapters')/GVAdapters/GVSocialAdapterManager/SocialAdapters/TwitterSocialAdapter/Accounts/Account/@name
+    #NotNull
+-->
+<!ATTLIST twitter-retweet-status account CDATA #REQUIRED>
+<!--
+    Status Id for Twitter (Tweet Id to retweet).
+    Can contains placeholders to be resolved at runtime.
+
+    #NotNull
+-->
+<!ATTLIST twitter-retweet-status statusId CDATA #REQUIRED>
+
+<!--
+    Twitter enable Notification sent by a user.
+
+    Dynamic fields can contains the following placeholders:
+     - fixed : a text string;
+     - ${{propname}}      : a System property name;
+     - sp{{propname}}     : a System property name;
+     - env{{varname}}     : an Environment variable value;
+     - @{{propname}}      : a inProperties property name;
+     - timestamp{{pattern[::tZone]]}} : return the current timestamp, in optional tZone value,
+                                        formatted as 'pattern'
+     - dateformat{{date::source-pattern::dest-pattern[::source-tZone::dest-tZone]}} :
+                               reformat 'date' from 'source-pattern' to 'dest-pattern',
+                               and optionally from 'source-tZone' to 'dest-tZone'
+     - decode{{field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                               evaluate as if-then-else; if 'field' is equal to cond1...n,
+                               return the value of val1...n, otherwise 'default'
+     - decodeL{{sep::field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                               is equivalent to 'decode', with the difference that 'condX'
+                               can be a list of values separated by 'sep'
+     - script{{lang::[scope::]script}} : evaluate a 'lang' script, using the base context 'scope',
+                                 the GVBuffer is added to the scope as 'object'
+     - js{{[scope::]script}}   : evaluate a JavaScript script, using the context 'scope',
+                                 the GVBuffer is added to the scope as 'object'
+     - ognl{{script}}          : evaluate a OGNL script,
+                                 the GVBuffer is added to the scope as 'object' (and is also the object on which execute the script !! NO MORE FROM 3.5 !!),
+     - sql{{conn::statement}}  : execute a select sql statement sql and return the value of
+                                 the first field of the first selected record.
+                                 The 'conn' parameter is the JNDI name of a DataSource
+
+    #Label: @name
+    #Icon: follow.png
+-->
+<!ELEMENT twitter-enable-notification (Description?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST twitter-enable-notification type CDATA #FIXED "call">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST twitter-enable-notification class CDATA #FIXED "it.greenvulcano.gvesb.virtual.social.twitter.TwitterEnableNotificationCallOperation">
+<!--
+    Operation name.
+    Used in the 'Flow' section to associate workflow nodes to VCL operations.
+
+    #NotNull
+    #Unique: ../*[@type='enqueue' or @type='dequeue' or @type='call']/@name
+-->
+<!ATTLIST twitter-enable-notification name CDATA #REQUIRED>
+<!--
+    If 'true' then account attribute can contains placeholders to be resolved at runtime.
+    The default is 'false'.
+
+    #NotNull
+-->
+<!ATTLIST twitter-enable-notification dynamic (true | false) #IMPLIED>
+<!--
+    Account name for Twitter
+
+    #References: {{../twitter-enable-notification[not(@dynamic) or (@dynamic = 'false')]}} gvesb:document('GVAdapters')/GVAdapters/GVSocialAdapterManager/SocialAdapters/TwitterSocialAdapter/Accounts/Account/@name
+    #NotNull
+-->
+<!ATTLIST twitter-enable-notification account CDATA #REQUIRED>
+<!--
+    Id or name of the user to follow.
+    Can contains placeholders to be resolved at runtime.
+
+    #NotNull
+-->
+<!ATTLIST twitter-enable-notification fromAccountId CDATA #REQUIRED>
+
+<!--
+    Twitter disable Notification sent by a user.
+
+    Dynamic fields can contains the following placeholders:
+     - fixed : a text string;
+     - ${{propname}}      : a System property name;
+     - sp{{propname}}     : a System property name;
+     - env{{varname}}     : an Environment variable value;
+     - @{{propname}}      : a inProperties property name;
+     - timestamp{{pattern[::tZone]]}} : return the current timestamp, in optional tZone value,
+                                        formatted as 'pattern'
+     - dateformat{{date::source-pattern::dest-pattern[::source-tZone::dest-tZone]}} :
+                               reformat 'date' from 'source-pattern' to 'dest-pattern',
+                               and optionally from 'source-tZone' to 'dest-tZone'
+     - decode{{field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                               evaluate as if-then-else; if 'field' is equal to cond1...n,
+                               return the value of val1...n, otherwise 'default'
+     - decodeL{{sep::field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                               is equivalent to 'decode', with the difference that 'condX'
+                               can be a list of values separated by 'sep'
+     - script{{lang::[scope::]script}} : evaluate a 'lang' script, using the base context 'scope',
+                                 the GVBuffer is added to the scope as 'object'
+     - js{{[scope::]script}}   : evaluate a JavaScript script, using the context 'scope',
+                                 the GVBuffer is added to the scope as 'object'
+     - ognl{{script}}          : evaluate a OGNL script,
+                                 the GVBuffer is added to the scope as 'object' (and is also the object on which execute the script !! NO MORE FROM 3.5 !!),
+     - sql{{conn::statement}}  : execute a select sql statement sql and return the value of
+                                 the first field of the first selected record.
+                                 The 'conn' parameter is the JNDI name of a DataSource
+
+    #Label: @name
+    #Icon: unfollow.png
+-->
+<!ELEMENT twitter-disable-notification (Description?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST twitter-disable-notification type CDATA #FIXED "call">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST twitter-disable-notification class CDATA #FIXED "it.greenvulcano.gvesb.virtual.social.twitter.TwitterDisableNotificationCallOperation">
+<!--
+    Operation name.
+    Used in the 'Flow' section to associate workflow nodes to VCL operations.
+
+    #NotNull
+    #Unique: ../*[@type='enqueue' or @type='dequeue' or @type='call']/@name
+-->
+<!ATTLIST twitter-disable-notification name CDATA #REQUIRED>
+<!--
+    If 'true' then account attribute can contains placeholders to be resolved at runtime.
+    The default is 'false'.
+
+    #NotNull
+-->
+<!ATTLIST twitter-disable-notification dynamic (true | false) #IMPLIED>
+<!--
+    Account name for Twitter
+
+    #References: {{../twitter-disable-notification[not(@dynamic) or (@dynamic = 'false')]}} gvesb:document('GVAdapters')/GVAdapters/GVSocialAdapterManager/SocialAdapters/TwitterSocialAdapter/Accounts/Account/@name
+    #NotNull
+-->
+<!ATTLIST twitter-disable-notification account CDATA #REQUIRED>
+<!--
+    Id or name of the user to unfollow.
+    Can contains placeholders to be resolved at runtime.
+
+    #NotNull
+-->
+<!ATTLIST twitter-disable-notification fromAccountId CDATA #REQUIRED>
+
+<!--
+    Twitter get followers for an account.
+
+    Dynamic fields can contains the following placeholders:
+     - fixed : a text string;
+     - ${{propname}}      : a System property name;
+     - sp{{propname}}     : a System property name;
+     - env{{varname}}     : an Environment variable value;
+     - @{{propname}}      : a inProperties property name;
+     - timestamp{{pattern[::tZone]]}} : return the current timestamp, in optional tZone value,
+                                        formatted as 'pattern'
+     - dateformat{{date::source-pattern::dest-pattern[::source-tZone::dest-tZone]}} :
+                               reformat 'date' from 'source-pattern' to 'dest-pattern',
+                               and optionally from 'source-tZone' to 'dest-tZone'
+     - decode{{field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                               evaluate as if-then-else; if 'field' is equal to cond1...n,
+                               return the value of val1...n, otherwise 'default'
+     - decodeL{{sep::field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                               is equivalent to 'decode', with the difference that 'condX'
+                               can be a list of values separated by 'sep'
+     - script{{lang::[scope::]script}} : evaluate a 'lang' script, using the base context 'scope',
+                                 the GVBuffer is added to the scope as 'object'
+     - js{{[scope::]script}}   : evaluate a JavaScript script, using the context 'scope',
+                                 the GVBuffer is added to the scope as 'object'
+     - ognl{{script}}          : evaluate a OGNL script,
+                                 the GVBuffer is added to the scope as 'object' (and is also the object on which execute the script !! NO MORE FROM 3.5 !!),
+     - sql{{conn::statement}}  : execute a select sql statement sql and return the value of
+                                 the first field of the first selected record.
+                                 The 'conn' parameter is the JNDI name of a DataSource
+
+    #Label: @name
+    #Icon: follower.png
+-->
+<!ELEMENT twitter-get-followers-ids (Description?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST twitter-get-followers-ids type CDATA #FIXED "call">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST twitter-get-followers-ids class CDATA #FIXED "it.greenvulcano.gvesb.virtual.social.twitter.TwitterGetFollowersIDsCallOperation">
+<!--
+    Operation name.
+    Used in the 'Flow' section to associate workflow nodes to VCL operations.
+
+    #NotNull
+    #Unique: ../*[@type='enqueue' or @type='dequeue' or @type='call']/@name
+-->
+<!ATTLIST twitter-get-followers-ids name CDATA #REQUIRED>
+<!--
+    If 'true' then account attribute can contains placeholders to be resolved at runtime.
+    The default is 'false'.
+
+    #NotNull
+-->
+<!ATTLIST twitter-get-followers-ids dynamic (true | false) #IMPLIED>
+<!--
+    Account name for Twitter
+
+    #References: {{../twitter-get-followers-ids[not(@dynamic) or (@dynamic = 'false')]}} gvesb:document('GVAdapters')/GVAdapters/GVSocialAdapterManager/SocialAdapters/TwitterSocialAdapter/Accounts/Account/@name
+    #NotNull
+-->
+<!ATTLIST twitter-get-followers-ids account CDATA #REQUIRED>
+<!--
+    Account Id or name being followed.
+    Can contains placeholders to be resolved at runtime.
+
+    #NotNull
+-->
+<!ATTLIST twitter-get-followers-ids followingId CDATA #REQUIRED>
+<!--
+    Index of the result to start from.
+    Can contains placeholders to be resolved at runtime.
+
+    #NotNull
+-->
+<!ATTLIST twitter-get-followers-ids cursor CDATA #REQUIRED>
+
+<!--
+    Twitter get friends for an account.
+
+    Dynamic fields can contains the following placeholders:
+     - fixed : a text string;
+     - ${{propname}}      : a System property name;
+     - sp{{propname}}     : a System property name;
+     - env{{varname}}     : an Environment variable value;
+     - @{{propname}}      : a inProperties property name;
+     - timestamp{{pattern[::tZone]]}} : return the current timestamp, in optional tZone value,
+                                        formatted as 'pattern'
+     - dateformat{{date::source-pattern::dest-pattern[::source-tZone::dest-tZone]}} :
+                               reformat 'date' from 'source-pattern' to 'dest-pattern',
+                               and optionally from 'source-tZone' to 'dest-tZone'
+     - decode{{field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                               evaluate as if-then-else; if 'field' is equal to cond1...n,
+                               return the value of val1...n, otherwise 'default'
+     - decodeL{{sep::field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                               is equivalent to 'decode', with the difference that 'condX'
+                               can be a list of values separated by 'sep'
+     - script{{lang::[scope::]script}} : evaluate a 'lang' script, using the base context 'scope',
+                                 the GVBuffer is added to the scope as 'object'
+     - js{{[scope::]script}}   : evaluate a JavaScript script, using the context 'scope',
+                                 the GVBuffer is added to the scope as 'object'
+     - ognl{{script}}          : evaluate a OGNL script,
+                                 the GVBuffer is added to the scope as 'object' (and is also the object on which execute the script !! NO MORE FROM 3.5 !!),
+     - sql{{conn::statement}}  : execute a select sql statement sql and return the value of
+                                 the first field of the first selected record.
+                                 The 'conn' parameter is the JNDI name of a DataSource
+
+    #Label: @name
+    #Icon: follower.png
+-->
+<!ELEMENT twitter-get-friends-ids (Description?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST twitter-get-friends-ids type CDATA #FIXED "call">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST twitter-get-friends-ids class CDATA #FIXED "it.greenvulcano.gvesb.virtual.social.twitter.TwitterGetFriendsIDsCallOperation">
+<!--
+    Operation name.
+    Used in the 'Flow' section to associate workflow nodes to VCL operations.
+
+    #NotNull
+    #Unique: ../*[@type='enqueue' or @type='dequeue' or @type='call']/@name
+-->
+<!ATTLIST twitter-get-friends-ids name CDATA #REQUIRED>
+<!--
+    If 'true' then account attribute can contains placeholders to be resolved at runtime.
+    The default is 'false'.
+
+    #NotNull
+-->
+<!ATTLIST twitter-get-friends-ids dynamic (true | false) #IMPLIED>
+<!--
+    Account name for Twitter
+
+    #References: {{../twitter-get-friends-ids[not(@dynamic) or (@dynamic = 'false')]}} gvesb:document('GVAdapters')/GVAdapters/GVSocialAdapterManager/SocialAdapters/TwitterSocialAdapter/Accounts/Account/@name
+    #NotNull
+-->
+<!ATTLIST twitter-get-friends-ids account CDATA #REQUIRED>
+<!--
+    Index of the result to start from.
+    Can contains placeholders to be resolved at runtime.
+
+    #NotNull
+-->
+<!ATTLIST twitter-get-friends-ids cursor CDATA #REQUIRED>
+
+<!--
+    Twitter send message directly to user.
+
+    Dynamic fields can contains the following placeholders:
+     - fixed : a text string;
+     - ${{propname}}      : a System property name;
+     - sp{{propname}}     : a System property name;
+     - env{{varname}}     : an Environment variable value;
+     - @{{propname}}      : a inProperties property name;
+     - timestamp{{pattern[::tZone]]}} : return the current timestamp, in optional tZone value,
+                                        formatted as 'pattern'
+     - dateformat{{date::source-pattern::dest-pattern[::source-tZone::dest-tZone]}} :
+                               reformat 'date' from 'source-pattern' to 'dest-pattern',
+                               and optionally from 'source-tZone' to 'dest-tZone'
+     - decode{{field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                               evaluate as if-then-else; if 'field' is equal to cond1...n,
+                               return the value of val1...n, otherwise 'default'
+     - decodeL{{sep::field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                               is equivalent to 'decode', with the difference that 'condX'
+                               can be a list of values separated by 'sep'
+     - script{{lang::[scope::]script}} : evaluate a 'lang' script, using the base context 'scope',
+                                 the GVBuffer is added to the scope as 'object'
+     - js{{[scope::]script}}   : evaluate a JavaScript script, using the context 'scope',
+                                 the GVBuffer is added to the scope as 'object'
+     - ognl{{script}}          : evaluate a OGNL script,
+                                 the GVBuffer is added to the scope as 'object' (and is also the object on which execute the script !! NO MORE FROM 3.5 !!),
+     - sql{{conn::statement}}  : execute a select sql statement sql and return the value of
+                                 the first field of the first selected record.
+                                 The 'conn' parameter is the JNDI name of a DataSource
+
+    #Label: @name
+    #Icon: message.png
+-->
+<!ELEMENT twitter-send-direct-message (Description?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST twitter-send-direct-message type CDATA #FIXED "call">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST twitter-send-direct-message class CDATA #FIXED "it.greenvulcano.gvesb.virtual.social.twitter.TwitterSendDirectMessageCallOperation">
+<!--
+    Operation name.
+    Used in the 'Flow' section to associate workflow nodes to VCL operations.
+
+    #NotNull
+    #Unique: ../*[@type='enqueue' or @type='dequeue' or @type='call']/@name
+-->
+<!ATTLIST twitter-send-direct-message name CDATA #REQUIRED>
+<!--
+    If 'true' then account attribute can contains placeholders to be resolved at runtime.
+    The default is 'false'.
+
+    #NotNull
+-->
+<!ATTLIST twitter-send-direct-message dynamic (true | false) #IMPLIED>
+<!--
+    Account name for Twitter
+
+    #References: {{../twitter-send-direct-message[not(@dynamic) or (@dynamic = 'false')]}} gvesb:document('GVAdapters')/GVAdapters/GVSocialAdapterManager/SocialAdapters/TwitterSocialAdapter/Accounts/Account/@name
+    #NotNull
+-->
+<!ATTLIST twitter-send-direct-message account CDATA #REQUIRED>
+<!--
+    Account Id or name to send the message to.
+    Can contains placeholders to be resolved at runtime.
+
+    #NotNull
+-->
+<!ATTLIST twitter-send-direct-message toAccountId CDATA #REQUIRED>
+<!--
+    Message.
+    Can contains placeholders to be resolved at runtime.
+    ATTENTION: the final message is automatically truncated at a length of 140 characters.
+
+    #NotNull
+-->
+<!ATTLIST twitter-send-direct-message message CDATA #REQUIRED>
+
+
+<!--
+    Social Adapters configuration.
+-->
+<!ELEMENT GVSocialAdapterManager (Description?, SocialAdapters)>
+
+<!ATTLIST GVSocialAdapterManager version CDATA #FIXED "1.0">
+<!--
+    Element type 'module'.
+-->
+<!ATTLIST GVSocialAdapterManager type    CDATA   #FIXED  "module">
+<!--
+    Module id always set to 'GV_SOCIAL'.
+-->
+<!ATTLIST GVSocialAdapterManager name CDATA #FIXED "GV_SOCIAL">
+
+<!--
+    #SortChild
+-->
+<!ELEMENT SocialAdapters (TwitterSocialAdapter?)>
+
+<!--
+    Defines the TwitterSocialAdapter.
+
+    #Label: @social
+    #SelectOnInsert
+    #Icon: tweet.png
+-->
+<!ELEMENT TwitterSocialAdapter (Description?, Accounts, Proxy?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST TwitterSocialAdapter type CDATA #FIXED "social-adapter">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST TwitterSocialAdapter class CDATA #FIXED "it.greenvulcano.gvesb.social.twitter.TwitterSocialAdapter">
+<!--
+    Social identifier.
+-->
+<!ATTLIST TwitterSocialAdapter social CDATA #FIXED "twitter">
+
+<!--
+    Accounts settings
+-->
+<!ELEMENT Accounts (Account+)>
+
+<!--
+    Defines an account.
+
+    #Label: @name
+    #SelectOnInsert
+-->
+<!ELEMENT Account (Description?)>
+<!--
+    Account name.
+
+    #NotNull
+    #Unique: ../Account/@name
+-->
+<!ATTLIST Account name CDATA #REQUIRED>
+<!--
+    Account consumer key.
+
+    #NotNull
+-->
+<!ATTLIST Account consumer_key CDATA #REQUIRED>
+<!--
+    Account consumer secret.
+
+    #NotNull
+-->
+<!ATTLIST Account consumer_secret CDATA #REQUIRED>
+<!--
+    Account consumer twitter id.
+
+    #NotNull
+-->
+<!ATTLIST Account twitteruserid CDATA #REQUIRED>
+
+
+
+
+
+
+
+

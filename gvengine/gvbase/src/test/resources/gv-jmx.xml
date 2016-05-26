@@ -1,0 +1,605 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE jmx SYSTEM "http://www.greenvulcano.com/gvesb/dtds/gv-jmx.dtd">
+
+<jmx version="R1">
+  <entry-point>
+    <standard-mbean-server-finder class="it.greenvulcano.jmx.StandardMBeanServerFinder" type="server-finder"
+      domain="GreenVulcano" mode="create" />
+    <ObjectNameBuilders>
+      <ObjectNameBuilder type="object-name-builder">
+        <!--
+			Per weblogic il nome e': weblogic.Name; per JBoss e'
+			jboss.server.name
+		-->
+        <ObjectNameProperty name="Location" value="StandardServerName" />
+      </ObjectNameBuilder>
+      <ObjectNameBuilder type="object-name-builder">
+        <ObjectNameProperty name="Internal" value="No" />
+      </ObjectNameBuilder>
+      <ObjectNameBuilder name="ServiceOperationInfo" type="object-name-builder">
+        <ObjectNameProperty name="Name" value="@{{IDService}}" />
+      </ObjectNameBuilder>
+      <ObjectNameBuilder name="ServiceOperationInfo_Internal" type="object-name-builder">
+        <ObjectNameProperty name="Internal" value="Yes" />
+        <ObjectNameProperty name="Name" value="@{{IDService}}#Internal" />
+      </ObjectNameBuilder>
+      <ObjectNameBuilder name="OperationInfo" type="object-name-builder">
+        <ObjectNameProperty name="Name" value="@{{IDService}}#@{{IDOperation}}" />
+      </ObjectNameBuilder>
+      <ObjectNameBuilder name="OperationInfo_Internal" type="object-name-builder">
+        <ObjectNameProperty name="Internal" value="Yes" />
+        <ObjectNameProperty name="Name" value="@{{IDService}}#@{{IDOperation}}#Internal" />
+      </ObjectNameBuilder>
+      <ObjectNameBuilder name="ServiceOperationInfoManager_Internal" type="object-name-builder">
+        <ObjectNameProperty name="Internal" value="Yes" />
+      </ObjectNameBuilder>
+      <ObjectNameBuilder name="JMXServiceManager_Internal" type="object-name-builder">
+        <ObjectNameProperty name="Internal" value="Yes" />
+      </ObjectNameBuilder>
+      <ObjectNameBuilder apply-to-class="no-current-nor-descendent" class="it.greenvulcano.configuration.jmx.XMLConfigProxy"
+        type="object-name-builder">
+        <ObjectNameProperty name="Component" value="%{{class}}" />
+        <ObjectNameProperty name="Type" value="%{{class}}" />
+      </ObjectNameBuilder>
+      <ObjectNameBuilder name="DomainInfo_Internal" type="object-name-builder">
+        <ObjectNameProperty name="Internal" value="Yes" />
+      </ObjectNameBuilder>
+      <ObjectNameBuilder name="TaskManager_Internal" type="object-name-builder">
+        <ObjectNameProperty name="Internal" value="Yes" />
+      </ObjectNameBuilder>
+    </ObjectNameBuilders>
+    <Initializers>
+      <generic-initializer class="it.greenvulcano.util.xpath.jmx.RegisterXPathReloader" target="StandardServerName"
+        type="initializer" />
+      <generic-initializer class="it.greenvulcano.configuration.jmx.RegisterXMLConfig" target="StandardServerName"
+        type="initializer" />
+      <generic-initializer class="it.greenvulcano.gvesb.core.jmx.RegisterServiceOperationInfoManager" target="StandardServerName"
+        type="initializer" />
+      <generic-initializer class="it.greenvulcano.gvesb.core.jmx.RegisterJMXServiceManager" target="StandardServerName"
+        type="initializer" />
+      <TimerTask-initializer class="it.greenvulcano.scheduler.util.RegisterTaskManagerFactory" target="StandardServerName"
+        type="initializer"/>
+    </Initializers>
+  </entry-point>
+  <mbeans-descriptors>
+    <mbean description="Gestione della configurazione locale." domain="GreenVulcano" group="configuration" name="XMLConfig"
+      type="it.greenvulcano.configuration.XMLConfig">
+      <attribute description="Configuration files already loaded by the configuration manager" displayName="Loaded files"
+        name="loadedFiles" readable="true" type="java.lang.String" writeable="false" />
+      <attribute description="Configuration files already loaded locally by the configuration manager" displayName="Locally loaded files"
+        name="loadedFilesLocal" readable="true" type="java.lang.String" writeable="false" />
+      <operation description="Force the loading of a configuration file." name="load">
+        <parameter description="Configuration file to load" name="file" type="java.lang.String" />
+      </operation>
+      <operation description="Force the reloading of the loaded configuration files." name="reloadAll" />
+      <operation description="Reload a configuration file. If the file is not already loaded, then nothing will happen."
+        name="reload">
+        <parameter description="File to reload" name="file" type="java.lang.String" />
+      </operation>
+      <operation description="Discard all loaded configuration files" name="discardAll" />
+      <operation description="Discard the given configuration file" name="discard">
+        <parameter description="File to discard" name="file" type="java.lang.String" />
+      </operation>
+      <operation description="Discard the given configuration file in the local configuration manager" name="discardLocal">
+        <parameter description="File to discard" name="file" type="java.lang.String" />
+      </operation>
+      <operation description="Discard all loaded configuration files in the local Configuration" name="discardAllLocal" />
+      <operation description="Force locally the loading of a configuration file." name="loadLocal">
+        <parameter description="File to load" name="file" type="java.lang.String" />
+      </operation>
+      <operation description="Reload locally a configuration file. If the file is not already loaded, then nothing will happen."
+        name="reloadLocal">
+        <parameter description="Configuration file to reload" name="file" type="java.lang.String" />
+      </operation>
+      <operation description="Force the reloading of the loaded configuration files in the local Configuration." name="reloadAllLocal" />
+    </mbean>
+    <mbean description="Gestione servizi GreenVulcano." domain="GreenVulcano" group="management"
+               name="JMXServiceManager" type="it.greenvulcano.gvesb.core.jmx.JMXServiceManager">
+            <attribute description="Returns the Groups list." name="groups"
+                       type="java.lang.String"/>
+            <attribute description="Returns the Services list." name="services"
+                       type="java.lang.String"/>
+            <attribute description="Returns the Systems list." name="systems"
+                       type="java.lang.String"/>
+            <attribute description="Returns the Services/Operations list."
+                       name="servicesOperations" type="java.lang.String"/>
+            <attribute description="Get the history average throughput for services."
+                       name="historyThroughputSvc" type="float"/>
+            <attribute description="Get the location and its maximum throughput for services."
+                       name="maxThroughputSvc" type="java.lang.Object[]"/>
+            <attribute description="Get the location and its minimum throughput for services."
+                       name="minThroughputSvc" type="java.lang.Object[]"/>
+            <attribute description="Get the throughput for services." name="throughputSvc"
+                       type="float"/>
+            <attribute description="Get the total hints for services."
+                       name="totalHintsSvc" type="long"/>
+            <attribute description="Reads the history Throughput for Nodes."
+                       displayName="historyThroughputNod" name="historyThroughputNod"
+                       readable="true" type="float" writeable="false"/>
+            <attribute description="Reads the Max Throughput for Nodes"
+                       displayName="MaxThroughputNod" name="maxThroughputNod"
+                       readable="true" type="float" writeable="false"/>
+            <attribute description="Get the location and its minimum throughput for nodes."
+                       name="minThroughputNod" type="java.lang.Object[]"/>
+            <attribute description="Get the throughput for nodes." name="throughputNod"
+                       type="float"/>
+            <attribute description="Get the total hints for nodes." name="totalHintsNod"
+                       type="long"/>
+            <attribute description="Get the throughput for nodes." name="throughputData"
+                       type="java.util.HashMap"/>
+            <operation description="Activate the given Group." name="groupOn">
+                <parameter description="Group name" name="name" type="java.lang.String"/>
+            </operation>
+            <operation description="Deactivate the given Group." name="groupOff">
+                <parameter description="Group name" name="name" type="java.lang.String"/>
+            </operation>
+            <operation description="Activate the given System." name="systemOn">
+                <parameter description="System name" name="name" type="java.lang.String"/>
+            </operation>
+            <operation description="Deactivate the given System." name="systemOff">
+                <parameter description="System name" name="name" type="java.lang.String"/>
+            </operation>
+            <operation description="Activate the given Service." name="serviceOn">
+                <parameter description="Service name" name="name" type="java.lang.String"/>
+            </operation>
+            <operation description="Deactivate the given Service." name="serviceOff">
+                <parameter description="Service name" name="name" type="java.lang.String"/>
+            </operation>
+            <operation description="Activate the given Service Operation."
+                       name="serviceOperationOn">
+                <parameter description="Service name" name="service"
+                           type="java.lang.String"/>
+                <parameter description="Operation name" name="operation"
+                           type="java.lang.String"/>
+            </operation>
+            <operation description="Deactivate the given Service Operation."
+                       name="serviceOperationOff">
+                <parameter description="Service name" name="service"
+                           type="java.lang.String"/>
+                <parameter description="Operation name" name="operation"
+                           type="java.lang.String"/>
+            </operation>
+            <operation description="Activate the given Service statistics."
+                       name="statisticsOn">
+                <parameter description="Service name" name="service"
+                           type="java.lang.String"/>
+            </operation>
+            <operation description="Deactivate the given Service statistics."
+                       name="statisticsOff">
+                <parameter description="Service name" name="service"
+                           type="java.lang.String"/>
+            </operation>
+            <operation description="Reset the counters of the ServiceOperationInfo instances."
+                       name="resetCounter"/>
+            <operation description="Reset the counters of the given ServiceOperationInfo."
+                       name="resetCounter">
+                <parameter description="Service name" name="service"
+                           type="java.lang.String"/>
+            </operation>
+            <operation description="Synchronize the ServiceOperationInfoManager instances."
+                       name="synchronizeStatus"/>
+            <operation description="Synchronize the given Service."
+                       name="synchronizeStatus">
+                <parameter description="Service name" name="service"
+                           type="java.lang.String"/>
+            </operation>
+        </mbean>
+        <mbean description="Gestione servizi GreenVulcano." domain="GreenVulcano" group="management"
+               name="JMXServiceManager_Internal"
+               type="it.greenvulcano.gvesb.core.jmx.JMXServiceManager">
+            <operation description="Returns the initial status for a given Service/Operations."
+                       name="getServiceOperationInfoData">
+                <parameter description="Filter Data" name="serviceInfoData"
+                           type="java.util.Hashtable"/>
+            </operation>
+            <operation description="Returns the initial status for a given Operation."
+                       name="getOperationInfoData">
+                <parameter description="Filter Data" name="operationInfoData"
+                           type="java.util.Hashtable"/>
+            </operation>
+        </mbean>
+        <mbean description="Gestione sistemi/servizi GreenVulcano." domain="GreenVulcano"
+               group="management" name="ServiceOperationInfoManager"
+               type="it.greenvulcano.gvesb.core.jmx.ServiceOperationInfoManager">
+            <operation description="Sends Notifications" name="sendJMXNotification">
+                <parameter description="Notification to send" name="notification"
+                           type="javax.management.Notification"/>
+                <parameter description="ModelMBean ObjectName" name="oname"
+                           type="javax.management.ObjectName"/>
+            </operation>
+        </mbean>
+        <mbean description="Gestione servizi/operazioni GreenVulcano." domain="GreenVulcano"
+               group="management" name="ServiceOperationInfoManager_Internal"
+               type="it.greenvulcano.gvesb.core.jmx.ServiceOperationInfoManager">
+            <attribute description="Get the internal history throughput average for services."
+                       displayName="HistoryThroughputSvc_Internal"
+                       name="historyThroughputSvc_Internal" readable="true" type="float"
+                       writeable="false"/>
+            <attribute description="Get the maximum internal throughput for services."
+                       displayName="MaxThroughputSvc_Internal"
+                       name="maxThroughputSvc_Internal" readable="true" type="float"
+                       writeable="false"/>
+            <attribute description="Get the minimum internal throughput for services."
+                       displayName="MinThroughputSvc_Internal"
+                       name="minThroughputSvc_Internal" readable="true" type="float"
+                       writeable="false"/>
+            <attribute description="Get the throughput for services."
+                       displayName="ThroughputSvc_Internal" name="throughputSvc_Internal"
+                       readable="true" type="float" writeable="false"/>
+            <attribute description="Get the total hints for services."
+                       displayName="TotalHintsSvc_Internal" name="totalHintsSvc_Internal"
+                       readable="true" type="long" writeable="false"/>
+            <attribute description="Get the internal history throughput average for nodes."
+                       displayName="HistoryThroughputNod_Internal"
+                       name="historyThroughputNod_Internal" readable="true" type="float"
+                       writeable="false"/>
+            <attribute description="Get the internal maximum throughput for nodes."
+                       displayName="MaxThroughputNod_Internal"
+                       name="maxThroughputNod_Internal" readable="true" type="float"
+                       writeable="false"/>
+            <attribute description="Get the internal minimum throughput for nodes."
+                       displayName="MinThroughputNod_Internal"
+                       name="minThroughputNod_Internal" readable="true" type="float"
+                       writeable="false"/>
+            <attribute description="Get the internal throughput for nodes."
+                       displayName="ThroughputNod_Internal" name="throughputNod_Internal"
+                       readable="true" type="float" writeable="false"/>
+            <attribute description="Get the internal total hints for nodes."
+                       displayName="TotalHintsNod_Internal" name="totalHintsNod_Internal"
+                       readable="true" type="long" writeable="false"/>
+            <attribute description="Get the location and the internal maximum throughput for nodes."
+                       displayName="MaxThroughputNod_Str_Internal"
+                       name="maxThroughputNod_Str_Internal" readable="true"
+                       type="java.lang.String" writeable="false"/>
+            <attribute description="Get the location and the maximum internal throughput for services."
+                       displayName="MaxThroughputSvc_Str_Internal"
+                       name="maxThroughputSvc_Str_Internal" readable="true"
+                       type="java.lang.String" writeable="false"/>
+            <attribute description="Get the location and the internal minimum throughput for nodes."
+                       displayName="MinThroughputNod_Str_Internal"
+                       name="minThroughputNod_Str_Internal" readable="true"
+                       type="java.lang.String" writeable="false"/>
+            <attribute description="Get the location and the minimum internal throughput for services."
+                       displayName="MinThroughputSvc_Str_Internal"
+                       name="minThroughputSvc_Str_Internal" readable="true"
+                       type="java.lang.String" writeable="false"/>
+            <attribute description="Get the throughputData for services and nodes."
+                       displayName="throughputData_Internal"
+                       name="throughputData_Internal" readable="true"
+                       type="it.greenvulcano.gvesb.util.ThroughputData" writeable="false"/>
+            <operation description="Clear the internal map." name="clearMap"/>
+            <operation description="Reset the counters of the ServiceOperationInfo instances."
+                       name="resetCounter"/>
+            <operation description="Reset the counters of the given ServiceOperationInfo."
+                       name="resetCounter">
+                <parameter description="Service name" name="service"
+                           type="java.lang.String"/>
+            </operation>
+            <operation description="Synchronize the ServiceOperationInfoManager instances."
+                       name="synchronizeStatus"/>
+            <operation description="Synchronize the given Service."
+                       name="synchronizeStatus">
+                <parameter description="Service name" name="service"
+                           type="java.lang.String"/>
+            </operation>
+        </mbean>
+        <mbean description="Visualizzazione stato servizio/operazione GreenVulcano."
+               domain="GreenVulcano" group="management" name="ServiceOperationInfo"
+               type="it.greenvulcano.gvesb.core.jmx.ServiceOperationInfo">
+            <attribute description="The Group name" displayName="Group" name="group"
+                       readable="true" type="java.lang.String" writeable="false"/>
+            <attribute description="The Service name" displayName="Service" name="service"
+                       readable="true" type="java.lang.String" writeable="false"/>
+            <attribute description="The total of service invocations" displayName="Total"
+                       name="total" readable="true" type="long" writeable="false"/>
+            <attribute description="The number of successfully invocation"
+                       displayName="Total success" name="totalSuccess" readable="true"
+                       type="long" writeable="false"/>
+            <attribute description="The number of failed invocation"
+                       displayName="Total failure" name="totalFailure" readable="true"
+                       type="long" writeable="false"/>
+            <attribute description="A snapshot of service invocations status"
+                       displayName="Flows status" name="flowsStatus" readable="true"
+                       type="java.lang.String" writeable="false"/>
+            <attribute description="The service activation status"
+                       displayName="Activation" name="activation" readable="true"
+                       type="boolean" writeable="false"/>
+            <attribute description="The statistics activation status"
+                       displayName="Statistics" name="statisticsEnabled" readable="true"
+                       type="boolean" writeable="false"/>
+            <attribute description="Get the history average throughput for service."
+                       displayName="HistoryThroughput" name="historyThroughput"
+                       readable="true" type="float" writeable="false"/>
+            <attribute description="Get the maximum throughput for service."
+                       displayName="MaxThroughput" name="maxThroughput" readable="true"
+                       type="float" writeable="false"/>
+            <attribute description="Get the minimum throughput for service."
+                       displayName="MinThroughput" name="minThroughput" readable="true"
+                       type="float" writeable="false"/>
+            <attribute description="Get the throughput for service."
+                       displayName="Throughput" name="throughput" readable="true"
+                       type="float" writeable="false"/>
+            <attribute description="Get the total hints for service."
+                       displayName="TotalHints" name="totalHints" readable="true"
+                       type="long" writeable="false"/>
+            <attribute description="Get the history average throughput for services."
+                       displayName="HistoryThroughputSvc" name="historyThroughputSvc"
+                       readable="true" type="float" writeable="false"/>
+            <attribute description="Get the maximum throughput for services."
+                       displayName="MaxThroughputSvc" name="maxThroughputSvc"
+                       readable="true" type="float" writeable="false"/>
+            <attribute description="Get the minimum throughput for services."
+                       displayName="MinThroughputSvc" name="minThroughputSvc"
+                       readable="true" type="float" writeable="false"/>
+            <attribute description="Get the throughput for services."
+                       displayName="Throughput" name="throughputSvc" readable="true"
+                       type="float" writeable="false"/>
+            <attribute description="Get the total hints for services."
+                       displayName="TotalHintsSvc" name="totalHintsSvc" readable="true"
+                       type="long" writeable="false"/>
+            <operation description="Set the ServiceActivation flag to &apos;on&apos;."
+                       name="on"/>
+            <operation description="Set the ServiceActivation flag to &apos;off&apos;."
+                       name="off"/>
+            <operation description="Set the statistics flag to &apos;on&apos;."
+                       name="statisticsOn"/>
+            <operation description="Set the statistics flag to &apos;off&apos;."
+                       name="statisticsOff"/>
+        </mbean>
+        <mbean description="Visualizzazione stato servizio/operazione GreenVulcano."
+               domain="GreenVulcano" group="management" name="ServiceOperationInfo_Internal"
+               type="it.greenvulcano.gvesb.core.jmx.ServiceOperationInfo">
+            <attribute description="The Group name" displayName="Group" name="group"
+                       readable="true" type="java.lang.String" writeable="false"/>
+            <attribute description="The Service name" displayName="Service" name="service"
+                       readable="true" type="java.lang.String" writeable="false"/>
+            <attribute description="The service activation status"
+                       displayName="ServiceActivation" name="serviceActivation"
+                       readable="true" type="boolean" writeable="true"/>
+            <attribute description="The group activation status"
+                       displayName="GroupActivation" name="groupActivation"
+                       readable="true" type="boolean" writeable="true"/>
+            <attribute description="The activation status" displayName="Activation"
+                       name="activation" readable="true" type="boolean" writeable="false"/>
+            <attribute description="The statistics activation status"
+                       displayName="Statistics" name="statisticsEnabled" readable="true"
+                       type="boolean" writeable="true"/>
+            <operation description="Set the ServiceActivation flag to &apos;on&apos;."
+                       name="on"/>
+            <operation description="Set the ServiceActivation flag to &apos;off&apos;."
+                       name="off"/>
+            <operation description="Set the statistics flag to &apos;on&apos;."
+                       name="statisticsOn"/>
+            <operation description="Set the statistics flag to &apos;off&apos;."
+                       name="statisticsOff"/>
+        </mbean>
+        <mbean description="Visualizzazione stato operazione per un dato servizio GreenVulcano."
+               domain="GreenVulcano" group="management" name="OperationInfo"
+               type="it.greenvulcano.gvesb.core.jmx.OperationInfo">
+            <attribute description="The Operation name" displayName="Operation"
+                       name="operation" readable="true" type="java.lang.String"
+                       writeable="false"/>
+            <attribute description="The number of successfully invocation."
+                       displayName="Total success" name="totalSuccess" readable="true"
+                       type="long" writeable="false"/>
+            <attribute description="The number of failed invocation."
+                       displayName="Total failure" name="totalFailure" readable="true"
+                       type="long" writeable="false"/>
+            <attribute description="A snapshot of operation invocations status."
+                       displayName="Flows status" name="flowsStatus" readable="true"
+                       type="java.lang.String[][]" writeable="false"/>
+            <attribute description="The total of service invocations." displayName="Total"
+                       name="total" readable="true" type="long" writeable="false"/>
+            <attribute description="The operation activation status"
+                       displayName="Activation" name="operationActivation" readable="true"
+                       type="boolean" writeable="false"/>
+            <attribute description="Reads the history Throughput for Nodes."
+                       displayName="historyThroughputNod" name="historyThroughputNod"
+                       readable="true" type="float" writeable="false"/>
+            <attribute description="Reads the Max Throughput for Nodes"
+                       displayName="MaxThroughputNod" name="maxThroughputNod"
+                       readable="true" type="float" writeable="false"/>
+            <attribute description="Reads the Min Throughput for Nodes."
+                       displayName="MinThroughputNod" name="minThroughputNod"
+                       readable="true" type="float" writeable="false"/>
+            <attribute description="Reads the Throughput for Nodes."
+                       displayName="ThroughputNod" name="throughputNod" readable="true"
+                       type="float" writeable="false"/>
+            <attribute description="" displayName="TotalHintsNod" name="totalHintsNod"
+                       readable="true" type="long" writeable="false"/>
+            <operation description="Set the Activation flag to &apos;on&apos;." name="on"/>
+            <operation description="Set the Activation flag to &apos;off&apos;."
+                       name="off"/>
+        </mbean>
+        <mbean description="Visualizzazione stato operazione per un dato servizio GreenVulcano."
+               domain="GreenVulcano" group="management" name="OperationInfo_Internal"
+               type="it.greenvulcano.gvesb.core.jmx.OperationInfo">
+            <attribute description="The Operation name" displayName="Operation"
+                       name="operation" readable="true" type="java.lang.String"
+                       writeable="false"/>
+            <attribute description="The operation activation status"
+                       displayName="Activation" name="operationActivation" readable="true"
+                       type="boolean" writeable="true"/>
+            <operation description="Set the Activation flag to &apos;on&apos;." name="on"/>
+            <operation description="Set the Activation flag to &apos;off&apos;."
+                       name="off"/>
+        </mbean>
+    <mbean description="Raccoglie informazioni sul dominio." domain="GreenVulcano" group="management" name="DomainInfo_Internal"
+      type="it.greenvulcano.gvesb.jmx.DomainInfo">
+      <attribute description="The domain name" displayName="DomainName" name="domainName" readable="true" type="java.lang.String"
+        writeable="false" />
+      <attribute description="The domain administration server name" displayName="AdminServerName" name="adminServerName"
+        readable="true" type="java.lang.String" writeable="false" />
+      <attribute description="The domain servers names" displayName="ServersNames" name="serversNames" readable="true"
+        type="java.lang.String[]" writeable="false" />
+    </mbean>
+    <mbean description="Gestione task GreenVulcano." domain="GreenVulcano" group="management" name="TaskManager"
+      type="it.greenvulcano.scheduler.TaskManager">
+      <attribute description="The Task list" displayName="TaskList" name="taskList" readable="true"
+        type="it.greenvulcano.scheduler.TaskData[][]" writeable="false" />
+      <operation description="Start the Timer MBean." name="startTimer" />
+      <operation description="Stop the Timer MBean." name="stopTimer" />
+      <operation description="Start all Tasks." name="startAllTask" />
+      <operation description="Stop all Tasks." name="stopAllTask" />
+      <operation description="Resume all Tasks." name="resumeAllTask" />
+      <operation description="Suspend all Tasks." name="suspendAllTask" />
+      <operation description="Start the given Task." name="startTask">
+        <parameter description="Task name" name="name" type="java.lang.String" />
+      </operation>
+      <operation description="Stop the given Task." name="stopTask">
+        <parameter description="Task name" name="name" type="java.lang.String" />
+      </operation>
+      <operation description="Resume the given Task." name="resumeTask">
+        <parameter description="Task name" name="name" type="java.lang.String" />
+      </operation>
+      <operation description="Suspend the given Task." name="suspendTask">
+        <parameter description="Task name" name="name" type="java.lang.String" />
+      </operation>
+    </mbean>
+    <mbean description="Gestione task GreenVulcano." domain="GreenVulcano" group="management" name="TaskManager_Internal"
+      type="it.greenvulcano.scheduler.TaskManager">
+      <attribute description="The Task list" displayName="TaskList" name="taskList_Internal" readable="true"
+        type="it.greenvulcano.gvesb.scheduler.TaskData[]" writeable="false" />
+      <operation description="Start the Timer MBean." name="startTimer_Internal" />
+      <operation description="Stop the Timer MBean." name="stopTimer_Internal" />
+      <operation description="Start all Tasks." name="startAllTask_Internal" />
+      <operation description="Stop all Tasks." name="stopAllTask_Internal" />
+      <operation description="Resume all Tasks." name="resumeAllTask_Internal" />
+      <operation description="Stop all Tasks." name="suspendAllTask_Internal" />
+      <operation description="Start the given Task." name="startTask_Internal">
+        <parameter description="Task name" name="name" type="java.lang.String" />
+      </operation>
+      <operation description="Stop the given Task." name="stopTask_Internal">
+        <parameter description="Task name" name="name" type="java.lang.String" />
+      </operation>
+      <operation description="Resume the given Task." name="resumeTask_Internal">
+        <parameter description="Task name" name="name" type="java.lang.String" />
+      </operation>
+      <operation description="Suspend the given Task." name="suspendTask_Internal">
+        <parameter description="Task name" name="name" type="java.lang.String" />
+      </operation>
+    </mbean>
+    <mbean description="HTTP Client registered protocols for the GreenVulcano ESB server." domain="GreenVulcano" group="management"
+      name="HttpClientProtocolManager" type="it.greenvulcano.gvesb.http.jmx.HttpClientProtocolProxy">
+      <attribute description="The registered protocol IDs" displayName="ProtocolIDs" name="protocolIDs" readable="true" type="java.util.Vector"
+        writeable="false" />
+    </mbean>
+    <mbean description="Visualizzazione stato GreenVulcanoPool per un dato sottosistema GreenVulcano."
+           domain="GreenVulcano" group="management" name="GreenVulcanoPoolInfo"
+           type="it.greenvulcano.gvesb.core.jmx.GreenVulcanoPoolInfo">
+        <attribute description="The Subsystem name"
+                   displayName="Subsystem" name="subsystem" readable="true"
+                   type="java.lang.String" writeable="false"/>
+        <attribute description="The number of pooled instances."
+                   displayName="Pooled Count" name="pooledCount" readable="true"
+                   type="int" writeable="false"/>
+        <attribute description="The number of in use instances."
+                   displayName="InUse Count" name="inUseCount" readable="true"
+                   type="int" writeable="false"/>
+        <attribute description="The max created instances."
+                   displayName="Max Created" name="maxCreated" readable="true"
+                   type="int" writeable="false"/>
+        <attribute description="The pool initial size."
+                   displayName="Pool initial size" name="initialSize" readable="true"
+                   type="int" writeable="false"/>
+        <attribute description="The pool maximum size."
+                   displayName="Pool maximum size" name="maximumSize" readable="true"
+                   type="int" writeable="false"/>
+        <attribute description="The pool maximum creation."
+                   displayName="Pool maximum creation" name="maximumCreation" readable="true"
+                   type="int" writeable="false"/>
+        <attribute description="The service miss count."
+                   displayName="Service miss" name="serviceMiss" readable="true"
+                   type="int" writeable="false"/>
+        <attribute description="The pool miss count."
+                   displayName="Pool miss" name="poolMiss" readable="true"
+                   type="int" writeable="false"/>
+        <attribute description="The service miss ratio."
+                   displayName="Service miss ratio" name="serviceMissRatio" readable="true"
+                   type="float" writeable="false"/>
+        <attribute description="The pool miss ratio."
+                   displayName="Pool pool ratio" name="poolMissRatio" readable="true"
+                   type="float" writeable="false"/>
+    </mbean>
+    
+    <mbean description="Visualizzazione stato JMS Forward Listener Pool per una data coda"
+           domain="GreenVulcano" group="management" name="JMSForwardListenerPoolInfo"
+           type="it.greenvulcano.gvesb.core.forward.jmx.JMSForwardListenerPoolInfo">
+        <attribute description="The Forward name."
+                   displayName="Forward" name="forwardName" readable="true"
+                   type="java.lang.String" writeable="false"/>
+        <attribute description="The Server name."
+                   displayName="Server" name="serverName" readable="true"
+                   type="java.lang.String" writeable="false"/>
+        <attribute description="The destination JNDI name."
+                   displayName="Destination" name="destinationName" readable="true"
+                   type="java.lang.String" writeable="false"/>
+        <attribute description="The connection factory JNDI name."
+                   displayName="Connection Factory" name="connectionFactory" readable="true"
+                   type="java.lang.String" writeable="false"/>
+        <attribute description="The message selector filter."
+                   displayName="Message selector" name="messageSelector" readable="true"
+                   type="java.lang.String" writeable="false"/>
+
+        <attribute description="Pool Activation state."
+                   displayName="Active" name="active" readable="true"
+                   type="boolean" writeable="false"/>
+        <attribute description="The pool initial size."
+                   displayName="Initial size" name="initialSize" readable="true"
+                   type="int" writeable="false"/>
+        <attribute description="The pool maximum size."
+                   displayName="Maximum size" name="maximumSize" readable="true"
+                   type="int" writeable="false"/>
+        <attribute description="The pool listeners max created count."
+                   displayName="Max created" name="maxCreated" readable="true"
+                   type="int" writeable="false"/>
+        <attribute description="The pooled listeners count."
+                   displayName="Pooled" name="pooledCount" readable="true"
+                   type="int" writeable="false"/>
+        <attribute description="The working listener count."
+                   displayName="Working" name="workingCount" readable="true"
+                   type="int" writeable="false"/>
+
+        <attribute description="The reconnect interval between connection retry."
+                   displayName="Reconnect Interval" name="reconnectInterval" readable="true"
+                   type="long" writeable="false"/>
+        <attribute description="The Listener receive timeout."
+                   displayName="Receive Timeout" name="receiveTimeout" readable="true"
+                   type="long" writeable="false"/>
+        <attribute description="The listener read attempts before rescheduling."
+                   displayName="Read Block Count" name="readBlockCount" readable="true"
+                   type="int" writeable="false"/>
+        <attribute description="The sleep timeout afther processing error."
+                   displayName="Sleep Timeout" name="sleepTimeout" readable="true"
+                   type="long" writeable="false"/>
+
+        <attribute description="The XA transaction activation."
+                   displayName="XA Transacted" name="transacted" readable="true"
+                   type="boolean" writeable="false"/>
+        <attribute description="The XA transaction timeout."
+                   displayName="XA Transaction Timeout" name="transactionTimeout" readable="true"
+                   type="int" writeable="false"/>
+        
+        <attribute description="The forced System."
+                   displayName="System" name="flowSystem" readable="true"
+                   type="java.lang.String" writeable="false"/>
+        <attribute description="The forced Service."
+                   displayName="Service" name="flowService" readable="true"
+                   type="java.lang.String" writeable="false"/>
+        <attribute description="The JMS Data Provider to be used for convert messages."
+                   displayName="JMS Data Provider" name="refDataProvider" readable="true"
+                   type="java.lang.String" writeable="false"/>
+                   
+        <attribute description="Dump received JMS Messages."
+                   displayName="Dump Message" name="dumpMessage" readable="true"
+                   type="boolean" writeable="true"/>
+        <attribute description="Active full debug... Use with caution!"
+                   displayName="Full Debug" name="debug" readable="true"
+                   type="boolean" writeable="true"/>
+                   
+        <operation description="Start the Listener pool." name="start" />
+        <operation description="Stop the Listener pool." name="stop" />
+    </mbean>
+  </mbeans-descriptors>
+</jmx>

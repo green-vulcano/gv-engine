@@ -1,0 +1,1696 @@
+<!ENTITY % gvextra SYSTEM "http://www.greenvulcano.com/gvesb/dtds/Extra.dtd">
+%gvextra;
+
+<!ENTITY % primitives "Request|RequestReply|GetReply|GetRequest|SendReply">
+<!ENTITY % dataProviders "ObjectDataProvider|StringDataProvider|MapDataProvider|ArrayDataProvider|CollectionDataProvider|XMLEventCollectionDataProvider|InputStreamDataProvider|JMSBytesMessageDataProvider|JMSMapMessageDataProvider|JMSObjectMessageDataProvider|JMSStreamMessageDataProvider|JMSTextMessageDataProvider|Axis2MessageContextDataProvider|Axis2SAAJSOAPMessageDataProvider|HttpMethodDataProvider|GVBufferChangeDataProvider">
+
+<!--
+    GreenVulcanoESB adapters configuration file.
+-->
+<!ELEMENT GVAdapters (GVSQLErrorMapping?,GVWebServices?,GVJdbc?,GVJDBCConnectionBuilder?,GVDataProviderManager?,GVDataHandlerConfiguration,GVExcelWorkbookConfiguration,GVExcelCreatorConfiguration,GVBIRTReportConfiguration,RSHServiceClientConfiguration %extra-adapters;)>
+<!--
+    Current GreenVulcano ESB version.
+-->
+<!ATTLIST GVAdapters version    CDATA   #FIXED  "1.0">
+
+
+<!--
+    Data Providers configuration.
+-->
+<!ELEMENT GVDataProviderManager (Description?, DataProviders)>
+<!--
+    Element type 'module'.
+-->
+<!ATTLIST GVDataProviderManager type    CDATA   #FIXED  "module">
+<!--
+    Module name always set to 'GVDP'.
+-->
+<!ATTLIST GVDataProviderManager name    CDATA   #FIXED  "GVDP">
+<!--
+    List of configured Data Providers.
+
+    #SortChild
+    #Template:
+        <xsl:template match="DataProviders">
+            <xsl:if test="Description">
+                <small><xsl:value-of select="Description"/></small><p/>
+            </xsl:if>
+            <table cellpadding="0" cellspacing="0">
+                <tr valign="top">
+                    <td>Configured DataProviders:</td>
+                    <td width="20"></td>
+                    <td>
+                        <table cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td><b><i>Name</i></b></td>
+                                <td width="20"></td>
+                                <td><b><i>Type</i></b></td>
+                                <td width="20"></td>
+                                <td><b><i>Class</i></b></td>
+                            </tr>
+                            <xsl:for-each select="./*[@type='dataProvider'][@name!='']">
+                                <tr>
+                                    <td><b><xsl:value-of select="@name"/></b></td>
+                                    <td width="20"></td>
+                                    <td><b><xsl:value-of select="name(.)"/></b></td>
+                                    <td width="20"></td>
+                                    <td><b><xsl:value-of select="@class"/></b></td>
+                                </tr>
+                            </xsl:for-each>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </xsl:template>
+-->
+<!ELEMENT DataProviders (%dataProviders;)*>
+
+<!-- 
+    Allows to define the key and direction of the Expression defined above.
+-->
+<!ELEMENT Field (Expression)>
+<!--
+    #Unique: ../*[@type='dataProvider']/@name
+    #NotNull
+-->
+<!ATTLIST Field key CDATA #REQUIRED>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST Field type CDATA #FIXED "field">
+<!--
+  Field direction.
+  INOUT: The expression is evaluated on the object set
+             (usually the current GVBuffer, unless otherwise specified by the attribute 'source-selector')
+             the value returned by the expression, is added to the context with the prefix
+             'key_' + @ key, and set the data provider to be returned in the output.
+  IN   : The expression is evaluated on the object set
+          (usually the current GVBuffer, unless otherwise specified by the attribute 'source-selector')
+          the value returned by the expression is added to the context with the prefix
+          'key_' + @ key.
+  OUT  : The expression is evaluated directly on the object that is returned by the DataProvider.
+
+  In all cases, two variables are added to the context:
+  # Input: object set, usually the current GVBuffer, which will not be overwritten from attribute 'source-selector';
+  # Output: the object that is returned by the DataProvider.
+-->
+<!ATTLIST Field direction (INOUT|IN|OUT) #IMPLIED>
+<!--
+    #NotNull
+-->
+<!ELEMENT Expression (#PCDATA)>
+<!--
+    #NotNull
+-->
+<!ATTLIST Expression type (ognl|js|xpath|regex) #REQUIRED>
+<!--
+    This elements transforms a GVBuffer into an object array.
+    The internal Field element must use the key attribute to identify
+    the array position of the Field Expression result.
+
+    #Label: @name
+-->
+<!ELEMENT ArrayDataProvider (Field+)>
+<!--
+    #Unique: ../*[@type='dataProvider']/@name
+    #NotNull
+-->
+<!ATTLIST ArrayDataProvider name CDATA #REQUIRED>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST ArrayDataProvider type CDATA #FIXED "dataProvider">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST ArrayDataProvider class CDATA #FIXED "it.greenvulcano.gvesb.gvdp.impl.ArrayDataProvider">
+<!--
+    This elements transforms a GVBuffer into a Map<String,Object>.
+    The internal Field element key attribute is used as key in the output Map, 
+    the expression result defines the associated value.
+	
+    #Label: @name
+-->
+<!ELEMENT MapDataProvider (Field+)>
+<!--
+    MapDataProvider name.
+	
+    #Unique: ../*[@type='dataProvider']/@name
+    #NotNull
+-->
+<!ATTLIST MapDataProvider name CDATA #REQUIRED>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST MapDataProvider type CDATA #FIXED "dataProvider">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST MapDataProvider class CDATA #FIXED "it.greenvulcano.gvesb.gvdp.impl.MapDataProvider">
+<!--
+    Wraps and creates an object that you can use as a binding source.
+    See ObjectDataProvider Class (System.Windows.Data).
+	
+    #Label: @name
+-->
+<!ELEMENT ObjectDataProvider (Field+)>
+<!--
+    ObjectDataProvider name.
+	
+    #Unique: ../*[@type='dataProvider']/@name
+    #NotNull
+-->
+<!ATTLIST ObjectDataProvider name CDATA #REQUIRED>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST ObjectDataProvider type CDATA #FIXED "dataProvider">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST ObjectDataProvider class CDATA #FIXED "it.greenvulcano.gvesb.gvdp.impl.ObjectDataProvider">
+<!--
+    This elements transforms a GVBuffer into a String.
+    The String is constructed concatenating the internal Field Expression values 
+    (only for the Field with type equals OUT).
+	
+    #Label: @name
+-->
+<!ELEMENT StringDataProvider (Field+)>
+<!--
+    #Unique: ../*[@type='dataProvider']/@name
+    #NotNull
+-->
+<!ATTLIST StringDataProvider name CDATA #REQUIRED>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST StringDataProvider type CDATA #FIXED "dataProvider">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST StringDataProvider class CDATA #FIXED "it.greenvulcano.gvesb.gvdp.impl.StringDataProvider">
+<!--
+    This elements transforms a GVBuffer into a Collection.
+    The Collection is constructed using the internal Field Expression
+    (tipically is used only one Field element).
+	
+    #Label: @name
+-->
+<!ELEMENT CollectionDataProvider (Field+)>
+<!--
+    CollectionDataProvider name.
+
+    #Unique: ../*[@type='dataProvider']/@name
+    #NotNull
+-->
+<!ATTLIST CollectionDataProvider name CDATA #REQUIRED>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST CollectionDataProvider type CDATA #FIXED "dataProvider">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST CollectionDataProvider class CDATA #FIXED "it.greenvulcano.gvesb.gvdp.impl.CollectionDataProvider">
+<!--
+    OGNL expression to provide the root object to be passed to the expression stated in the 'Field' items.
+
+    #NotNull
+-->
+<!ATTLIST CollectionDataProvider source-selector CDATA #IMPLIED>
+<!--
+    This DataProvider, reads an XML with a pull/push parser and executes fields bound to xml events.
+    At the moment, only pull parser is handled, using the AXIOM implementation.
+    Called fields are the following:
+        - START_DOCUMENT;
+        - END_DOCUMENT;
+        - NAMESPACE;
+        - PROCESSING_INSTRUCTION;
+        - ENTITY_REFERENCE;
+        - DTD;
+        - ATTRIBUTE;
+        - START_ELEMENT;
+        - END_ELEMENT;
+        - CHARACTERS.
+
+    In addition to 'input' and 'output' variables, following are bound to the context of expressions:
+        - environment: an helper map to pass objects between field;
+        - parser: the pull/push parser.
+
+    #Label: @name
+-->
+<!ELEMENT XMLEventCollectionDataProvider (Field+)>
+<!--
+    XMLEventCollectionDataProvider name.
+
+    #Unique: ../*[@type='dataProvider']/@name
+    #NotNull
+-->
+<!ATTLIST XMLEventCollectionDataProvider name CDATA #REQUIRED>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST XMLEventCollectionDataProvider type CDATA #FIXED "dataProvider">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST XMLEventCollectionDataProvider class CDATA #FIXED "it.greenvulcano.gvesb.gvdp.impl.XMLEventCollectionDataProvider">
+<!--
+    OGNL expression to provide the root object to be passed to the expression stated in the 'Field' items.
+
+    #NotNull
+-->
+<!ATTLIST XMLEventCollectionDataProvider source-selector CDATA #IMPLIED>
+<!--
+  This data provider must return an object of class java.io.InputStream or subclass.
+  The field must contain the expression to obtain an InputStream or a byte [].
+
+    #Label: @name
+-->
+<!ELEMENT InputStreamDataProvider (Field)>
+<!--
+    #Unique: ../*[@type='dataProvider']/@name
+    #NotNull
+-->
+<!ATTLIST InputStreamDataProvider name CDATA #REQUIRED>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST InputStreamDataProvider type CDATA #FIXED "dataProvider">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST InputStreamDataProvider class CDATA #FIXED "it.greenvulcano.gvesb.gvdp.impl.InputStreamDataProvider">
+<!--
+    This elements transforms a GVBuffer into a JMSBytesMessage.
+    The JMSBytesMessage is the context object in the OGNL expression
+    and the input GVBuffer can be referenced by #input identifier.
+
+    #Label: @name
+-->
+<!ELEMENT JMSBytesMessageDataProvider (Field+)>
+<!--
+    #Unique: ../*[@type='dataProvider']/@name
+    #NotNull
+-->
+<!ATTLIST JMSBytesMessageDataProvider name CDATA #REQUIRED>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST JMSBytesMessageDataProvider type CDATA #FIXED "dataProvider">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST JMSBytesMessageDataProvider class CDATA #FIXED "it.greenvulcano.gvesb.gvdp.impl.JMSBytesMessageDataProvider">
+<!--
+    This elements transforms a GVBuffer into a JMSMapMessage.
+    The JMSMapMessage is the context object in the OGNL expression
+    and the input GVBuffer can be referenced by #input identifier.
+
+    #Label: @name
+-->
+<!ELEMENT JMSMapMessageDataProvider (Field+)>
+<!--
+    #Unique: ../*[@type='dataProvider']/@name
+    #NotNull
+-->
+<!ATTLIST JMSMapMessageDataProvider name CDATA #REQUIRED>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST JMSMapMessageDataProvider type CDATA #FIXED "dataProvider">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST JMSMapMessageDataProvider class CDATA #FIXED "it.greenvulcano.gvesb.gvdp.impl.JMSMapMessageDataProvider">
+<!--
+    This elements transforms a GVBuffer into a JMSObjectMessage.
+    The JMSObjectMessage is the context object in the OGNL expression
+    and the input GVBuffer can be referenced by #input identifier.
+
+    #Label: @name
+-->
+<!ELEMENT JMSObjectMessageDataProvider (Field+)>
+<!--
+    #Unique: ../*[@type='dataProvider']/@name
+    #NotNull
+-->
+<!ATTLIST JMSObjectMessageDataProvider name CDATA #REQUIRED>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST JMSObjectMessageDataProvider type CDATA #FIXED "dataProvider">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST JMSObjectMessageDataProvider class CDATA #FIXED "it.greenvulcano.gvesb.gvdp.impl.JMSObjectMessageDataProvider">
+<!--
+    This elements transforms a GVBuffer into a JMSStreamMessage.
+    The JMSStreamMessage is the context object in the OGNL expression
+    and the input GVBuffer can be referenced by #input identifier.
+
+    #Label: @name
+-->
+<!ELEMENT JMSStreamMessageDataProvider (Field+)>
+<!--
+    #Unique: ../*[@type='dataProvider']/@name
+    #NotNull
+-->
+<!ATTLIST JMSStreamMessageDataProvider name CDATA #REQUIRED>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST JMSStreamMessageDataProvider type CDATA #FIXED "dataProvider">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST JMSStreamMessageDataProvider class CDATA #FIXED "it.greenvulcano.gvesb.gvdp.impl.JMSStreamMessageDataProvider">
+<!--
+    This elements transforms a GVBuffer into a JMSTextMessage.
+    The JMSTextMessage is the context object in the OGNL expression
+    and the input GVBuffer can be referenced by #input identifier.
+	
+    #Label: @name
+-->
+<!ELEMENT JMSTextMessageDataProvider (Field+)>
+<!--
+    #Unique: ../*[@type='dataProvider']/@name
+    #NotNull
+-->
+<!ATTLIST JMSTextMessageDataProvider name CDATA #REQUIRED>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST JMSTextMessageDataProvider type CDATA #FIXED "dataProvider">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST JMSTextMessageDataProvider class CDATA #FIXED "it.greenvulcano.gvesb.gvdp.impl.JMSTextMessageDataProvider">
+<!--
+    This element allows you to set objects to manipulate input / output for webservices.
+
+    #Label: @name
+-->
+<!ELEMENT Axis2MessageContextDataProvider (Field+)>
+<!--
+    Axis2MessageContextDataProvider name.
+	
+    #Unique: ../*[@type='dataProvider']/@name
+    #NotNull
+-->
+<!ATTLIST Axis2MessageContextDataProvider name CDATA #REQUIRED>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST Axis2MessageContextDataProvider type CDATA #FIXED "dataProvider">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST Axis2MessageContextDataProvider class CDATA #FIXED "it.greenvulcano.gvesb.gvdp.impl.Axis2MessageContextDataProvider">
+
+<!--
+    Uses SAAJ to create the SOAPMessage to send.
+    The basic object on which they are applying the expressions will be
+    an object of type javax.xml.soap.SOAPMessage.
+
+    #Label: @name
+-->
+<!ELEMENT Axis2SAAJSOAPMessageDataProvider (Field+)>
+<!--
+    Axis2SAAJSOAPMessageDataProvider name.
+ 
+    #Unique: ../*[@type='dataProvider']/@name
+    #NotNull
+-->
+<!ATTLIST Axis2SAAJSOAPMessageDataProvider name CDATA #REQUIRED>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST Axis2SAAJSOAPMessageDataProvider type CDATA #FIXED "dataProvider">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST Axis2SAAJSOAPMessageDataProvider class CDATA #FIXED "it.greenvulcano.gvesb.gvdp.impl.Axis2SAAJSOAPMessageDataProvider">
+<!--
+    This DataProvider works on a GVBuffer context object created by its caller.
+    The GVBuffer instance will be enriched processing the #input generic object.
+
+    #Label: @name
+-->
+<!ELEMENT GVBufferChangeDataProvider (Field+)>
+<!--
+    GVBufferChangeDataProvider name.
+
+    #Unique: ../*[@type='dataProvider']/@name
+    #NotNull
+-->
+<!ATTLIST GVBufferChangeDataProvider name CDATA #REQUIRED>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST GVBufferChangeDataProvider type CDATA #FIXED "dataProvider">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST GVBufferChangeDataProvider class CDATA #FIXED "it.greenvulcano.gvesb.gvdp.impl.GVBufferChangeDataProvider">
+<!--
+    This DataProvider works on 'org.apache.commons.httpclient.HttpMethod' implementation,
+    created by the caller of this DataProvider.
+    Referes to 'org.apache.commons.httpclient.HttpMethod' HttpClient documentation to set headers,
+    or to send MultiPart messages.
+
+    #Label: @name
+-->
+<!ELEMENT HttpMethodDataProvider (Field+)>
+<!--
+    HttpMethodDataProvider name.
+
+    #Unique: ../*[@type='dataProvider']/@name
+    #NotNull
+-->
+<!ATTLIST HttpMethodDataProvider name CDATA #REQUIRED>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST HttpMethodDataProvider type CDATA #FIXED "dataProvider">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST HttpMethodDataProvider class CDATA #FIXED "it.greenvulcano.gvesb.gvhttp.impl.HttpMethodDataProvider">
+
+<!--
+    This element defines the parameters necessary to build a JDBC connection.
+
+    #Table: | Drivers | Drivers | Class | Driver/@class | Enabled | Driver/@enabled | Init Type | Driver/@initType
+    #Table: | Connections | Connections | URL | Connection/@connectionString | Enabled |Connection/@enabled | Id | Connection/@id
+-->
+<!ELEMENT GVJdbc (Description?, Drivers, Connections)>
+<!--
+    Element type 'module'.
+-->
+<!ATTLIST GVJdbc type    CDATA   #FIXED  "module">
+<!--
+    Module id always set to 'JDBC'.
+-->
+<!ATTLIST GVJdbc name    CDATA   #FIXED  "JDBC">
+<!--
+    This element defines the drivers relevant to JDBC calls.
+
+    #SortChild
+-->
+<!ELEMENT Drivers (Description?, Driver*)>
+<!--
+    This element defines the necessary parameters to define the Driver
+     to be used for JDBC connections.
+
+    #Template:
+        <xsl:template match="Driver">
+            <xsl:if test="Description">
+                <small><xsl:value-of select="Description"/></small><p/>
+            </xsl:if>
+            <table>
+                <tr valign="top">
+                    <td><b>Enabled:</b></td>
+                    <td><xsl:value-of select="@enabled"/></td>
+                </tr>
+                <tr valign="top">
+                    <td><b>Class:</b></td>
+                    <td><xsl:value-of select="@class"/></td>
+                </tr>
+                <tr valign="top">
+                    <td><b>Init Type:</b></td>
+                    <td><xsl:value-of select="@initType"/></td>
+                </tr>
+            </table>
+        </xsl:template>
+-->
+<!ELEMENT Driver (Description?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST Driver type CDATA #FIXED "driver">
+<!--
+    Defines whether this driver is active or not.
+-->
+<!ATTLIST Driver enabled (Yes | No) "No">
+<!--
+    Defines the class driver.
+    Ex : oracle.jdbc.driver.OracleDriver
+
+    #NotNull
+-->
+<!ATTLIST Driver class CDATA #REQUIRED>
+<!--
+    Some drivers basing on the specifications do not need to be instantiated to be initialized, in this case then
+    the initType would be: 'static'. (The Oracle driver is static.)
+    Ex : oracle.jdbc.driver.OracleDriver
+
+    #NotNull
+-->
+<!ATTLIST Driver initType (static | instance) "static">
+<!--
+    This element defines the necessary parameters to define the
+    Driver to be used for JDBC connection.
+
+    #SortChild
+-->
+<!ELEMENT Connections (Description?, Connection*)>
+<!--
+    This element defines the necessary parameters to define the
+    Driver to be used for JDBC connection.
+
+    #Template:
+        <xsl:template match="Connection">
+            <xsl:if test="Description">
+                <small><xsl:value-of select="Description"/></small><p/>
+            </xsl:if>
+            <table>
+                <tr valign="top">
+                    <td><b>ID:</b></td>
+                    <td><xsl:value-of select="@id"/></td>
+                </tr>
+                <tr valign="top">
+                    <td><b>Enabled:</b></td>
+                    <td><xsl:value-of select="@enabled"/></td>
+                </tr>
+                <tr valign="top">
+                    <td><b>Connection String:</b></td>
+                    <td><xsl:value-of select="@connectionString"/></td>
+                </tr>
+                <tr valign="top">
+                    <td><b>User:</b></td>
+                    <td><xsl:value-of select="@user"/></td>
+                </tr>
+                <tr valign="top">
+                    <td><b>Password:</b></td>
+                    <td><xsl:value-of select="@password"/></td>
+                </tr>
+                <tr valign="top">
+                    <td><b>Auto Commit:</b></td>
+                    <td><xsl:value-of select="@autoCommit"/></td>
+                </tr>
+                <tr valign="top">
+                    <td><b>Transaction Isolation:</b></td>
+                    <td><xsl:value-of select="@txIsolation"/></td>
+                </tr>
+                <tr valign="top">
+                    <td><b>Connection Min:</b></td>
+                    <td><xsl:value-of select="@connectionMin"/></td>
+                </tr>
+                <tr valign="top">
+                    <td><b>Connection Max:</b></td>
+                    <td><xsl:value-of select="@connectionMax"/></td>
+                </tr>
+            </table>
+        </xsl:template>
+-->
+<!ELEMENT Connection (Description?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST Connection    type CDATA #FIXED "connection">
+<!--
+    Defines the connection identifier. Used to find the connection in the pool.
+
+    #NotNull
+    #Unique: ../Connection/@id
+-->
+<!ATTLIST Connection	id CDATA #REQUIRED>
+<!--
+    If true the connection is enabled.
+-->
+<!ATTLIST Connection	enabled (Yes | No) "No">
+<!--
+    Defines the connection string to the database.
+    Refer to your database documentation for syntax.
+
+    #NotNull
+-->
+<!ATTLIST Connection    connectionString CDATA #REQUIRED>
+<!--
+    Defines user access to the database.
+    Giving a value to the user is not required if you enter it in the connection String.
+
+    #Warn: {{../Connection[not(@password) and @user]}} If a Username is set a Password MUST be set too
+-->
+<!ATTLIST Connection    user CDATA #IMPLIED>
+<!--
+    Defines the password to the database.
+    The value of the password is not required if you enter it in the connection string.
+
+    #Warn: {{../Connection[not(@user) and @password]}} If a Password is set a Username MUST be set too
+    #Encrypted
+-->
+<!ATTLIST Connection    password CDATA #IMPLIED>
+<!--
+    Defines the minimum number of connections to be built at initialization.
+
+    #Pattern: ! [1-9][0-9]* ! Numeric characters only
+    #NotNull
+-->
+<!ATTLIST Connection    connectionMin CDATA #REQUIRED>
+<!--
+    Defines the maximum number of connections that can be built.
+
+    #Pattern: ! [1-9][0-9]* ! Numeric characters only
+    #NotNull
+-->
+<!ATTLIST Connection    connectionMax CDATA #REQUIRED>
+<!--
+    Defines how to commit the SQL operations.
+    If AutoCommit is 'true' all SQL statements are
+    carried out and commit such uniqe transactions.
+    If AutoCommit is 'false', but the statement is
+    grouped into transactions that end with the call
+    to a method to commit or rollback.
+
+    By default, new connections are in autocommit mode.
+
+-->
+<!ATTLIST Connection    autoCommit (false | true) "true">
+<!--
+    Defines the level of transaction isolation of the given connection.
+
+    Just remember the following concepts:
+
+    - 'dirty reads' : a dirty read occurs when a transaction reads data from
+                           a row that has been modified by another transaction,
+                           but not yet committed.
+    - 'non-repeatable' : non-repeatable reads may occur in a lock-based
+                                   concurrency control method when read locks are
+                                   not acquired when performing a SELECT.
+    - 'phantom' : a phantom read occurs when, in the course of a transaction,
+                         two identical queries are executed, and the collection of rows
+                         returned by the second query is different from the first.
+
+    Therefore we list the meanings of the isolation levels of a
+    transaction :
+
+    - TRANSACTION_NONE : Uses DataBase defaults
+
+    - TRANSACTION_READ_UNCOMMITTED : Dirty reads, non-repeatable and phantom reads are possible.
+
+    - TRANSACTION_READ_COMMITTED : Dirty reads not possible, non-repeatable and phantom are possible.
+
+    - TRANSACTION_REPEATABLE_READ : Dirty reads and non-repeatable are not possible, phantom is possible.
+    - TRANSACTION_SERIALIZABLE : Dirty reads, non-repeatable and phantom are not possible.
+
+-->
+<!ATTLIST Connection    txIsolation (TRANSACTION_NONE | TRANSACTION_READ_UNCOMMITTED | TRANSACTION_READ_COMMITTED | TRANSACTION_REPEATABLE_READ | TRANSACTION_SERIALIZABLE) "TRANSACTION_NONE">
+
+<!--
+    SQL Error Mapping
+
+    #SortChild
+-->
+<!ELEMENT GVSQLErrorMapping (Description?, DefaultMapping*, CustomMapping*)>
+<!--
+    Element type 'module'.
+-->
+<!ATTLIST GVSQLErrorMapping type    CDATA   #FIXED  "module">
+<!--
+    Module id always set to 'SQL_ERROR_MAPPING'.
+-->
+<!ATTLIST GVSQLErrorMapping name    CDATA   #FIXED  "SQL_ERROR_MAPPING">
+
+<!ELEMENT DefaultMapping (CatalogMapping)>
+
+<!--
+    #NotNull
+    #Pattern: ! [1-9][0-9]* ! Only numbers
+-->
+<!ATTLIST DefaultMapping code CDATA #REQUIRED>
+
+<!ELEMENT CustomMapping (CatalogMapping)>
+
+<!--
+    #NotNull
+    #Pattern: ! [1-9][0-9]* ! Only numbers
+-->
+<!ATTLIST CustomMapping code CDATA #REQUIRED>
+
+<!--
+    #NotNull
+-->
+<!ATTLIST CustomMapping caller CDATA #REQUIRED>
+
+<!--
+    #SortChild
+-->
+<!ELEMENT CatalogMapping (SQLErrorCode*)>
+
+<!--
+    #NotNull
+    #Pattern: ! [1-9][0-9]* ! Only numbers
+-->
+<!ATTLIST CatalogMapping code CDATA #REQUIRED>
+
+<!--
+    #NotNull
+-->
+<!ATTLIST CatalogMapping module CDATA #IMPLIED>
+
+<!ELEMENT SQLErrorCode EMPTY>
+
+<!--
+    #NotNull
+    #Pattern: ! [1-9][0-9]* ! Only numbers
+-->
+<!ATTLIST SQLErrorCode code CDATA #REQUIRED>
+
+
+<!--
+    This element defines the helpers necessary to create JDBC connection.
+    Used by DataHandler, Excel Report, sql*{{...}} Metadata.
+
+    #SortChild
+-->
+<!ELEMENT GVJDBCConnectionBuilder (Description?, (DriverConnectionBuilder|DriverPoolConnectionBuilder|DataSourceConnectionBuilder)*)>
+<!--
+    Element type 'module'.
+-->
+<!ATTLIST GVJDBCConnectionBuilder type    CDATA   #FIXED  "module">
+<!--
+    Module id always set to 'JDBC'.
+-->
+<!ATTLIST GVJDBCConnectionBuilder name    CDATA   #FIXED  "GVJDBC">
+
+
+<!--
+-->
+<!ELEMENT GVWebServices (Description?, GreenVulcanoWebServices,BusinessWebServices ,UDDI?,AxisExtra?)>
+<!ATTLIST GVWebServices	version CDATA #FIXED "1.0">
+<!--
+    Element type 'module'.
+-->
+<!ATTLIST GVWebServices type    CDATA   #FIXED  "module">
+<!--
+    Module id always set to 'WEB_SERVICES'.
+-->
+<!ATTLIST GVWebServices name    CDATA   #FIXED  "WEB_SERVICES">
+<!--
+    Definition of business web service.
+    The ESB's service input GVBuffer contains the following properties:
+    - WS_SERVICE      : name of the invoked webservice
+    - WS_OPERATION    : name of the invoked webservice's operation
+    - WS_REMOTE_ADDR  : remote address of the invoking client
+    - WS_CONTENT_TYPE : request content type
+
+    #Table: ! Operations ! Operation ! Operation ! @operation ! SOAP Action ! @soap-action ! Description ! Description
+    #SelectOnInsert
+   	#SortChild
+    #Label: @web-service
+-->
+<!ELEMENT WebService (Description?, SOARegistry?, WSOperation+, Transport?, EngageModule*)>
+<!--
+    #NotNull
+    #Unique: parent::*/WebService/@web-service
+-->
+<!ATTLIST WebService    web-service CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST WebService    force-https (true | false) #IMPLIED>
+<!--
+    The soap:address will be exactly the here specified url.
+    As a difference with the default-soap-address, it won't be made any composition
+    with the service name.
+
+    If default-soap-address is not specified, this is mandatory.
+
+    #NotNull
+-->
+<!ATTLIST WebService    soap-address CDATA #IMPLIED>
+<!--
+    The path of the XSD that defines the types of input that will be declared in the generated WSDL.
+    May contain an absolute path or a relative path, in which case, is relative to
+    ${{gv.app.home}}/xmlconfig/xsds.
+
+    May contain placeholders such as ${{gv.app.home}}.
+    May also include the types of output, in this case does not specify the parameter 'output-xsd'.
+
+    #NotNull
+-->
+<!ATTLIST WebService    input-xsd CDATA #IMPLIED>
+<!--
+    The path of the XSD that defines the types of output that will be declared in the generated WSDL.
+    May contain an absolute path or a relative path, in which case, is relative to
+    ${{gv.app.home}}/xsds.
+
+    If not specified only the parameter 'input-xsd' will be used.
+
+    #NotNull
+-->
+<!ATTLIST WebService    output-xsd CDATA #IMPLIED>
+<!--
+    Defines if the target namespace of the types in the WSDL shall be that specified in the XSD input.
+    If "false", the target namespace is: http://www.greenvulcano.it/greenvulcano
+-->
+<!ATTLIST WebService    targetNS-from-xsd (true | false) #IMPLIED>
+
+<!ATTLIST WebService    useOriginalwsdl (true | false) #IMPLIED>
+<!--
+    Defines the web service operation.
+    
+    #SelectOnInsert
+    #Label: @operation-qname
+-->
+<!ELEMENT WSOperation (Description?, Binding, PolicyData?)>
+<!--
+    Qualified Name (QName) of the operation exposed by the web service.
+    If the namespace is present, it must be specified in braces:
+
+    {namespace}localname
+
+    #NotNull
+    #Unique: parent::WebService/WSOperation/@operation-qname
+-->
+<!ATTLIST WSOperation	operation-qname CDATA #REQUIRED>
+<!--
+    MIME Header SOAPAction of the HTTP request.
+    If not specified is set to SERVICE/OPERATION
+
+    #NotNull
+    #Unique: parent::WebService/WSOperation/@soap-action
+-->
+<!ATTLIST WSOperation	soap-action CDATA #IMPLIED>
+<!--
+    DataProvider be used to send the reply to the caller.
+    The DataProvider will return a MessageContext to be sent as a reply.
+    If not used, the webservice adapter expects a org.apache.axiom.soap.SOAPEnvelope
+    as a field object of GVBuffer.
+
+    #NotNull
+    #References: /GVAdapters/GVDataProviderManager/DataProviders/*[@type='dataProvider']/@name
+-->
+<!ATTLIST WSOperation	ref-dp CDATA #IMPLIED>
+
+<!ENTITY % transport_types "soap|soap12|rest|jms">
+<!--
+    Transport configured for webservices.
+-->
+<!ELEMENT Transport (Description?,(%transport_types;)+)>
+
+<!ELEMENT soap (Description?)>
+<!ELEMENT soap12 (Description?)>
+<!ELEMENT rest (Description?)>
+
+<!ELEMENT jms (Description?)>
+<!ATTLIST rest verb  (GET|POST|PUT|DELETE) #IMPLIED>
+<!ATTLIST jms connectionFactory  CDATA #IMPLIED>
+<!ATTLIST jms initialContextFactory  CDATA #IMPLIED>
+<!ATTLIST jms jndiURL  CDATA #IMPLIED>
+<!ATTLIST jms destination  CDATA #IMPLIED>
+<!ATTLIST jms replyDestination  CDATA #IMPLIED>
+<!ATTLIST jms destinationType  (queue|topic) #IMPLIED>
+<!ATTLIST jms contentType CDATA #IMPLIED>
+<!ATTLIST jms bytesMessage CDATA #IMPLIED>
+<!ATTLIST jms textMessage CDATA #IMPLIED>
+
+<!--
+    Defines the parameters to enable GVCore service invocation.
+    The optional ChangeGVBuffer can be used to preprocess the request data.
+
+    #SelectOnInsert
+    #CompositeLabel: | | @gv-system | | @gv-service | | @gv-operation
+-->
+<!ELEMENT Binding (Description?, ChangeGVBuffer?)>
+<!--
+    ID service with which to perform the invocation of GreenVulcano ESB.
+
+    #References: gvesb:document('GVCore')/GVCore/GVServices/Services/Service/@id-service
+-->
+<!ATTLIST Binding	gv-service CDATA #REQUIRED>
+<!--
+    ID system with which to perform the invocation of GreenVulcano ESB.
+
+    #References: gvesb:document('GVCore')/GVCore/GVSystems/Systems/System/@id-system
+-->
+<!ATTLIST Binding    gv-system CDATA #IMPLIED>
+<!--
+     GreenVulcano ESB operation to invoke.
+
+    #References: gvesb:document('GVCore')/GVCore/GVServices/Services/Service[@id-service=current()/@gv-service]/*/@name
+    #References: gvesb:document('GVCore')/GVCore/GVServices/Services/Service[@id-service=current()/@gv-service]/*/@forward-name
+-->
+<!ATTLIST Binding	gv-operation CDATA #REQUIRED>
+<!--
+    Defines how to set the response data in the object field of output GVBuffer:
+    - context         : the MessageContext
+    - envelope        : the envelope as XML serialized as string
+    - body            : the body as XML serialized as string
+    - body-element    : the first child of body as XML serialized as string
+    - header          : the header as XML serialized as string
+	- envelope-om     : the envelope as OMMessage
+    - body-om         : the body as OMMessage
+    - body-element-om : the first child of body as OMMessage
+    - header-om       : the header as OMMessage
+
+
+    Default: context
+-->
+<!ATTLIST Binding    inputType  (context|envelope|body|body-element|header|envelope-om|body-om|body-element-om|header-om) #IMPLIED>
+<!--
+      Indicates whether the invocation to be performed in GreenVulcano is transactional or not.
+      Default: false
+
+      A transaction is rolled back if:
+      - the service ends with exception
+      - the output SOAP response is a Fault
+      - the output GVBuffer contains the property WS_FORCE_TX_ROLLBACK=Y
+-->
+<!ATTLIST Binding    transacted  (true|false) #IMPLIED>
+<!--
+    Transaction timeout in seconds.
+    Default: 30s
+
+    #Pattern: ! [1-9][0-9]* ! Enter the number of seconds
+    #Warn: {{self::Binding[not(@transacted) or (@transacted='false')]}} In non-transactional mode must NOT be specified the timeout
+-->
+<!ATTLIST Binding    tx-timeout  CDATA   #IMPLIED>
+
+<!--
+    GreenVulcano Web Services definition
+
+    #SelectOnInsert
+    #SortChild
+    #Template:
+        <xsl:template match="GreenVulcanoWebServices">
+            <xsl:value-of select="Description"/>
+        </xsl:template>
+-->
+<!ELEMENT GreenVulcanoWebServices (Description?, GreenVulcanoWebService*)>
+<!--
+    #SelectOnInsert
+    #CompositeLabel: | | @gv-service | | @gv-operation
+-->
+<!ELEMENT GreenVulcanoWebService (Description?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST GreenVulcanoWebService    type CDATA #FIXED "greenvulcanowebservice">
+<!--
+    ID service with which to perform the invocation of GreenVulcano ESB.
+
+    #References: gvesb:document('GVCore')/GVCore/GVServices/Services/Service/@id-service
+-->
+<!ATTLIST GreenVulcanoWebService    gv-service CDATA #REQUIRED>
+<!--
+     GreenVulcano ESB operation to invoke.
+
+    #References: gvesb:document('GVCore')/GVCore/GVServices/Services/Service[@id-service=current()/@gv-service]/*/@name
+    #References: gvesb:document('GVCore')/GVCore/GVServices/Services/Service[@id-service=current()/@gv-service]/*/@forward-name
+-->
+<!ATTLIST GreenVulcanoWebService    gv-operation CDATA #REQUIRED>
+<!--
+    Indicates whether the invocation to be performed in GreenVulcano is transactional or not.
+    Default: false
+
+    A transaction is rolled back if:
+    - the service ends with exception
+    - the output SOAP response is a Fault
+    - the output GVBuffer contains the property WS_FORCE_TX_ROLLBACK=Y
+-->
+<!ATTLIST GreenVulcanoWebService    transacted  (true|false) #IMPLIED>
+<!--
+    Transaction timeout in seconds.
+    Default: 30s
+
+    #Pattern: ! [1-9][0-9]* ! Enter the number of seconds
+    #Warn: {{self::GreenVulcanoWebService[not(@transacted) or (@transacted='false')]}} In non-transactional mode must NOT be specified the timeout
+-->
+<!ATTLIST GreenVulcanoWebService    tx-timeout  CDATA   #IMPLIED>
+<!--
+      Indicates whether the protocol must be https or not.
+      Default: false
+-->
+<!ATTLIST GreenVulcanoWebService    force-https  (true|false) #IMPLIED>
+<!--
+    DataProvider be used to send the reply to the caller.
+
+    #NotNull
+    #References: /GVAdapters/GVDataProviderManager/DataProviders/*[@type='dataProvider']/@name
+-->
+<!ATTLIST GreenVulcanoWebService    output-dp CDATA #IMPLIED>
+<!--
+    DataProvider be used to send the reply to the caller.
+
+    #NotNull
+    #References: /GVAdapters/GVDataProviderManager/DataProviders/*[@type='dataProvider']/@name
+-->
+<!ATTLIST GreenVulcanoWebService    input-dp CDATA #IMPLIED>
+
+<!--
+    Business web services definition on Axis2.
+
+    #Warn: {{ancestor::*[not(@authenticated-http-soap-address)]/WebService[not(@soap-address)][SecurityRoles][not(@force-https) or (@force-https='false')]}} Specificare soap-address o authenticated-http-soap-address
+    #Warn: {{ancestor::*[not(@authenticated-https-soap-address)]/WebService[not(@soap-address)][SecurityRoles][@force-https='true']}} Specificare soap-address o authenticated-https-soap-address
+    #Warn: {{ancestor::*[not(@http-soap-address)]/WebService[not(@soap-address)][not(SecurityRoles)][not(@force-https) or (@force-https='false')]}} Specificare soap-address o http-soap-address
+    #Warn: {{ancestor::*[not(@https-soap-address)]/WebService[not(@soap-address)][not(SecurityRoles)][@force-https='true']}} Specificare soap-address o https-soap-address
+
+    #SortChild
+    #Table: ! Web services ! WebService ! Web Service ! @web-service ! SOAP Address ! @soap-address ! Description ! Description
+    #Template:
+        <xsl:template match="BusinessWebServices">
+            <xsl:value-of select="Description"/>
+        </xsl:template>
+-->
+<!ELEMENT BusinessWebServices (Description?, WebService*)>
+
+<!--
+    Directory containing the generated WSDL for the services exposed through Axis2.
+
+    #NotNull
+-->
+<!ATTLIST BusinessWebServices wsdl-directory CDATA #REQUIRED>
+<!--
+    Directory containing the services generated from a WSDL using Axis2.
+
+    #NotNull
+-->
+<!ATTLIST BusinessWebServices services-directory CDATA #REQUIRED>
+<!--
+    This is the default URL that is used in the build the soap: address
+    for web services that require authentication exposed with http protocol.
+    This URL can be overridden on different services.
+    If not specified will be required to define it on the services.
+    The final URL will be formed by concatenating the name of the service: default-soap-address/service
+
+    #NotNull
+-->
+<!ATTLIST BusinessWebServices authenticated-http-soap-address CDATA #IMPLIED>
+<!--
+    This is the default URL that is used in the build the soap:address
+    for web services that require authentication exposed with https protocol.
+    This URL can be overridden on different services.
+    If not specified will be required to define it on the services.
+    The final URL will be formed by concatenating the name of the service: default-soap-address/service
+
+    #NotNull
+-->
+<!ATTLIST BusinessWebServices authenticated-https-soap-address CDATA #IMPLIED>
+<!--
+    This is the default URL that is used in the build the soap:address
+    for web services that not require authentication exposed with http protocol.
+    This URL can be overridden on different services.
+    If not specified will be required to define it on the services.
+    The final URL will be formed by concatenating the name of the service: default-soap-address/service
+
+    #NotNull
+-->
+<!ATTLIST BusinessWebServices http-soap-address CDATA #IMPLIED>
+<!--
+    This is the default URL that is used in the build the soap:address
+    for web services that not require authentication exposed with https protocol.
+    This URL can be overridden on different services.
+    If not specified will be required to define it on the services.
+    The final URL will be formed by concatenating the name of the service: default-soap-address/service
+
+    #NotNull
+-->
+<!ATTLIST BusinessWebServices https-soap-address CDATA #IMPLIED>
+
+<!ENTITY % registry_impl "JAXMLRegistry">
+<!ELEMENT JAXRegistry (Description?, XMLRegistries)>
+<!ATTLIST JAXRegistry	version CDATA #FIXED "1.0">
+
+<!--
+    The XML Registries (JAXR) provides a uniform and standard API for accessing different kinds of XML Registries.
+    XML registries are an enabling infrastructure for building, deployment and discovery of web services.
+    
+    #Table: ! XML Registries ! XMLRegistry ! ID ! @id-registry ! Query Url  ! @query-url  ! Publish Url  ! @publish-url  ! Description ! Description
+-->
+<!ELEMENT XMLRegistries (Description?, (%registry_impl;)*, Proxy?)>
+
+<!--
+    Implementation for the UDDI Server JUDDI.
+
+    #SelectOnInsert
+-->
+<!ELEMENT JAXMLRegistry (Description?, Properties?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST JAXMLRegistry    class CDATA #FIXED "it.greenvulcano.gvesb.j2ee.xmlRegistry.impl.RegistryImpl">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST JAXMLRegistry	type CDATA #FIXED "xmlregistry">
+<!--
+    Unique identifier of XMLRegistry
+
+    #NotNull
+    #Unique: ../JAXMLRegistry/@id-registry
+-->
+<!ATTLIST JAXMLRegistry	id-registry CDATA #REQUIRED>
+<!--
+    URL definition to perform the query
+
+    #NotNull
+-->
+<!ATTLIST JAXMLRegistry	query-url CDATA #REQUIRED>
+<!--
+    Definition of the URL to make the publication
+
+    #NotNull
+-->
+<!ATTLIST JAXMLRegistry	publish-url CDATA #REQUIRED>
+<!--
+    Defining the user name for authentication on the Registry
+
+    #NotNull
+-->
+<!ATTLIST JAXMLRegistry	user-name CDATA #IMPLIED>
+<!--
+    Defining the password for authentication on the Registry
+    
+    #NotNull
+    #Encrypted
+-->
+<!ATTLIST JAXMLRegistry	password CDATA #IMPLIED>
+<!--
+    Defining the desired organization's name on the Registry
+    
+    #NotNull
+-->
+<!ATTLIST JAXMLRegistry	organization-name CDATA #IMPLIED>
+
+<!--
+    List of the properties needed to access the UDDI server.
+
+    #SelectOnInsert
+-->
+<!ELEMENT Properties (connectionFactory?, connectionProperty*, Description?)>
+<!--
+    Connection Factory.
+
+    #SelectOnInsert
+-->
+<!ELEMENT connectionFactory (Description?)>
+<!--
+    Full qualified name of the connection factory.
+
+    #Label: @name
+    #NotNull
+-->
+<!ATTLIST connectionFactory value CDATA #REQUIRED>
+<!--
+    Defines a property to access the UDDI server.
+
+    #Label: @name
+    #SelectOnInsert
+-->
+<!ELEMENT connectionProperty (Description?)>
+<!--
+    Property type.
+    
+    #NotNull
+-->
+<!ATTLIST connectionProperty type CDATA #REQUIRED>
+<!--
+    Fully qualified interface name.
+
+    #NotNull
+    #Unique: ../connectionProperty/@name
+-->
+<!ATTLIST connectionProperty name CDATA #REQUIRED>
+<!--
+    Fully qualified name of te implementation.
+
+    #NotNull
+-->
+<!ATTLIST connectionProperty value CDATA #REQUIRED>
+
+<!ELEMENT UDDI (Description?, (%registry_impl;), Proxy?)>
+<!--
+    #SelectOnInsert
+-->
+<!ELEMENT AxisExtra (Description?, PasswordCallback?)>
+<!--
+    #SelectOnInsert
+-->
+<!ELEMENT PasswordCallback (Description?, PwCbBasicHandler?)>
+<!--
+    #SelectOnInsert
+-->
+<!ELEMENT PwCbBasicHandler (Description?, UserDef*)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST PwCbBasicHandler    type CDATA #FIXED "pwcb">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST PwCbBasicHandler    class CDATA #FIXED "it.greenvulcano.gvesb.ws.rampart.policy.pwcb.PwCbBasicHandler">
+
+<!--
+    #Label: @name
+    #Unique: ../UserDef/@name
+    #SelectOnInsert
+-->
+<!ELEMENT UserDef (Description?)>
+<!--
+    #NotNull
+-->
+<!ATTLIST UserDef name CDATA #REQUIRED>
+<!--
+    #NotNull
+    #Encrypted
+-->
+<!ATTLIST UserDef password CDATA #REQUIRED>
+<!--
+    Information about Web Service published on a SOA Registry.
+    Usually these information are retrieved and filled by VulCon or other user tools (like GVConsole).
+    These information are not operative, used only to map the Web Service to a WSDL published on a SOA Registry.
+
+    #SelectOnInsert
+    #Label: @web-service
+-->
+<!ELEMENT SOARegistry (Description?)>
+<!--
+    Name of Business Service identifying this Web Service.
+
+    #NotNull
+-->
+<!ATTLIST SOARegistry    business-service-name CDATA #REQUIRED>
+<!--
+    Version of Business Service published on the SOA Registry.
+
+    #NotNull
+-->
+<!ATTLIST SOARegistry    business-service-version CDATA #REQUIRED>
+<!--
+    Name of web service identifying this Web Service on the SOA Repository.
+
+    #NotNull
+-->
+<!ATTLIST SOARegistry    webservice-name CDATA #REQUIRED>
+<!--
+    Version of WebService published on the SOA Registry.
+
+    #NotNull
+-->
+<!ATTLIST SOARegistry    webservice-version CDATA #REQUIRED>
+<!--
+    URL where the WSDL defining this Web Service is published on.
+
+    #NotNull
+-->
+<!ATTLIST SOARegistry    wsdl-url CDATA #REQUIRED>
+<!--
+    Name of service identifying this Web Service.
+    It normally corresponds to the name given to the WSDL on the SOA Registry.
+
+    #NotNull
+-->
+<!ATTLIST SOARegistry    wsdl-name CDATA #REQUIRED>
+<!--
+    Version of WSDL published on the SOA Registry.
+
+    #NotNull
+-->
+<!ATTLIST SOARegistry    wsdl-version CDATA #REQUIRED>
+
+
+<!--
+    Options to pass to renderers.
+
+    #SortChild
+-->
+<!ELEMENT Options (Description?, Option*)>
+
+<!--
+    Option to pass to render.
+
+    #Label: @name
+-->
+<!ELEMENT Option (Description?)>
+<!--
+    Name of option.
+
+    #Unique: ../Option/@name
+    #NotNull
+-->
+<!ATTLIST Option name CDATA #REQUIRED>
+<!--
+    Value of option.
+-->
+<!ATTLIST Option value CDATA #IMPLIED>
+
+<!--
+-->
+<!ELEMENT Renders (Description?, ExcelReportRender?, PDFReportRender?, HTMLReportRender?)>
+
+<!--
+-->
+<!ELEMENT ExcelReportRender (Description?, Options?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST ExcelReportRender type CDATA #FIXED "report-render">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST ExcelReportRender class CDATA #FIXED "it.greenvulcano.birt.report.internal.ExcelReportRenderOptions">
+
+<!--
+-->
+<!ELEMENT PDFReportRender (Description?, Options?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST PDFReportRender type CDATA #FIXED "report-render">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST PDFReportRender class CDATA #FIXED "it.greenvulcano.birt.report.internal.PDFReportRenderOptions">
+
+<!--
+-->
+<!ELEMENT HTMLReportRender (Description?, Options?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST HTMLReportRender type CDATA #FIXED "report-render">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST HTMLReportRender class CDATA #FIXED "it.greenvulcano.birt.report.internal.HTMLReportRenderOptions">
+
+<!--
+    #Label: @name
+-->
+<!ELEMENT Report (Description?, Renders?, Parameters?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST Report type CDATA #FIXED "report">
+<!--
+    Report name.
+
+    #Unique: ../Report/@name
+    #NotNull
+-->
+<!ATTLIST Report name CDATA #REQUIRED>
+<!--
+    Report configuration.
+
+    #NotNull
+-->
+<!ATTLIST Report config CDATA #REQUIRED>
+<!--
+    Report preferred rendered, default 'pdf'.
+
+-->
+<!ATTLIST Report defaultRender (pdf|excel|html) #IMPLIED>
+
+<!--
+    #SortChild
+-->
+<!ELEMENT Parameters (Description?, Parameter*)>
+<!--
+    #Label: @name
+-->
+<!ELEMENT Parameter (Description?, (StringSource|FixedSource|DHSource)?)>
+<!--
+    Parameter name.
+
+    #Unique: ../Parameter/@name
+    #NotNull
+-->
+<!ATTLIST Parameter name CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST Parameter label CDATA #IMPLIED>
+<!--
+    #NotNull
+-->
+<!ATTLIST Parameter format CDATA #IMPLIED>
+<!--
+    #NotNull
+-->
+<!ATTLIST Parameter expression CDATA #IMPLIED>
+<!--
+    #NotNull
+-->
+<!ATTLIST Parameter default-value CDATA #IMPLIED>
+<!--
+
+-->
+<!ATTLIST Parameter control-type (TEXT|SELECT|RADIO|CHECK) #IMPLIED>
+
+
+<!--
+    #SelectOnInsert
+-->
+<!ELEMENT StringSource (#PCDATA)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST StringSource type CDATA #FIXED "source">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST StringSource class CDATA #FIXED "it.greenvulcano.birt.report.internal.field.StringSource">
+
+<!--
+    #SelectOnInsert
+-->
+<!ELEMENT DHSource (DHVariable*)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST DHSource type CDATA #FIXED "source">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST DHSource class CDATA #FIXED "it.greenvulcano.birt.report.internal.field.DHSource">
+<!--
+    #References: /GVAdapters/GVDataHandlerConfiguration/DBOBuilder/@name
+    #NotNull
+-->
+<!ATTLIST DHSource service CDATA #REQUIRED>
+<!--
+
+-->
+<!ATTLIST DHSource use-string-map (true|false) #IMPLIED>
+<!--
+
+-->
+<!ATTLIST DHSource sort (true|false) #IMPLIED>
+
+<!--
+    #SelectOnInsert
+-->
+<!ELEMENT FixedSource (ListItem*)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST FixedSource type CDATA #FIXED "source">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST FixedSource class CDATA #FIXED "it.greenvulcano.birt.report.internal.field.FixedSource">
+<!--
+    #NotNull
+-->
+<!ATTLIST FixedSource sort (true|false) #IMPLIED>
+
+<!--
+    #Label: @text
+    #SelectOnInsert
+-->
+<!ELEMENT ListItem EMPTY>
+<!--
+    #NotNull
+-->
+<!ATTLIST ListItem text CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST ListItem value CDATA #REQUIRED>
+
+
+<!--
+    This adapter sets the parameters valid for generating BIRT reports.
+-->
+<!ELEMENT GVBIRTReportConfiguration (Description?, Engine, ReportGroups)>
+
+<!ATTLIST GVBIRTReportConfiguration version CDATA #FIXED "1.0">
+<!--
+    Element type 'module'.
+-->
+<!ATTLIST GVBIRTReportConfiguration type    CDATA   #FIXED  "module">
+<!--
+    Module id always set to 'BIRT_REPO'.
+-->
+<!ATTLIST GVBIRTReportConfiguration name    CDATA   #FIXED  "BIRT_REPO">
+
+<!--
+    This element sets the home directory and the log level of the BIRT report engine. 
+-->
+<!ELEMENT Engine (Description?, Renders)>
+<!--
+    Home directory of the BIRT report engine, default to ${{gv.app.home}}/BIRTReportEngine
+
+    #NotNull
+-->
+<!ATTLIST Engine reportEngineHome CDATA #IMPLIED>
+<!--
+    BIRT report engine log level, default to FINEST
+
+-->
+<!ATTLIST Engine logLevel (SEVERE|WARNING|INFO|CONFIG|FINE|FINER|FINEST) #IMPLIED>
+
+<!--
+    Contains the ReportGroup elements which allows to group more reports. 
+    
+    #SortChild
+-->
+<!ELEMENT ReportGroups (Description?, ReportGroup*)>
+
+<!--
+    #Label: @name
+    #SortChild
+-->
+<!ELEMENT ReportGroup (Description?, Report*)>
+<!--
+    Group name.
+
+    #NotNull
+    #Unique: ../ReportGroup/@name
+-->
+<!ATTLIST ReportGroup name CDATA #REQUIRED>
+
+
+<!--
+    R(emote)SH(ell) client's pool configuration.
+-->
+<!ELEMENT RSHServiceClientConfiguration (Description?,(RSHServiceClientLocal|RSHServiceClientRMI)*)>
+
+<!ATTLIST RSHServiceClientConfiguration version CDATA #FIXED "1.0">
+<!--
+    Element type 'module'.
+-->
+<!ATTLIST RSHServiceClientConfiguration type    CDATA   #FIXED  "module">
+<!--
+    Module id always set to 'RSH_CLIENT'.
+-->
+<!ATTLIST RSHServiceClientConfiguration name CDATA #FIXED "RSH_CLIENT">
+
+<!--
+    Executes operations on local VM.
+
+    #Label: @name
+-->
+<!ELEMENT RSHServiceClientLocal (Description?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST RSHServiceClientLocal type CDATA #FIXED "rshClient">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST RSHServiceClientLocal class CDATA #FIXED "it.greenvulcano.gvesb.rsh.client.impl.RSHServiceClientLocal">
+<!--
+    #NotNull
+-->
+<!ATTLIST RSHServiceClientLocal name CDATA #REQUIRED>
+
+<!--
+    Executes operations on a VM external (local or remote) RSH server.
+
+    #Label: @name
+-->
+<!ELEMENT RSHServiceClientRMI (Description?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST RSHServiceClientRMI type CDATA #FIXED "rshClient">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST RSHServiceClientRMI class CDATA #FIXED "it.greenvulcano.gvesb.rsh.client.impl.RSHServiceClientRMI">
+<!--
+    #NotNull
+-->
+<!ATTLIST RSHServiceClientRMI name CDATA #REQUIRED>
+<!--
+    RMI Registry connection URL.
+    Ex: rmi://localhost:1099
+
+    #NotNull
+-->
+<!ATTLIST RSHServiceClientRMI regURL CDATA #REQUIRED>
+<!--
+    Default: com.sun.jndi.rmi.registry.RegistryContextFactory
+
+    #NotNull
+-->
+<!ATTLIST RSHServiceClientRMI regCtxFactory CDATA #IMPLIED>
+<!--
+    Default: it.greenvulcano.gvesb.rsh.server.rmi.RSHService
+
+    #NotNull
+-->
+<!ATTLIST RSHServiceClientRMI regSvcName CDATA #IMPLIED>
+

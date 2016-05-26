@@ -1,0 +1,2 @@
+#services = #{"LIST_EXCEL":"1", "LIST_PDF":"1", "LIST_BIRT":"1"},
+#findMatch = :["1" == #services[#this]],

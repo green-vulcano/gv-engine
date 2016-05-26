@@ -1,0 +1,1857 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!ENTITY % JavaCharEncodings "(US-ASCII | ISO-8859-1 | ISO-LATIN-1 | UTF-8 | UTF-16BE | UTF-16LE | UTF-16)">
+<!ENTITY % Paradigms "(RequestReply | Request | SendReply | GetRequest | GetReply)">
+<!ENTITY % GVBufferFields "(GVBuffer.system | GVBuffer.service | GVBuffer.id | GVBuffer.retCode | GVBuffer.object)">
+<!ENTITY % GVTransErrorInfoFields "(GVTransInfo.system | GVTransInfo.service | GVTransInfo.id | GVTransInfo.errorCode | GVTransInfo.errorMessage)">
+<!ENTITY % GVTransInfoFields "(GVTransInfo.system | GVTransInfo.service | GVTransInfo.tid)">
+<!ENTITY % RequestHandlers "(RequestXMLParamHandler | RequestFlatParamHandler | RequestStringParamHandler)">
+<!ENTITY % ResponseHandlers "(ResponseXMLParamHandler | ResponseFlatParamHandler | ResponseStringParamHandler)">
+<!ENTITY % ResponseErrorHandlers "(XMLParamErrorHandler | FlatParamErrorHandler | StringParamErrorHandler)">
+
+<!ENTITY % FormatterTypes "(ExtendedInboundParamHandlerFormatter)">
+
+<!ELEMENT GVAdapterHttpConfiguration (InboundConfiguration, Formatters)>
+<!ATTLIST GVAdapterHttpConfiguration version CDATA #FIXED "1.0">
+<!--
+    Element type 'module'.
+-->
+<!ATTLIST GVAdapterHttpConfiguration type    CDATA   #FIXED  "module">
+<!--
+    Module Id always set to 'HTTP_INBOUND'.
+-->
+<!ATTLIST GVAdapterHttpConfiguration name    CDATA   #FIXED  "HTTP_ADAPTER">
+
+
+<!ELEMENT InboundConfiguration (ActionMappings, InboundTransactions)>
+
+<!ELEMENT ActionMappings ((GVCoreActionMapping|ForwardActionMapping|RESTActionMapping)*)>
+
+<!ELEMENT RetCodeConversionIn EMPTY>
+<!--
+    #NotNull
+-->
+<!ATTLIST RetCodeConversionIn   RetCodeConversion           (ignore | 0to1 | 1to0) #IMPLIED>
+
+<!ELEMENT RetCodeConversionOut EMPTY>
+<!--
+    #NotNull
+-->
+<!ATTLIST RetCodeConversionOut  RetCodeConversion           (ignore | 0to1 | 1to0) #IMPLIED>
+
+<!--
+    Defines a mapping between a request Action and a configured Formatter.
+    Used to call a GVESB Service.
+    
+    Input GVBuffer:
+    - HTTP_ACTION
+    - HTTP_PATH
+    - HTTP_QUERY
+    - HTTP_METHOD
+    - HTTP_REMOTE_ADDR
+
+    #SelectOnInsert
+    #Label: @Action
+-->
+<!ELEMENT GVCoreActionMapping (Description?, RetCodeConversionIn?, RetCodeConversionOut?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST GVCoreActionMapping    type CDATA #FIXED "action-mapping">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST GVCoreActionMapping    class CDATA #FIXED "it.greenvulcano.gvesb.adapter.http.mapping.GVCoreHttpServletMapping">
+<!--
+    Defines the action name, referenced by the request parameter GV_ACTION.
+
+    #NotNull
+    #Unique: ../*[@type='action-mapping']/@Action
+-->
+<!ATTLIST GVCoreActionMapping Action             CDATA #REQUIRED>
+<!--
+    #References: /GVAdapters/GVAdapterHttpConfiguration/Formatters/*[@Type='FormatterPlugin']/@ID
+-->
+<!ATTLIST GVCoreActionMapping FormatterID        CDATA #REQUIRED>
+<!--
+    ContentType to be declared while handling HTTP responses to the external system.
+    Default to text/html and is used only if not defined by the formatter.
+
+    #NotNull
+    #Choice: text/html | text/xml | text/json | text/javascript | application/xml | application/json | application/x-www-form-urlencoded
+-->
+<!ATTLIST GVCoreActionMapping  RespContentType   CDATA #IMPLIED>
+<!--
+    This parameter defines if an action must be processed.
+
+    #NotNull
+-->
+<!ATTLIST GVCoreActionMapping enabled (true | false) #REQUIRED>
+<!--
+    If true enable the dump of the input/output HTTP data.
+    Default false.
+
+    #NotNull
+-->
+<!ATTLIST GVCoreActionMapping dump-in-out (true|false) #IMPLIED>
+
+<!--
+    Defines a mapping between a request Action and remote server.
+    Used to perform an HTTP Forward to a remote server.
+
+    #SelectOnInsert
+    #Label: @Action
+-->
+<!ELEMENT ForwardActionMapping (Description?, endpoint)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST ForwardActionMapping    type CDATA #FIXED "action-mapping">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST ForwardActionMapping    class CDATA #FIXED "it.greenvulcano.gvesb.adapter.http.mapping.ForwardHttpServletMapping">
+<!--
+    Defines the action name, referenced by the request parameter GV_ACTION.
+
+    #NotNull
+    #Unique: ../*[@type='action-mapping']/@Action
+-->
+<!ATTLIST ForwardActionMapping Action             CDATA #REQUIRED>
+<!--
+    This parameter defines if an action must be processed.
+
+    #NotNull
+-->
+<!ATTLIST ForwardActionMapping enabled (true | false) #REQUIRED>
+<!--
+    If true enable the dump of the input/output HTTP data.
+    Default false.
+
+    #NotNull
+-->
+<!ATTLIST ForwardActionMapping dump-in-out (true|false) #IMPLIED>
+
+<!--
+    Defines a mapping between a request Action and a GV ESB workflow.
+    Used to call a GVESB Service.
+    
+    Input GVBuffer:
+    - HTTP_ACTION
+    - HTTP_PATH
+    - HTTP_QUERY
+    - HTTP_METHOD
+    - HTTP_REMOTE_ADDR
+    - HTTP_REQ_CONTENT_TYPE
+    - HTTP_REQ_ACCEPT
+    - query string parameters (or form-url-encoded parameters) as properties
+    - HTTP_REQ_HEADERS contains, if requested, the request HTTP headers as xml document;
+    <Hdr>
+        <h n="hdr name" v="hdr value"/>
+        <h n="hdr name" v="hdr value"/>
+    </Hdr>
+    - if the request content type is application/xml or application/json or text/* the request GVBuffer object
+      will contain String
+    - for other request content types the request GVBuffer object will contain a byte[]
+    
+    Output GVBuffer;
+    - HTTP_RESP_STATUS_CODE, optional, define the status response code
+    - HTTP_RESP_STATUS_MSG, optional, if defined the couple HTTP_RESP_STATUS_CODE and HTTP_RESP_STATUS_MSG
+                            defines the error response code
+    - HTTP_RESP_CHAR_ENCODING, optional, defines the response character encoding
+    - HTTP_RESP_CONTENT_TYPE, optional, defines the rsponse content type
+    - if the response content type is application/xml or application/json or text/* the response GVBuffer object
+      must contains a byte[] a String or a Document to be serialized
+    - for other response content types the response GVBuffer object must contains a byte[]
+
+    #SelectOnInsert
+    #Label: @Action
+-->
+<!ELEMENT RESTActionMapping (Description?, OperationMappings)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST RESTActionMapping    type CDATA #FIXED "action-mapping">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST RESTActionMapping    class CDATA #FIXED "it.greenvulcano.gvesb.adapter.http.mapping.RESTHttpServletMapping">
+<!--
+    Defines the action name, referenced by the request parameter GV_ACTION.
+
+    #NotNull
+    #Unique: ../*[@type='action-mapping']/@Action
+-->
+<!ATTLIST RESTActionMapping Action             CDATA #REQUIRED>
+<!--
+    This parameter defines if an action must be processed.
+
+    #NotNull
+-->
+<!ATTLIST RESTActionMapping enabled (true | false) #REQUIRED>
+<!--
+    CharacterEncoding to handle responses to the external system.
+    Default to UTF-8.
+
+    #NotNull
+-->
+<!ATTLIST RESTActionMapping  RespCharacterEncoding   %JavaCharEncodings; #IMPLIED>
+<!--
+    ContentType to be declared while handling HTTP responses to the external system.
+    Default to application/xml.
+
+    #NotNull
+    #Choice: text/html | text/xml | text/json | text/javascript | application/xml | application/json | application/x-www-form-urlencoded
+-->
+<!ATTLIST RESTActionMapping  RespContentType         CDATA #IMPLIED>
+
+<!--
+    If true enable the dump of the input/output HTTP data.
+    Default false.
+
+    #NotNull
+-->
+<!ATTLIST RESTActionMapping dump-in-out (true|false) #IMPLIED>
+
+<!--
+    This element contains the mappings from request URIs/Methods and GV ESB services.
+
+-->
+<!ELEMENT OperationMappings (Mapping+)>
+
+<!--
+    This element contains the mappings from request URI/Method and GV ESB service.
+
+    #CompositeLabel: || @method | # | @pattern | -> | @service | / | @operation
+    #SelectOnInsert
+-->
+<!ELEMENT Mapping (Description?)>
+<!--
+    #NotNull
+-->
+<!ATTLIST Mapping method (GET|PUT|POST|DELETE) #REQUIRED>
+<!--
+    Defines the rules to be matched in order to identify the request URI.
+    The URI pattern refers to the Path component only:
+    http://localhost:8080/gvhttp/inbound/AddressBook/entry/123
+    Path -> /AddressBook/entry/123
+    Sample mapping: /APPLICATION=AddressBook/E_COLLECTION=entry/E_UUID=\d+
+    The URL is splitted on / and must start with the string 'AddressBook', then must contain the string 'entry',
+    then the last tocken must match the regular expression '\d+' (must be a number of at least 1 digit).
+    On match, the input GVBuffer will contain the following properties:
+        APPLICATION  = AddressBook
+        E_COLLECTION = entry
+        E_UUID       = 123
+
+    #NotNull
+-->
+<!ATTLIST Mapping pattern CDATA #REQUIRED>
+<!--
+    #NotNull
+    #References: gvesb:document('GVCore')/GVCore/GVServices/Services/Service/@id-service
+-->
+<!ATTLIST Mapping service CDATA #REQUIRED>
+<!--
+    Optional system name.
+
+    #NotNull
+    #References: gvesb:document('GVCore')/GVCore/GVSystems/Systems/System/@id-system
+-->
+<!ATTLIST Mapping system CDATA #IMPLIED>
+<!--
+    #NotNull
+    #References: gvesb:document('GVCore')/GVCore/GVServices/Services/Service[@id-service=current()/@service]/Operation[@name!='Forward']/@name
+    #References: gvesb:document('GVCore')/GVCore/GVServices/Services/Service[@id-service=current()/@service]/Operation[@name='Forward']/@forward-name
+-->
+<!ATTLIST Mapping operation CDATA #REQUIRED>
+<!--
+    This parameter defines if the request headers must be extracted..
+
+    #NotNull
+-->
+<!ATTLIST Mapping extract-headers (true | false) #IMPLIED>
+
+
+<!--
+    This element contains the transaction definitions for the manged services.
+
+-->
+<!ELEMENT InboundTransactions (Transaction*)>
+<!--
+    This element contains the transaction definitions for a given service.
+
+    #Label: @service
+    #SelectOnInsert
+-->
+<!ELEMENT Transaction (Description?)>
+<!--
+    #NotNull
+    #References: gvesb:document('GVCore')/GVCore/GVServices/Services/Service/@id-service
+-->
+<!ATTLIST Transaction service CDATA #REQUIRED>
+<!--
+    Default to ALL.
+
+    #NotNull
+    #References: gvesb:document('GVCore')/GVCore/GVSystems/Systems/System/@id-system
+-->
+<!ATTLIST Transaction system CDATA #IMPLIED>
+<!--
+    This parameter defines if a service must be executed in transaction.
+    Default is false.
+
+    #NotNull
+-->
+<!ATTLIST Transaction transacted (true | false) #REQUIRED>
+<!--
+    This parameter defines the transaction timeout in seconds.
+    Default is 30s.
+
+    #NotNull
+    #Pattern: ! [1-9][0-9]* ! Enter the number of seconds
+-->
+<!ATTLIST Transaction timeout CDATA #IMPLIED>
+<!--
+    This parameter defines when transaction must be committed:
+    before or after sending the response to the client.
+    Default is before.
+
+    #NotNull
+-->
+<!ATTLIST Transaction close-on-response (after | before) #IMPLIED>
+
+
+<!--
+    #SelectOnInsert
+-->
+<!ELEMENT Formatters ((%FormatterTypes;)*)>
+
+
+<!--
+    #SelectOnInsert
+    #Label: @ID
+-->
+<!ELEMENT InboundParamHandlerFormatter ((RequestParams | RequestContent)?, GVBufferDefaultValues?, OpTypeDefaultValue?, ResponseParams?, Description?)>
+<!ATTLIST InboundParamHandlerFormatter  Type                CDATA #FIXED "FormatterPlugin">
+<!ATTLIST InboundParamHandlerFormatter  Class               CDATA #FIXED "it.greenvulcano.gvesb.adapter.http.formatters.handlers.InboundParamHandlerFormatter">
+<!--
+    #NotNull
+    #Unique: ../*[@Type='FormatterPlugin']/@ID
+-->
+<!ATTLIST InboundParamHandlerFormatter  ID                  CDATA #REQUIRED>
+<!--
+    CharacterEncoding to be used to handle requests from external system.
+    Default to UTF-8.
+
+    #NotNull
+-->
+<!ATTLIST InboundParamHandlerFormatter  ReqCharacterEncoding   %JavaCharEncodings; #IMPLIED>
+<!--
+    CharacterEncoding to handle responses to the external system.
+    Default to UTF-8.
+
+    #NotNull
+-->
+<!ATTLIST InboundParamHandlerFormatter  RespCharacterEncoding   %JavaCharEncodings; #IMPLIED>
+<!--
+    ContentType to be declared while handling HTTP responses to the external system.
+    Default to text/html.
+
+    #NotNull
+    #Choice: text/html | text/xml | text/json | text/javascript | application/xml | application/json | application/x-www-form-urlencoded
+-->
+<!ATTLIST InboundParamHandlerFormatter  RespContentType         CDATA #IMPLIED>
+
+<!--
+    #SelectOnInsert
+    #Label: @ID
+-->
+<!ELEMENT ExtendedInboundParamHandlerFormatter (RequestParams?, RequestContent?, GVBufferDefaultValues?, OpTypeDefaultValue?, ResponseParams?, Description?)>
+<!ATTLIST ExtendedInboundParamHandlerFormatter  Type                CDATA #FIXED "FormatterPlugin">
+<!ATTLIST ExtendedInboundParamHandlerFormatter  Class               CDATA #FIXED "it.greenvulcano.gvesb.adapter.http.formatters.handlers.ExtendedInboundParamHandlerFormatter">
+<!--
+    #NotNull
+    #Unique: ../*[@Type='FormatterPlugin']/@ID
+-->
+<!ATTLIST ExtendedInboundParamHandlerFormatter  ID                  CDATA #REQUIRED>
+<!--
+    If 'true' reads the request HTTP headers and provide them with the request parameters.
+
+    Default: false
+-->
+<!ATTLIST ExtendedInboundParamHandlerFormatter  read-request-header (true|false) #IMPLIED>
+<!--
+    CharacterEncoding to be used to handle requests from external system.
+    Default to UTF-8.
+
+    #NotNull
+-->
+<!ATTLIST ExtendedInboundParamHandlerFormatter  ReqCharacterEncoding   %JavaCharEncodings; #IMPLIED>
+<!--
+    CharacterEncoding to handle responses to the external system.
+    Default to UTF-8.
+
+    #NotNull
+-->
+<!ATTLIST ExtendedInboundParamHandlerFormatter  RespCharacterEncoding   %JavaCharEncodings; #IMPLIED>
+<!--
+    ContentType to be declared while handling HTTP responses to the external system.
+    Default to text/html.
+
+    #NotNull
+    #Choice: text/html | text/xml | text/json | text/javascript | application/xml | application/json | application/x-www-form-urlencoded
+-->
+<!ATTLIST ExtendedInboundParamHandlerFormatter  RespContentType         CDATA #IMPLIED>
+<!--
+    If true force the POST body to be handled as application/x-www-form-urlencoded content type.
+    Default is false.
+
+    #NotNull
+    #Choice: true | false
+-->
+<!ATTLIST ExtendedInboundParamHandlerFormatter  HandlePostBodyAsParams  CDATA #IMPLIED>
+<!--
+    If != -1 force the adapter to respond with the given http code on case of error.
+    Default is -1 (disabled).
+
+    #NotNull
+-->
+<!ATTLIST ExtendedInboundParamHandlerFormatter  ResponseOnError-HTTPCode  CDATA #IMPLIED>
+
+
+<!--
+    A configured default value for a field of a GVBuffer object.
+
+    #Template:
+    <xsl:template match="GVBufferFieldDefaultValue">
+        <table cellpadding="0" cellspacing="0">
+            <tr>
+                <td>Field name:  <i><xsl:value-of select="@FieldName"/></i></td>
+            </tr>
+            <tr>
+                <td>Field value:  <i><xsl:value-of select="@FieldValue"/></i></td>
+            </tr>
+        </table>
+    </xsl:template>
+-->
+<!ELEMENT GVBufferFieldDefaultValue EMPTY>
+<!--
+    The name of a GVBuffer field.
+-->
+<!ATTLIST GVBufferFieldDefaultValue FieldName %GVBufferFields; #REQUIRED>
+<!--
+    The configured default value of a GVBuffer field.
+
+    #NotNull
+-->
+<!ATTLIST GVBufferFieldDefaultValue FieldValue CDATA #REQUIRED>
+
+<!--
+    A configured default value for a property field of a GVBuffer object.
+
+    #Template:
+    <xsl:template match="GVBufferPropertyDefaultValue">
+        <table cellpadding="0" cellspacing="0">
+            <tr>
+                <td>Extended field name:  <i><xsl:value-of select="@FieldName"/></i></td>
+            </tr>
+            <tr>
+                <td>Extended field value:  <i><xsl:value-of select="@FieldValue"/></i></td>
+            </tr>
+        </table>
+    </xsl:template>
+-->
+<!ELEMENT GVBufferPropertyDefaultValue EMPTY>
+<!--
+    The name of a GVBuffer property.
+
+    #NotNull
+-->
+<!ATTLIST GVBufferPropertyDefaultValue FieldName CDATA #REQUIRED>
+<!--
+    The configured default value of a GVBuffer property.
+
+    #NotNull
+-->
+<!ATTLIST GVBufferPropertyDefaultValue FieldValue CDATA #REQUIRED>
+
+<!--
+    This element represents a mapping target from/to a field of a GVBuffer object.
+
+    #Template:
+    <xsl:template match="GVBufferField">
+        <table cellpadding="0" cellspacing="0">
+                <tr>
+                <td>Field name: <b><xsl:value-of select="substring-after(@FieldName, 'GVBuffer.')"/></b></td>
+            </tr>
+        </table>
+    </xsl:template>
+-->
+<!ELEMENT GVBufferField EMPTY>
+<!--
+    The name of a field of a GVBuffer object.
+
+    #NotNull
+-->
+<!ATTLIST GVBufferField FieldName %GVBufferFields; #REQUIRED>
+
+<!--
+    This element represents a mapping target from/to a property field of a GVBuffer object.
+
+    #Template:
+    <xsl:template match="GVBufferProperty">
+        <table cellpadding="0" cellspacing="0">
+                <tr>
+                <td>Extended field name: <b><xsl:value-of select="@FieldName"/></b></td>
+            </tr>
+        </table>
+    </xsl:template>
+-->
+<!ELEMENT GVBufferProperty EMPTY>
+<!--
+    The name of a property of a GVBuffer object.
+
+    #NotNull
+-->
+<!ATTLIST GVBufferProperty FieldName CDATA #REQUIRED>
+
+<!--
+    This element represents a mapping target from/to a list of properties of a GVBuffer object.
+
+    #Template:
+    <xsl:template match="GVBufferPropertyList">
+        <table cellpadding="0" cellspacing="0">
+                <tr>
+                <td>Excluded Extended fields names: <b><xsl:value-of select="@ExcludeFields"/></b></td>
+            </tr>
+        </table>
+    </xsl:template>
+-->
+<!ELEMENT GVBufferPropertyList EMPTY>
+<!--
+    True if outbound request parameters must be URLEncoded, false otherwise.
+-->
+<!ATTLIST GVBufferPropertyList URLEncoding (True | False) #REQUIRED>
+<!--
+    Parameters name-value separator string within list.
+    Default is '='
+
+    #NotNull
+-->
+<!ATTLIST GVBufferPropertyList FieldNameValueSeparator CDATA #IMPLIED>
+<!--
+    Parameters entry separator string within list.
+    Default is ';'
+
+    #NotNull
+-->
+<!ATTLIST GVBufferPropertyList FieldEntrySeparator CDATA #IMPLIED>
+<!--
+    The comma separated list of property names to ignore.
+
+    #NotNull
+-->
+<!ATTLIST GVBufferPropertyList ExcludeFields CDATA #IMPLIED>
+
+<!--
+    This element represents a plain text value to be assigned as source/target
+    of an handler mapping.
+
+    #Template:
+    <xsl:template match="DefaultValue">
+        <table cellpadding="0" cellspacing="0">
+                <tr>
+                <td>Value length: <b><xsl:value-of select="string-length(text())"/></b> characters</td>
+            </tr>
+        </table>
+    </xsl:template>
+-->
+<!ELEMENT DefaultValue (#PCDATA)>
+
+
+<!--
+    This element contains configuration informations about conversion of the parameters of an inbound http request into a valid GVBuffer object
+    and determination of the communication paradigm to be used by GreenVulcano.
+
+    #Template:
+    <xsl:template match="RequestParams">
+        <table cellpadding="0" cellspacing="0">
+                <tr>
+                <td>Parameters entry separator string within input querystring:</td>
+                    <td width="20"></td>
+                <td><b><xsl:value-of select="@ParamEntrySeparator"/></b></td>
+                </tr>
+                <tr>
+                <td>Parameters name-value separator string within input querystring:</td>
+                    <td width="20"></td>
+                <td><b><xsl:value-of select="@ParamNameValueSeparator"/></b></td>
+                </tr>
+            <tr>
+                <td>Configured inbound request parameters:</td>
+            </tr>
+                <tr>
+                    <td>
+                        <ul>
+                        <xsl:for-each select="RequestParam">
+                            <li><b><xsl:value-of select="@Name"/></b></li>
+                        </xsl:for-each>
+                        </ul>
+                    </td>
+            </tr>
+        </table>
+    </xsl:template>
+-->
+<!ELEMENT RequestParams (RequestParam+)>
+<!--
+    Parameters name-value separator string within input querystring.
+    Default is '='
+
+    #NotNull
+-->
+<!ATTLIST RequestParams ParamNameValueSeparator CDATA #IMPLIED>
+<!--
+    Parameters entry separator string within input querystring.
+    Default is '&'
+
+    #NotNull
+-->
+<!ATTLIST RequestParams ParamEntrySeparator CDATA #IMPLIED>
+
+<!--
+    This element contains configuration informations about conversion of the content of an inbound http request into a valid GVBuffer object
+    and determination of the communication paradigm to be used by GreenVulcano.
+
+    #Template:
+    <xsl:template match="RequestContent">
+        <table cellpadding="0" cellspacing="0">
+                <tr>
+                    <td>Configured handlers:</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="count(./*[@ItemType='Handler'])"/></b></td>
+            </tr>
+        </table>
+    </xsl:template>
+-->
+<!ELEMENT RequestContent ((%RequestHandlers;)+)>
+
+<!--
+    This element specifies the rules to follow to convert a single parameter of an inbound http request into a partially populated GVBuffer object.
+
+    #Label: @Name
+    #Template:
+    <xsl:template match="RequestParam">
+        <table cellpadding="0" cellspacing="0">
+            <tr>
+                <td>Parameter name:</td>
+                <td width="20"></td>
+                <td><b><xsl:value-of select="@Name"/></b></td>
+            </tr>
+            <xsl:if test="@Type">
+                <tr>
+                    <td>Type:</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="@Type"/></b></td>
+                </tr>
+            </xsl:if>
+                <tr>
+                    <td>Configured handlers:</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="count(./*[@ItemType='Handler'])"/></b></td>
+                </tr>
+        </table>
+    </xsl:template>
+-->
+<!ELEMENT RequestParam ((%RequestHandlers;)+)>
+<!--
+    The name of an inbound request parameter.
+
+    #NotNull
+-->
+<!ATTLIST RequestParam Name CDATA #REQUIRED>
+<!--
+    If true the request parameter is mandatory.
+    Default is true.
+
+    #NotNull
+-->
+<!ATTLIST RequestParam Required (true | false) #IMPLIED>
+<!--
+    #Warn: {{../RequestParam[@Type]}} The attribute 'Type' is not yet implemented.
+-->
+<!ATTLIST RequestParam Type CDATA #IMPLIED>
+
+<!--
+    This element contains configuration informations about an inbound request XML parameter <b>Handler</b>: a Java object used to extract informations from a single parameter of an inbound http request (in the case that this parameter contains an XML string) and use them to populate one or more fields of an GVBuffer request object to be sent to GreenVulcano.
+
+    #Label: @OutputType
+    #Template:
+    <xsl:template match="RequestXMLParamHandler">
+        <table cellpadding="0" cellspacing="0">
+            <xsl:choose>
+            <xsl:when test="../@Name">
+                <tr>
+                    <td>Inbound request parameter handled:</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="../@Name"/></b></td>
+                </tr>
+            </xsl:when>
+            <xsl:otherwise>
+                <tr>
+                    <td>Inbound request content handler.</td>
+                </tr>
+            </xsl:otherwise>
+            </xsl:choose>
+            <tr>
+                <td>Output type: <b><xsl:value-of select="@OutputType"/></b></td>
+            </tr>
+            <tr>
+                <td>Maps parameter contents to:</td>
+                <td width="20"></td>
+            </tr>
+            <tr>
+                <td>
+                    <ul>
+                        <xsl:for-each select="RequestXMLParamMapping">
+                            <xsl:if test="GVBufferField">
+                                <li>field <b><xsl:value-of select="substring-after(GVBufferField/@FieldName, 'GVBuffer.')"/></b> of GVBuffer</li>
+                            </xsl:if>
+                            <xsl:if test="GVBufferProperty">
+                                <li>extended field <b><xsl:value-of select="GVBufferProperty/@FieldName"/></b> of GVBuffer</li>
+                            </xsl:if>
+                                <xsl:if test="OpType">
+                                <li><i>OperationType</i> variable (GreenVulcano communication paradigm)</li>
+                            </xsl:if>
+                        </xsl:for-each>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+    </xsl:template>
+-->
+<!ELEMENT RequestXMLParamHandler (RequestXMLParamMapping+)>
+<!--
+    Element type.
+-->
+<!ATTLIST RequestXMLParamHandler ItemType CDATA #FIXED "Handler">
+<!--
+    Implementation class.
+-->
+<!ATTLIST RequestXMLParamHandler Class CDATA #FIXED "it.greenvulcano.gvesb.adapter.http.formatters.handlers.XMLParameterHandler">
+<!--
+    The output type of this inbound request parameter handler (GVBuffer object or communication paradigm string).
+
+    #NotNull
+-->
+<!ATTLIST RequestXMLParamHandler OutputType (GVBuffer | OpType) #REQUIRED>
+
+<!--
+    This element contains a mapping between a value extracted by an element or attribute (within XML content of an inbound request parameter) matching a given XPath, and a field of a request GVBuffer object. If mapping target is indicated with the "OpType" keyword, the value is a string indicating the requested communication paradigm (RequestReply, Request, SendReply, GetRequest, GetReply).
+    #Template:
+
+        <xsl:template match="RequestXMLParamMapping">
+            <table cellpadding="0" cellspacing="0">
+             <xsl:choose>
+                <xsl:when test="../../@Name">
+                    <tr>
+                        <td>Inbound request parameter handled:</td>
+                        <td width="20"></td>
+                        <td><b><xsl:value-of select="../../@Name"/></b></td>
+                    </tr>
+                </xsl:when>
+                <xsl:otherwise>
+                    <tr>
+                        <td>Inbound request content handler mapping.</td>
+                    </tr>
+                </xsl:otherwise>
+             </xsl:choose>
+                <tr>
+                    <td>Mapping source: <b><xsl:value-of select="@XPath"/></b></td>
+                </tr>
+                <tr>
+                    <td>Mapping target:
+                        <xsl:if test="GVBufferField">
+                           field <b><xsl:value-of select="substring-after(GVBufferField/@FieldName, 'GVBuffer.')"/></b> of GVBuffer
+                        </xsl:if>
+                        <xsl:if test="GVBufferProperty">
+                            extended field <b><xsl:value-of select="GVBufferProperty/@FieldName"/></b> of GVBuffer
+                        </xsl:if>
+                        <xsl:if test="OpType">
+                            <i>OperationType</i> variable (GreenVulcano communication paradigm)
+                        </xsl:if>
+                    </td>
+                </tr>
+            </table>
+        </xsl:template>
+-->
+<!ELEMENT RequestXMLParamMapping (GVBufferField | GVBufferProperty | OpType)>
+<!--
+    Element type.
+-->
+<!ATTLIST RequestXMLParamMapping ItemType CDATA #FIXED "Mapping">
+<!--
+    XPath of an element or attribute (within XML content of an inbound request parameter).
+
+    #NotNull
+-->
+<!ATTLIST RequestXMLParamMapping XPath CDATA #REQUIRED>
+
+<!--
+    This element contains configuration informations about an inbound request Flat parameter <b>Handler</b>: a Java object used to extract informations from a single parameter of an inbound http request (in the case that this parameter contains a Flat string) and use them to populate one or more fields of an GVBuffer request object to be sent to GreenVulcano.
+
+    #Label: @OutputType
+    #Template:
+    <xsl:template match="RequestFlatParamHandler">
+        <table cellpadding="0" cellspacing="0">
+            <xsl:choose>
+            <xsl:when test="../@Name">
+                <tr>
+                    <td>Inbound request parameter handled:</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="../@Name"/></b></td>
+                </tr>
+            </xsl:when>
+            <xsl:otherwise>
+                <tr>
+                    <td>Inbound request content handler.</td>
+                </tr>
+            </xsl:otherwise>
+            </xsl:choose>
+            <tr>
+                <td>Output type: <b><xsl:value-of select="@OutputType"/></b></td>
+            </tr>
+            <tr>
+                <td>Maps parameter contents to:</td>
+                <td width="20"></td>
+            </tr>
+            <tr>
+                <td>
+                    <ul>
+                        <xsl:for-each select="RequestFlatParamMapping">
+                            <xsl:if test="GVBufferField">
+                                <li>field <b><xsl:value-of select="substring-after(GVBufferField/@FieldName, 'GVBuffer.')"/></b> of GVBuffer</li>
+                            </xsl:if>
+                            <xsl:if test="GVBufferProperty">
+                                <li>extended field <b><xsl:value-of select="GVBufferProperty/@FieldName"/></b> of GVBuffer</li>
+                            </xsl:if>
+                                <xsl:if test="OpType">
+                                <li><i>OperationType</i> variable (GreenVulcano communication paradigm)</li>
+                            </xsl:if>
+                        </xsl:for-each>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+    </xsl:template>
+-->
+<!ELEMENT RequestFlatParamHandler (RequestFlatParamMapping+)>
+
+<!--
+    Element type.
+-->
+<!ATTLIST RequestFlatParamHandler ItemType CDATA #FIXED "Handler">
+<!--
+    Implementation class.
+-->
+<!ATTLIST RequestFlatParamHandler Class CDATA #FIXED "it.greenvulcano.gvesb.adapter.http.formatters.handlers.FlatParameterHandler">
+<!--
+    The output type of this inbound request parameter handler (GVBuffer object or communication paradigm string).
+
+    #NotNull
+-->
+<!ATTLIST RequestFlatParamHandler OutputType (GVBuffer | OpType) #REQUIRED>
+<!--
+    The separator character between fields within the flat string value of this inbound request parameter.
+
+    #NotNull
+-->
+<!ATTLIST RequestFlatParamHandler SeparatorChar CDATA #IMPLIED>
+
+<!--
+    This element contains a mapping between a value extracted from a flat string (the content of an inbound request parameter), and a field of a request GVBuffer object. If mapping target is indicated with the "OpType" keyword, the value is a string indicating the requested communication paradigm (RequestReply, Request, SendReply, GetRequest, GetReply).
+
+    #Template:
+    <xsl:template match="RequestFlatParamMapping">
+        <table cellpadding="0" cellspacing="0">
+            <xsl:choose>
+            <xsl:when test="../../@Name">
+                <tr>
+                    <td>Inbound request parameter handled:</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="../../@Name"/></b></td>
+                </tr>
+            </xsl:when>
+            <xsl:otherwise>
+                <tr>
+                    <td>Inbound request content handler mapping.</td>
+                </tr>
+            </xsl:otherwise>
+            </xsl:choose>
+            <tr>
+                <td>Mapping source offset: <b><xsl:value-of select="@Offset"/></b></td>
+            </tr>
+            <xsl:if test="@Length">
+            <tr>
+                <td>Mapping source Length: <b><xsl:value-of select="@Length"/></b></td>
+            </tr>
+            </xsl:if>
+            <tr>
+                <td>Mapping target:
+                    <xsl:if test="GVBufferField">
+                        field <b><xsl:value-of select="substring-after(GVBufferField/@FieldName, 'GVBuffer.')"/></b> of GVBuffer
+                    </xsl:if>
+                    <xsl:if test="GVBufferProperty">
+                        extended field <b><xsl:value-of select="GVBufferProperty/@FieldName"/></b> of GVBuffer
+                    </xsl:if>
+                    <xsl:if test="OpType">
+                        <i>OperationType</i> variable (GreenVulcano communication paradigm)
+                    </xsl:if>
+                </td>
+            </tr>
+        </table>
+    </xsl:template>
+-->
+<!ELEMENT RequestFlatParamMapping (GVBufferField | GVBufferProperty | OpType)>
+<!--
+    Element type.
+-->
+<!ATTLIST RequestFlatParamMapping ItemType CDATA #FIXED "Mapping">
+<!--
+    The offset of a field within the flat string value of this inbound request parameter.
+
+    #NotNull
+-->
+<!ATTLIST RequestFlatParamMapping Offset CDATA #REQUIRED>
+<!--
+    The length of a field within the flat string value of this inbound request parameter. Not needed if a field separator char has already been specified.
+
+    #NotNull
+    #Warn: {{../@SeparatorChar}} You have already specified a Separator Char.
+-->
+<!ATTLIST RequestFlatParamMapping Length CDATA #IMPLIED>
+<!--
+    The place where unneeded filling white spaces can be present.
+    Possible values are:
+    "left", to trim leading white spaces
+    "right", to trim trailing white spaces
+    "both", to trim both leading and trailing spaces
+    If it is specified a value different from these above, no trimming will be performed
+-->
+<!ATTLIST RequestFlatParamMapping Trim (none | left | right | both) "none">
+
+<!--
+    This element contains configuration informations about an inbound request Flat parameter <b>Handler</b>: a Java object used to extract informations from a single parameter of an inbound http request (in the case that this parameter contains a plain text string) and use them to populate one or more fields of an GVBuffer request object to be sent to GreenVulcano.
+
+    #Label: @OutputType
+    #Template:
+
+        <xsl:template match="RequestStringParamHandler">
+            <table cellpadding="0" cellspacing="0">
+                <xsl:choose>
+                <xsl:when test="../@Name">
+                    <tr>
+                        <td>Inbound request parameter handled:</td>
+                        <td width="20"></td>
+                        <td><b><xsl:value-of select="../@Name"/></b></td>
+                    </tr>
+                </xsl:when>
+                <xsl:otherwise>
+                    <tr>
+                        <td>Inbound request content handler.</td>
+                    </tr>
+                </xsl:otherwise>
+             </xsl:choose>
+               <tr>
+                    <td>Output type: <b><xsl:value-of select="@OutputType"/></b></td>
+                </tr>
+                <tr>
+                    <td>Maps parameter contents to:</td>
+                    <td width="20"></td>
+                </tr>
+                <tr>
+                    <td>
+                        <ul>
+                            <xsl:for-each select="RequestStringParamMapping">
+                                <xsl:if test="GVBufferField">
+                                    <li>field <b><xsl:value-of select="substring-after(GVBufferField/@FieldName, 'GVBuffer.')"/></b> of GVBuffer</li>
+                                </xsl:if>
+                                <xsl:if test="GVBufferProperty">
+                                    <li>extended field <b><xsl:value-of select="GVBufferProperty/@FieldName"/></b> of GVBuffer</li>
+                                </xsl:if>
+                                 <xsl:if test="OpType">
+                                    <li><i>OperationType</i> variable (GreenVulcano communication paradigm)</li>
+                                </xsl:if>
+                           </xsl:for-each>
+                        </ul>
+                   </td>
+                </tr>
+            </table>
+        </xsl:template>
+-->
+<!ELEMENT RequestStringParamHandler (RequestStringParamMapping+)>
+<!--
+    Element type.
+-->
+<!ATTLIST RequestStringParamHandler ItemType CDATA #FIXED "Handler">
+<!--
+    Implementation class.
+-->
+<!ATTLIST RequestStringParamHandler Class CDATA #FIXED "it.greenvulcano.gvesb.adapter.http.formatters.handlers.StringParameterHandler">
+<!--
+    The output type of this inbound request parameter handler (GVBuffer object or communication paradigm string).
+
+    #NotNull
+-->
+<!ATTLIST RequestStringParamHandler OutputType (GVBuffer | OpType) #REQUIRED>
+
+<!--
+    This element contains a mapping between a value extracted from a plain text string (the value of an inbound request parameter), and a field of a request GVBuffer object. If mapping target is indicated with the "OpType" keyword, the value is a string indicating the requested communication paradigm (RequestReply, Request, SendReply, GetRequest, GetReply).
+    #Template:
+
+        <xsl:template match="RequestStringParamMapping">
+            <table cellpadding="0" cellspacing="0">
+             <xsl:choose>
+                <xsl:when test="../../@Name">
+                    <tr>
+                        <td>Inbound request parameter handled:</td>
+                        <td width="20"></td>
+                        <td><b><xsl:value-of select="../../@Name"/></b></td>
+                    </tr>
+                </xsl:when>
+                <xsl:otherwise>
+                    <tr>
+                        <td>Inbound request content handler mapping.</td>
+                    </tr>
+                </xsl:otherwise>
+             </xsl:choose>
+                <tr>
+                    <td>Mapping target:
+                        <xsl:if test="GVBufferField">
+                           field <b><xsl:value-of select="substring-after(GVBufferField/@FieldName, 'GVBuffer.')"/></b> of GVBuffer
+                        </xsl:if>
+                        <xsl:if test="GVBufferProperty">
+                            extended field <b><xsl:value-of select="GVBufferProperty/@FieldName"/></b> of GVBuffer
+                        </xsl:if>
+                        <xsl:if test="OpType">
+                            <i>OperationType</i> variable (GreenVulcano communication paradigm)
+                        </xsl:if>
+                    </td>
+                </tr>
+            </table>
+        </xsl:template>
+-->
+<!ELEMENT RequestStringParamMapping (GVBufferField | GVBufferProperty | OpType)>
+<!--
+    Element type.
+-->
+<!ATTLIST RequestStringParamMapping ItemType CDATA #FIXED "Mapping">
+
+<!--
+    This element contains the configuration of default values for some of all the fields of a inbound request GVBuffer object.
+
+    #Template:
+    <xsl:template match="GVBufferDefaultValues">
+        <table cellpadding="0" cellspacing="0">
+            <tr>
+                <td>
+                <ul>
+                    <xsl:if test="GVBufferFieldDefaultValue">
+                        <li>field <b><xsl:value-of select="substring-after(GVBufferFieldDefaultValue/@FieldName, 'GVBuffer.')"/></b> of GVBuffer set to <i><xsl:value-of select="GVBufferFieldDefaultValue/@FieldValue"/></i></li>
+                    </xsl:if>
+                    <xsl:if test="GVBufferPropertyDefaultValue">
+                        <li>extended field <b><xsl:value-of select="GVBufferPropertyDefaultValue/@FieldName"/></b> of GVBuffer set to <i><xsl:value-of select="GVBufferPropertyDefaultValue/@FieldValue"/></i></li>
+                    </xsl:if>
+                </ul>
+                </td>
+            </tr>
+        </table>
+    </xsl:template>
+-->
+<!ELEMENT GVBufferDefaultValues ((GVBufferFieldDefaultValue+, GVBufferPropertyDefaultValue*) | (GVBufferFieldDefaultValue*, GVBufferPropertyDefaultValue+))>
+
+<!--
+    A configured default value for the communication paradigm to be used.
+        #Template:
+
+        <xsl:template match="OpTypeDefaultValue">
+            <table cellpadding="0" cellspacing="0">
+                <tr>
+                    <td>Communication paradigm set to:  <i><xsl:value-of select="@Value"/></i></td>
+                </tr>
+            </table>
+        </xsl:template>
+-->
+<!ELEMENT OpTypeDefaultValue EMPTY>
+<!--
+    The configured default value for the communication paradigm.
+-->
+<!ATTLIST OpTypeDefaultValue Value %Paradigms; #REQUIRED>
+
+<!--
+    This element contains configuration informations about conversion of a response GVBuffer object (received from GreenVulcano) into an inbound http response to be sent to the invoking external http system.
+
+    #Template:
+    <xsl:template match="ResponseParams">
+        <table cellpadding="0" cellspacing="0">
+            <xsl:if test="@ParamEntrySeparator">
+            <tr>
+                <td>Parameters entry separator string within output querystring:</td>
+                    <td width="20"></td>
+                <td><b><xsl:value-of select="@ParamEntrySeparator"/></b></td>
+                </tr>
+            </xsl:if>
+            <xsl:if test="@ParamNameValueSeparator">
+            <tr>
+                <td>Parameters name-value separator string within output querystring:</td>
+                    <td width="20"></td>
+                <td><b><xsl:value-of select="@ParamNameValueSeparator"/></b></td>
+                </tr>
+            </xsl:if>
+        <xsl:choose>
+            <xsl:when test="@EncodeParams='True'">
+                <tr>
+                    <td>Inbound response parameters values will be <i>URLEncoded</i>.</td>
+                    </tr>
+                </xsl:when>
+            <xsl:otherwise>
+                <tr>
+                    <td>Inbound response parameters values will NOT be <i>URLEncoded</i>.</td>
+                    </tr>
+                </xsl:otherwise>
+            </xsl:choose>
+            <tr>
+                <td>Configured inbound request parameters:</td>
+            </tr>
+                <tr>
+                    <td>
+                        <ul>
+                        <xsl:for-each select="ResponseParam">
+                            <li><b><xsl:value-of select="@Name"/></b></li>
+                        </xsl:for-each>
+                        </ul>
+                    </td>
+            </tr>
+        </table>
+    </xsl:template>
+-->
+<!ELEMENT ResponseParams (ResponseParam+, Description?)>
+<!--
+    True if inbound response parameters must be URLEncoded, false otherwise.
+-->
+<!ATTLIST ResponseParams URLEncoding (True | False) #REQUIRED>
+<!--
+    Parameters name-value separator string within output querystring.
+    Default is '='
+
+    #NotNull
+-->
+<!ATTLIST ResponseParams ParamNameValueSeparator CDATA #IMPLIED>
+<!--
+    Parameters entry separator string within output querystring.
+    Default is '&'
+
+    #NotNull
+-->
+<!ATTLIST ResponseParams ParamEntrySeparator CDATA #IMPLIED>
+
+<!--
+    This element specifies the rules to follow to generate a single parameter of an inbound http response.
+    It's possible to use values read from the fields of the response GVBuffer object received from GreenVulcano, or configure a default value for each handler mapping.
+
+    #Label: @Name
+    #Template:
+    <xsl:template match="ResponseParam">
+        <table cellpadding="0" cellspacing="0">
+            <tr>
+                <td>Parameter name:</td>
+                <td width="20"></td>
+                <td><b><xsl:value-of select="@Name"/></b></td>
+            </tr>
+            <xsl:if test="@Type">
+                <tr>
+                    <td>Type:</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="@Type"/></b></td>
+                </tr>
+            </xsl:if>
+                <tr>
+                    <td>Configured handlers:</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="count(./*[@ItemType='Handler'])"/></b></td>
+                </tr>
+                <tr>
+                    <td>Configured error handlers:</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="count(./*[@ItemType='ErrorHandler'])"/></b></td>
+                </tr>
+                    <tr>
+                    <td>Configured ACK handlers:</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="count(./*[@ItemType='ACKHandler'])"/></b></td>
+                </tr>
+                    <xsl:choose>
+                    <xsl:when test="@SendParameterName='True'">
+                        <tr>
+                            <td>This parameter appears within inbound response as a <i>name=value</i> entry.</td>
+                            </tr>
+                        </xsl:when>
+                    <xsl:otherwise>
+                        <tr>
+                            <td>This parameter appears within inbound response as a single <i>value</i> entry.</td>
+                            </tr>
+                        </xsl:otherwise>
+                    </xsl:choose>
+        </table>
+    </xsl:template>
+-->
+<!ELEMENT ResponseParam ((%ResponseHandlers;)+, (%ResponseErrorHandlers;)*)>
+<!--
+    The name of an inbound response parameter.
+
+    #NotNull
+-->
+<!ATTLIST ResponseParam Name CDATA #REQUIRED>
+<!--
+    True if the parameter's name must appear within inbound response, false otherwise.
+-->
+<!ATTLIST ResponseParam SendParameterName (True | False) #REQUIRED>
+<!--
+    True if the parameter must appear in the HTTP header.
+-->
+<!ATTLIST ResponseParam PutInHeader (True | False) #REQUIRED>
+<!--
+    #Warn: {{../ResponseParam[@Type]}} The attribute 'Type' is not yet implemented.
+-->
+<!ATTLIST ResponseParam Type CDATA #IMPLIED>
+
+<!--
+    This element contains configuration informations about an inbound response XML parameter <b>Handler</b>: a Java object used to extract informations from one or more fields of an GVBuffer response object (received from GreenVulcano) and use them to generate an Http response parameter value (containing an XML string) to be sent back to external Http system.
+
+    #Label: @OutputType
+    #Template:
+    <xsl:template match="ResponseXMLParamHandler">
+        <table cellpadding="0" cellspacing="0">
+            <tr>
+                <td>Inbound response parameter handled:</td>
+                <td width="20"></td>
+                <td><b><xsl:value-of select="../@Name"/></b></td>
+            </tr>
+            <tr>
+                <td>Output type: <b><xsl:value-of select="@OutputType"/></b></td>
+            </tr>
+            <tr>
+                <td>Maps parameter contents from:</td>
+                <td width="20"></td>
+            </tr>
+            <tr>
+                <td>
+                    <ul>
+                        <xsl:for-each select="ResponseXMLParamMapping">
+                            <xsl:if test="GVBufferField">
+                                <li>field <b><xsl:value-of select="substring-after(GVBufferField/@FieldName, 'GVBuffer.')"/></b> of GVBuffer</li>
+                            </xsl:if>
+                            <xsl:if test="GVBufferProperty">
+                                <li>extended field <b><xsl:value-of select="GVBufferProperty/@FieldName"/></b> of GVBuffer</li>
+                            </xsl:if>
+                                <xsl:if test="DefaultValue">
+                                <li>configured default value</li>
+                            </xsl:if>
+                        </xsl:for-each>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+    </xsl:template>
+-->
+<!ELEMENT ResponseXMLParamHandler (ResponseXMLParamMapping+)>
+<!--
+    Element type.
+-->
+<!ATTLIST ResponseXMLParamHandler ItemType CDATA #FIXED "Handler">
+<!--
+    Implementation class.
+-->
+<!ATTLIST ResponseXMLParamHandler Class CDATA #FIXED "it.greenvulcano.gvesb.adapter.http.formatters.handlers.XMLParameterHandler">
+<!--
+    The output type of this inbound response parameter handler (an inbound http response parameter value).
+
+    #NotNull
+-->
+<!ATTLIST ResponseXMLParamHandler OutputType CDATA #FIXED "HttpParam">
+
+<!--
+    This element contains a mapping between the value of a field of a response GVBuffer object (received from GreenVulcano) and the value (to be set) of an element or attribute (within the XML content of an inbound response parameter) matching a given XPath.
+
+    #Template:
+    <xsl:template match="ResponseXMLParamMapping">
+        <table cellpadding="0" cellspacing="0">
+            <tr>
+                <td>Inbound response parameter handled:</td>
+                <td width="20"></td>
+                <td><b><xsl:value-of select="../../@Name"/></b></td>
+            </tr>
+            <tr>
+                <td>Mapping target: <b><xsl:value-of select="@XPath"/></b></td>
+            </tr>
+            <tr>
+                <td>Mapping source:
+                    <xsl:if test="GVBufferField">
+                        field <b><xsl:value-of select="substring-after(GVBufferField/@FieldName, 'GVBuffer.')"/></b> of GVBuffer
+                    </xsl:if>
+                    <xsl:if test="GVBufferProperty">
+                        extended field <b><xsl:value-of select="GVBufferProperty/@FieldName"/></b> of GVBuffer
+                    </xsl:if>
+                        <xsl:if test="DefaultValue">
+                        configured default value
+                    </xsl:if>
+                </td>
+            </tr>
+        </table>
+    </xsl:template>
+-->
+<!ELEMENT ResponseXMLParamMapping (GVBufferField | GVBufferProperty | GVBufferPropertyList | DefaultValue)>
+<!--
+    Element type.
+-->
+<!ATTLIST ResponseXMLParamMapping ItemType CDATA #FIXED "Mapping">
+<!--
+    XPath of an element or attribute (within XML content of an inbound response parameter).
+
+    #NotNull
+-->
+<!ATTLIST ResponseXMLParamMapping XPath CDATA #REQUIRED>
+
+<!--
+    This element contains configuration informations about an inbound response Flat parameter <b>Handler</b>: a Java object used to extract informations from one or more fields of an GVBuffer response object (received from GreenVulcano) and use them to generate an Http response parameter value (containing a Flat string) to be sent back to external Http system.
+
+    #Label: @OutputType
+    #Template:
+    <xsl:template match="ResponseFlatParamHandler">
+        <table cellpadding="0" cellspacing="0">
+            <tr>
+                <td>Inbound response parameter handled:</td>
+                <td width="20"></td>
+                <td><b><xsl:value-of select="../@Name"/></b></td>
+            </tr>
+            <tr>
+                <td>Output type: <b><xsl:value-of select="@OutputType"/></b></td>
+            </tr>
+            <tr>
+                <td>Maps parameter contents from:</td>
+                <td width="20"></td>
+            </tr>
+            <tr>
+                <td>
+                    <ul>
+                        <xsl:for-each select="ResponseFlatParamMapping">
+                            <xsl:if test="GVBufferField">
+                                <li>field <b><xsl:value-of select="substring-after(GVBufferField/@FieldName, 'GVBuffer.')"/></b> of GVBuffer</li>
+                            </xsl:if>
+                            <xsl:if test="GVBufferProperty">
+                                <li>extended field <b><xsl:value-of select="GVBufferProperty/@FieldName"/></b> of GVBuffer</li>
+                            </xsl:if>
+                                <xsl:if test="DefaultValue">
+                                <li>configured default value</li>
+                            </xsl:if>
+                        </xsl:for-each>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+    </xsl:template>
+-->
+<!ELEMENT ResponseFlatParamHandler (ResponseFlatParamMapping+)>
+<!--
+    Element type.
+-->
+<!ATTLIST ResponseFlatParamHandler ItemType CDATA #FIXED "Handler">
+<!--
+    Implementation class.
+-->
+<!ATTLIST ResponseFlatParamHandler Class CDATA #FIXED "it.greenvulcano.gvesb.adapter.http.formatters.handlers.FlatParameterHandler">
+<!--
+    The output type of this inbound response parameter handler (an inbound http response parameter value).
+
+    #NotNull
+-->
+<!ATTLIST ResponseFlatParamHandler OutputType CDATA #FIXED "HttpParam">
+<!--
+    The separator character between fields within the flat string value of this inbound response parameter.
+
+    #NotNull
+-->
+<!ATTLIST ResponseFlatParamHandler SeparatorChar CDATA #IMPLIED>
+
+<!--
+    This element contains a mapping between a value extracted from a field of a response GVBuffer object (received from GreenVulcano) and the value (to be set) of a field within a flat string (the content of an inbound response parameter).
+
+    #Template:
+    <xsl:template match="ResponseFlatParamMapping">
+        <table cellpadding="0" cellspacing="0">
+            <tr>
+                <td>Inbound response parameter handled:</td>
+                <td width="20"></td>
+                <td><b><xsl:value-of select="../../@Name"/></b></td>
+            </tr>
+            <tr>
+                <td>Mapping target offset: <b><xsl:value-of select="@Offset"/></b></td>
+            </tr>
+            <xsl:if test="@Length">
+            <tr>
+                <td>Mapping target Length: <b><xsl:value-of select="@Length"/></b></td>
+            </tr>
+            </xsl:if>
+            <tr>
+                <td>Mapping source:
+                    <xsl:if test="GVBufferField">
+                        field <b><xsl:value-of select="substring-after(GVBufferField/@FieldName, 'GVBuffer.')"/></b> of GVBuffer
+                    </xsl:if>
+                    <xsl:if test="GVBufferProperty">
+                        extended field <b><xsl:value-of select="GVBufferProperty/@FieldName"/></b> of GVBuffer
+                    </xsl:if>
+                        <xsl:if test="DefaultValue">
+                        configured default value
+                    </xsl:if>
+                </td>
+            </tr>
+        </table>
+    </xsl:template>
+-->
+<!ELEMENT ResponseFlatParamMapping (GVBufferField | GVBufferProperty | DefaultValue)>
+<!--
+    Element type.
+-->
+<!ATTLIST ResponseFlatParamMapping ItemType CDATA #FIXED "Mapping">
+<!--
+    The offset of a field within the flat string value of this inbound response parameter.
+
+    #NotNull
+-->
+<!ATTLIST ResponseFlatParamMapping Offset CDATA #REQUIRED>
+<!--
+    The length of a field within the flat string value of this inbound response parameter. Not needed if a field separator char has already been specified.
+
+    #NotNull
+    #Warn: {{../@SeparatorChar}} You have already specified a Separator Char.
+-->
+<!ATTLIST ResponseFlatParamMapping Length CDATA #IMPLIED>
+<!--
+    The place where unneeded filling white spaces can be present. These spaces will be trimmed by the Adapter.
+    Possible values are:
+    "left", to trim leading white spaces
+    "right", to trim trailing white spaces
+    "both", to trim both leading and trailing spaces
+    If it is specified a value different from these above, no trimming will be performed
+-->
+<!ATTLIST ResponseFlatParamMapping Trim (none | left | right | both) "none">
+
+<!--
+    This element contains configuration informations about an inbound response string parameter <b>Handler</b>: a Java object used to extract informations from one or more fields of an GVBuffer response object (received from GreenVulcano) and use them to generate an Http response parameter value (containing a plain text string) to be sent back to external Http system.
+
+    #Label: @OutputType
+    #Template:
+    <xsl:template match="ResponseStringParamHandler">
+        <table cellpadding="0" cellspacing="0">
+            <tr>
+                <td>Inbound response parameter handled:</td>
+                <td width="20"></td>
+                <td><b><xsl:value-of select="../@Name"/></b></td>
+            </tr>
+            <tr>
+                <td>Output type: <b><xsl:value-of select="@OutputType"/></b></td>
+            </tr>
+            <tr>
+                <td>Maps parameter contents from:</td>
+                <td width="20"></td>
+            </tr>
+            <tr>
+                <td>
+                    <ul>
+                        <xsl:for-each select="ResponseStringParamMapping">
+                            <xsl:if test="GVBufferField">
+                                <li>field <b><xsl:value-of select="substring-after(GVBufferField/@FieldName, 'GVBuffer.')"/></b> of GVBuffer</li>
+                            </xsl:if>
+                            <xsl:if test="GVBufferProperty">
+                                <li>extended field <b><xsl:value-of select="GVBufferProperty/@FieldName"/></b> of GVBuffer</li>
+                            </xsl:if>
+                                <xsl:if test="DefaultValue">
+                                <li>configured default value</li>
+                            </xsl:if>
+                        </xsl:for-each>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+    </xsl:template>
+-->
+<!ELEMENT ResponseStringParamHandler (ResponseStringParamMapping+)>
+<!--
+    Element type.
+-->
+<!ATTLIST ResponseStringParamHandler ItemType CDATA #FIXED "Handler">
+<!--
+    Implementation class.
+-->
+<!ATTLIST ResponseStringParamHandler Class CDATA #FIXED "it.greenvulcano.gvesb.adapter.http.formatters.handlers.StringParameterHandler">
+<!--
+    The output type of this inbound response parameter handler (an inbound http response parameter value).
+
+    #NotNull
+-->
+<!ATTLIST ResponseStringParamHandler OutputType CDATA #FIXED "HttpParam">
+
+<!--
+    This element contains a mapping between a value extracted from a field of a response GVBuffer object (received from GreenVulcano) and the value (to be set) of a field within a plain text string (the content of an inbound response parameter).
+    #Template:
+
+        <xsl:template match="ResponseStringParamMapping">
+            <table cellpadding="0" cellspacing="0">
+                <tr>
+                    <td>Inbound response parameter handled:</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="../../@Name"/></b></td>
+                </tr>
+                <tr>
+                    <td>Mapping source:
+                        <xsl:if test="GVBufferField">
+                           field <b><xsl:value-of select="substring-after(GVBufferField/@FieldName, 'GVBuffer.')"/></b> of GVBuffer
+                        </xsl:if>
+                        <xsl:if test="GVBufferProperty">
+                            extended field <b><xsl:value-of select="GVBufferProperty/@FieldName"/></b> of GVBuffer
+                        </xsl:if>
+                         <xsl:if test="DefaultValue">
+                            configured default value
+                        </xsl:if>
+                   </td>
+                </tr>
+            </table>
+        </xsl:template>
+-->
+<!ELEMENT ResponseStringParamMapping (GVBufferField | GVBufferProperty | GVBufferPropertyList | DefaultValue)>
+<!--
+    Element type.
+-->
+<!ATTLIST ResponseStringParamMapping ItemType CDATA #FIXED "Mapping">
+
+<!--
+    This element represents a mapping target to the variable containing the communication paradigm to be used.
+-->
+<!ELEMENT OpType EMPTY>
+
+<!--
+    This element represents a plain text value to be assigned as source of an inbound response error message.
+
+    #Template:
+    <xsl:template match="DefaultErrorMessage">
+        <table cellpadding="0" cellspacing="0">
+                <tr>
+                <td>Message length: <b><xsl:value-of select="string-length(text())"/></b> characters</td>
+            </tr>
+        </table>
+    </xsl:template>
+-->
+<!ELEMENT DefaultErrorMessage (#PCDATA)>
+<!--
+    This element represents a mapping target from a field of an GVTransactionInfo object to the error value of an HTTP parameter.
+
+    #Template:
+    <xsl:template match="GVTransactionErrorInfo">
+        <table cellpadding="0" cellspacing="0">
+                <tr>
+                <td>Field name: <b><xsl:value-of select="substring-after(@Value, 'GVTransInfo.')"/></b></td>
+            </tr>
+        </table>
+    </xsl:template>
+-->
+<!ELEMENT GVTransactionErrorInfo EMPTY>
+<!--
+    The name of a field of an GVTransactionInfo object.
+-->
+<!ATTLIST GVTransactionErrorInfo Value %GVTransErrorInfoFields; #REQUIRED>
+
+<!--
+    This element contains configuration informations about an inbound response XML parameter <b>Error Handler</b>: a Java object used to generate an Http response parameter ERROR value (containing an XML string) to be sent back to external Http system.
+
+    #Label: @OutputType
+    #Template:
+    <xsl:template match="XMLParamErrorHandler">
+        <table cellpadding="0" cellspacing="0">
+            <tr>
+                <td>Inbound response parameter handled:</td>
+                <td width="20"></td>
+                <td><b><xsl:value-of select="../@Name"/></b></td>
+            </tr>
+            <tr>
+                <td>Output type: <b><xsl:value-of select="@OutputType"/></b></td>
+            </tr>
+            <tr>
+                <td>Maps parameter contents from:</td>
+                <td width="20"></td>
+            </tr>
+            <tr>
+                <td>
+                    <ul>
+                        <xsl:for-each select="XMLParamErrorMapping">
+                            <xsl:if test="GVTransactionErrorInfo">
+                                <li>field <b><xsl:value-of select="substring-after(GVTransactionErrorInfo/@Value, 'GVTransInfo.')"/></b> of GVTransactionInfo</li>
+                            </xsl:if>
+                                <xsl:if test="DefaultErrorMessage">
+                                <li>configured default error message</li>
+                            </xsl:if>
+                        </xsl:for-each>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+    </xsl:template>
+-->
+<!ELEMENT XMLParamErrorHandler (XMLParamErrorMapping)+>
+<!--
+    Element type.
+-->
+<!ATTLIST XMLParamErrorHandler ItemType CDATA #FIXED "ErrorHandler">
+<!--
+    Implementation class.
+-->
+<!ATTLIST XMLParamErrorHandler Class CDATA #FIXED "it.greenvulcano.gvesb.adapter.http.formatters.handlers.XMLParameterHandler">
+<!--
+    The output type of this inbound response parameter handler (an inbound http response parameter value).
+
+    #NotNull
+-->
+<!ATTLIST XMLParamErrorHandler OutputType CDATA #FIXED "HttpParam">
+
+<!--
+    This element contains a mapping between the value of a field of an GVTransactionInfo object (or a fixed default error value) and the value (to be set in case of error) of an element or attribute (within the XML content of an inbound response parameter) matching a given XPath.
+
+    #Template:
+    <xsl:template match="XMLParamErrorMapping">
+        <table cellpadding="0" cellspacing="0">
+            <tr>
+                <td>Inbound response parameter handled:</td>
+                <td width="20"></td>
+                <td><b><xsl:value-of select="../../@Name"/></b></td>
+            </tr>
+            <tr>
+                <td>Mapping target: <b><xsl:value-of select="@XPath"/></b></td>
+            </tr>
+            <tr>
+                <td>Mapping source:
+                    <xsl:if test="GVTransactionErrorInfo">
+                        field <b><xsl:value-of select="substring-after(GVTransactionErrorInfo/@Value, 'GVTransInfo.')"/></b> of GVTransactionInfo
+                    </xsl:if>
+                        <xsl:if test="DefaultErrorMessage">
+                        configured default error message
+                    </xsl:if>
+                </td>
+            </tr>
+        </table>
+    </xsl:template>
+-->
+<!ELEMENT XMLParamErrorMapping (GVTransactionErrorInfo | DefaultErrorMessage)>
+<!--
+    Element type.
+-->
+<!ATTLIST XMLParamErrorMapping ItemType CDATA #FIXED "Mapping">
+<!--
+    XPath of an element or attribute (within XML content of an inbound response parameter).
+
+    #NotNull
+-->
+<!ATTLIST XMLParamErrorMapping XPath CDATA #REQUIRED>
+
+<!--
+    This element contains configuration informations about an inbound response Flat parameter <b>Error Handler</b>: a Java object used to generate an Http response parameter ERROR value (containing a Flat string) to be sent back to external Http system.
+
+    #Label: @OutputType
+    #Template:
+    <xsl:template match="FlatParamErrorHandler">
+        <table cellpadding="0" cellspacing="0">
+            <tr>
+                <td>Inbound response parameter handled:</td>
+                <td width="20"></td>
+                <td><b><xsl:value-of select="../@Name"/></b></td>
+            </tr>
+            <tr>
+                <td>Output type: <b><xsl:value-of select="@OutputType"/></b></td>
+            </tr>
+            <tr>
+                <td>Maps parameter contents from:</td>
+                <td width="20"></td>
+            </tr>
+            <tr>
+                <td>
+                    <ul>
+                        <xsl:for-each select="FlatParamErrorMapping">
+                            <xsl:if test="GVTransactionErrorInfo">
+                                <li>field <b><xsl:value-of select="substring-after(GVTransactionErrorInfo/@Value, 'GVTransInfo.')"/></b> of GVTransactionInfo</li>
+                            </xsl:if>
+                                <xsl:if test="DefaultErrorMessage">
+                                <li>configured error message</li>
+                            </xsl:if>
+                        </xsl:for-each>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+    </xsl:template>
+-->
+<!ELEMENT FlatParamErrorHandler (FlatParamErrorMapping+)>
+<!--
+    Element type.
+-->
+<!ATTLIST FlatParamErrorHandler ItemType CDATA #FIXED "ErrorHandler">
+<!--
+    Implementation class.
+-->
+<!ATTLIST FlatParamErrorHandler Class CDATA #FIXED "it.greenvulcano.gvesb.adapter.http.formatters.handlers.FlatParameterHandler">
+<!--
+    The output type of this inbound response parameter handler (an inbound http response parameter value).
+
+    #NotNull
+-->
+<!ATTLIST FlatParamErrorHandler OutputType CDATA #FIXED "HttpParam">
+<!--
+    The separator character between fields within the flat string value of this inbound response parameter.
+
+    #NotNull
+-->
+<!ATTLIST FlatParamErrorHandler SeparatorChar CDATA #IMPLIED>
+
+<!--
+    This element contains a mapping between a value extracted from a field of an GVTransactionInfo object (or a fixed default error value) and the value (to be set) of a field within a flat string (the error content of an inbound response parameter).
+
+    #Template:
+    <xsl:template match="FlatParamErrorMapping">
+        <table cellpadding="0" cellspacing="0">
+            <tr>
+                <td>Inbound response parameter handled:</td>
+                <td width="20"></td>
+                <td><b><xsl:value-of select="../../@Name"/></b></td>
+            </tr>
+            <tr>
+                <td>Mapping target offset: <b><xsl:value-of select="@Offset"/></b></td>
+            </tr>
+            <xsl:if test="@Length">
+            <tr>
+                <td>Mapping target Length: <b><xsl:value-of select="@Length"/></b></td>
+            </tr>
+            </xsl:if>
+            <tr>
+                <td>Mapping source:
+                    <xsl:if test="GVTransactionErrorInfo">
+                        field <b><xsl:value-of select="substring-after(GVTransactionErrorInfo/@Value, 'GVTransInfo.')"/></b> of GVTransactionInfo
+                    </xsl:if>
+                        <xsl:if test="DefaultErrorMessage">
+                        configured default error message
+                    </xsl:if>
+                </td>
+            </tr>
+        </table>
+    </xsl:template>
+-->
+<!ELEMENT FlatParamErrorMapping (GVTransactionErrorInfo | DefaultErrorMessage)>
+<!--
+    Element type.
+-->
+<!ATTLIST FlatParamErrorMapping ItemType CDATA #FIXED "Mapping">
+<!--
+    The offset of a field within the flat string value of this inbound response parameter.
+
+    #NotNull
+-->
+<!ATTLIST FlatParamErrorMapping Offset CDATA #REQUIRED>
+<!--
+    The length of a field within the flat string value of this inbound response parameter. Not needed if a field separator char has already been specified.
+
+    #NotNull
+    #Warn: {{../@SeparatorChar}} You have already specified a Separator Char.
+-->
+<!ATTLIST FlatParamErrorMapping Length CDATA #IMPLIED>
+
+<!--
+    This element contains configuration informations about an inbound response string parameter <b>Error Handler</b>: a Java object used to generate an Http response parameter ERROR value (containing a plain text string) to be sent back to external Http system.
+
+    #Label: @OutputType
+    #Template:
+    <xsl:template match="StringParamErrorHandler">
+        <table cellpadding="0" cellspacing="0">
+            <tr>
+                <td>Inbound response parameter handled:</td>
+                <td width="20"></td>
+                <td><b><xsl:value-of select="../@Name"/></b></td>
+            </tr>
+            <tr>
+                <td>Output type: <b><xsl:value-of select="@OutputType"/></b></td>
+            </tr>
+            <tr>
+                <td>Maps parameter contents from:</td>
+                <td width="20"></td>
+            </tr>
+            <tr>
+                <td>
+                    <ul>
+                        <xsl:for-each select="StringParamErrorMapping">
+                            <xsl:if test="GVTransactionErrorInfo">
+                                <li>field <b><xsl:value-of select="substring-after(GVTransactionErrorInfo/@Value, 'GVTransInfo.')"/></b> of GVTransactionInfo</li>
+                            </xsl:if>
+                                <xsl:if test="DefaultErrorMessage">
+                                <li>configured default error message</li>
+                            </xsl:if>
+                        </xsl:for-each>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+    </xsl:template>
+-->
+<!ELEMENT StringParamErrorHandler (StringParamErrorMapping+)>
+<!--
+    Element type.
+-->
+<!ATTLIST StringParamErrorHandler ItemType CDATA #FIXED "ErrorHandler">
+<!--
+    Implementation class.
+-->
+<!ATTLIST StringParamErrorHandler Class CDATA #FIXED "it.greenvulcano.gvesb.adapter.http.formatters.handlers.StringParameterHandler">
+<!--
+    The output type of this inbound response parameter handler (an inbound http response parameter value).
+
+    #NotNull
+-->
+<!ATTLIST StringParamErrorHandler OutputType CDATA #FIXED "HttpParam">
+
+<!--
+    This element contains a mapping between a value extracted from a field of an GVTransactionInfo object (or a fixed default error value) and the value (to be set) of a field within a plain text string (the content of an inbound response parameter).
+
+    #Template:
+    <xsl:template match="StringParamErrorMapping">
+        <table cellpadding="0" cellspacing="0">
+            <tr>
+                <td>Inbound response parameter handled:</td>
+                <td width="20"></td>
+                <td><b><xsl:value-of select="../../@Name"/></b></td>
+            </tr>
+            <tr>
+                <td>Mapping source:
+                    <xsl:if test="GVTransactionErrorInfo">
+                        field <b><xsl:value-of select="substring-after(GVTransactionErrorInfo/@Value, 'GVTransInfo.')"/></b> of GVTransactionInfo
+                    </xsl:if>
+                        <xsl:if test="DefaultErrorMessage">
+                        configured default error message
+                    </xsl:if>
+                </td>
+            </tr>
+        </table>
+    </xsl:template>
+-->
+<!ELEMENT StringParamErrorMapping (GVTransactionErrorInfo | DefaultErrorMessage)>
+<!--
+    Element type.
+-->
+<!ATTLIST StringParamErrorMapping ItemType CDATA #FIXED "Mapping">

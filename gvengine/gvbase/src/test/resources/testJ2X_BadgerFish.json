@@ -1,0 +1,69 @@
+{
+  "soapenv:Envelope": {
+    "@xmlns": {
+      "soapenv": "http://schemas.xmlsoap.org/soap/envelope/"
+    },
+    "soapenv:Header": {
+      "@xmlns": {
+        "soapenv": "http://schemas.xmlsoap.org/soap/envelope/"
+      }
+    },
+    "soapenv:Body": {
+      "@xmlns": {
+        "soapenv": "http://schemas.xmlsoap.org/soap/envelope/"
+      },
+      "ser:Pay": {
+        "@xmlns": {
+          "ser": "http://www.credit.com/services"
+        },
+        "ser:cnumber": [
+          {
+            "@xmlns": {
+              "ser": "http://www.credit.com/services"
+            },
+            "$": "1111222233334444"
+          },
+          {
+            "@xmlns": {
+              "ser": "http://www.credit.com/services"
+            },
+            "$": "1111222233337777"
+          }
+        ],
+        "ser:amount": {
+          "@xmlns": {
+            "ser": "http://www.credit.com/services"
+          },
+          "$": "10"
+        }
+      },
+      "Pay": {
+        "@xmlns": {
+          "$": "http://www.credit.com/services"
+        },
+        "cnumber": [
+          {
+            "@type": "master",
+            "@xmlns": {
+              "$": "http://www.credit.com/services"
+            },
+            "$": "1111222233335555"
+          },
+          {
+            "@type": "secondary",
+            "@xmlns": {
+              "$": "http://www.credit.com/services"
+            },
+            "$": "1111222233336666"
+          }
+        ],
+        "amount": {
+          "@xmlns": {
+            "$": "http://www.credit.com/services"
+          },
+          "$": "20"
+        }
+      }
+    }
+  }
+}

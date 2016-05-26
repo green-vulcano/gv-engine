@@ -1,0 +1,255 @@
+
+<!ENTITY % net-parsers   "SimpleStartStopParser">
+
+<!--
+    VCL plugin to send a Net message to remote servers.
+
+    #Label: @name
+    _Icon: GVHttpCall.png
+    #Category: Custom
+    #SelectOnInsert
+    #Template:
+
+        <xsl:template match="net-send-rec">
+                <xsl:if test="Description">
+                <small><xsl:value-of select="Description"/></small><p/>
+            </xsl:if>
+        </xsl:template>
+-->
+<!ELEMENT net-send-rec (Description?, %net-parsers;, ScriptDecoder?, ScriptEncoder?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST net-send-rec   type CDATA #FIXED "call">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST net-send-rec    class CDATA #FIXED "it.greenvulcano.gvesb.virtual.net.NetSendRecCallOperation">
+<!--
+    Operation name.
+    Used in the 'Flow' section to associate workflow nodes to VCL operations.
+
+    #NotNull
+    #Unique: ../*[@type='enqueue' or @type='dequeue' or @type='call']/@name
+-->
+<!ATTLIST net-send-rec    name CDATA #REQUIRED>
+<!--
+    Host to connect to.
+    Can contain metadata to be resolved at runtime.
+
+    #NotNull
+-->
+<!ATTLIST net-send-rec   host CDATA #REQUIRED>
+<!--
+    Port where the service is exposed.
+    Can contain metadata to be resolved at runtime.
+
+    #NotNull
+-->
+<!ATTLIST net-send-rec   port CDATA #REQUIRED>
+<!--
+    If true input/output data are printed on log file.
+    The default value is 'false'.
+-->
+<!ATTLIST net-send-rec   debug (false|true) #IMPLIED>
+<!--
+    Defines the timeout to wait for a server response, in ms.
+    Default to 10000ms.
+
+    #NotNull
+-->
+<!ATTLIST net-send-rec  so-timeout CDATA #IMPLIED>
+
+
+<!--
+    Decode a Net message idetified by a start/stop sequence.
+
+    #SelectOnInsert
+-->
+<!ELEMENT SimpleStartStopParser (Description?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST SimpleStartStopParser type CDATA #FIXED "net-parser">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST SimpleStartStopParser class CDATA #FIXED "it.greenvulcano.gvesb.gvnet.parser.SimpleStartStopParser">
+<!--
+    Hex representation of the start sequence.
+
+    #NotNull
+-->
+<!ATTLIST SimpleStartStopParser begin-marker CDATA #REQUIRED>
+<!--
+    Hex representation of the stop sequence.
+
+    #NotNull
+-->
+<!ATTLIST SimpleStartStopParser end-marker CDATA #REQUIRED>
+<!--
+    I true, the start/stop sequence is keep in the Net message.
+    Default to false.
+
+    #NotNull
+-->
+<!ATTLIST SimpleStartStopParser keep-markers (true|false) #REQUIRED>
+<!--
+    If true, the data stream is ignored until a start marker is read.
+    Default to true.
+
+    #NotNull
+-->
+<!ATTLIST SimpleStartStopParser skip-until-begin-marker (true|false) #REQUIRED>
+
+<!--
+    Decode a Net message to a GVBuffer instance.
+
+    #SelectOnInsert
+-->
+<!ELEMENT ScriptDecoder (Description?, Script)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST ScriptDecoder type CDATA #FIXED "net-decoder">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST ScriptDecoder class CDATA #FIXED "it.greenvulcano.gvesb.gvnet.marshall.ScriptMarshaller">
+
+<!--
+    Encode a GVBuffer instance to a Net message.
+
+    #SelectOnInsert
+-->
+<!ELEMENT ScriptEncoder (Description?, Script)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST ScriptEncoder type CDATA #FIXED "net-encoder">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST ScriptEncoder class CDATA #FIXED "it.greenvulcano.gvesb.gvnet.marshall.ScriptMarshaller">
+
+
+<!--
+    Net Listener configuration.
+
+-->
+<!ELEMENT GVNetConfiguration (Description?, NetListeners?)>
+
+<!ATTLIST GVNetConfiguration version CDATA #FIXED "1.0">
+<!--
+    Element type 'module'.
+-->
+<!ATTLIST GVNetConfiguration type    CDATA   #FIXED  "module">
+<!--
+    Module id always set to 'GV_NET'.
+-->
+<!ATTLIST GVNetConfiguration name CDATA #FIXED "GV_NET">
+
+<!--
+    #SortChild
+-->
+<!ELEMENT NetListeners (NetReceiver*)>
+
+<!--
+
+    #Label: @name
+-->
+<!ELEMENT NetReceiver (Description?, %net-parsers;, GVNetCoreInvoker)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST NetReceiver type CDATA #FIXED "net-receiver">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST NetReceiver class CDATA #FIXED "it.greenvulcano.gvesb.gvnet.listener.NetReceiver">
+<!--
+    #NotNull
+    #Unique: ../*[@type='net-receiver']/@name
+-->
+<!ATTLIST NetReceiver name CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST NetReceiver host CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST NetReceiver port CDATA #REQUIRED>
+<!--
+    Property that defines if the listener must be activated.
+-->
+<!ATTLIST NetReceiver enabled (true|false) #REQUIRED>
+<!--
+    Property that defines if the listener must be started.
+-->
+<!ATTLIST NetReceiver autoStart (true|false) #REQUIRED>
+<!--
+    Time in sec. to wait on communication errors before reconnect.
+    #NotNull
+-->
+<!ATTLIST NetReceiver reconnectTime CDATA #IMPLIED>
+
+<!--
+
+    #Label: @name
+-->
+<!ELEMENT GVNetCoreInvoker (Description?, ScriptDecoder?, ScriptEncoder?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST GVNetCoreInvoker type CDATA #FIXED "net-invoker">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST GVNetCoreInvoker class CDATA #FIXED "it.greenvulcano.gvesb.gvnet.listener.invoker.GVCoreInvoker">
+<!--
+    #NotNull
+-->
+<!ATTLIST GVNetCoreInvoker name CDATA #REQUIRED>
+<!--
+    ID service with which to perform the invocation of GreenVulcano ESB.
+
+    #References: gvesb:document('GVCore')/GVCore/GVServices/Services/Service/@id-service
+-->
+<!ATTLIST GVNetCoreInvoker gv-service CDATA #REQUIRED>
+<!--
+    ID system with which to perform the invocation of GreenVulcano ESB.
+
+    #References: gvesb:document('GVCore')/GVCore/GVSystems/Systems/System/@id-system
+-->
+<!ATTLIST GVNetCoreInvoker gv-system CDATA #IMPLIED>
+<!--
+     GreenVulcano ESB operation to invoke.
+
+    #References: gvesb:document('GVCore')/GVCore/GVServices/Services/Service[@id-service=current()/@gv-service]/*/@name
+    #References: gvesb:document('GVCore')/GVCore/GVServices/Services/Service[@id-service=current()/@gv-service]/*/@forward-name
+-->
+<!ATTLIST GVNetCoreInvoker gv-operation CDATA #REQUIRED>
+<!--
+    If true the Listener must send reply message.
+    Default to false.
+-->
+<!ATTLIST GVNetCoreInvoker send-reply (true|false) #IMPLIED>
+<!--
+    If true is enabled debug dump of Net Input/Output messages.
+    Default to false.
+-->
+<!ATTLIST GVNetCoreInvoker debug (true|false) #IMPLIED>
+

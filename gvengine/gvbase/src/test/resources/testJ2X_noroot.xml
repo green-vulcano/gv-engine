@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DEFAULT_ROOT>
+    <objA>
+        <id>0</id>
+        <string>000</string>
+    </objA>
+    <objB>
+        <id>1</id>
+        <string>001</string>
+        <value>aaa</value>
+        <value>bbb</value>
+        <value>ccc</value>
+    </objB>
+</DEFAULT_ROOT>

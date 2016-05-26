@@ -1,0 +1,401 @@
+
+<!ENTITY % mqtt-server   "Moquette|ExternalServer">
+
+<!--
+    VCL plugin to publish a MQTT message to brokers.
+
+    #Label: @name
+    _Icon: GVHttpCall.png
+    #Category: Custom
+    #SelectOnInsert
+    #Template:
+
+        <xsl:template match="mqtt-publish-call">
+                <xsl:if test="Description">
+                <small><xsl:value-of select="Description"/></small><p/>
+            </xsl:if>
+        </xsl:template>
+-->
+<!ELEMENT mqtt-publish-call (Description?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST mqtt-publish-call   type CDATA #FIXED "call">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST mqtt-publish-call    class CDATA #FIXED "it.greenvulcano.gvesb.virtual.mqtt.MQTTPublisherCallOperation">
+<!--
+    Operation name.
+    Used in the 'Flow' section to associate workflow nodes to VCL operations.
+
+    #NotNull
+    #Unique: ../*[@type='enqueue' or @type='dequeue' or @type='call']/@name
+-->
+<!ATTLIST mqtt-publish-call    name CDATA #REQUIRED>
+<!--
+    If 'true' then publisher attribute can contains metadata to be resolved at runtime.
+    The default is 'false'.
+-->
+<!ATTLIST mqtt-publish-call    dynamic (true | false) #IMPLIED>
+<!--
+    Publisher to be used to post messages.
+    Can contain metadata to be resolved at runtime.
+
+    #References: {{../mqtt-publish-call[not(@dynamic) or (@dynamic = 'false')]}} gvesb:document('GVAdapters')/GVAdapters/GVMQTTConfiguration/MQTTPublishers/*[@type='mqtt-publisher']/@name
+    #NotNull
+-->
+<!ATTLIST mqtt-publish-call   publisher CDATA #REQUIRED>
+<!--
+    Topic on wich post messages.
+    Overrides the publisher default topic.
+    Can contain metadata to be resolved at runtime.
+
+    #NotNull
+-->
+<!ATTLIST mqtt-publish-call   topic CDATA #IMPLIED>
+<!--
+    QoS used to post messages.
+    Overrides the publisher default QoS.
+    Can contain metadata to be resolved at runtime.
+
+    #NotNull
+-->
+<!ATTLIST mqtt-publish-call   qos CDATA #IMPLIED>
+
+
+<!--
+    Decode a MQTT message to a GVBuffer instance.
+
+    #SelectOnInsert
+-->
+<!ELEMENT ScriptDecoder (Description?, Script)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST ScriptDecoder type CDATA #FIXED "mqtt-decoder">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST ScriptDecoder class CDATA #FIXED "it.greenvulcano.gvesb.gvmqtt.marshall.ScriptMarshaller">
+
+<!--
+    Encode a GVBuffer instance to a MQTT message.
+
+    #SelectOnInsert
+-->
+<!ELEMENT ScriptEncoder (Description?, Script)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST ScriptEncoder type CDATA #FIXED "mqtt-encoder">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST ScriptEncoder class CDATA #FIXED "it.greenvulcano.gvesb.gvmqtt.marshall.ScriptMarshaller">
+
+<!--
+    Manage an internal Moquette broker instance.
+
+    #Label: @name
+    #SelectOnInsert
+-->
+<!ELEMENT Moquette (Description?, moq-property*)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST Moquette type CDATA #FIXED "mqtt-server">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST Moquette class CDATA #FIXED "it.greenvulcano.gvesb.gvmqtt.server.Moquette">
+<!--
+    #NotNull
+    #Unique: ../*[@type='mqtt-server']/@name
+-->
+<!ATTLIST Moquette name   CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST Moquette brokerUrl    CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST Moquette messageStore CDATA #REQUIRED>
+
+<!--
+    Defines a property to set in Moquette configuration.
+
+    #Label: @name
+    #SelectOnInsert
+-->
+<!ELEMENT moq-property (Description)?>
+<!--
+    Property name.
+
+    #NotNull
+    #Unique: ../moq-property/@name
+-->
+<!ATTLIST moq-property   name CDATA #REQUIRED>
+<!--
+    Property value.
+    Can contains the following metadata:
+     - fixed : a text string;
+     - %{{class}}         : the obj class name;
+     - %{{fqclass}}       : the obj fully qualified class name;
+     - %{{package}}       : the obj package name;
+     - ${{propname}}      : a System property name;
+     - sp{{propname}}     : a System property name;
+     - env{{varname}}     : an Environment variable value;
+     - @{{propname}}      : a inProperties property name;
+     - timestamp{{pattern[::tZone]]}} : return the current timestamp, in optional tZone value,
+                                        formatted as 'pattern'
+     - dateformat{{date::source-pattern::dest-pattern[::source-tZone::dest-tZone]}} :
+                               reformat 'date' from 'source-pattern' to 'dest-pattern',
+                               and optionally from 'source-tZone' to 'dest-tZone'
+     - decode{{field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                               evaluate as if-then-else; if 'field' is equal to cond1...n,
+                               return the value of val1...n, otherwise 'default'
+     - decodeL{{sep::field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                               is equivalent to 'decode', with the difference that 'condX'
+                               can be a list of values separated by 'sep'
+     - script{{lang::[scope::]script}} : evaluate a 'lang' script, using the base context 'scope',
+                               the GVBuffer is added to the scope as 'object'
+     - js{{[scope::]script}} : evaluate a JavaScript script, using the context 'scope',
+                               the GVBuffer is added to the scope as 'object'
+     - ognl{{script}} : evaluate a OGNL script,
+                               the GVBuffer is added to the scope as 'object' (and is also the object on which execute the script !! NO MORE FROM 3.5 !!),
+     - sql{{conn::statement}}            : execute a select sql statement sql and return the value of
+                                           the first field of the first selected record.
+                                           The 'conn' parameter is the JNDI name of a DataSource
+     - sqllist{{conn[::sep]::statement}} : execute a select sql statement sql and return the value of
+                                           the first field of all selected records as a 'sep' separated list.
+                                           The 'conn' parameter is the JNDI name of a DataSource
+                                           The 'sep' parameter defaults to comma
+     - sqltable{{conn::statement}}       : executes a select sql statement and returns all values of
+                                           returned cursor as an XML.
+                                           The 'conn' parameter is the JNDI name of a DataSource
+-->
+<!ATTLIST moq-property   value CDATA #REQUIRED>
+
+<!--
+    Reference an external MQTT broker.
+
+    #SelectOnInsert
+-->
+<!ELEMENT ExternalServer (Description?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST ExternalServer type      CDATA #FIXED "mqtt-server">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST ExternalServer class     CDATA #FIXED "it.greenvulcano.gvesb.gvmqtt.server.ExternalServer">
+<!--
+    #NotNull
+    #Unique: ../*[@type='mqtt-server']/@name
+-->
+<!ATTLIST ExternalServer name      CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST ExternalServer brokerUrl CDATA #REQUIRED>
+
+<!--
+    #SortChild
+-->
+<!ELEMENT TopicFilters (Filter*)>
+
+<!ELEMENT Filter (Description?)>
+<!--
+    #Label: @topic
+    #NotNull
+-->
+<!ATTLIST Filter topic CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST Filter qos   CDATA #REQUIRED>
+
+
+<!--
+    MQTT Adapter configuration.
+
+-->
+<!ELEMENT GVMQTTConfiguration (Description?, (%mqtt-server;), MQTTSubscribers?, MQTTPublishers?)>
+
+<!ATTLIST GVMQTTConfiguration version CDATA #FIXED "1.0">
+<!--
+    Element type 'module'.
+-->
+<!ATTLIST GVMQTTConfiguration type    CDATA   #FIXED  "module">
+<!--
+    Module id always set to 'GV_NET'.
+-->
+<!ATTLIST GVMQTTConfiguration name    CDATA #FIXED "GV_MQTT">
+
+<!--
+    #SortChild
+-->
+<!ELEMENT MQTTSubscribers (MQTTSubscriber*)>
+
+<!--
+
+    #Label: @name
+-->
+<!ELEMENT MQTTSubscriber (Description?, TopicFilters?, GVMQTTCoreInvoker)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST MQTTSubscriber type CDATA #FIXED "mqtt-subscriber">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST MQTTSubscriber class CDATA #FIXED "it.greenvulcano.gvesb.gvmqtt.subscriber.MQTTSubscriber">
+<!--
+    #NotNull
+    #Unique: ../*[@type='mqtt-subscriber']/@name
+-->
+<!ATTLIST MQTTSubscriber name CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST MQTTSubscriber clientID CDATA #REQUIRED>
+<!--
+    Broker URL to connect to. If not defined, use the defined MQTT Server as default.
+
+    #NotNull
+-->
+<!ATTLIST MQTTSubscriber brokerUrl CDATA #IMPLIED>
+<!--
+    Property that defines if the subscriber must be activated.
+-->
+<!ATTLIST MQTTSubscriber enabled (true|false) #REQUIRED>
+<!--
+    Property that defines if the subscriber must be started.
+-->
+<!ATTLIST MQTTSubscriber autoStart (true|false) #REQUIRED>
+<!--
+    Time in sec. to wait on communication errors before reconnect.
+    #NotNull
+-->
+<!ATTLIST MQTTSubscriber reconnectTime CDATA #IMPLIED>
+
+<!--
+
+    #Label: @name
+-->
+<!ELEMENT GVMQTTCoreInvoker (Description?, ScriptDecoder?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST GVMQTTCoreInvoker type CDATA #FIXED "mqtt-invoker">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST GVMQTTCoreInvoker class CDATA #FIXED "it.greenvulcano.gvesb.gvmqtt.subscriber.invoker.GVCoreInvoker">
+<!--
+    #NotNull
+-->
+<!ATTLIST GVMQTTCoreInvoker name CDATA #REQUIRED>
+<!--
+    ID service with which to perform the invocation of GreenVulcano ESB.
+
+    #References: gvesb:document('GVCore')/GVCore/GVServices/Services/Service/@id-service
+-->
+<!ATTLIST GVMQTTCoreInvoker gv-service CDATA #REQUIRED>
+<!--
+    ID system with which to perform the invocation of GreenVulcano ESB.
+
+    #References: gvesb:document('GVCore')/GVCore/GVSystems/Systems/System/@id-system
+-->
+<!ATTLIST GVMQTTCoreInvoker gv-system CDATA #IMPLIED>
+<!--
+     GreenVulcano ESB operation to invoke.
+
+    #References: gvesb:document('GVCore')/GVCore/GVServices/Services/Service[@id-service=current()/@gv-service]/*/@name
+    #References: gvesb:document('GVCore')/GVCore/GVServices/Services/Service[@id-service=current()/@gv-service]/*/@forward-name
+-->
+<!ATTLIST GVMQTTCoreInvoker gv-operation CDATA #REQUIRED>
+<!--
+    If true is enabled debug dump of Net Input/Output messages.
+    Default to false.
+-->
+<!ATTLIST GVMQTTCoreInvoker debug (true|false) #IMPLIED>
+
+<!--
+    #SortChild
+-->
+<!ELEMENT MQTTPublishers (MQTTPublisher*)>
+
+<!--
+
+    #Label: @name
+-->
+<!ELEMENT MQTTPublisher (Description?, TopicFilters?, GVMQTTCoreInvoker)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST MQTTPublisher type CDATA #FIXED "mqtt-subscriber">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST MQTTPublisher class CDATA #FIXED "it.greenvulcano.gvesb.gvmqtt.publisher.MQTTPublisher">
+<!--
+    #NotNull
+    #Unique: ../*[@type='mqtt-publisher']/@name
+-->
+<!ATTLIST MQTTPublisher name CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST MQTTPublisher clientID CDATA #REQUIRED>
+<!--
+    Broker URL to connect to. If not defined, use the defined MQTT Server as default.
+
+    #NotNull
+-->
+<!ATTLIST MQTTPublisher brokerUrl CDATA #IMPLIED>
+<!--
+    Property that defines if the subscriber must be activated.
+-->
+<!ATTLIST MQTTPublisher enabled (true|false) #REQUIRED>
+<!--
+    Property that defines if the subscriber must be started.
+-->
+<!ATTLIST MQTTPublisher autoStart (true|false) #REQUIRED>
+<!--
+    Time in sec. to wait on communication errors before reconnect.
+    #NotNull
+-->
+<!ATTLIST MQTTPublisher reconnectTime CDATA #IMPLIED>
+<!--
+    Default topic on wich post messages.
+
+    #NotNull
+-->
+<!ATTLIST MQTTPublisher topic CDATA #IMPLIED>
+<!--
+    Default QoS[0..2] for posted messages.
+    Default to 0.
+
+    #NotNull
+-->
+<!ATTLIST MQTTPublisher qos CDATA #IMPLIED>

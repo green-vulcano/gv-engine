@@ -1,0 +1,63 @@
+
+
+<!--
+    Defines the information needed to convert a Pdf file, read from file system
+    or in GVBuffer.object field, in a XML document.
+
+    #Label: @name
+    #Icon: GVPdfReaderCall.png
+    #Category: Utils
+    #Template:
+        <xsl:template match="pdfreader-call">
+            <xsl:if test="Description">
+                <small><br/><xsl:value-of select="Description"/></small>
+            </xsl:if>
+        </xsl:template>
+-->
+<!ELEMENT pdfreader-call (Description?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST pdfreader-call type CDATA #FIXED "call">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST pdfreader-call class CDATA #FIXED "it.greenvulcano.gvesb.virtual.pdf.reader.GVPdfReaderCallOperation">
+<!--
+    Operation name.
+    Used in the 'Flow' section to associate workflow nodes to VCL operations.
+
+    #NotNull
+    #Unique: ../*[@type='call' or @type='enqueue' or @type='dequeue']/@name
+-->
+<!ATTLIST pdfreader-call name CDATA #REQUIRED>
+<!--
+    Pdf file name. Can contains placeholder to be decoded at runtime.
+    If not defined the Pdf file content must be into GVBuffer.object field.
+
+    #NotNull
+-->
+<!ATTLIST pdfreader-call fileName CDATA #IMPLIED>
+<!--
+    Starting page for conversion. Can contains placeholder to be decoded at runtime.
+    If not defined is -1, meaning that only Pdf metadata must be extracted.
+
+    #NotNull
+-->
+<!ATTLIST pdfreader-call pageStart CDATA #IMPLIED>
+<!--
+    Ending page for conversion. Can contains placeholder to be decoded at runtime.
+    If not defined is -1, meaning that till Pdf's last must be extracted.
+
+    #NotNull
+-->
+<!ATTLIST pdfreader-call pageEnd CDATA #IMPLIED>
+<!--
+    If true the input pdf file is embedded as base64 data into the output XML.
+    Default to false.
+
+    #NotNull
+-->
+<!ATTLIST pdfreader-call embedPDF (true | false) #IMPLIED>

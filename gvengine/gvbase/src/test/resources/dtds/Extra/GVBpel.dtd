@@ -1,0 +1,149 @@
+
+<!ELEMENT BpelEngineConfiguration (Description?,EngineProperties+)>
+<!--
+    Defines parameter configuration for Bpel process.
+
+    #Icon: default.png
+-->
+<!ATTLIST BpelEngineConfiguration deployMentUnitProcess CDATA #REQUIRED>
+
+<!--
+    Start Engine Bpel.
+-->
+<!ATTLIST BpelEngineConfiguration startServer (true|false) #REQUIRED>
+<!--
+    Timeout Transaction.
+    #NotNull
+-->
+<!ATTLIST BpelEngineConfiguration transactionTimeout CDATA #REQUIRED>
+
+<!--
+    Bpel Engine properties.
+
+    #Label: concat(@name,'=',@value)
+-->
+<!ELEMENT EngineProperties (Description?)>
+<!--
+    Property name.
+
+    #NotNull
+    #Unique: ../EngineProperties/@name
+-->
+<!ATTLIST EngineProperties name CDATA #REQUIRED>
+<!--
+    Property value.
+-->
+<!ATTLIST EngineProperties value CDATA #REQUIRED>
+
+<!--
+    Defines an operational workflow of GreenVulcanoESB.
+    Each workflow is identified by a couple <service,operation> and is made
+    instantiating a 'Flow', with Bpel operations
+
+    The operations you can configure are:
+
+    - Forward
+    - GetReply
+    - GetRequest
+    - Request
+    - RequestReply
+    - SendReply
+
+    And correspond (apart from the Forward) to the communication primitives of GreenVulcanoESB.
+    The Forward workflows are driven by the internal mechanisms of GreenVulcanoESB to complete
+    transactions that do not require assistance from external systems
+
+    You can enable some consistency check on the data passed on
+    GreenVulcanoESB.
+
+    Using the sub-element 'Conditions' can be (re)defined the conditions
+    for possible use in the workflow routing.
+
+    #SortChild
+    #SelectOnInsert
+    #Label: {{../*[@name!='Forward']}} @name
+    #Label: {{../*[@name='Forward']}} @forward-name
+    #Icon: operation.png
+    #Warn: {{../*[@name='Forward' and not(@forward-name)]}} 'forward-name' must be defined
+    #Warn: {{../*[@name!='Forward' and @forward-name]}} 'forward-name' must not be defined
+-->
+<!ELEMENT BpelOperation   (Description?,BpelFlow)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST BpelOperation   type              CDATA #FIXED "operation">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST BpelOperation   class             CDATA #FIXED "it.greenvulcano.gvesb.core.bpel.GVFlowODE">
+<!--
+    BpelOperation's name.
+    Corresponds to a GreenVulcanoESB communication primitive or a forward.
+
+    In the case of a forward, then you must also specify the parameter 'forward-name'.
+
+    #Unique: {{../*[@name!='Forward']}} ../*/@name
+    #Choice: RequestReply|Request|GetReply|GetRequest|SendReply|Forward
+-->
+<!ATTLIST BpelOperation   name              CDATA #REQUIRED>
+<!--
+    Forward's name.
+
+    Must be specified only if you are setting up a workflow for a forward.
+
+    Must not be specified for the GreenVulcanoESB communication primitive.
+
+    #NotNull
+    #Unique: ../*/@forward-name
+    #Warn: {{../*[@forward-name = 'RequestReply']}} RequestReply is not a valid 'forward-name'
+    #Warn: {{../*[@forward-name = 'Request']}} Request is not a valid 'forward-name'
+    #Warn: {{../*[@forward-name = 'GetReply']}} GetReply is not a valid 'forward-name'
+    #Warn: {{../*[@forward-name = 'GetRequest']}} GetRequest is not a valid 'forward-name'
+    #Warn: {{../*[@forward-name = 'SendReply']}} SendReply is not a valid 'forward-name'
+    #Warn: {{../*[@forward-name = 'Forward']}} Forward is not a valid 'forward-name'
+-->
+<!ATTLIST BpelOperation   forward-name      CDATA #IMPLIED>
+<!--
+    Enable a consistency check of GVBuffer.
+
+    It can take three values:
+
+    - none: does not make any check.
+
+    - sys-svc: fields 'system' and 'service' the result should take the
+        taking the same values in the input buffer.
+
+    - sys-svc-id: fields 'system', 'service' and 'id' of the result must
+        assume the same values that assumed in the input buffer.
+        This setting should not be used in transactions with semantics
+        'GetRequest'.
+-->
+<!ATTLIST BpelOperation   out-check-type    (none|sys-svc|sys-svc-id) #REQUIRED>
+<!--
+    Activation status of the current service operation.
+
+    The state can take two values:
+    - on: the operation is active.
+    - off: the operation is not active.
+-->
+<!ATTLIST BpelOperation operation-activation (on|off) "on">
+<!--
+    Defines the master logger Level for the BpelOperation.
+    Default to ALL.
+-->
+<!ATTLIST BpelOperation loggerLevel (ALL|DEBUG|INFO|WARN|ERROR) #IMPLIED>
+
+<!--
+    Defines a GreenVulcanoESB Bpel workflow.
+-->
+<!ELEMENT BpelFlow   (Description?)>
+<!--
+    Bpel operation namespace.
+-->
+<!ATTLIST BpelFlow namespace CDATA #REQUIRED>
+<!--
+    Bpel process name.
+-->
+<!ATTLIST BpelFlow processname CDATA #REQUIRED>

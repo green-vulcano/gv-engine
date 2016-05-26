@@ -1,0 +1,312 @@
+
+<!--
+    Send a message and wait for a response using 0MQ framework.
+
+    Input properties can contains the following placeholders:
+     - fixed : a text string;
+     - ${{propname}}      : a System property name;
+     - sp{{propname}}     : a System property name;
+     - env{{varname}}     : an Environment variable value;
+     - @{{propname}}      : a inProperties property name;
+     - timestamp{{pattern[::tZone]]}} : return the current timestamp, in optional tZone value,
+                                        formatted as 'pattern'
+     - dateformat{{date::source-pattern::dest-pattern[::source-tZone::dest-tZone]}} :
+                               reformat 'date' from 'source-pattern' to 'dest-pattern',
+                               and optionally from 'source-tZone' to 'dest-tZone'
+     - decode{{field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                               evaluate as if-then-else; if 'field' is equal to cond1...n,
+                               return the value of val1...n, otherwise 'default'
+     - decodeL{{sep::field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                               is equivalent to 'decode', with the difference that 'condX'
+                               can be a list of values separated by 'sep'
+     - script{{lang::[scope::]script}} : evaluate a 'lang' script, using the base context 'scope',
+                                 the GVBuffer is added to the scope as 'object'
+     - js{{[scope::]script}}   : evaluate a JavaScript script, using the context 'scope',
+                                 the GVBuffer is added to the scope as 'object'
+     - ognl{{script}}          : evaluate a OGNL script,
+                                 the GVBuffer is added to the scope as 'object' (and is also the object on which execute the script !! NO MORE FROM 3.5 !!),
+     - sql{{conn::statement}}  : execute a select sql statement sql and return the value of
+                                 the first field of the first selected record.
+                                 The 'conn' parameter is the JNDI name of a DataSource
+
+    #Label: @name
+    #Category: Custom
+-->
+<!ELEMENT zmq-call (Description?, ServiceAlias?, ScriptDecoder?, ScriptEncoder?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST zmq-call type CDATA #FIXED "call">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST zmq-call class CDATA #FIXED "it.greenvulcano.gvesb.virtual.zmq.ZMQCallOperation">
+<!--
+    Operation name.
+    Used in the 'Flow' section to associate workflow nodes to VCL operations.
+
+    #NotNull
+    #Unique: ../*[@type='enqueue' or @type='dequeue' or @type='call']/@name
+-->
+<!ATTLIST zmq-call name CDATA #REQUIRED>
+<!--
+    The destination address.
+
+    #NotNull
+-->
+<!ATTLIST zmq-call address CDATA #REQUIRED>
+<!--
+    If true is enabled debug dump of 0MQ Input/Output messages.
+    Default to false.
+-->
+<!ATTLIST zmq-call debug (true|false) #IMPLIED>
+
+<!--
+    Publish a message using 0MQ framework.
+
+    Input properties can contains the following placeholders:
+     - fixed : a text string;
+     - ${{propname}}      : a System property name;
+     - sp{{propname}}     : a System property name;
+     - env{{varname}}     : an Environment variable value;
+     - @{{propname}}      : a inProperties property name;
+     - timestamp{{pattern[::tZone]]}} : return the current timestamp, in optional tZone value,
+                                        formatted as 'pattern'
+     - dateformat{{date::source-pattern::dest-pattern[::source-tZone::dest-tZone]}} :
+                               reformat 'date' from 'source-pattern' to 'dest-pattern',
+                               and optionally from 'source-tZone' to 'dest-tZone'
+     - decode{{field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                               evaluate as if-then-else; if 'field' is equal to cond1...n,
+                               return the value of val1...n, otherwise 'default'
+     - decodeL{{sep::field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                               is equivalent to 'decode', with the difference that 'condX'
+                               can be a list of values separated by 'sep'
+     - script{{lang::[scope::]script}} : evaluate a 'lang' script, using the base context 'scope',
+                               the GVBuffer is added to the scope as 'object'
+     - js{{[scope::]script}}   : evaluate a JavaScript script, using the context 'scope',
+                                 the GVBuffer is added to the scope as 'object'
+     - ognl{{script}}          : evaluate a OGNL script,
+                                 the GVBuffer is added to the scope as 'object' (and is also the object on which execute the script !! NO MORE FROM 3.5 !!),
+     - sql{{conn::statement}}  : execute a select sql statement sql and return the value of
+                                 the first field of the first selected record.
+                                 The 'conn' parameter is the JNDI name of a DataSource
+
+    #Label: @name
+    #Category: Custom
+-->
+<!ELEMENT zmq-publish (Description?, ServiceAlias?, ScriptEncoder?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST zmq-publish type CDATA #FIXED "call">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST zmq-publish class CDATA #FIXED "it.greenvulcano.gvesb.virtual.zmq.ZMQPublishOperation">
+<!--
+    Operation name.
+    Used in the 'Flow' section to associate workflow nodes to VCL operations.
+
+    #NotNull
+    #Unique: ../*[@type='enqueue' or @type='dequeue' or @type='call']/@name
+-->
+<!ATTLIST zmq-publish name CDATA #REQUIRED>
+<!--
+    The destination address.
+
+    #References: gvesb:document('GVAdapters')/GVAdapters/GVZMQConfiguration/ZMQPublishers/*[@type='zmq-publisher']/@name
+-->
+<!ATTLIST zmq-publish publisher-name CDATA #REQUIRED>
+<!--
+    If true is enabled debug dump of 0MQ Input/Output messages.
+    Default to false.
+-->
+<!ATTLIST zmq-publish debug (true|false) #IMPLIED>
+
+
+<!--
+    Decode a 0MQ message to a GVBuffer instance.
+
+    #SelectOnInsert
+-->
+<!ELEMENT ScriptDecoder (Description?, Script)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST ScriptDecoder type CDATA #FIXED "zmq-decoder">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST ScriptDecoder class CDATA #FIXED "it.greenvulcano.gvesb.gvzmq.marshall.ScriptMarshaller">
+
+<!--
+    Encode a GVBuffer instance to a 0MQ message.
+
+    #SelectOnInsert
+-->
+<!ELEMENT ScriptEncoder (Description?, Script)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST ScriptEncoder type CDATA #FIXED "zmq-encoder">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST ScriptEncoder class CDATA #FIXED "it.greenvulcano.gvesb.gvzmq.marshall.ScriptMarshaller">
+
+
+<!--
+    0MQ Listener configuration.
+
+-->
+<!ELEMENT GVZMQConfiguration (Description?, ZMQListeners?, ZMQPublishers?)>
+
+<!ATTLIST GVZMQConfiguration version CDATA #FIXED "1.0">
+<!--
+    Element type 'module'.
+-->
+<!ATTLIST GVZMQConfiguration type    CDATA   #FIXED  "module">
+<!--
+    Module id always set to 'ZQM_CFG'.
+-->
+<!ATTLIST GVZMQConfiguration name CDATA #FIXED "ZQM_CFG">
+
+<!--
+    #SortChild
+-->
+<!ELEMENT ZMQListeners (ZMQListener*)>
+
+<!--
+
+    #Label: @name
+-->
+<!ELEMENT ZMQListener (Description?, zmqAddress+, zmqFilter*, GVCoreInvoker)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST ZMQListener type CDATA #FIXED "zmq-listener">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST ZMQListener class CDATA #FIXED "it.greenvulcano.gvesb.gvzmq.listener.ZMQListener">
+<!--
+    #NotNull
+-->
+<!ATTLIST ZMQListener name CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST ZMQListener mode CDATA #FIXED "Subscribe">
+<!--
+    Property that defines if the listener must be activated.
+-->
+<!ATTLIST ZMQListener enabled (true|false) #REQUIRED>
+
+<!--
+    #SortChild
+-->
+<!ELEMENT ZMQPublishers (ZMQPublisher*)>
+
+<!--
+
+    #Label: @name
+-->
+<!ELEMENT ZMQPublisher (Description?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST ZMQPublisher type CDATA #FIXED "zmq-publisher">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST ZMQPublisher class CDATA #FIXED "it.greenvulcano.gvesb.gvzmq.publisher.ZMQPublisher">
+<!--
+    #NotNull
+-->
+<!ATTLIST ZMQPublisher name CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST ZMQPublisher bind-address CDATA #REQUIRED>
+<!--
+    Property that defines if the publisher must be activated.
+-->
+<!ATTLIST ZMQPublisher enabled (true|false) #REQUIRED>
+
+<!--
+
+    #Label: @name
+-->
+<!ELEMENT GVCoreInvoker (Description?, ScriptDecoder?, ScriptEncoder?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST GVCoreInvoker type CDATA #FIXED "zmq-invoker">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST GVCoreInvoker class CDATA #FIXED "it.greenvulcano.gvesb.gvzmq.listener.invoker.GVCoreInvoker">
+<!--
+    #NotNull
+-->
+<!ATTLIST GVCoreInvoker name CDATA #REQUIRED>
+<!--
+    ID service with which to perform the invocation of GreenVulcano ESB.
+
+    #References: gvesb:document('GVCore')/GVCore/GVServices/Services/Service/@id-service
+-->
+<!ATTLIST GVCoreInvoker gv-service CDATA #REQUIRED>
+<!--
+    ID system with which to perform the invocation of GreenVulcano ESB.
+
+    #References: gvesb:document('GVCore')/GVCore/GVSystems/Systems/System/@id-system
+-->
+<!ATTLIST GVCoreInvoker gv-system CDATA #IMPLIED>
+<!--
+     GreenVulcano ESB operation to invoke.
+
+    #References: gvesb:document('GVCore')/GVCore/GVServices/Services/Service[@id-service=current()/@gv-service]/*/@name
+    #References: gvesb:document('GVCore')/GVCore/GVServices/Services/Service[@id-service=current()/@gv-service]/*/@forward-name
+-->
+<!ATTLIST GVCoreInvoker gv-operation CDATA #REQUIRED>
+<!--
+    If true the Listener must send reply message.
+    Default to false.
+-->
+<!ATTLIST GVCoreInvoker send-reply (true|false) #IMPLIED>
+<!--
+    If true is enabled debug dump of 0MQ Input/Output messages.
+    Default to false.
+-->
+<!ATTLIST GVCoreInvoker debug (true|false) #IMPLIED>
+
+<!--
+
+-->
+<!ELEMENT zmqAddress EMPTY>
+<!--
+    #NotNull
+-->
+<!ATTLIST zmqAddress address CDATA #REQUIRED>
+<!--
+
+-->
+<!ELEMENT zmqFilter EMPTY>
+<!--
+    #NotNull
+-->
+<!ATTLIST zmqFilter filter CDATA #REQUIRED>

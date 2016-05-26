@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+		   xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+		   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	       xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+	 						   http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd" 
+			default-activation="eager">
+			                               
+	<cm:property-placeholder persistent-id="it.greenvulcano.gvesb.bus" update-strategy="reload" >
+			<cm:default-properties>
+				<cm:property name="gvbus.apikey" value="" />				
+				<cm:property name="gvbus.endpoint" value="" />
+				<cm:property name="gvbus.username" value="" />
+				<cm:property name="gvbus.password" value="" />
+				<cm:property name="gvrepo.endpoint" value="" />
+			</cm:default-properties>
+	</cm:property-placeholder>
+
+    <bean id="activemqConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+        <property name="brokerURL" value="${gvbus.endpoint}" />
+        <property name="userName" value="${gvbus.username}" />
+        <property name="password" value="${gvbus.password}" />
+    </bean>
+
+    <bean id="pooledConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory">
+        <property name="maxConnections" value="8" />
+        <property name="connectionFactory" ref="activemqConnectionFactory" />
+    </bean>
+
+	<reference id="transactionManager" interface="javax.transaction.TransactionManager" />
+    
+    <bean id="resourceManager" class="org.apache.activemq.pool.ActiveMQResourceManager" init-method="recoverResource">
+        <property name="transactionManager" ref="transactionManager" />
+        <property name="connectionFactory" ref="activemqConnectionFactory" />
+        <property name="resourceName" value="activemq.localhost" />
+    </bean>   
+
+	<reference id="sysConfigRepo" interface="org.apache.karaf.config.core.ConfigRepository" />
+	<reference id="gvConfigurationManager" interface="it.greenvulcano.gvesb.GVConfigurationManager" timeout="5000"/>
+	
+	<bean id="gvConfigRepo" class="it.greenvulcano.gvesb.osgi.repository.vulcon.GVConfigurationRestRepository">
+		<property name="endpoint" value="${gvrepo.endpoint}"/>
+    	<property name="authtoken" value="${gvbus.apikey}"/>
+	</bean>     
+
+	<bean id="gvBusDeployer" class="it.greenvulcano.gvesb.osgi.bus.connectors.GVBusDeployer">
+    	<property name="configurationManager" ref="gvConfigurationManager"/>
+    	<property name="configurationRepository" ref="gvConfigRepo"/>
+    </bean>
+    
+    <reference id="gvDebugger" interface="it.greenvulcano.gvesb.core.debug.GVDebugger" 
+    			activation="eager" availability="mandatory"  />
+    
+    <bean id="gvBusDebugger"  class="it.greenvulcano.gvesb.osgi.bus.connectors.GVBusDebugger">
+    	<property name="gvDebugger" ref="gvDebugger"/>
+    </bean>
+
+	<bean id="gvBusLink" class="it.greenvulcano.gvesb.osgi.bus.connectors.GVBusLink" 
+		  init-method="init" destroy-method="destroy" >
+		<property name="configRepository" ref="sysConfigRepo" />
+		<property name="busId" value="${gvbus.apikey}" />	
+		<property name="connectionFactory" ref="pooledConnectionFactory"/>
+		<property name="connector" ref="gvBusDeployer"/>
+		<property name="connector" ref="gvBusDebugger"/>
+	</bean>
+	
+	<service id="gvBusConnector" interface="it.greenvulcano.gvesb.osgi.bus.BusLink" ref="gvBusLink" />
+	<service id="gvConfigurationRepository" interface="it.greenvulcano.gvesb.osgi.repository.GVConfigurationRepository" ref="gvConfigRepo" />
+</blueprint>

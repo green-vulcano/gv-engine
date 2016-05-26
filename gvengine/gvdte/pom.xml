@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>it.greenvulcano.gvesb</groupId>
+		<artifactId>gvengine</artifactId>
+		<version>4.0.0</version>
+	</parent>
+
+	<artifactId>gvdte</artifactId>
+	<name>GreenVulcano Data Transformation Engine</name>
+	<packaging>bundle</packaging>
+
+	<dependencies>
+		<dependency>
+			<groupId>it.greenvulcano.gvesb</groupId>
+			<artifactId>gvbase</artifactId>
+			<version>${project.version}</version>
+			<type>bundle</type>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.4</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20151123</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+		    <groupId>org.ops4j.pax.logging</groupId>
+		    <artifactId>pax-logging-api</artifactId>
+		    <version>1.8.5</version>
+		    <scope>provided</scope>
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.ws.commons.axiom</groupId>
+		    <artifactId>axiom-api</artifactId>
+		    <version>1.2.18</version>
+		    <scope>provided</scope>
+		    <exclusions>
+		    	<exclusion>
+		    		<artifactId>commons-logging</artifactId>
+		    		<groupId>commons-logging</groupId>
+		    	</exclusion>
+		    </exclusions>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.opencsv</groupId>
+			<artifactId>opencsv</artifactId>
+			<version>2.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.xmlgraphics</groupId>
+			<artifactId>fop</artifactId>
+			<version>2.1</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>commons-logging</artifactId>
+					<groupId>commons-logging</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>commons-io</artifactId>
+					<groupId>commons-io</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>xml-apis</artifactId>
+					<groupId>xml-apis</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.saxon</groupId>
+			<artifactId>Saxon-HE</artifactId>
+			<version>9.4.0-9</version>
+		</dependency>
+
+		<!-- *************** TEST *************** -->
+		<dependency>
+			<groupId>xmlunit</groupId>
+			<artifactId>xmlunit</artifactId>
+			<version>1.5</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.skyscreamer</groupId>
+			<artifactId>jsonassert</artifactId>
+			<version>1.3.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+		    <groupId>xml-resolver</groupId>
+		    <artifactId>xml-resolver</artifactId>
+		    <version>1.2</version>
+		    <scope>test</scope>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>${maven-bundle-plugin.version}</version>
+				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+						<Bundle-Version>${project.version}</Bundle-Version>
+						<Export-Package>it.greenvulcano.gvesb.gvdte*;version=${project.version}</Export-Package>
+						<Import-Package>
+							it.greenvulcano.configuration,
+							it.greenvulcano.gvesb.internal,
+							it.greenvulcano.util*,
+							org.slf4j;version="[1.6,2)";provider=paxlogging,
+							org.w3c.dom,
+							org.json,
+							javax.xml.transform,
+							javax.xml.transform.stream,
+							javax.xml.transform.sax,
+							javax.xml.transform.dom,
+							javax.xml.parsers,
+							javax.xml.namespace
+						</Import-Package>
+						<Embed-Dependency>*;scope=compile;type=jar</Embed-Dependency>
+						<Embed-Transitive>true</Embed-Transitive>
+					</instructions>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

@@ -1,0 +1,59 @@
+{
+  "root": {
+    "elem": [
+      {
+        "id": "A",
+        "int": 12345,
+        "intStr": "12345",
+        "string": "some & value",
+        "float": 123.456
+      },
+      {
+        "id": "B",
+        "int": 67890,
+        "intStr": "67890",
+        "string": "some other <value>",
+        "float": 456.123,
+        "contentText": "text child\nsecond row"
+      }
+    ],
+    "elemA": "",
+    "elemB": {
+      "int": 12345,
+      "intStr": "12345",
+      "string": "some & ' \" value",
+      "elem": [
+        {
+          "id": "C",
+          "string": "some & child value",
+          "boolean": true
+        },
+        {
+          "id": "D",
+          "string": "some other <child value>",
+          "boolean": false,
+          "contentText": "text child\nsecond row"
+        }
+      ]
+    },
+    "elemC": [
+      {
+        "id": "E",
+        "int": 12345,
+        "intStr": "12345",
+        "nullVal": null,
+        "float": 123.456
+      }
+    ],
+    "elemD": [
+      {
+        "id": "F"
+      }
+    ],
+    "elemL": [
+      "text 1",
+      "text 2",
+      "text 3"
+    ]
+  }
+}

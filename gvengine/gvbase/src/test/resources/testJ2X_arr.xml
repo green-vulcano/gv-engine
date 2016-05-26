@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<container>
+    <array>
+        <id>0</id>
+        <string>000</string>
+    </array>
+    <array>
+        <id>1</id>
+        <string>001</string>
+        <value>aaa</value>
+        <value>bbb</value>
+        <value>ccc</value>
+    </array>
+</container>

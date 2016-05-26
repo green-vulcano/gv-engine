@@ -1,0 +1,176 @@
+<!ENTITY % push-calls  "push-notification-call|push-feedback-call">
+
+<!--
+-->
+<!ELEMENT GVPushNotificationManager (Description?, NotificationEngines)>
+<!ATTLIST GVPushNotificationManager version CDATA #FIXED "1.0">
+<!--
+    Element type 'module'.
+-->
+<!ATTLIST GVPushNotificationManager type    CDATA   #FIXED  "module">
+<!--
+    Module id always set to 'PUSH_NOTIFICATION'.
+-->
+<!ATTLIST GVPushNotificationManager name    CDATA   #FIXED  "PUSH_NOTIFICATION">
+
+<!--
+    #SortChild
+-->
+<!ELEMENT NotificationEngines ((AndroidNotificationEngine|iOSNotificationEngine)*)>
+
+<!--
+
+    #Label: @name
+-->
+<!ELEMENT AndroidNotificationEngine (Description?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST AndroidNotificationEngine type CDATA #FIXED "pushnotif">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST AndroidNotificationEngine class CDATA #FIXED "it.greenvulcano.gvesb.gvpushnot.publisher.engine.android.AndroidNotificationEngine">
+<!--
+    Engine name.
+
+    #NotNull
+    #Unique: ../*[@type='pushnotif']/@name
+-->
+<!ATTLIST AndroidNotificationEngine name CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST AndroidNotificationEngine apiKey CDATA #REQUIRED>
+<!--
+    Default to false.
+-->
+<!ATTLIST AndroidNotificationEngine dryRun (true|false) #IMPLIED>
+<!--
+    Automatically starts the engine.
+    Default to true.
+-->
+<!ATTLIST AndroidNotificationEngine autoStart (true|false) #IMPLIED>
+
+
+<!--
+
+    #Label: @name
+-->
+<!ELEMENT iOSNotificationEngine (Description?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST iOSNotificationEngine type CDATA #FIXED "pushnotif">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST iOSNotificationEngine class CDATA #FIXED "it.greenvulcano.gvesb.gvpushnot.publisher.engine.android.AndroidNotificationEngine">
+<!--
+    Engine name.
+
+    #NotNull
+    #Unique: ../*[@type='pushnotif']/@name
+-->
+<!ATTLIST iOSNotificationEngine name CDATA #REQUIRED>
+<!--
+    #References: gvesb:document('GVCore')/GVCore/GVCryptoHelper/KeyStoreID/@id
+-->
+<!ATTLIST iOSNotificationEngine keystoreID CDATA #REQUIRED>
+<!--
+    Default to false.
+-->
+<!ATTLIST iOSNotificationEngine useProduction (true|false) #REQUIRED>
+<!--
+    Automatically starts the engine.
+    Default to true.
+-->
+<!ATTLIST iOSNotificationEngine autoStart (true|false) #IMPLIED>
+
+
+<!--
+    Push Notification VCL plugin to send notifications to iOS/Android devices.
+
+    #Label: @name
+    #Icon: GVPushCall.png
+    #Category: Notification
+    #SelectOnInsert
+    #Template:
+
+        <xsl:template match="push-notification-call">
+                <xsl:if test="Description">
+                <small><xsl:value-of select="Description"/></small><p/>
+            </xsl:if>
+        </xsl:template>
+-->
+<!ELEMENT push-notification-call (Description?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST push-notification-call type CDATA #FIXED "call">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST push-notification-call class CDATA #FIXED "it.greenvulcano.gvesb.virtual.pushnot.PushNotificationCallOperation">
+<!--
+    Operation name.
+    Used in the 'Flow' section to associate workflow nodes to VCL operations.
+
+    #NotNull
+    #Unique: ../*[@type='enqueue' or @type='dequeue' or @type='call']/@name
+-->
+<!ATTLIST push-notification-call name CDATA #REQUIRED>
+<!--
+    Default notification engine. Used only if not configured in a Notification request.
+
+    #References: gvesb:document('GVAdapters')/GVAdapters/GVPushNotificationManager/NotificationEngines/*[@type='pushnotif']/@name
+-->
+<!ATTLIST push-notification-call defaultEngine CDATA #REQUIRED>
+
+
+<!--
+    Push Notification VCL plugin to receive provider feedback.
+
+    #Label: @name
+    #Icon: GVFeedbackCall.png
+    #Category: Notification
+    #SelectOnInsert
+    #Template:
+
+        <xsl:template match="push-feedback-call">
+                <xsl:if test="Description">
+                <small><xsl:value-of select="Description"/></small><p/>
+            </xsl:if>
+        </xsl:template>
+-->
+<!ELEMENT push-feedback-call (Description?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST push-feedback-call type CDATA #FIXED "call">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST push-feedback-call class CDATA #FIXED "it.greenvulcano.gvesb.virtual.pushnot.PushFeedbackCallOperation">
+<!--
+    Operation name.
+    Used in the 'Flow' section to associate workflow nodes to VCL operations.
+
+    #NotNull
+    #Unique: ../*[@type='enqueue' or @type='dequeue' or @type='call']/@name
+-->
+<!ATTLIST push-feedback-call name CDATA #REQUIRED>
+<!--
+    Default notification engine. Used only if not configured in a Feedbak request.
+
+    #References: gvesb:document('GVAdapters')/GVAdapters/GVPushNotificationManager/NotificationEngines/*[@type='pushnotif']/@name
+-->
+<!ATTLIST push-feedback-call defaultEngine CDATA #REQUIRED>

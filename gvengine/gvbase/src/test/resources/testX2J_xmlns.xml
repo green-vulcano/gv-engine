@@ -1,0 +1,15 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://www.credit.com/services">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ser:Pay xmlns:ser="http://www.credit.com/services">
+         <ser:cnumber>1111222233334444</ser:cnumber>
+         <ser:cnumber>1111222233337777</ser:cnumber>
+         <ser:amount>10</ser:amount>
+      </ser:Pay>
+      <Pay xmlns="http://www.credit.com/services">
+         <cnumber type="master">1111222233335555</cnumber>
+         <cnumber type="secondary">1111222233336666</cnumber>
+         <amount>20</amount>
+      </Pay>
+   </soapenv:Body>
+</soapenv:Envelope>

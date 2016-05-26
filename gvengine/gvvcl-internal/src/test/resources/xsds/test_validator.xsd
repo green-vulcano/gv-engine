@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.greenvulcano.org/test_validator/" targetNamespace="http://www.greenvulcano.org/test_validator/"
+  elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <element name="test">
+    <complexType>
+      <sequence>
+        <element name="firstName" type="string" />
+        <element name="lastName" type="string" />
+        <element name="address">
+          <complexType>
+            <sequence>
+              <element name="street" type="string" />
+              <element name="city" type="string" />
+              <element name="zipcode" type="string" minOccurs="0" />
+            </sequence>
+          </complexType>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+</schema>

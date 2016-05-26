@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>it.greenvulcano.gvesb</groupId>
+		<artifactId>gvengine</artifactId>
+		<version>4.0.0</version>
+	</parent>
+
+	<artifactId>gvbus</artifactId>
+	<packaging>bundle</packaging>
+
+	<name>GreenVulcano BUS link</name>
+
+	<dependencies>
+		<dependency>
+	      <groupId>it.greenvulcano.gvesb</groupId>
+	      <artifactId>gvbase</artifactId>
+	      <version>${project.version}</version>
+	      <type>bundle</type>
+	      <scope>provided</scope>
+	    </dependency>
+		<dependency>
+	  		<groupId>it.greenvulcano.gvesb</groupId>
+	  		<artifactId>gvcore</artifactId>
+	  		<version>${project.version}</version>
+	  		<type>bundle</type>
+	  		<scope>provided</scope>
+	  	</dependency>
+		<dependency>
+			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-jms_1.1_spec</artifactId>
+			<version>1.1.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20151123</version>
+			<scope>provided</scope>
+		</dependency>
+		 <dependency>
+		    <groupId>org.apache.karaf.config</groupId>
+		    <artifactId>org.apache.karaf.config.core</artifactId>
+		    <version>4.0.4</version>
+		    <scope>provided</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>3.0.1</version>
+				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+						<Bundle-Version>${project.version}</Bundle-Version>
+						<Export-Package>
+							it.greenvulcano.gvesb.osgi.bus, it.greenvulcano.gvesb.osgi.repository, it.greenvulcano.gvesb.osgi.repository.exception
+						</Export-Package>
+						<Import-Package>
+							it.greenvulcano.gvesb.core.debug,
+							it.greenvulcano.gvesb.core.debug.model,
+							it.greenvulcano.configuration,
+							it.greenvulcano.gvesb,
+							org.slf4j;version="[1.6,2)";provider=paxlogging,
+							org.apache.karaf.config.core,
+							org.apache.activemq,
+                        	org.apache.activemq.pool,
+                        	org.json,
+                        	org.xml.sax,
+                        	org.w3c.dom,
+							javax.jms,
+							javax.transaction,
+							javax.xml.parsers,
+							javax.xml.ws.http
+						</Import-Package>
+					</instructions>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

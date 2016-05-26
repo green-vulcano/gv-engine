@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE GVCore SYSTEM "http://www.greenvulcano.com/gvesb/dtds/GVCore.dtd">
+
+<GVCore version="1.0">
+  <GVXPath name="XPATH" type="module">
+    <XPath xpath-factory="it.greenvulcano.util.xpath.search.jaxen.JaxenXPathAPIFactoryImpl">
+      <Description>Funzioni estese e namespaces per l&apos;XPath.</Description>
+      <XPathExtension class="it.greenvulcano.util.xpath.search.extension.ExternalDocumentXPathFunction"
+                      function-name="document">
+            <Description>Accede ad un documento esterno. Uso: gvf:document('xml file path')</Description>
+      </XPathExtension>
+      <XPathNamespace namespace="http://www.w3.org/2001/XMLSchema" prefix="xsd" />
+      <XPathNamespace namespace="http://www.w3.org/2001/XMLSchema-instance" prefix="xsi" />
+      <XPathNamespace namespace="http://schemas.xmlsoap.org/wsdl/soap/" prefix="soap" />
+      <XPathNamespace namespace="http://schemas.xmlsoap.org/wsdl/" prefix="wsdl" />
+      <XPathNamespace namespace="http://jakarta.apache.org/log4j/" prefix="log4j" />
+      <XPathNamespace namespace="http://www.w3.org/XML/1998/namespace" prefix="xml" />
+      <XPathNamespace namespace="http://www.greenvulcano.it/greenvulcano" prefix="gvesbws"/>
+      <XPathNamespace namespace="http://www.greenvulcano.it/jca/xml" prefix="jca" />
+      <XPathNamespace namespace="http://www.greenvulcano.it/ldap" prefix="ldapc" />
+      <XPathNamespace namespace="http://drools.org/drools-5.0/change-set" prefix="drools-cs"/>
+    </XPath>
+  </GVXPath>
+  <GVDataTransformation name="GVDT" type="module">
+    <DataSourceSets>
+      <DataSourceSet name="Default">
+        <LocalFSDataSource class="it.greenvulcano.gvesb.gvdte.config.LocalFSDataSource" formatHandled="xsl" name="Default"
+          repositoryHome="target/test-classes/gvdte/datasource/xsl" type="datasource" />
+        <LocalFSDataSource class="it.greenvulcano.gvesb.gvdte.config.LocalFSDataSource" formatHandled="xsd" name="DefaultXSD"
+          repositoryHome="target/test-classes/gvdte/datasource/xsd" type="datasource" />
+         <LocalFSDataSource class="it.greenvulcano.gvesb.gvdte.config.LocalFSDataSource" formatHandled="bin" name="DefaultBIN"
+          repositoryHome="target/test-classes/gvdte/datasource/bin" type="datasource"
+          formatHandlerClass="it.greenvulcano.gvesb.gvdte.config.XMLLoader"/>
+        <LocalFSDataSource class="it.greenvulcano.gvesb.gvdte.config.LocalFSDataSource" formatHandled="xq" name="Default"
+          repositoryHome="target/test-classes/gvdte/datasource/xq" type="datasource" />
+      </DataSourceSet>
+    </DataSourceSets>
+    <Transformations>
+      <XSLTransformation XSLMapName="identity.xsl" class="it.greenvulcano.gvesb.gvdte.transformers.xslt.XSLTransformer"
+        name="identityXML" type="transformation"/>
+      <XSLTransformation XSLMapName="identity.xsl" class="it.greenvulcano.gvesb.gvdte.transformers.xslt.XSLTransformer"
+        name="identityXMLValidating" type="transformation" validate="true" validationType="xsd" validateDirection="in"/>
+      <XSLTransformation XSLMapName="Include.xsl" class="it.greenvulcano.gvesb.gvdte.transformers.xslt.XSLTransformer"
+        name="TestInclude" type="transformation"/>
+      <XSLTransformation XSLMapName="TextList2XML.xsl" class="it.greenvulcano.gvesb.gvdte.transformers.xslt.XSLTransformer"
+        name="TextList2XML" type="transformation"/>
+      <XSLTransformation XSLMapName="Extension.xsl" class="it.greenvulcano.gvesb.gvdte.transformers.xslt.XSLTransformer"
+        name="TestExtension" type="transformation"/>
+      <XSLTransformation XSLMapName="TestDefNs.xsl" class="it.greenvulcano.gvesb.gvdte.transformers.xslt.XSLTransformer"
+        name="TestDefNs" type="transformation"/>
+        
+      <XSLTransformation XSLMapName="TestSaxon.xsl" class="it.greenvulcano.gvesb.gvdte.transformers.xslt.XSLTransformer"
+        name="TestSaxon" type="transformation" TransformerFactory="net.sf.saxon.TransformerFactoryImpl"/>
+        
+      <Bin2XMLTransformation ConversionMapName="bin2xml.bin" class="it.greenvulcano.gvesb.gvdte.transformers.bin.bin2xml.BinaryToXMLTransformer"
+        name="Bin2XML" type="transformation"/>
+      <AddTagTransformation TagName="xml" UseCDATA="False"
+        class="it.greenvulcano.gvesb.gvdte.transformers.bin.bin2xml.AddTagTransformer" name="AddTag" type="transformation" />
+      <ChangeCharTransformation InputChar="65" OutputChar="34"
+        class="it.greenvulcano.gvesb.gvdte.transformers.bin.bin2xml.ChangeCharTransformer" name="ChangeChar" type="transformation">
+        <Description>Convert ('e','l','o') to ('4','1','0')</Description>
+        <CharConversion InputChar="6C" OutputChar="31" />
+        <CharConversion InputChar="6F" OutputChar="30" />
+      </ChangeCharTransformation>
+      <SequenceTransformation Output="OutB" class="it.greenvulcano.gvesb.gvdte.controller.SequenceTransformer"
+         name="TestTextList2XML" type="transformation">
+         <SequenceElement Input="InA" Output="OutA" Transformer="AddTag"/>
+         <SequenceElement Input="OutA" Output="OutB" Transformer="TextList2XML"/>
+      </SequenceTransformation>
+      <CSV2XMLTransformation FieldsSeparator="," UseCDATA="False"
+        class="it.greenvulcano.gvesb.gvdte.transformers.bin.bin2xml.CSVToXMLTransformer" name="CSV2XML" type="transformation" />
+      <CSV2XMLTransformation FieldsSeparator="," UseCDATA="False" GroupBy="1,3"
+        class="it.greenvulcano.gvesb.gvdte.transformers.bin.bin2xml.CSVToXMLTransformer" name="CSV2XML_GRP" type="transformation" />
+      <XQTransformation XQMapName="bib_filter.xq" class="it.greenvulcano.gvesb.gvdte.transformers.xq.XQTransformer"
+        name="TestXQuery" type="transformation"/>
+        
+      <XML2JSONTransformation class="it.greenvulcano.gvesb.gvdte.transformers.json.XML2JSONTransformer"
+        name="TestXml2Json" ForceElementsArray="author,editor" ForceStringValue="year" type="transformation"/>
+      <JSON2XMLTransformation class="it.greenvulcano.gvesb.gvdte.transformers.json.JSON2XMLTransformer"
+        name="TestJson2Xml" type="transformation"/>
+      <JSON2XMLTransformation class="it.greenvulcano.gvesb.gvdte.transformers.json.JSON2XMLTransformer"
+        name="TestJson2Xml_attr" ForceAttributes="last,affiliation,first,title,price,year,publisher"
+        type="transformation"/>
+
+      <XML2JSONTransformation class="it.greenvulcano.gvesb.gvdte.transformers.json.XML2JSONTransformer"
+        name="TestXml2Json_BadgerFish" ConversionPolicy="badgerfish" type="transformation"/>
+      <JSON2XMLTransformation class="it.greenvulcano.gvesb.gvdte.transformers.json.JSON2XMLTransformer"
+        name="TestJson2Xml_BadgerFish" ConversionPolicy="badgerfish" type="transformation"/>
+
+      <XML2JSONTransformation InputXSLMapName="identity.xsl" class="it.greenvulcano.gvesb.gvdte.transformers.json.XML2JSONTransformer"
+        name="TestXml2Json_Xsl" ForceElementsArray="author,editor" ForceStringValue="year" type="transformation"/>
+      <JSON2XMLTransformation OutputXSLMapName="identity.xsl" class="it.greenvulcano.gvesb.gvdte.transformers.json.JSON2XMLTransformer"
+        name="TestJson2Xml_Xsl" type="transformation"/>
+
+    </Transformations>
+  </GVDataTransformation>
+  
+</GVCore>

@@ -1,0 +1,150 @@
+<!--
+    Operation to invoke a Rule Engine service.
+
+    #Label: @name
+    #Icon: GVRulesCall.png
+    #Category: Utils
+-->
+<!ELEMENT rules-call (Description?, ServiceAlias?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST rules-call    type CDATA #FIXED "call">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST rules-call    class CDATA #FIXED "it.greenvulcano.gvesb.gvrules.virtual.RulesCall">
+<!--
+    Operation name.
+    Used in the 'Flow' section to associate workflow nodes to VCL operations.
+
+    #NotNull
+    #Unique: ../*[@type='enqueue' or @type='dequeue' or @type='call']/@name
+-->
+<!ATTLIST rules-call    name CDATA #REQUIRED>
+<!--
+    Reference a Rule set.
+
+    #References: gvesb:document('GVAdapters')/GVAdapters/GVRulesConfigManager/*[@type='knwl-config']/@name
+-->
+<!ATTLIST rules-call    ruleSet CDATA #REQUIRED>
+<!--
+    Name of Data Provider to be used to prepare the facts to be
+    inserted in the session.
+    This Data Provider (ex. a MapDataProvider) will receive in
+    input a GVBuffer and must return a map of named objects.
+
+    #References: gvesb:document('GVAdapters')/GVAdapters/GVDataProviderManager/DataProviders/*[@type='dataProvider']/@name
+-->
+<!ATTLIST rules-call input-ref-dp CDATA #REQUIRED>
+<!--
+    Name of Data Provider to be used to prepare the objects to
+    be inserted as Globals in the session.
+    This Data Provider (ex. a MapDataProvider) will receive in
+    input a GVBuffer and must return a map of named objects.
+    If the name of some Globals start with [[OUT]] then those
+    object are inserted in a map and passed as #input to the
+    output-ref-dp Data Provider.
+
+    #References: gvesb:document('GVAdapters')/GVAdapters/GVDataProviderManager/DataProviders/*[@type='dataProvider']/@name
+-->
+<!ATTLIST rules-call globals-ref-dp CDATA #IMPLIED>
+<!--
+    Name of Data Provider to use for rules output manipulation.
+    This Data Provider will receive as context a GVBuffer and
+    as input the rules ExecutionResults or the Globals objects
+    map (see globals-ref-dp) and must return an enriched
+    GVBuffer object.
+    Ex.a GVBufferChangeDataProvider instance.
+
+    If not defined the rules ExecutionResults or the Globals
+    objects map (see globals-ref-dp) are inserted in the output
+    GVBuffer object field.
+
+    #References: gvesb:document('GVAdapters')/GVAdapters/GVDataProviderManager/DataProviders/*[@type='dataProvider']/@name
+-->
+<!ATTLIST rules-call output-ref-dp CDATA #IMPLIED>
+
+
+<!--
+    Drools Rules set definition.
+
+    #SortChild
+-->
+<!ELEMENT GVRulesConfigManager (Description?, GVKnowledgeBaseConfig*)>
+
+<!ATTLIST GVRulesConfigManager version CDATA #FIXED "1.0">
+<!--
+    Element type 'module'.
+-->
+<!ATTLIST GVRulesConfigManager type    CDATA   #FIXED  "module">
+<!--
+    Module id always set to 'RULES_CFG'.
+-->
+<!ATTLIST GVRulesConfigManager name CDATA #FIXED "RULES_CFG">
+
+<!--
+    Defines the resources needed to configure the KnowledgeBase.
+
+    #Label: @name
+    #SelectOnInsert
+-->
+<!ELEMENT GVKnowledgeBaseConfig (Description?, RuleResource+)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST GVKnowledgeBaseConfig type CDATA #FIXED "knwl-config">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST GVKnowledgeBaseConfig class CDATA #FIXED "it.greenvulcano.gvesb.gvrules.drools.config.impl.GVKnowledgeBaseConfig">
+<!--
+    Rule set identifier.
+
+    #NotNull
+    #Unique: ../*[@type='knwl-config']/@name
+-->
+<!ATTLIST GVKnowledgeBaseConfig name CDATA #REQUIRED>
+
+<!--
+    Defines a rule resource.
+
+    #Label: @url
+    #SelectOnInsert
+-->
+<!ELEMENT RuleResource (Description?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST RuleResource type CDATA #FIXED "knwl-resource">
+<!--
+    Rule resource URL.
+
+    #NotNull
+-->
+<!ATTLIST RuleResource url CDATA #REQUIRED>
+<!--
+    Rule resource type.
+
+    #Warn: {{../RuleResource[(@resourceType = 'DTABLE') and not(@inputType)]}} If resourceType is 'DTABLE' must be defined inputType
+-->
+<!ATTLIST RuleResource resourceType (DRL|XDRL|DSL|DSLR|DRF|DTABLE|PKG|BRL|CHANGE_SET) #REQUIRED>
+<!--
+    Decision table type..
+
+    #Warn: {{../RuleResource[(@resourceType != 'DTABLE') and @inputType]}} If resourceType isn't 'DTABLE' must not be defined inputType
+    #Warn: {{../RuleResource[(@inputType = 'XLS') and not(@worksheetName)]}} If inputType is 'XLS' must be defined worksheetName
+-->
+<!ATTLIST RuleResource inputType (XLS|CSV) #IMPLIED>
+<!--
+    Excel file worksheet.
+
+    #NotNull
+    #Warn: {{../RuleResource[(@inputType != 'XLS') and @worksheetName]}} If inputType isn't 'XLS' must not be defined worksheetName
+-->
+<!ATTLIST RuleResource worksheetName CDATA #IMPLIED>

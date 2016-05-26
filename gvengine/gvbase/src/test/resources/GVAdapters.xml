@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE GVAdapters SYSTEM "http://www.greenvulcano.com/gvesb/dtds/GVAdapters.dtd">
+
+<GVAdapters version="1.0">
+  <GVWebServices name="WEB_SERVICES" type="module" version="1.0">
+    <GreenVulcanoWebServices>
+      <Description>Invocazione generica di un servizio su GVESB</Description>
+      <GreenVulcanoWebService id-key="TOUPPER_STRING_STRING" id-primitive="RequestReply" type="greenvulcanowebservice">
+        <Description>String - String</Description>
+      </GreenVulcanoWebService>
+      <GreenVulcanoWebService id-key="TOUPPER_STRING_ARRAY" id-primitive="RequestReply" type="greenvulcanowebservice">
+        <Description>String - Array</Description>
+      </GreenVulcanoWebService>
+    </GreenVulcanoWebServices>
+    <BusinessWebServices authenticated-http-soap-address="http://127.0.0.1:8080/wsgvesb/ws"
+      authenticated-https-soap-address="https://127.0.0.1:8080/wsgvesb/ws" http-soap-address="http://127.0.0.1:8080/wsgvesb/openws"
+      https-soap-address="https://127.0.0.1:8080/wsgvesb/openws" services-directory="${{gv.app.home}}/conf/webservices"
+      wsdl-directory="${{gv.app.home}}/conf/wsdl">
+      <WebService web-service="TOUPPER">
+        <WSOperation operation-qname="toupper">
+          <Binding gv-operation="RequestReply" gv-service="TOUPPER" gv-system="GVESB" inputType="context"/>
+        </WSOperation>
+      </WebService>
+    </BusinessWebServices>
+    <UDDI>
+      <Description>Descrizione</Description>
+      <JAXMLRegistry class="it.greenvulcano.gvesb.j2ee.xmlRegistry.impl.RegistryImpl" id-registry="Registry"
+        organization-name="GreenVulcano" password="root" publish-url="http://localhost:8080/juddiv3/services/publish?wsdl"
+        query-url="http://localhost:8080/juddiv3/services/inquiry?wsdl" type="xmlregistry" user-name="jdoe">
+        <Description>Private JUDDI Registry</Description>
+        <Properties>
+          <connectionFactory value="org.apache.ws.scout.registry.ConnectionFactoryImpl" />
+          <connectionProperty name="javax.xml.registry.queryManagerURL" type="classproperty"
+            value="org.apache.juddi.registry.local.InquiryService#inquire" />
+          <connectionProperty name="javax.xml.registry.lifeCycleManagerURL" type="classproperty"
+            value="org.apache.juddi.registry.local.PublishService#publish" />
+          <connectionProperty name="javax.xml.registry.uddi.maxRows" type="classproperty" value="10" />
+          <connectionProperty name="scout.proxy.transportClass" type="classproperty"
+            value="org.apache.ws.scout.transport.LocalTransport" />
+        </Properties>
+      </JAXMLRegistry>
+    </UDDI>
+    <AxisExtra>
+        <PasswordCallback>
+            <PwCbBasicHandler type="pwcb" class="it.greenvulcano.gvesb.ws.rampart.policy.pwcb.PwCbBasicHandler">
+                <UserDef name="client" password="client"/>
+                <UserDef name="service" password="service"/>
+            </PwCbBasicHandler>
+        </PasswordCallback>
+    </AxisExtra>
+  </GVWebServices>
+  <GVDataProviderManager name="GVDP" type="module">
+    <Description>Elenco dei Data Providers</Description>
+    <DataProviders>
+      <ObjectDataProvider class="it.greenvulcano.gvesb.gvdp.impl.ObjectDataProvider" name="objectDataProvider"
+        type="dataProvider">
+        <Field direction="INOUT" key="buffer" type="field">
+          <Expression type="ognl">new java.lang.String(object, &apos;UTF-8&apos;)</Expression>
+        </Field>
+      </ObjectDataProvider>
+      <ObjectDataProvider class="it.greenvulcano.gvesb.gvdp.impl.ObjectDataProvider" name="JS-objectDataProvider"
+        type="dataProvider">
+        <Field direction="INOUT" key="buffer" type="field">
+          <Expression type="js">new java.lang.String(root.getObject(), &apos;UTF-8&apos;)</Expression>
+        </Field>
+      </ObjectDataProvider>
+      <StringDataProvider class="it.greenvulcano.gvesb.gvdp.impl.StringDataProvider" name="stringFromNodeDataProvider"
+        type="dataProvider">
+        <Field direction="INOUT" key="buffer" type="field">
+          <Expression type="ognl">object.getNodeValue()</Expression>
+        </Field>
+      </StringDataProvider>
+      <StringDataProvider class="it.greenvulcano.gvesb.gvdp.impl.StringDataProvider" name="stringDataProvider"
+        type="dataProvider">
+        <Field direction="INOUT" key="buffer" type="field">
+          <Expression type="ognl">new java.lang.String(object, &apos;UTF-8&apos;)</Expression>
+        </Field>
+      </StringDataProvider>
+      <StringDataProvider class="it.greenvulcano.gvesb.gvdp.impl.StringDataProvider" name="JS-stringDataProvider"
+        type="dataProvider">
+        <Field direction="INOUT" key="buffer" type="field">
+          <Expression type="js">new java.lang.String(root.getObject(), &apos;UTF-8&apos;)</Expression>
+        </Field>
+      </StringDataProvider>
+      <CollectionDataProvider class="it.greenvulcano.gvesb.gvdp.impl.CollectionDataProvider" name="xpathCollectionDataProvider"
+        source-selector="object" type="dataProvider">
+        <Field direction="INOUT" key="buffer" type="field">
+          <Expression type="xpath">/Radice/data/text()</Expression>
+        </Field>
+      </CollectionDataProvider>
+      <CollectionDataProvider class="it.greenvulcano.gvesb.gvdp.impl.CollectionDataProvider" name="xpathNodeCollectionDataProvider"
+        source-selector="object" type="dataProvider">
+        <Field direction="INOUT" key="buffer" type="field">
+          <Expression type="xpath">/Radice/*</Expression>
+        </Field>
+      </CollectionDataProvider>
+      <CollectionDataProvider class="it.greenvulcano.gvesb.gvdp.impl.CollectionDataProvider" name="regexCollectionDataProvider"
+        source-selector="object" type="dataProvider">
+        <Field direction="INOUT" key="buffer" type="field">
+          <Expression type="regex">(\w*),(\w*),(\w*)</Expression>
+        </Field>
+      </CollectionDataProvider>
+      <CollectionDataProvider class="it.greenvulcano.gvesb.gvdp.impl.CollectionDataProvider" name="ognlCollectionDataProvider"
+        source-selector="object" type="dataProvider">
+        <Field direction="INOUT" key="buffer" type="field">
+          <Expression type="ognl">split(&quot;,&quot;)</Expression>
+        </Field>
+      </CollectionDataProvider>
+      <XMLEventCollectionDataProvider class="it.greenvulcano.gvesb.gvdp.impl.XMLEventCollectionDataProvider" name="eventCollectionDataProvider"
+        source-selector="object" type="dataProvider">
+        <Field direction="IN" key="START_ELEMENT" type="field">
+          <Expression type="ognl">
+            #localName = #parser.localName,
+            #environment[&apos;NODE_START&apos;]
+              ? (
+                  #nodeXmlStreamWriter = #environment[&apos;NODE_XML_STREAM_WRITER&apos;],
+                  #nodeXmlStreamWriter.writeStartElement(#localName)
+                )
+              : (
+                    #localName.startsWith(&apos;nodo&apos;) &amp;&amp; (
+                        #environment[&apos;NODE_START&apos;] = &apos;true&apos;,
+                        #out = new java.io.ByteArrayOutputStream(),
+                        #nodeXmlStreamWriter = @org.apache.axiom.om.util.StAXUtils@createXMLStreamWriter(#out),
+                        #environment[&apos;NODE_XML_STREAM_WRITER&apos;] = #nodeXmlStreamWriter,
+                        #environment[&apos;NODE_OUTPUT_STREAM&apos;] = #out,
+                        #nodeXmlStreamWriter.writeStartDocument(#parser.version),
+                        #nodeXmlStreamWriter.writeStartElement(#localName),
+                        #parser.attributeCount &amp;&amp; (
+                            #loop = :[#this &lt; #parser.attributeCount &amp;&amp; (
+                                (#parser.getAttributeNamespace(#this)
+                                    ? #nodeXmlStreamWriter.writeAttribute(#parser.getAttributeNamespace(#this), #parser.getAttributeLocalName(#this), #parser.getAttributeValue(#this))
+                                    : #nodeXmlStreamWriter.writeAttribute(#parser.getAttributeLocalName(#this), #parser.getAttributeValue(#this))
+                                ), #loop(#this+1)
+                            )], #loop(0)
+                        )
+                    )
+                )
+          </Expression>
+        </Field>
+        <Field direction="IN" key="CHARACTERS" type="field">
+          <Expression type="ognl">
+            !#parser.isWhiteSpace() &amp;&amp; (
+              #nodeXmlStreamWriter = #environment[&apos;NODE_XML_STREAM_WRITER&apos;],
+              #environment[&apos;NODE_START&apos;]
+                &amp;&amp; #nodeXmlStreamWriter.writeCharacters(#parser.text)
+            )
+          </Expression>
+        </Field>
+        <Field direction="IN" key="END_ELEMENT" type="field">
+          <Expression type="ognl">
+            #nodeXmlStreamWriter = #environment[&apos;NODE_XML_STREAM_WRITER&apos;],
+            #localName = #parser.localName,
+            #environment[&apos;NODE_START&apos;]
+              &amp;&amp; (#nodeXmlStreamWriter.writeEndElement(), #localName.startsWith(&apos;nodo&apos;)
+                &amp;&amp; (
+                  #environment[&apos;NODE_START&apos;] = null,
+                  #out = #environment[&apos;NODE_OUTPUT_STREAM&apos;],
+                  #environment[&apos;NODE_XML_STREAM_WRITER&apos;] = null,
+                  #environment[&apos;NODE_OUTPUT_STREAM&apos;] = null,
+                  #nodeXmlStreamWriter.writeEndDocument(),
+                  #nodeXmlStreamWriter.close(),
+                  #out.close(),
+                  #output.add(#out.toByteArray()),
+                  @java.util.Collections@reverse(#output)
+                )
+              )
+          </Expression>
+        </Field>
+      </XMLEventCollectionDataProvider>
+      <MapDataProvider class="it.greenvulcano.gvesb.gvdp.impl.MapDataProvider" name="mapDataProvider" type="dataProvider">
+        <Field direction="INOUT" key="system" type="field">
+          <Expression type="ognl">system</Expression>
+        </Field>
+        <Field direction="INOUT" key="service" type="field">
+          <Expression type="ognl">service</Expression>
+        </Field>
+        <Field direction="INOUT" key="identifier" type="field">
+          <Expression type="ognl">id</Expression>
+        </Field>
+        <Field direction="INOUT" key="buffer" type="field">
+          <Expression type="ognl">@it.greenvulcano.configuration.XMLConfig@getNode(object,&apos;/Radice/nodo1&apos;)</Expression>
+        </Field>
+        <Field direction="INOUT" key="xml_property" type="field">
+          <Expression type="ognl">property[&apos;XMLProperty&apos;]</Expression>
+        </Field>
+        <Field direction="INOUT" key="test" type="field">
+          <Expression type="ognl">&apos;Creating a custom string using system
+            field: &apos; + system + &apos; and
+            buffer: &apos; + #key_buffer</Expression>
+        </Field>
+      </MapDataProvider>
+      <MapDataProvider class="it.greenvulcano.gvesb.gvdp.impl.MapDataProvider" name="JS-mapDataProvider" type="dataProvider">
+        <Field direction="INOUT" key="system" type="field">
+          <Expression type="js">root.getSystem()</Expression>
+        </Field>
+        <Field direction="INOUT" key="service" type="field">
+          <Expression type="js">root.getService()</Expression>
+        </Field>
+        <Field direction="INOUT" key="identifier" type="field">
+          <Expression type="js">root.getId()</Expression>
+        </Field>
+        <Field direction="INOUT" key="buffer" type="field">
+          <Expression type="js">XMLUtils.selectSingleNode_S(root.getObject(),&apos;/Radice/nodo1&apos;)</Expression>
+        </Field>
+        <Field direction="INOUT" key="xml_property" type="field">
+          <Expression type="js">root.getProperty(&apos;XMLProperty&apos;)</Expression>
+        </Field>
+        <Field direction="INOUT" key="test" type="field">
+          <Expression type="js">&apos;Creating a custom string using system field: &apos; + root.getSystem() + &apos; and buffer: &apos; + key_buffer</Expression>
+        </Field>
+      </MapDataProvider>
+      <ArrayDataProvider class="it.greenvulcano.gvesb.gvdp.impl.ArrayDataProvider" name="arrayDataProvider" type="dataProvider">
+        <Field direction="INOUT" key="0" type="field">
+          <Expression type="ognl">system</Expression>
+        </Field>
+        <Field direction="INOUT" key="1" type="field">
+          <Expression type="ognl">service</Expression>
+        </Field>
+        <Field direction="INOUT" key="2" type="field">
+          <Expression type="ognl">id</Expression>
+        </Field>
+        <Field direction="INOUT" key="3" type="field">
+          <Expression type="ognl">@it.greenvulcano.configuration.XMLConfig@getNode(object,&apos;/Radice/nodo1&apos;)</Expression>
+        </Field>
+        <Field direction="INOUT" key="4" type="field">
+          <Expression type="ognl">property[&apos;XMLProperty&apos;]</Expression>
+        </Field>
+        <Field direction="INOUT" key="5" type="field">
+          <Expression type="ognl">&apos;Creating a custom string using system
+            field: &apos; + system + &apos; and
+            buffer: &apos; + #key_3</Expression>
+        </Field>
+      </ArrayDataProvider>
+      <ArrayDataProvider class="it.greenvulcano.gvesb.gvdp.impl.ArrayDataProvider" name="JS-arrayDataProvider" type="dataProvider">
+        <Field direction="INOUT" key="0" type="field">
+          <Expression type="js">root.getSystem()</Expression>
+        </Field>
+        <Field direction="INOUT" key="1" type="field">
+          <Expression type="js">root.getService()</Expression>
+        </Field>
+        <Field direction="INOUT" key="2" type="field">
+          <Expression type="js">root.getId()</Expression>
+        </Field>
+        <Field direction="INOUT" key="3" type="field">
+          <Expression type="js">XMLUtils.selectSingleNode_S(root.getObject(),&apos;/Radice/nodo1&apos;)</Expression>
+        </Field>
+        <Field direction="INOUT" key="4" type="field">
+          <Expression type="js">root.getProperty(&apos;XMLProperty&apos;)</Expression>
+        </Field>
+        <Field direction="INOUT" key="5" type="field">
+          <Expression type="js">&apos;Creating a custom string using system field: &apos; + root.getSystem() + &apos; and buffer: &apos; + key_3</Expression>
+        </Field>
+      </ArrayDataProvider>
+      <GVBufferChangeDataProvider class="it.greenvulcano.gvesb.gvdp.impl.GVBufferChangeDataProvider" name="gvBufferChangeDataProvider"
+        type="dataProvider">
+        <Field direction="OUT" key="buffer" type="field">
+          <Expression type="ognl">system = #input[0], service = #input[1],
+            object = object.getBytes()</Expression>
+        </Field>
+      </GVBufferChangeDataProvider>
+      <GVBufferChangeDataProvider class="it.greenvulcano.gvesb.gvdp.impl.GVBufferChangeDataProvider" name="JS-gvBufferChangeDataProvider"
+        type="dataProvider">
+        <Field direction="OUT" key="buffer" type="field">
+          <Expression type="js">root.setSystem(input[0]);
+            root.setService(input[1]);
+            root.setObject(root.getObject().getBytes());</Expression>
+        </Field>
+      </GVBufferChangeDataProvider>
+    </DataProviders>
+  </GVDataProviderManager>
+</GVAdapters>

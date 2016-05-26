@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>it.greenvulcano.gvesb</groupId>
+		<artifactId>gvengine</artifactId>
+		<version>4.0.0</version>
+	</parent>
+
+	<artifactId>gvvcl</artifactId>
+	<packaging>bundle</packaging>
+	<name>GreenVulcano Virtual Communication Layer</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>it.greenvulcano.gvesb</groupId>
+			<artifactId>gvbase</artifactId>
+			<version>${project.version}</version>
+			<type>bundle</type>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.geronimo.specs</groupId>
+		    <artifactId>geronimo-jta_1.1_spec</artifactId>
+		    <version>1.1.1</version>
+		    <scope>provided</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>${maven-bundle-plugin.version}</version>
+				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+						<Bundle-Version>${project.version}</Bundle-Version>
+						<Bundle-Activator>it.greenvulcano.gvesb.virtual.Activator</Bundle-Activator>
+						<Export-Package>it.greenvulcano.gvesb.virtual*;version=${project.version}</Export-Package>
+						<Import-Package>
+							it.greenvulcano.configuration,
+							it.greenvulcano.event.util.shutdown,
+							it.greenvulcano.gvesb.buffer,
+							it.greenvulcano.gvesb.internal.condition,
+							it.greenvulcano.gvesb.internal,
+							it.greenvulcano.gvesb.j2ee,
+							it.greenvulcano.log,
+							it.greenvulcano.script,
+							it.greenvulcano.util.thread,
+							it.greenvulcano.util.xpath,
+							org.slf4j;version="[1.6,2)";provider=paxlogging,
+							org.osgi.framework;version="[1.7,2)",
+							org.osgi.service.blueprint;version="[1.0.0,2.0.0)",
+							javax.transaction,
+							org.w3c.dom
+						</Import-Package>
+					</instructions>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

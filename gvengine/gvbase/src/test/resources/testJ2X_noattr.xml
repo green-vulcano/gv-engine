@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+    <elem>
+        <id>A</id>
+        <int>12345</int>
+        <intStr>12345</intStr>
+        <string>some &amp; value</string>
+        <float>123.456</float>
+    </elem>
+    <elem>
+        <id>B</id>
+        <int>67890</int>
+        <intStr>67890</intStr>
+        <string>some other &lt;value&gt;</string>
+        <float>456.123</float>text child
+second row</elem>
+    <elemA/>
+    <elemB>
+        <int>12345</int>
+        <intStr>12345</intStr>
+        <string>some &amp; ' " value</string>
+        <elem>
+            <id>C</id>
+            <string>some &amp; child value</string>
+            <boolean>true</boolean>
+        </elem>
+        <elem>
+            <id>D</id>
+            <string>some other &lt;child value&gt;</string>
+            <boolean>false</boolean>text child
+second row</elem>
+    </elemB>
+    <elemC>
+        <id>E</id>
+        <int>12345</int>
+        <intStr>12345</intStr>
+        <nullVal>null</nullVal>
+        <float>123.456</float>
+    </elemC>
+    <elemD>
+        <id>F</id>
+    </elemD>
+    <elemL>text 1</elemL>
+    <elemL>text 2</elemL>
+    <elemL>text 3</elemL>
+</root>

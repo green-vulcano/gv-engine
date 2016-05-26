@@ -1,0 +1,16 @@
+<root>
+    <elem id="A" string="some &amp; value" int="12345" intStr="12345" float="123.456"/>
+    <elem id="B" string="some other &lt;value&gt;" int="67890" intStr="67890" float="456.123">text child
+second row</elem>
+    <elemA/>
+    <elemB string="some &amp; &apos; &quot; value" int="12345" intStr="12345">
+        <elem id="C" string="some &amp; child value" boolean="true"/>
+        <elem id="D" string="some other &lt;child value&gt;" boolean="false">text child
+second row</elem>
+    </elemB>
+    <elemC id="E" int="12345" intStr="12345" float="123.456" nullVal="null"/>
+    <elemD id="F"/>
+    <elemL>text 1</elemL>
+    <elemL>text 2</elemL>
+    <elemL>text 3</elemL>
+</root>

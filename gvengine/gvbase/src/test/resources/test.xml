@@ -1,0 +1,8 @@
+<root>
+    <elem id="A">xmlp{{prop00}}</elem>
+    <elem id="B">xmlp{{prop01}}</elem>
+    <elem id="C">xmlp{{prop02}}</elem>
+    <elem id="D">xmlp{{prop03}}</elem>
+    <elem id="E">xmlp{{prop04}}</elem>
+    <elem id="F">xmlp{{prop05}}</elem>
+</root>

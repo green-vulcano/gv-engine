@@ -1,0 +1,685 @@
+
+<!ENTITY % dbo_mongo_types        "DBOMongoDelete|DBOMongoInsert|DBOMongoMapReduce|DBOMongoSelect|DBOMongoUpdate|DBOMongoUpsert">
+
+<!--
+    DataHandlerMongoDB service.
+
+    #Label: @name
+    #SelectOnInsert
+    #Icon: GVDataHandler_DBOBuilder.png
+-->
+<!ELEMENT DBOMongoBuilder (Description?, DHAliasList?, DHVariables?, (%dbo_mongo_types;)+)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST DBOMongoBuilder type CDATA #FIXED "dbobuilder">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST DBOMongoBuilder class CDATA #FIXED "it.greenvulcano.gvesb.datahandling.mongodb.dbobuilder.DBOMongoBuilder">
+<!--
+    Service name.
+
+    #Unique: ../*[@type='dbobuilder']/@name
+    #NotNull
+-->
+<!ATTLIST DBOMongoBuilder name CDATA #REQUIRED>
+<!--
+    MongoDB server string uri connection string. Ex. mongodb://localhost:27017
+
+    #NotNull
+-->
+<!ATTLIST DBOMongoBuilder mongo-server-uri CDATA #REQUIRED>
+<!--
+    The default is the value of @output-data of the last DBOMongoxxx.
+
+    #NotNull
+-->
+<!ATTLIST DBOMongoBuilder output-data CDATA #IMPLIED>
+<!--
+    If set to 'none' not perform the input/output data dump.
+    If set to 'text' or 'hex' then the dump is performed as text or hexadecimal string.
+    Defaut to 'text'.
+-->
+<!ATTLIST DBOMongoBuilder make-dump (none|text|hex) #IMPLIED>
+
+<!--
+    DBOMongo optimized for insert operations.
+
+    #Label: @name
+    #SelectOnInsert
+    #Icon: GVDBOInsert.png
+-->
+<!ELEMENT DBOMongoInsert (Description?, MDBInsert+)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST DBOMongoInsert type CDATA #FIXED "dbo">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST DBOMongoInsert class CDATA #FIXED "it.greenvulcano.gvesb.datahandling.mongodb.dbo.DBOMongoInsert">
+<!--
+    DBOMongoInsert name.
+
+    #Unique: ../*[@type='dbo']/@name
+    #NotNull
+-->
+<!ATTLIST DBOMongoInsert name CDATA #REQUIRED>
+<!--
+    Force mode of the DBO, can be used in DBOBuilder whit more heterogeneous DBO.
+    Mode:
+    caller - inherit the mode of the caller
+    json2db - data entry mode
+-->
+<!ATTLIST DBOMongoInsert force-mode (caller|json2db) #IMPLIED>
+<!--
+    Tell the engine do not use the input data.
+-->
+<!ATTLIST DBOMongoInsert ignore-input (true|false) #IMPLIED>
+<!--
+    The default is the value of @name-Input.
+    Can be set as the @output-data of a preceeding DBO to use its
+    output as input.
+
+    #NotNull
+-->
+<!ATTLIST DBOMongoInsert input-data CDATA #IMPLIED>
+<!--
+    The default is the value of @name-Output.
+
+    #NotNull
+-->
+<!ATTLIST DBOMongoInsert output-data CDATA #IMPLIED>
+
+
+<!--
+    MongoDB Insert object structure. This input object can be null in the configuration and, in this case, will be set on the input json object.
+
+    #Label: @id
+-->
+<!ELEMENT MDBInsert (data*)>
+<!--
+    #NotNull
+    #Pattern: ! [0-9]* ! set a integer value
+-->
+<!ATTLIST MDBInsert id CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST MDBInsert db CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST MDBInsert collection CDATA #REQUIRED>
+
+<!--
+    Insert data json object to be evaluated. This value is a json string object used to insert elements in the collection.
+
+    Can contains the following placeholders:
+     - fixed : a text string;
+     - ${{propname}}      : a System property name;
+     - sp{{propname}}     : a System property name;
+     - env{{varname}}     : an Environment variable value;
+     - @{{propname}}      : a inProperties property name;
+     - script{{lang::[scope::]script}} : evaluate a 'lang' script, using the base context 'scope'
+     - js{{[scope::]script}} : evaluate a JavaScript script, using the context 'scope'
+     - ognl{{script}} : evaluate a OGNL script
+
+    If this element is not defined is possible to use an input json element with this structure:
+
+    {
+    "RowSet": {
+        "data": [
+            {
+                "id": 0,
+                "row": [
+                    {
+                        "ID0_ROW1": {
+                            "item": "ROW1",
+                            "details": {
+                                "model": "0001",
+                                "manufacturer": "XYZ Company"
+                            }
+                           }
+                       }
+                   ]
+               }
+           ]
+       }
+    }
+-->
+<!ELEMENT data (#PCDATA)>
+
+
+
+<!--
+    DBO running the update, and if no record updated, the corresponding insert.
+
+    #Label: @name
+    #SelectOnInsert
+    #Icon: GVDBOInsertUpdate.png
+-->
+<!ELEMENT DBOMongoUpsert (Description?, MDBUpsert+)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST DBOMongoUpsert type CDATA #FIXED "dbo">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST DBOMongoUpsert class CDATA #FIXED "it.greenvulcano.gvesb.datahandling.mongodb.dbo.DBOMongoUpsert">
+<!--
+    DBOMongoUpsert name.
+
+    #Unique: ../*[@type='dbo']/@name
+    #NotNull
+-->
+<!ATTLIST DBOMongoUpsert name CDATA #REQUIRED>
+<!--
+    Force mode of the DBO, can be used in DBOBuilder whit more heterogeneous DBO.
+    Mode:
+    caller - inherit the mode of the caller
+    json2db - data entry mode
+-->
+<!ATTLIST DBOMongoUpsert force-mode (caller|json2db) #IMPLIED>
+<!--
+    Tell the engine do not use the input data.
+
+-->
+<!ATTLIST DBOMongoUpsert ignore-input (true|false) #IMPLIED>
+<!--
+    The default is the value of @name-Input.
+    Can be set as the @output-data of a preceeding DBO to use its
+    output as input.
+
+    #NotNull
+-->
+<!ATTLIST DBOMongoUpsert input-data CDATA #IMPLIED>
+<!--
+    The default is the value of @name-Output.
+
+    #NotNull
+-->
+<!ATTLIST DBOMongoUpsert output-data CDATA #IMPLIED>
+
+<!--
+    MongoDB Upsert object structure.
+
+    It's possible to define a json object as input in the GVBuffer with the following structure:
+
+    {
+    "RowSet": {
+        "data": [
+            {
+                "id": 0,
+                "row": [
+                    {
+                        "w": {
+                            "ID0_ROW1.item": "ROW1_UPSERTED4"
+                        },
+                        "d": {
+                            $set: {
+                                "IDO_ROW1.details.manufacturer": "XYZ Company Upsert"
+                              }
+                          }
+                      }
+                  ]
+              }
+          ]
+       }
+     }
+
+     "w" is the filter
+     "d" is the value to set.
+
+     If this input object is not defined or, "ignore-input" param is true, will be considered the "filter" and "set" elements in order to execute the command.
+
+     #Label: @id
+-->
+<!ELEMENT MDBUpsert (filter, set)>
+<!--
+    #NotNull
+    #Pattern: ! [0-9]* ! set a integer value
+-->
+<!ATTLIST MDBUpsert id CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST MDBUpsert db CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST MDBUpsert collection CDATA #REQUIRED>
+
+<!--
+    Upsert filter json object to be evaluated. This value is a json string object used to filter elements in the collection to update. If nothing is filtered an insert is executed.
+
+    Can contains the following placeholders:
+     - fixed : a text string;
+     - ${{propname}}      : a System property name;
+     - sp{{propname}}     : a System property name;
+     - env{{varname}}     : an Environment variable value;
+     - @{{propname}}      : a inProperties property name;
+     - script{{lang::[scope::]script}} : evaluate a 'lang' script, using the base context 'scope'
+     - js{{[scope::]script}} : evaluate a JavaScript script, using the context 'scope'
+     - ognl{{script}} : evaluate a OGNL script
+-->
+<!ELEMENT filter (#PCDATA)>
+
+<!--
+    Upsert set json object to be evaluated. This value is a json string object used to set elements in the collection to update. If nothing is filtered an insert of this object is executed.
+
+    Can contains the following placeholders:
+     - fixed : a text string;
+     - ${{propname}}      : a System property name;
+     - sp{{propname}}     : a System property name;
+     - env{{varname}}     : an Environment variable value;
+     - @{{propname}}      : a inProperties property name;
+     - script{{lang::[scope::]script}} : evaluate a 'lang' script, using the base context 'scope'
+     - js{{[scope::]script}} : evaluate a JavaScript script, using the context 'scope'
+     - ognl{{script}} : evaluate a OGNL script
+-->
+<!ELEMENT set (#PCDATA)>
+
+
+<!--
+    DBO optimized for update operations.
+
+    #Label: @name
+    #SelectOnInsert
+    #Icon: GVDBOUpdate.png
+-->
+<!ELEMENT DBOMongoUpdate (Description?, MDBUpdate+)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST DBOMongoUpdate type CDATA #FIXED "dbo">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST DBOMongoUpdate class CDATA #FIXED "it.greenvulcano.gvesb.datahandling.mongodb.dbo.DBOMongoUpdate">
+<!--
+    DBOMongoUpdate name.
+
+    #Unique: ../*[@type='dbo']/@name
+    #NotNull
+-->
+<!ATTLIST DBOMongoUpdate name CDATA #REQUIRED>
+<!--
+    Force mode of the DBO, can be used in DBOBuilder whit more heterogeneous DBO.
+    Mode:
+    caller - inherit the mode of the caller
+    json2db - data entry mode
+-->
+<!ATTLIST DBOMongoUpdate force-mode (caller|json2db) #IMPLIED>
+<!--
+    Tell the engine do not use the input data.
+
+-->
+<!ATTLIST DBOMongoUpdate ignore-input (true|false) #IMPLIED>
+<!--
+    The default is the value of @name-Input.
+    Can be set as the @output-data of a preceeding DBO to use its
+    output as input.
+
+    #NotNull
+-->
+<!ATTLIST DBOMongoUpdate input-data CDATA #IMPLIED>
+<!--
+    The default is the value of @name-Output.
+
+    #NotNull
+-->
+<!ATTLIST DBOMongoUpdate output-data CDATA #IMPLIED>
+
+<!--
+    Object statement structure.
+
+    It's possibile to define a json object as input in the GVBuffer with the following structure:
+
+    {
+    "RowSet": {
+        "data": [
+            {
+                "id": 0,
+                "row": [
+                    {
+                        "w": {
+                            "ID0_ROW1.item": "ROW1_UPSERTED4"
+                        },
+                        "d": {
+                            $set: {
+                                "IDO_ROW1.details.manufacturer": "XYZ Company Upsert"
+                              }
+                          }
+                      }
+                  ]
+              }
+          ]
+       }
+     }
+
+     "w" is the filter
+     "d" is the value to set.
+
+     If this input object is not defined or, "ignore-input" param is true, will be considered the "filter" and "set" elements in order to execute the command.
+
+     #Label: @id
+-->
+<!ELEMENT MDBUpdate (filter, set)>
+<!--
+    #NotNull
+    #Pattern: ! [0-9]* ! set a integer value
+-->
+<!ATTLIST MDBUpdate id CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST MDBUpdate db CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST MDBUpdate collection CDATA #REQUIRED>
+
+<!--
+    Update set json object to be evaluated. This value is a json string object used to set elements in the collection to update.
+
+    Can contains the following placeholders:
+     - fixed : a text string;
+     - ${{propname}}      : a System property name;
+     - sp{{propname}}     : a System property name;
+     - env{{varname}}     : an Environment variable value;
+     - @{{propname}}      : a inProperties property name;
+     - script{{lang::[scope::]script}} : evaluate a 'lang' script, using the base context 'scope'
+     - js{{[scope::]script}} : evaluate a JavaScript script, using the context 'scope'
+     - ognl{{script}} : evaluate a OGNL script
+-->
+<!ELEMENT set (#PCDATA)>
+
+
+
+<!--
+    DBO optimized for delete operations.
+
+    #Label: @name
+    #SelectOnInsert
+    #Icon: GVDBOUpdate.png
+-->
+<!ELEMENT DBOMongoDelete (Description?, MDBDelete+)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST DBOMongoDelete type CDATA #FIXED "dbo">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST DBOMongoDelete class CDATA #FIXED "it.greenvulcano.gvesb.datahandling.mongodb.dbo.DBOMongoDelete">
+<!--
+    DBOMongoUpdate name.
+
+    #Unique: ../*[@type='dbo']/@name
+    #NotNull
+-->
+<!ATTLIST DBOMongoDelete name CDATA #REQUIRED>
+
+<!--
+    Force mode of the DBO, can be used in DBOMongoBuilder whit more heterogeneous DBO.
+    Mode:
+    caller - inherit the mode of the caller
+    json2db - data entry mode to filter data to delete.
+-->
+<!ATTLIST DBOMongoDelete force-mode (caller|json2db) #IMPLIED>
+<!--
+    Tell the engine do not use the input data.
+
+-->
+<!ATTLIST DBOMongoDelete ignore-input (true|false) #IMPLIED>
+<!--
+    The default is the value of @name-Input.
+    Can be set as the @output-data of a preceeding DBO to use its
+    output as input.
+
+    #NotNull
+-->
+<!ATTLIST DBOMongoDelete input-data CDATA #IMPLIED>
+<!--
+    The default is the value of @name-Output.
+
+    #NotNull
+-->
+<!ATTLIST DBOMongoDelete output-data CDATA #IMPLIED>
+
+<!--
+    Object statement structure.
+
+    #Label: @id
+-->
+<!ELEMENT MDBDelete (filter)>
+<!--
+    #NotNull
+    #Pattern: ! [0-9]* ! set a integer value
+-->
+<!ATTLIST MDBDelete id CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST MDBDelete db CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST MDBDelete collection CDATA #REQUIRED>
+
+
+
+<!--
+    DBO optimized for select operations.
+
+    The data output will be the following structure:
+
+    {
+    "RowSet": {
+        "data": [
+            {
+                "id": 0,
+                "row": [
+                    {
+                        "ID0_ROW1": {
+                            "item": "ROW1",
+                            "details": {
+                                "model": "0001",
+                                "manufacturer": "XYZ Company"
+                            }
+                           }
+                       }
+                   ]
+               }
+           ]
+       }
+    }
+
+    #Label: @name
+    #SelectOnInsert
+    #Icon: GVDBOSelect.png
+-->
+<!ELEMENT DBOMongoSelect (Description?, MDBSelect+)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST DBOMongoSelect type CDATA #FIXED "dbo">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST DBOMongoSelect class CDATA #FIXED "it.greenvulcano.gvesb.datahandling.mongodb.dbo.DBOMongoSelect">
+<!--
+    DBOMongoSelect name.
+
+    #Unique: ../*[@type='dbo']/@name
+    #NotNull
+-->
+<!ATTLIST DBOMongoSelect name CDATA #REQUIRED>
+<!--
+    Force mode of the DBO, can be used in DBOMongoBuilder whit more heterogeneous DBO.
+    Mode:
+    caller - inherit the mode of the caller
+    db2json - data extraction mode
+-->
+<!ATTLIST DBOMongoSelect force-mode (caller|db2json) #IMPLIED>
+<!--
+    Tell the engine do not use the input data.
+
+-->
+<!ATTLIST DBOMongoSelect ignore-input (true|false) #IMPLIED>
+<!--
+    The default is the value of @name-Output.
+
+    #NotNull
+-->
+<!ATTLIST DBOMongoSelect output-data CDATA #IMPLIED>
+
+<!--
+    MongoDB Select object structure.
+
+    #Label: @id
+-->
+<!ELEMENT MDBSelect (filter)>
+<!--
+    #NotNull
+    #Pattern: ! [0-9]* ! set a integer value
+-->
+<!ATTLIST MDBSelect id CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST MDBSelect db CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST MDBSelect collection CDATA #REQUIRED>
+
+
+
+
+<!--
+    DBO optimized for operations on mapreduce tasks.
+
+    #Label: @name
+    #SelectOnInsert
+    #Icon: GVDBOCallSP.png
+-->
+<!ELEMENT DBOMongoMapReduce (Description?, MDBMapReduce+)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST DBOMongoMapReduce type CDATA #FIXED "dbo">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST DBOMongoMapReduce class CDATA #FIXED "it.greenvulcano.gvesb.datahandling.mongodb.dbo.DBOMongoMapReduceCommand">
+<!--
+    DBOMongoMapReduce name.
+
+    #Unique: ../*[@type='dbo']/@name
+    #NotNull
+-->
+<!ATTLIST DBOMongoMapReduce name CDATA #REQUIRED>
+<!--
+    Force mode of the DBO, can be used in DBOBuilder whit more heterogeneous DBO.
+    Mode:
+    caller - inherit the mode of the caller
+    json2db   - call mapreduce command task.
+-->
+<!ATTLIST DBOMongoMapReduce force-mode (caller|json2db) #IMPLIED>
+<!--
+    Tell the engine do not use the input data.
+
+-->
+<!ATTLIST DBOMongoMapReduce ignore-input (true|false) #IMPLIED>
+<!--
+    The default is the value of @name-Input.
+    Can be set as the @output-data of a preceeding DBO to use its
+    output as input.
+
+    #NotNull
+-->
+<!ATTLIST DBOMongoMapReduce input-data CDATA #IMPLIED>
+<!--
+    The default is the value of @name-Output.
+
+    #NotNull
+-->
+<!ATTLIST DBOMongoMapReduce output-data CDATA #IMPLIED>
+
+<!--
+    MongoDB Select object structure.
+
+    #Label: @id
+-->
+<!ELEMENT MDBMapReduce (map-function+, reduce-function+, filter+, output-type+)>
+<!--
+    #NotNull
+    #Pattern: ! [0-9]* ! set a integer value
+-->
+<!ATTLIST MDBMapReduce id CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST MDBMapReduce db CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST MDBMapReduce collection CDATA #REQUIRED>
+
+<!--
+    Map function json javascript object to be evaluated. This value is a json string object used as map function evaluated by mongodb in map-reduce task.
+
+    Can contains the following placeholders:
+     - fixed : a text string;
+     - ${{propname}}      : a System property name;
+     - sp{{propname}}     : a System property name;
+     - env{{varname}}     : an Environment variable value;
+     - @{{propname}}      : a inProperties property name;
+     - script{{lang::[scope::]script}} : evaluate a 'lang' script, using the base context 'scope'
+     - js{{[scope::]script}} : evaluate a JavaScript script, using the context 'scope'
+     - ognl{{script}} : evaluate a OGNL script
+-->
+<!ELEMENT map-function (#PCDATA)>
+<!--
+    Reduce function json javascript object to be evaluated. This value is a json string object used as reduce function evaluated by mongodb in map-reduce task.
+
+    Can contains the following placeholders:
+     - fixed : a text string;
+     - ${{propname}}      : a System property name;
+     - sp{{propname}}     : a System property name;
+     - env{{varname}}     : an Environment variable value;
+     - @{{propname}}      : a inProperties property name;
+     - script{{lang::[scope::]script}} : evaluate a 'lang' script, using the base context 'scope'
+     - js{{[scope::]script}} : evaluate a JavaScript script, using the context 'scope'
+     - ognl{{script}} : evaluate a OGNL script
+-->
+<!ELEMENT reduce-function (#PCDATA)>
+<!--
+    Select filter json object to be evaluated. This value is a json string object used to filter elements in the collection used for the map-reduce task.
+
+    Can contains the following values:
+
+    - REPLACE: Save the job output to a collection, replacing its previous content
+    - MERGE: Merge the job output with the existing contents of outputTarget collection
+    - REDUCE: Reduce the job output with the existing contents of outputTarget collection
+    - INLINE: Return results inline, no result is written to the DB server
+-->
+<!ELEMENT output-type (#PCDATA)>

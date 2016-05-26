@@ -1,0 +1,53 @@
+{"bib": {"book": [
+  {
+    "author": [{
+      "last": "Stevens",
+      "first": "W."
+    }],
+    "title": "TCP/IP Illustrated",
+    "price": 55.65,
+    "year": "1994",
+    "publisher": "Addison-Wesley"
+  },
+  {
+    "author": [{
+      "last": "Stevens",
+      "first": "W."
+    }],
+    "title": "Advanced Programming in the Unix environment",
+    "price": 65.95,
+    "year": "1992",
+    "publisher": "Addison-Wesley"
+  },
+  {
+    "author": [
+      {
+        "last": "Abiteboul",
+        "first": "Serge"
+      },
+      {
+        "last": "Buneman",
+        "first": "Peter"
+      },
+      {
+        "last": "Suciu",
+        "first": "Dan"
+      }
+    ],
+    "title": "Data on the Web",
+    "price": 39.95,
+    "year": "2000",
+    "publisher": "Morgan Kaufmann Publishers"
+  },
+  {
+    "editor": [{
+      "last": "Gerbarg",
+      "affiliation": "CITI",
+      "first": "Darcy"
+    }],
+    "title": "The Economics of Technology and Content for Digital TV",
+    "price": 129.95,
+    "year": "1999",
+    "publisher": "Kluwer Academic Publishers"
+  }
+]}}

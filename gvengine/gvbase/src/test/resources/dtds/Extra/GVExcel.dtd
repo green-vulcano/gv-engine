@@ -1,0 +1,513 @@
+
+
+<!--
+    Defines the configuration elements of an Excel report.
+
+    #SortChild
+    #SelectOnInsert
+    #Label: @name
+-->
+<!ELEMENT GVExcelReport (Description?, Sheet+)>
+<!--
+    Report name
+
+    #NotNull
+    #Unique: ../GVExcelReport/@name
+-->
+<!ATTLIST GVExcelReport name CDATA #REQUIRED>
+<!--
+    Report group.
+    Default Generic.
+
+    #NotNull
+-->
+<!ATTLIST GVExcelReport group CDATA #IMPLIED>
+<!--
+    JNDI name of a DataSource.
+
+    #NotNull
+-->
+<!ATTLIST GVExcelReport jdbc-connection CDATA #REQUIRED>
+<!--
+    Name of the style of the report.
+    Default 'default'.
+
+    #References: gvesb:document('GVAdapters')/GVAdapters/GVExcelWorkbookConfiguration/GVExcelWorkbook/@configName
+-->
+<!ATTLIST GVExcelReport format CDATA #IMPLIED>
+<!--
+    Defines the source of the data to be converted in Excel file:
+    - sql: the data are extracted from a DB though an SQL statement
+    - xml: the data are extracted from an XML document contained into GVBuffer.object field
+    Default to sql.
+-->
+<!ATTLIST GVExcelReport mode (sql|xml) #IMPLIED>
+
+<!--
+    Defines the configuration of a sheet of the Report.
+
+    #SelectOnInsert
+    #CompositeLabel: || @id | - | @name
+-->
+<!ELEMENT Sheet (Description?, prep-statement*, statement)>
+<!--
+    Sheet id.
+
+    #NotNull
+    #Unique: ../Sheet/@id
+-->
+<!ATTLIST Sheet id CDATA #REQUIRED>
+<!--
+    Sheet name.
+
+    #NotNull
+-->
+<!ATTLIST Sheet name CDATA #REQUIRED>
+<!--
+    Sheet title.
+
+    #NotNull
+-->
+<!ATTLIST Sheet title CDATA #IMPLIED>
+<!--
+    JNDI name of a DataSource.
+    Default to Report connection.
+
+    #NotNull
+-->
+<!ATTLIST Sheet jdbc-connection CDATA #IMPLIED>
+<!--
+    Useful only for XML mode, defines the list of (row) element's attributes (and their order) to be shown in the Excel sheet.
+
+    #NotNull
+-->
+<!ATTLIST Sheet fields CDATA #IMPLIED>
+
+<!--
+    Preparation statement for Excel report generation.
+    Are executed after the report statement.
+    Can contains the following placeholders:
+     - fixed : a text string;
+     - ${{propname}}      : a System property name;
+     - sp{{propname}}     : a System property name;
+     - env{{varname}}     : an Environment variable value;
+     - @{{propname}}      : a inProperties property name;
+     - timestamp{{pattern[::tZone]]}} : return the current timestamp, in optional tZone value,
+                                        formatted as 'pattern'
+     - dateformat{{date::source-pattern::dest-pattern[::source-tZone::dest-tZone]}} :
+                               reformat 'date' from 'source-pattern' to 'dest-pattern',
+                               and optionally from 'source-tZone' to 'dest-tZone'
+     - decode{{field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                               evaluate as if-then-else; if 'field' is equal to cond1...n,
+                               return the value of val1...n, otherwise 'default'
+     - decodeL{{sep::field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                               is equivalent to 'decode', with the difference that 'condX'
+                               can be a list of values separated by 'sep'
+     - script{{lang::[scope::]script}} : evaluate a 'lang' script, using the base context 'scope'
+     - js{{[scope::]script}} : evaluate a JavaScript script, using the context 'scope'
+     - ognl{{script}}        : evaluate a OGNL script
+     - sql{{[conn::]statement}}     : execute a select sql statement sql and return the value of
+                                      the first field of the first selected record.
+                                      The 'conn' parameter is the JNDI name of a DataSource,
+                                      if not defined is used the current connection
+     - sqllist{{[conn::]statement}} : execute a select sql statement sql and return the value of
+                                      the first field of all selected records as a comma separated list.
+                                      The 'conn' parameter is the JNDI name of a DataSource,
+                                      if not defined is used the current connection
+     - sqltable{{conn::statement}}  : executes a select sql statement and returns all values of
+                                      returned cursor as an XML.
+                                      The 'conn' parameter is the JNDI name of a DataSource
+
+-->
+<!ELEMENT prep-statement (#PCDATA)>
+<!--
+    Must be:
+    Excel Sheet        : insert|update|callsp
+
+    #NotNull
+-->
+<!ATTLIST prep-statement type (%statement_type;) #REQUIRED>
+<!--
+    #NotNull
+    #Pattern: ! [0-9]* ! set a integer value
+-->
+<!ATTLIST prep-statement id CDATA #IMPLIED>
+
+
+
+<!--
+    Defines the information needed to generate Excel reports from a select on the DB.
+
+    #Label: @name
+    #Icon: GVExcelCall.png
+    #Category: Utils
+    #Template:
+        <xsl:template match="excel-call">
+            <xsl:if test="Description">
+                <small><br/><xsl:value-of select="Description"/></small>
+            </xsl:if>
+        </xsl:template>
+-->
+<!ELEMENT excel-call (Description?, GVExcelReport?)>
+
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST excel-call type CDATA #FIXED "call">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST excel-call class CDATA #FIXED "it.greenvulcano.gvesb.virtual.excel.GVExcelCallOperation">
+<!--
+    Operation name.
+    Used in the 'Flow' section to associate workflow nodes to VCL operations.
+
+    #NotNull
+    #Unique: ../*[@type='call' or @type='enqueue' or @type='dequeue']/@name
+-->
+<!ATTLIST excel-call name CDATA #REQUIRED>
+<!--
+    Reports group name.
+
+    #NotNull
+-->
+<!ATTLIST excel-call group CDATA #IMPLIED>
+<!--
+    Report name.
+
+    #NotNull
+-->
+<!ATTLIST excel-call report CDATA #IMPLIED>
+
+<!--
+    Defines the information needed to convert a Excel file, read from file system 
+    or in GVBuffer.object field, in a XML document or CSV string.
+
+    #Label: @name
+    #Icon: GVExcelReaderCall.png
+    #Category: Utils
+    #Template:
+        <xsl:template match="excelreader-call">
+            <xsl:if test="Description">
+                <small><br/><xsl:value-of select="Description"/></small>
+            </xsl:if>
+        </xsl:template>
+-->
+<!ELEMENT excelreader-call (Description?, (ToXMLReader | ToCSVReader)?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST excelreader-call type CDATA #FIXED "call">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST excelreader-call class CDATA #FIXED "it.greenvulcano.gvesb.virtual.excel.reader.GVExcelReaderCallOperation">
+<!--
+    Operation name.
+    Used in the 'Flow' section to associate workflow nodes to VCL operations.
+
+    #NotNull
+    #Unique: ../*[@type='call' or @type='enqueue' or @type='dequeue']/@name
+-->
+<!ATTLIST excelreader-call name CDATA #REQUIRED>
+<!--
+    Excel file name. Can contains placeholder to be decoded at runtime.
+    If not defined the Excel file content must be into GVBuffer.object field.
+
+    #NotNull
+-->
+<!ATTLIST excelreader-call fileName CDATA #IMPLIED>
+
+
+<!--
+    Defines the information needed to convert a Excel file into an XML document.
+-->
+<!ELEMENT ToXMLReader (Description?, ColumnSkipper?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST ToXMLReader type CDATA #FIXED "excel-reader">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST ToXMLReader class CDATA #FIXED "it.greenvulcano.excel.reader.ToXMLReader">
+<!--
+    If true, insert in the XML document also the cell formatting informations.
+    Default to true.
+-->
+<!ATTLIST ToXMLReader onlyData (false|true) #IMPLIED>
+
+
+<!--
+    Defines the information needed to convert a Excel file into an CSV string.
+-->
+<!ELEMENT ToCSVReader (Description?, ColumnSkipper?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST ToCSVReader type CDATA #FIXED "excel-reader">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST ToCSVReader class CDATA #FIXED "it.greenvulcano.excel.reader.ToCSVReader">
+<!--
+    CSV field's separator. Can handle also '\t' (TAB) character.
+    Default to ','.
+
+    #NotNull
+-->
+<!ATTLIST ToCSVReader separator CDATA #IMPLIED>
+<!--
+    Defines the EOL chars to append at the end of every CSV line.
+    Default to LN.
+
+    native : OS native EOL
+    LF     : line feed
+    CR-LF  : carriage return and line feed
+    CR     : carriage return
+-->
+<!ATTLIST ToCSVReader end-line (native|LF|CR-LF|CR) #IMPLIED>
+<!--
+    Defines the CSV escape formatting style..
+    Default to excel.
+-->
+<!ATTLIST ToCSVReader formatting-style (excel|unix) #IMPLIED>
+
+<!--
+    Defines the information needed to skip column processing on some Excel sheet.
+-->
+<!ELEMENT ColumnSkipper (Description?, sheet+)>
+
+<!ELEMENT sheet (Description?)>
+<!--
+    Sheet number, 0 based.
+
+    #NotNull
+-->
+<!ATTLIST sheet id CDATA #REQUIRED>
+<!--
+    Comma separated columns number to skip, 0 based.
+
+    #NotNull
+-->
+<!ATTLIST sheet col CDATA #REQUIRED>
+
+<!--
+    It is on this GreenVulcano  ESB element where Report Excel formats will be configured.
+
+    #SortChild
+-->
+<!ELEMENT GVExcelWorkbookConfiguration (Description?, GVExcelWorkbook+)>
+<!ATTLIST GVExcelWorkbookConfiguration version CDATA #FIXED "1.0">
+<!--
+    Element type 'module'.
+-->
+<!ATTLIST GVExcelWorkbookConfiguration type    CDATA   #FIXED  "module">
+<!--
+    Module name always set to 'EXCEL_FORMAT'.
+-->
+<!ATTLIST GVExcelWorkbookConfiguration name    CDATA   #FIXED  "EXCEL_WORK">
+
+
+<!--
+    Defines the configuration elements of a Report.
+
+    #SelectOnInsert
+    #Label: @configName
+-->
+<!ELEMENT GVExcelWorkbook (Description?, SheetConfig)>
+<!--
+    Format name.
+    There must be one with the value 'default'.
+
+    #NotNull
+    #Unique: ../GVExcelWorkbook/@configName
+-->
+<!ATTLIST GVExcelWorkbook configName CDATA #REQUIRED>
+<!--
+    Max number of sheets in the report.
+    Default 30.
+
+    #NotNull
+-->
+<!ATTLIST GVExcelWorkbook maxNumberOfSheets CDATA #IMPLIED>
+<!--
+    Default name for sheets.
+    Default Sheet.
+
+    #NotNull
+-->
+<!ATTLIST GVExcelWorkbook sheetDefaultName CDATA #IMPLIED>
+
+<!--
+    Defines the configuration of a sheet in a report.
+
+    #SelectOnInsert
+-->
+<!ELEMENT SheetConfig (Description?, Title, TableHeader, TextColumn, DateColumn, NumberColumn)>
+<!--
+    Offset in rows to data start.
+    Default 0.
+
+    #NotNull
+-->
+<!ATTLIST SheetConfig offset CDATA #IMPLIED>
+
+<!--
+    Defines the configuration of the title of a sheet.
+
+    #SelectOnInsert
+-->
+<!ELEMENT Title (Format)>
+<!--
+    Offset in rows.
+    Default 0.
+
+    #NotNull
+-->
+<!ATTLIST Title rowsFromTop CDATA #IMPLIED>
+<!--
+    Offset in columns.
+    Default 0.
+
+    #NotNull
+-->
+<!ATTLIST Title columnsFromLeft CDATA #IMPLIED>
+
+<!--
+    Defines the configuration header on a sheet.
+
+    #SelectOnInsert
+-->
+<!ELEMENT TableHeader (Format)>
+
+<!--
+    Defines the configuration of the columns of type text in a sheet.
+
+    #SelectOnInsert
+-->
+<!ELEMENT TextColumn (Format)>
+
+<!--
+    Defines the configuration of the columns of type date in a sheet.
+
+    #SelectOnInsert
+-->
+<!ELEMENT DateColumn (Format)>
+
+<!--
+    Defines the configuration of the columns of type number in a sheet.
+
+    #SelectOnInsert
+-->
+<!ELEMENT NumberColumn (Format)>
+
+<!--
+    Defines the configuration of the cell in a Report.
+
+    #SelectOnInsert
+-->
+<!ELEMENT Format (Description?, Font)>
+<!--
+    Minimum width of the cell.
+    Default 1.
+
+    #NotNull
+-->
+<!ATTLIST Format minWidth CDATA #IMPLIED>
+<!--
+    Maximum width of the cell.
+    Default 30.
+
+    #NotNull
+-->
+<!ATTLIST Format maxWidth CDATA #IMPLIED>
+<!--
+    Alignment of cell text.
+    Default "LEFT".
+-->
+<!ATTLIST Format alignment (LEFT|CENTRE|RIGHT) #IMPLIED>
+<!--
+    Border of the cell
+    Default "0".
+-->
+<!ATTLIST Format hasBorder (true|false) #IMPLIED>
+<!--
+    Cell zoom.
+    Default "1".
+
+    #NotNull
+-->
+<!ATTLIST Format scaleFactor CDATA #IMPLIED>
+<!--
+    Background color of the cell.
+    Default "white".
+
+    #NotNull
+-->
+<!ATTLIST Format backgroundColour CDATA #IMPLIED>
+<!--
+    Format of the cell Number and Date.
+    Default:
+       Number: @
+       Date  : dd/MM/yyyy hh:mm:ss
+
+    #NotNull
+-->
+<!ATTLIST Format pattern CDATA #IMPLIED>
+
+<!--
+    Defines the configuration of a font in a report.
+
+    #SelectOnInsert
+-->
+<!ELEMENT Font (Description?)>
+<!--
+    Type
+    Default "ARIAL".
+-->
+<!ATTLIST Font type (ARIAL|COURIER|TAHOMA|TIMES) #IMPLIED>
+<!--
+    Dimension.
+    Default "10".
+
+    #NotNull
+-->
+<!ATTLIST Font size CDATA #IMPLIED>
+<!--
+    Bold style.
+    Default "0".
+-->
+<!ATTLIST Font isBold (true|false) #IMPLIED>
+<!--
+    Italic Style.
+    Default "false".
+-->
+<!ATTLIST Font isItalic (true|false) #IMPLIED>
+<!--
+    Underlined style.
+    Default "false".
+-->
+<!ATTLIST Font isUnderlined (true|false) #IMPLIED>
+
+<!--
+    #SortChild
+-->
+<!ELEMENT GVExcelCreatorConfiguration (Description?, GVExcelReport*)>
+<!ATTLIST GVExcelCreatorConfiguration version CDATA #FIXED "1.0">
+<!--
+    Element type 'module'.
+-->
+<!ATTLIST GVExcelCreatorConfiguration type    CDATA   #FIXED  "module">
+<!--
+    Module name always set to 'EXCEL_REPO'.
+-->
+<!ATTLIST GVExcelCreatorConfiguration name    CDATA   #FIXED  "EXCEL_REPO">

@@ -1,0 +1,1232 @@
+<!ENTITY % validateValues "(true|false)">
+<!ENTITY % validateDirectionValues "(in|out|in-out)">
+<!ENTITY % validationTypes "(xsd|dtd)">
+
+<!ENTITY % dte-transformer-helpers "DHExternalRetrieverHelper">
+
+<!ENTITY % body-builders    "SimpleGVBufferBodyBuilder">
+
+<!ENTITY % encodings  "(US-ASCII | ISO-8859-1 | ISO-8859-15 | ISO-LATIN-1 | UTF-8 | UTF-16BE | UTF-16LE | UTF-16)">
+
+<!--
+    Dummy XML element.
+    To be used as a placeholder.
+-->
+<!ELEMENT DUMMY (Description)?>
+
+<!--
+    Can be used to define the proprietary connection parameter.
+
+    #Label: @name
+-->
+<!ELEMENT Extended (Description?)>
+<!--
+    Connection parameter name.
+
+    #NotNull
+-->
+<!ATTLIST Extended   name CDATA #REQUIRED>
+<!--
+    Connection parameter value.
+
+    #NotNull
+-->
+<!ATTLIST Extended   value CDATA #REQUIRED>
+
+<!--
+    Can be used to define advanced connection parameters.
+-->
+<!ELEMENT Advanced (Description?)>
+<!--
+    Specifies the list of object factories to use.
+
+    #NotNull
+-->
+<!ATTLIST Advanced   object-factories CDATA #IMPLIED>
+<!--
+    Specifies the list of state factories to use.
+
+    #NotNull
+-->
+<!ATTLIST Advanced  state-factories CDATA #IMPLIED>
+<!--
+    Specifies the list of package prefixes to use when loading in URL context factories.
+
+    #NotNull
+-->
+<!ATTLIST Advanced url-pkg-prefixes CDATA #IMPLIED>
+<!--
+    Specifies the DNS host and domain names to use for the JNDI URL context.
+
+    #NotNull
+-->
+<!ATTLIST Advanced  dns-url CDATA #IMPLIED>
+<!--
+     Specifies the authoritativeness of the service requested.
+
+    #NotNull
+-->
+<!ATTLIST Advanced        authoritative CDATA #IMPLIED>
+<!--
+    Specifies the batch size to use when returning data via the service's protocol.
+
+    #NotNull
+-->
+<!ATTLIST Advanced        batchsize CDATA #IMPLIED>
+<!--
+    Specifies how referrals encountered by the service provider are to be processed.
+
+    #NotNull
+-->
+<!ATTLIST Advanced  referral CDATA #IMPLIED>
+<!--
+    Specifies the security protocol to use.
+
+    #NotNull
+-->
+<!ATTLIST Advanced  security-protocol CDATA #IMPLIED>
+<!--
+    Specifies the security level to use.
+
+    #NotNull
+-->
+<!ATTLIST Advanced security-authentication CDATA #IMPLIED>
+<!--
+    Specifies the preferred language to be used.
+
+    #NotNull
+-->
+<!ATTLIST Advanced language CDATA #IMPLIED>
+
+<!--
+    Defines remote JNDI connection parameters.
+
+-->
+<!ELEMENT JNDIHelper (Description?, Advanced?, Extended*)>
+<!--
+    Initial context factory for the JNDI tree containing connection-factory
+    and the destination-name.
+    Refere to your application server documentation for further information.
+
+    Where GreenVulcano ESB and the server to contact are installed on the application
+    server of the same type, you may leave this parameter unspecified.
+
+    Where the application servers are rather different, as well as configure the initial
+    context factory, make sure also that are present in the classpath the classes necessary
+    to connect remote application server.
+
+    #Icon: default.png
+    #NotNull
+-->
+<!ATTLIST JNDIHelper  initial-context-factory CDATA #IMPLIED>
+<!--
+    Application server connection URL.
+    Refere to your application server documentation for the configuration of this parameter
+
+    If the JNDI Context to be created refers to the current application server
+    you can leave this parameter unspecified.
+
+    #Icon: default.png
+    #NotNull
+-->
+<!ATTLIST JNDIHelper provider-url CDATA #IMPLIED>
+<!--
+    Username used to connect the application server.
+    If security is not enabled, you can leave unspecified this parameter.
+
+    #Icon: default.png
+    #NotNull
+-->
+<!ATTLIST JNDIHelper security-principal CDATA #IMPLIED>
+<!--
+    Password to connect the application server.
+    If security is not enabled, you can leave unspecified this parameter.
+
+    #Icon: default.png
+    #NotNull
+-->
+<!ATTLIST JNDIHelper security-credentials CDATA #IMPLIED>
+
+<!--
+    Defines remote LDAP connection parameters.
+
+-->
+<!ELEMENT LDAPContext (Description?, Advanced?, Extended*)>
+<!--
+    Initial context factory for the LDAP tree containing connection-factory
+    and the destination-name.
+    Refere to your LDAP server documentation for the configuration of this parameter
+
+    #Icon: default.png
+    #NotNull
+-->
+<!ATTLIST LDAPContext        initial-context-factory CDATA "com.sun.jndi.ldap.LdapCtxFactory">
+<!--
+    LDAP server connection URL.
+    Refere to your LDAP server documentation for the configuration of this parameter
+
+    #Icon: default.png
+    #NotNull
+-->
+<!ATTLIST LDAPContext        provider-url CDATA #REQUIRED>
+<!--
+    Username used to connect the LDAP server.
+    If security is not enabled, you can leave unspecified this parameter.
+
+    #Icon: default.png
+    #NotNull
+-->
+<!ATTLIST LDAPContext        security-principal CDATA #IMPLIED>
+<!--
+    Password to connect the LDAP server.
+    If security is not enabled, you can leave unspecified this parameter.
+
+    #Icon: default.png
+    #NotNull
+-->
+<!ATTLIST LDAPContext        security-credentials CDATA #IMPLIED>
+
+<!--
+    The content defines a LDAP search filter.
+
+    #NotNull
+    #Icon: default.png
+    #SelectOnInsert
+-->
+<!ELEMENT LDAPFilter (#PCDATA)>
+
+<!--
+    The element defines a Script execution parameters.
+    If defined the 'file' attribute overrides the contained script.
+
+    #Label: @lang
+    #Icon: default.png
+    #SelectOnInsert
+-->
+<!ELEMENT Script (#PCDATA)>
+<!--
+    The script engine to use.
+
+    #References: gvesb:document('GVSupport')/GVSupport/GVScriptConfig/ScriptEngines/*[@type='script-engine']/@lang
+-->
+<!ATTLIST Script  lang CDATA #REQUIRED>
+<!--
+    This attribute defines the 'context' to be used for script execution.
+    If not set, the default context is inherited from the specific 'lang'
+    configuration.
+
+    #References: gvesb:document('GVSupport')/GVSupport/GVScriptConfig/ScriptEngines/*[@type='script-engine' and @lang=current()/@lang]/BaseContext/@name
+-->
+<!ATTLIST Script  base-context CDATA #IMPLIED>
+<!--
+    This attribute is the name of a file containing the script to execute.
+    The file path must be relative to $GV_HOME/scripts.
+
+    #NotNull
+-->
+<!ATTLIST Script  file CDATA #IMPLIED>
+
+
+<!--
+    The custom protocol handler configuration.
+    Referes to HttpClient documentation for further info:
+    http://hc.apache.org/httpclient-3.x/sslguide.html
+
+    #Template:
+        <xsl:template match="CustomProtocol">
+            <xsl:value-of select="Description"/>
+        </xsl:template>
+-->
+<!ELEMENT CustomProtocol (Description?, constructor-args?)>
+<!--
+    Name identifier for this protocol.
+
+    #Unique: ../CustomProtocol/@name
+    #NotNull
+-->
+<!ATTLIST CustomProtocol   name CDATA #REQUIRED>
+<!--
+    The URI protocol scheme (http, https, etc.).
+
+    #NotNull
+-->
+<!ATTLIST CustomProtocol   protocol-scheme CDATA #REQUIRED>
+<!--
+    The custom socket factory class, implementation of class
+    'org.apache.commons.httpclient.protocol.ProtocolSocketFactory'.
+    If this class do not have a default constructor,
+    you can specify constructor arguments using 'constructor-args' element.
+
+    #NotNull
+-->
+<!ATTLIST CustomProtocol   protocol-socket-factory CDATA #REQUIRED>
+<!--
+    The default port number for this custom protocol.
+
+    #NotNull
+    #Pattern: ! ^(6553[0-5]|655[0-2]\d|65[0-4]\d\d|6[0-4]\d{3}|[1-5]\d{4}|[1-9]\d{0,3}|0)$ ! Insert a number between 0 and 65535
+-->
+<!ATTLIST CustomProtocol   protocol-default-port CDATA #REQUIRED>
+<!--
+    You can specify this parameter to use your own custom protocol designator
+    as well as the default protocol implementation, specified by 'protocol-scheme' attribute.
+
+    #NotNull
+-->
+<!ATTLIST CustomProtocol    protocol-virtual-scheme CDATA #IMPLIED>
+
+<!--
+    You can specify constructor arguments here, if your protocol socket factory class
+    does not have a default constructor.
+
+    #SelectOnInsert
+    #Template:
+
+        <xsl:template match="constructor-args">
+            <xsl:if test="Description">
+                <small><xsl:value-of select="Description"/></small><p/>
+            </xsl:if>
+            <table cellspacing="0" cellpadding="0">
+                <xsl:for-each select="parameter">
+                    <tr valign="top">
+                        <td><b><xsl:value-of select="@type"/></b></td>
+                        <td width="15"><b/></td>
+                        <td><b><xsl:value-of select="@value"/></b></td>
+                        <td width="15"><b/></td>
+                        <td><xsl:value-of select="Description"/><b/></td>
+                    </tr>
+                </xsl:for-each>
+            </table>
+        </xsl:template>
+
+-->
+<!ELEMENT constructor-args (Description?, constructor-param+)>
+<!--
+    A constructor parameter.
+
+    #SelectOnInsert
+    #Template:
+
+        <xsl:template match="parameter">
+            <xsl:if test="Description">
+                <small><xsl:value-of select="Description"/></small><p/>
+            </xsl:if>
+            <table cellspacing="0" cellpadding="0">
+                <tr valign="top">
+                    <td>Type</td>
+                    <td width="15"><b/></td>
+                    <td><b><xsl:value-of select="@type"/></b></td>
+                </tr>
+                <tr valign="top">
+                    <td>Value</td>
+                    <td width="15"><b/></td>
+                    <td><b><xsl:value-of select="@value"/></b></td>
+                </tr>
+            </table>
+        </xsl:template>
+-->
+<!ELEMENT constructor-param (Description?)>
+<!--
+    Parameter type.
+
+    Only simple java types are supported.
+-->
+<!ATTLIST constructor-param   type (byte | boolean | char | double | float | int | long | short | String) #REQUIRED>
+<!--
+    Parameter value. Do not specify the value of this parameter if null should be passed.
+
+    #Pattern: {{../constructor-param[@type='byte' or @type='int' or @type='long' or @type='short']}}   @ -?\d+ @ Insert an integer number
+    #Pattern: {{../constructor-param[@type='double' or @type='float']}} @ -?\d+(\.\d+)? @ Insert a decimal number
+    #Pattern: {{../constructor-param[@type='char']}}   @ . @ Insert a character
+    #Choice:  {{../constructor-param[@type='boolean']}} true | false
+    #Encrypted
+-->
+<!ATTLIST constructor-param    value CDATA #IMPLIED>
+
+<!--
+    Each element of the configuration provides a field 'Description' optional
+    that can contain free text available to the user.
+    This field can be used for notes and information that help
+    users in configuration management.
+
+    This information can be used by the application GVConsole
+    to enrich the reports relating to the configuration.
+
+    The description is always optional, but if used can not be empty.
+
+    #NotNull
+    #Icon: description.png
+    #SelectOnInsert
+-->
+<!ELEMENT Description (#PCDATA)>
+
+<!--
+    Create a JDBC connection using the DriverManager.
+
+    #Label: @name
+    #SelectOnInsert
+    #Template:
+
+        <xsl:template match="DriverConnectionBuilder">
+                <xsl:if test="Description">
+                <small><xsl:value-of select="Description"/></small><p/>
+            </xsl:if>
+        </xsl:template>
+-->
+<!ELEMENT DriverConnectionBuilder (Description?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST DriverConnectionBuilder    type CDATA #FIXED "jdbc-connection-builder">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST DriverConnectionBuilder   class CDATA #FIXED "it.greenvulcano.gvesb.j2ee.db.connections.impl.DriverConnectionBuilder">
+<!--
+    Builder name.
+
+    #NotNull
+    #Unique: ../*[@type='jdbc-connection-builder']/@name
+-->
+<!ATTLIST DriverConnectionBuilder    name CDATA #REQUIRED>
+<!--
+    JDBC driver class.
+
+    #NotNull
+-->
+<!ATTLIST DriverConnectionBuilder    driver-class CDATA #REQUIRED>
+<!--
+    JDBC connection URL.
+
+    #NotNull
+-->
+<!ATTLIST DriverConnectionBuilder    url CDATA #REQUIRED>
+<!--
+    JDBC connection user name.
+
+    #NotNull
+-->
+<!ATTLIST DriverConnectionBuilder    user CDATA #IMPLIED>
+<!--
+    JDBC connection password.
+
+    #Encrypted
+-->
+<!ATTLIST DriverConnectionBuilder    password CDATA #IMPLIED>
+
+<!--
+    Create a JDBC connection using a DataSource.
+
+    #Label: @name
+    #SelectOnInsert
+    #Template:
+
+        <xsl:template match="DataSourceConnectionBuilder">
+                <xsl:if test="Description">
+                <small><xsl:value-of select="Description"/></small><p/>
+            </xsl:if>
+        </xsl:template>
+-->
+<!ELEMENT DataSourceConnectionBuilder (Description?,JNDIHelper?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST DataSourceConnectionBuilder    type CDATA #FIXED "jdbc-connection-builder">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST DataSourceConnectionBuilder    class CDATA #FIXED "it.greenvulcano.gvesb.j2ee.db.connections.impl.DataSourceConnectionBuilder">
+<!--
+    Builder name.
+
+    #NotNull
+    #Unique: ../*[@type='jdbc-connection-builder']/@name
+-->
+<!ATTLIST DataSourceConnectionBuilder    name CDATA #REQUIRED>
+<!--
+    DataSource JNDI name.
+
+    #NotNull
+-->
+<!ATTLIST DataSourceConnectionBuilder    data-source-jndi CDATA #REQUIRED>
+
+
+<!--
+    Create a JDBC connection (pool) using Apache DBCP.
+
+    #Label: @name
+    #SelectOnInsert
+    #Template:
+        <xsl:template match="DriverPoolConnectionBuilder">
+            <xsl:if test="Description">
+                <small><xsl:value-of select="Description"/></small><p/>
+            </xsl:if>
+        </xsl:template>
+-->
+<!ELEMENT DriverPoolConnectionBuilder (Description?,PoolParameters?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST DriverPoolConnectionBuilder    type CDATA #FIXED "jdbc-connection-builder">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST DriverPoolConnectionBuilder    class CDATA #FIXED "it.greenvulcano.gvesb.j2ee.db.connections.impl.DriverPoolConnectionBuilder">
+<!--
+    Builder name.
+
+    #NotNull
+    #Unique: ../*[@type='jdbc-connection-builder']/@name
+-->
+<!ATTLIST DriverPoolConnectionBuilder    name CDATA #REQUIRED>
+<!--
+    JDBC driver class.
+
+    #NotNull
+-->
+<!ATTLIST DriverPoolConnectionBuilder    driver-class CDATA #REQUIRED>
+<!--
+    JDBC connection URL.
+
+    #NotNull
+-->
+<!ATTLIST DriverPoolConnectionBuilder    url CDATA #REQUIRED>
+<!--
+    JDBC connection user name.
+
+    #NotNull
+-->
+<!ATTLIST DriverPoolConnectionBuilder    user CDATA #IMPLIED>
+<!--
+    JDBC connection password.
+
+    #Encrypted
+-->
+<!ATTLIST DriverPoolConnectionBuilder    password CDATA #IMPLIED>
+
+<!--
+    Apache DBCP Pool parameters.
+    All times are in seconds.
+
+    #SelectOnInsert
+-->
+<!ELEMENT PoolParameters (Description?,validationQuery?)>
+<!--
+     Controls the maximum number of objects that can sit idle in the pool at any time.
+     When negative, there is no limit to the number of objects that may be idle at one time.
+     The default setting for this parameter is 5.
+
+    #NotNull
+-->
+<!ATTLIST PoolParameters minIdle CDATA #IMPLIED>
+<!--
+    Controls the maximum number of objects that can sit idle in the pool at any time.
+    When negative, there is no limit to the number of objects that may be idle at one time.
+    The default setting for this parameter is 10.
+
+    #NotNull
+-->
+<!ATTLIST PoolParameters maxIdle CDATA #IMPLIED>
+<!--
+    Controls the maximum number of objects that can be allocated by the pool (checked out to clients,
+    or idle awaiting checkout) at a given time.
+    When non-positive, there is no limit to the number of objects that can be managed by the pool at one time.
+    When maxActive is reached, the pool is said to be exhausted.
+    The default setting for this parameter is 15.
+
+    #NotNull
+-->
+<!ATTLIST PoolParameters maxActive CDATA #IMPLIED>
+<!--
+     Indicates how long the eviction thread should sleep before "runs" of examining idle objects.
+     When non-positive, no eviction thread will be launched.
+     The default setting for this parameter is 300 seconds (i.e., 5 minutes).
+
+    #NotNull
+-->
+<!ATTLIST PoolParameters timeBetweenEvictionRuns CDATA #IMPLIED>
+<!--
+     Specifies the minimum amount of time that an object may sit idle in the pool before it is eligible
+     for eviction due to idle time.
+     When non-positive, no object will be dropped from the pool due to idle time alone.
+     This setting has no effect unless timeBetweenEvictionRuns > 0.
+     The default setting for this parameter is 300 seconds (i.e., 5 minutes).
+
+    #NotNull
+-->
+<!ATTLIST PoolParameters minEvictableIdleTime CDATA #IMPLIED>
+<!--
+     Determines the number of objects examined in each run of the idle object evictor.
+     This setting has no effect unless timeBetweenEvictionRuns > 0.
+     The default setting for this parameter is 3.
+
+    #NotNull
+-->
+<!ATTLIST PoolParameters numTestsPerEvictionRun CDATA #IMPLIED>
+
+<!--
+    Apache DBCP pooled connection validation query.
+
+    #SelectOnInsert
+-->
+<!ELEMENT validationQuery (#PCDATA)>
+
+<!--
+    Statement to be evaluated.
+
+    Can contains the following placeholders:
+     - fixed : a text string;
+     - ${{propname}}      : a System property name;
+     - sp{{propname}}     : a System property name;
+     - env{{varname}}     : an Environment variable value;
+     - @{{propname}}      : a inProperties property name;
+     - timestamp{{pattern[::tZone]]}} : return the current timestamp, in optional tZone value,
+                                        formatted as 'pattern'
+     - dateformat{{date::source-pattern::dest-pattern[::source-tZone::dest-tZone]}} :
+                               reformat 'date' from 'source-pattern' to 'dest-pattern',
+                               and optionally from 'source-tZone' to 'dest-tZone'
+     - decode{{field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                               evaluate as if-then-else; if 'field' is equal to cond1...n,
+                               return the value of val1...n, otherwise 'default'
+     - decodeL{{sep::field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                               is equivalent to 'decode', with the difference that 'condX'
+                               can be a list of values separated by 'sep'
+     - script{{lang::[scope::]script}} : evaluate a 'lang' script, using the base context 'scope'
+     - js{{[scope::]script}} : evaluate a JavaScript script, using the context 'scope'
+     - ognl{{script}} : evaluate a OGNL script
+     - sql{{[conn::]statement}}     : execute a select sql statement sql and return the value of
+                                      the first field of the first selected record.
+                                      The 'conn' parameter is the JNDI name of a DataSource,
+                                      if not defined is used the current connection
+     - sqllist{{[conn::]statement}} : execute a select sql statement sql and return the value of
+                                      the first field of all selected records as a comma separated list.
+                                      The 'conn' parameter is the JNDI name of a DataSource,
+                                      if not defined is used the current connection
+     - sqltable{{conn::statement}}  : executes a select sql statement and returns all values of
+                                      returned cursor as an XML.
+                                      The 'conn' parameter is the JNDI name of a DataSource
+
+    #CompositeLabel: || @id | / | @type
+-->
+<!ELEMENT statement (#PCDATA)>
+
+<!--
+    Must be:
+
+    DBOSelect          : select
+    DBOThreadSelect    : select
+    DBOFlatSelect      : select
+    DBOMultiFlatSelect : select
+    DBOInsert          : insert
+    DBOUpdate          : update
+    DBOInsertOrUpdate  : insert|update
+    DBOUpdateOrInsert  : insert|update
+    DBOCallSP          : callsp
+
+    Excel Sheet        : select
+
+    DBSelect           : select
+
+    #NotNull
+    #Choice: {{ancestor::DBOSelect/statement}} select
+    #Choice: {{ancestor::DBOThreadSelect/statement}} select
+    #Choice: {{ancestor::DBOFlatSelect/statement}} select
+    #Choice: {{ancestor::DBOMultiFlatSelect/statement}} select
+    #Choice: {{ancestor::DBOInsert/statement}} insert
+    #Choice: {{ancestor::DBOUpdate/statement}} update
+    #Choice: {{ancestor::DBOInsertOrUpdate/statement}} insert | update
+    #Choice: {{ancestor::DBOUpdateOrInsert/statement}} insert | update
+    #Choice: {{ancestor::CallDescriptor/statement}} callsp
+    #Choice: {{ancestor::Sheet/statement}} select
+    #Choice: {{ancestor::DBSelect/statement}} select
+-->
+<!ATTLIST statement type CDATA #REQUIRED>
+
+<!--
+    #NotNull
+    #Pattern: ! [0-9]* ! set a integer value
+-->
+<!ATTLIST statement id CDATA #IMPLIED>
+
+<!--
+    Only useful in DBOSelect.
+    Specifies the index of select output on which group the results.
+    The corresponding values are specified as attributes of 'data'
+    element within the 'RowSet' element.
+
+    For example, in the select:
+        SELECT id,company_code,name FROM employees
+
+    specifying the attribute keys = "2", the result would be:
+    <RowSet>
+      <data key_2="GreenVulcano">
+        <row>
+          <col>19</col>
+          <col>pippo</col>
+        </row>
+        <row>
+          <col>25</col>
+          <col>pluto</col>
+        </row>
+      </data>
+    </RowSet>
+
+    Can specify multiple keys separated by commas.
+
+    #NotNull
+-->
+<!ATTLIST statement keys CDATA #IMPLIED>
+
+
+<!--
+    Proxy configuration.
+
+    #SelectOnInsert
+    #Template:
+        <xsl:template match="Proxy">
+            <xsl:if test="Description">
+                <small><br/><xsl:value-of select="Description"/></small>
+            </xsl:if>
+        </xsl:template>
+-->
+<!ELEMENT Proxy (Description?, (BasicHttpAuth | NTLMHttpAuth)?)>
+<!--
+    Proxy server IP or name.
+
+    #NotNull
+-->
+<!ATTLIST Proxy host CDATA #REQUIRED>
+<!--
+    Proxy server port.
+    Default: 8080
+
+    #NotNull
+    #Pattern: ! ^(6553[0-5]|655[0-2]\d|65[0-4]\d\d|6[0-4]\d{3}|[1-5]\d{4}|[1-9]\d{0,3}|0)$ ! Insert a number between 0 and 65535
+-->
+<!ATTLIST Proxy port CDATA #IMPLIED>
+
+<!--
+    Http Basic authentication configuration.
+
+    #SelectOnInsert
+    #Template:
+        <xsl:template match="BasicHttpAuth">
+            <xsl:if test="Description">
+                <small><br/><xsl:value-of select="Description"/></small>
+            </xsl:if>
+        </xsl:template>
+-->
+<!ELEMENT BasicHttpAuth (Description?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST BasicHttpAuth type CDATA #FIXED "http-auth">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST BasicHttpAuth class CDATA #FIXED "it.greenvulcano.gvesb.http.auth.impl.BasicHttpAuth">
+<!--
+    User name.
+
+    #NotNull
+-->
+<!ATTLIST BasicHttpAuth user CDATA #REQUIRED>
+<!--
+    User password.
+
+    #NotNull
+    #Encrypted
+-->
+<!ATTLIST BasicHttpAuth password CDATA #IMPLIED>
+<!--
+    Realm.
+
+    #NotNull
+-->
+<!ATTLIST BasicHttpAuth realm CDATA #IMPLIED>
+
+<!--
+    Http NTLM authentication configuration.
+
+    #SelectOnInsert
+    #Template:
+        <xsl:template match="NTLMHttpAuth">
+            <xsl:if test="Description">
+                <small><br/><xsl:value-of select="Description"/></small>
+            </xsl:if>
+        </xsl:template>
+-->
+<!ELEMENT NTLMHttpAuth (Description?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST NTLMHttpAuth type CDATA #FIXED "http-auth">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST NTLMHttpAuth class CDATA #FIXED "it.greenvulcano.gvesb.http.auth.impl.NTLMHttpAuth">
+<!--
+    User name.
+
+    #NotNull
+-->
+<!ATTLIST NTLMHttpAuth user CDATA #REQUIRED>
+<!--
+    User password.
+
+    #NotNull
+    #Encrypted
+-->
+<!ATTLIST NTLMHttpAuth password CDATA #REQUIRED>
+<!--
+    Domain.
+
+    #NotNull
+-->
+<!ATTLIST NTLMHttpAuth domain CDATA #REQUIRED>
+
+<!--
+    Defines a trasformation name alias.
+
+    #Label: @name
+-->
+<!ELEMENT TransformationAlias (Description?)>
+<!--
+    Transformation's alternative name.
+
+    #Label: @name
+    #Unique: /GVCore/GVDataTransformation/Transformations/*[@type='transformation']/TransformationAlias/@name
+    #Unique: /GVCore/GVDataTransformation/Transformations/*[@type='transformation']/@name
+    #Warn: {{self::TransformationAlias[not(../@name = /GVCore/GVDataTransformation/Startup/ToPreload/Preload/@Transformation)]}} An aliased Transformation must be defined in ToPreload DTE section
+    #NotNull
+-->
+<!ATTLIST TransformationAlias name CDATA #REQUIRED>
+
+
+<!ELEMENT EngageModule (Description?, PolicyData?, ModuleProperty*)>
+<!--
+    Defines the name of a module to hire to handle WS-*.
+    If set, takes precedence over the attribute 'specifications'.
+
+    #Choice:  {{self::EngageModule[@specification='WS-Security']}} rampart
+    #Choice:  {{self::EngageModule[@specification='WS-ReliableMessaging']}} sandesha2
+    #Warn:    {{self::EngageModule[@name='' and @specification='NO-SPEC']}} Define the name, or choose a specific already preset.
+    #NotNull: {{self::EngageModule[@specification='NO-SPEC']}}
+-->
+<!ATTLIST EngageModule name CDATA #REQUIRED>
+<!--
+    Defines the class that implements the hander for the module to engage.
+
+    #Choice:  {{self::EngageModule[@specification='WS-Security']}} it.greenvulcano.gvesb.virtual.ws.module.rampart.RampartModuleHandler
+    #Choice:  {{self::EngageModule[@specification='WS-ReliableMessaging']}} it.greenvulcano.gvesb.virtual.ws.module.sandesha2.Sandesha2ModuleHandler
+    #NotNull: {{self::EngageModule[@specification='NO-SPEC']}}
+-->
+<!ATTLIST EngageModule type CDATA "it.greenvulcano.gvesb.virtual.ws.module.DefaultModuleHandler">
+<!--
+    The specification to implement, mandatory and other than 'NO-SPEC'
+    if the name attribute is not declared.
+-->
+<!ATTLIST EngageModule specification (NO-SPEC|WS-Security|WS-ReliableMessaging) "NO-SPEC">
+
+<!--
+    This element is an XML that describes the policies for a specific.
+    Currently it is used only for the WS-Security implemented by the module 'rampart'.
+
+    Below is an example of policy to be included on the module 'rampart':
+
+<wsp:Policy wsu:Id="UTOverTransport" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <sp:TransportBinding xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+          <wsp:Policy>
+            <sp:TransportToken>
+              <wsp:Policy>
+                <sp:HttpsToken RequireClientCertificate="false"/>
+              </wsp:Policy>
+            </sp:TransportToken>
+            <sp:AlgorithmSuite>
+              <wsp:Policy>
+                <sp:Basic256/>
+              </wsp:Policy>
+            </sp:AlgorithmSuite>
+            <sp:Layout>
+              <wsp:Policy>
+                <sp:Lax/>
+              </wsp:Policy>
+            </sp:Layout>
+            <sp:IncludeTimestamp/>
+          </wsp:Policy>
+        </sp:TransportBinding>
+        <sp:SignedSupportingTokens xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+            <wsp:Policy>
+                <sp:UsernameToken sp:IncludeToken="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy/IncludeToken/AlwaysToRecipient" />
+          </wsp:Policy>
+        </sp:SignedSupportingTokens>
+
+        <ramp:RampartConfig xmlns:ramp="http://ws.apache.org/rampart/policy">
+            <ramp:user>alice</ramp:user>
+            <ramp:passwordCallbackClass>org.apache.rampart.samples.policy.sample01.PWCBHandler</ramp:passwordCallbackClass>
+        </ramp:RampartConfig>
+
+      </wsp:All>
+    </wsp:ExactlyOne>
+</wsp:Policy>
+-->
+<!ELEMENT PolicyData (#PCDATA)>
+<!--
+    Defines the key to set the policy for the service invocation.
+
+    #Choice:  {{parent::*[@specification='WS-Security' or @name='rampart']/PolicyData}}rampartPolicy
+    #NotNull:
+-->
+<!ATTLIST PolicyData policy_key CDATA #REQUIRED>
+
+<!--
+    Specific property form the module to engage.
+
+    For example the property
+    'org.apache.axis2.addressing.AddressingConstants.DISABLE_OUTBOUND_ADDRESSING_VALIDATION'
+    set to 'true' prevents a fault if SOAPAction is not set.
+-->
+<!ELEMENT ModuleProperty (Description?)>
+<!--
+    #Unique: ../ModuleProperty/@name
+    #NotNull
+-->
+<!ATTLIST ModuleProperty name CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST ModuleProperty value CDATA #REQUIRED>
+<!--
+
+-->
+<!ATTLIST ModuleProperty  type (String | Boolean | Byte | Short | Int | Long | Float | Double) "String">
+
+
+
+<!--
+    This element specifies a modification of a data buffer.
+
+    A change to a data buffer is to set one or more fields of the
+    buffer with configurable values, or perform some transformation
+    on the body.
+
+    If used for script execution, execution environment map is added 
+    to the script context as 'environment' property and the current 
+    input object is added as 'data' property.
+
+    You can also completely remove the body field. This option is
+    useful to return an acknowledgment to the client without overhead
+    to transfer the response data.
+
+    #Icon: default.png
+    #Table: | Properties | PropertyDef | Field | @name | Value | @value | Overwrite Body | @overwrite-body | Description | Description
+    #Template:
+        <xsl:template match="ChangeGVBuffer">
+            <xsl:if test="Description">
+                <small><xsl:value-of select="Description"/></small><p/>
+            </xsl:if>
+            <xsl:if test="@clear-data='true'">
+                Clear the data buffer.<br/>
+            </xsl:if>
+            <xsl:if test="@system">
+                Set the system field to <b><xsl:value-of select="@system"/></b>.<br/>
+            </xsl:if>
+            <xsl:if test="@service">
+                Set the service field to <b><xsl:value-of select="@service"/></b>.<br/>
+            </xsl:if>
+            <xsl:if test="@ret-code">
+                Set the return code to <b><xsl:value-of select="@ret-code"/></b>.<br/>
+            </xsl:if>
+            <xsl:for-each select="PropertyDef">
+                Set the property <b><xsl:value-of select="@name"/></b>
+                to <b><xsl:value-of select="@value"/></b>.<br/>
+            </xsl:for-each>
+        </xsl:template>
+-->
+<!ELEMENT ChangeGVBuffer (Description?, (%body-builders;)?, Script?, PropertyDef*)>
+<!--
+    This attribute can be set to:
+    - true: reset the body field of the buffer
+    - false: do not alter the body field of the buffer
+
+    This option is useful to return an acknowledgment to the client
+    without overhead to transfer the response data.
+-->
+<!ATTLIST ChangeGVBuffer    clear-data (false | true) #REQUIRED>
+<!--
+    This attribute sets the value of system field of the buffer.
+
+    #NotNull
+-->
+<!ATTLIST ChangeGVBuffer    system CDATA #IMPLIED>
+<!--
+    This attribute sets the value of service field of the buffer.
+
+    #NotNull
+-->
+<!ATTLIST ChangeGVBuffer    service CDATA #IMPLIED>
+<!--
+    This attribute sets the value of return code field of the buffer.
+
+    #NotNull
+-->
+<!ATTLIST ChangeGVBuffer    ret-code CDATA #IMPLIED>
+<!--
+    This attribute defines whether or not to use encryption and if
+    you encrypt or decrypt the body field.
+    Can not be defined with 'compress-op', 'base64-op' and 'clear-data'.
+
+    #Warn: {{../ChangeGVBuffer[not(@crypto-op='none') and (@clear-data='true')]}} The attribute 'crypto-op' must be defined only if the attribute 'clear-data' is false
+    #Warn: {{../ChangeGVBuffer[not(@crypto-op='none') and @compress-op and not(@compress-op='none')]}} The attribute 'crypto-op' must be defined only if the attribute 'compress-op'='none'
+    #Warn: {{../ChangeGVBuffer[not(@crypto-op='none') and @base64-op and not(@base64-op='none')]}} The attribute 'crypto-op' must be defined only if the attribute 'base64-op'='none'
+-->
+<!ATTLIST ChangeGVBuffer    crypto-op (none|encrypt|decrypt) #IMPLIED>
+<!--
+    This attribute sets the key to use for the encryption/decryption.
+
+    #NotNull
+    #Warn: {{../ChangeGVBuffer[not(@crypto-op) or @crypto-op='none']}} The attribute 'key-id' must be defined only if defined the attribute 'crypto-op'
+-->
+<!ATTLIST ChangeGVBuffer    key-id CDATA #IMPLIED>
+<!--
+    This attribute defines whether to use compression and if you compress
+    or decompress the body field.
+    Can not be defined with 'crypto-op', 'base64-op' and 'clear-data'.
+
+    #Warn: {{../ChangeGVBuffer[not(@compress-op='none') and (@clear-data='true')]}} The attribute 'compress-op' must be defined only if the attribute 'clear-data' is false
+    #Warn: {{../ChangeGVBuffer[not(@compress-op='none') and @crypto-op and not(@crypto-op='none')]}} The attribute 'compress-op' must be defined only if the attribute 'crypto-op'='none'
+    #Warn: {{../ChangeGVBuffer[not(@compress-op='none') and @base64-op and not(@base64-op='none')]}} The attribute 'compress-op' must be defined only if the attribute 'base64-op'='none'
+-->
+<!ATTLIST ChangeGVBuffer    compress-op (none|compress|uncompress) #IMPLIED>
+<!--
+    This attribute sets the compression ratio to use.
+
+    #Warn: {{../ChangeGVBuffer[not(@compress-op) or @compress-op='none' or @compress-op='uncompress']}} The attribute 'compress-level' must be defined only if defined the attribute 'compress-op'='compress'
+-->
+<!ATTLIST ChangeGVBuffer    compress-level (best-compression | best-speed | default-compression | no-compression) #IMPLIED>
+<!--
+    This attribute defines whether to use Base64 encoding and if
+    you encode or decode the body field.
+    Can not be defined with 'compress-op', 'crypto-op' and 'clear-data'.
+
+    #Warn: {{../ChangeGVBuffer[not(@base64-op='none') and (@clear-data='true')]}} The attribute 'base64-op' must be defined only if the attribute 'clear-data' is false
+    #Warn: {{../ChangeGVBuffer[not(@base64-op='none') and @compress-op and not(@compress-op='none')]}} The attribute 'base64-op' must be defined only if the attribute 'compress-op'='none'
+    #Warn: {{../ChangeGVBuffer[not(@base64-op='none') and @crypto-op and not(@crypto-op='none')]}} The attribute 'base64-op' must be defined only if the attribute 'crypto-op'='none'
+-->
+<!ATTLIST ChangeGVBuffer    base64-op (none|encode|decode) #IMPLIED>
+
+<!--
+    This element allows you to set the GVBuffer body.
+
+    #SelectOnInsert
+-->
+<!ELEMENT SimpleGVBufferBodyBuilder (#PCDATA)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST SimpleGVBufferBodyBuilder type CDATA #FIXED "body-builder">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST SimpleGVBufferBodyBuilder class CDATA #FIXED "it.greenvulcano.gvesb.internal.data.SimpleGVBufferBodyMaker">
+<!--
+    This attribute is the path of a file whose contents should
+    be inserted into the body of GVBuffer.
+    You can specify a file on the server's classpath using the
+    following syntax:
+
+         CP://filename
+         or
+         cp://filename
+
+    This attribute has precedence over the element content.
+
+    #NotNull
+-->
+<!ATTLIST SimpleGVBufferBodyBuilder file-name CDATA #IMPLIED>
+<!--
+    If true the file will be read only once, otherwise the file
+    will be read on each invocation of the service.
+    This attribute is meaningful only if the attribute
+    file-name is specified.
+    Default to "true".
+
+    #Choice: true | false
+-->
+<!ATTLIST SimpleGVBufferBodyBuilder read-once CDATA #IMPLIED>
+<!--
+    This attribute is the encoding used to convert text to byte array.
+
+-->
+<!ATTLIST SimpleGVBufferBodyBuilder encoding %encodings; #IMPLIED>
+<!--
+    If true the body content can contin metadata to be resolved at runtime.
+    The body content must be a valid String.
+    Default to "false".
+
+    #Choice: true | false
+-->
+<!ATTLIST SimpleGVBufferBodyBuilder process-metadata CDATA #IMPLIED>
+
+
+<!--
+    Defines a property to set in GVBuffer.
+    Is used in 'ChangeGVBuffer' and 'SavePoint'.
+
+    #Label: @name
+    #SelectOnInsert
+    #Warn: {{../PropertyDef[count(../PropertyDef[@overwrite-body='yes'])>1]}} The 'overwrite-body' attribute can be set only once.
+    #Warn: {{../../SpProperties/PropertyDef[@overwrite-body='yes']}} The 'overwrite-body' attribute can be set only in ChangeGVBuffer.
+-->
+<!ELEMENT PropertyDef (Description)?>
+<!--
+    Property name.
+
+    #NotNull
+    #Unique: ../PropertyDef/@name
+-->
+<!ATTLIST PropertyDef   name CDATA #REQUIRED>
+<!--
+    Property value.
+    Can contains the following metadata:
+     - fixed : a text string;
+     - %{{class}}         : the obj class name;
+     - %{{fqclass}}       : the obj fully qualified class name;
+     - %{{package}}       : the obj package name;
+     - ${{propname}}      : a System property name;
+     - sp{{propname}}     : a System property name;
+     - env{{varname}}     : an Environment variable value;
+     - @{{propname}}      : a inProperties property name;
+     - timestamp{{pattern[::tZone]]}} : return the current timestamp, in optional tZone value,
+                                        formatted as 'pattern'
+     - dateformat{{date::source-pattern::dest-pattern[::source-tZone::dest-tZone]}} :
+                               reformat 'date' from 'source-pattern' to 'dest-pattern',
+                               and optionally from 'source-tZone' to 'dest-tZone'
+     - decode{{field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                               evaluate as if-then-else; if 'field' is equal to cond1...n,
+                               return the value of val1...n, otherwise 'default'
+     - decodeL{{sep::field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                               is equivalent to 'decode', with the difference that 'condX'
+                               can be a list of values separated by 'sep'
+     - script{{lang::[scope::]script}} : evaluate a 'lang' script, using the base context 'scope',
+                               the GVBuffer is added to the scope as 'object'
+     - js{{[scope::]script}} : evaluate a JavaScript script, using the context 'scope',
+                               the GVBuffer is added to the scope as 'object'
+     - ognl{{script}} : evaluate a OGNL script,
+                               the GVBuffer is added to the scope as 'object' (and is also the object on which execute the script !! NO MORE FROM 3.5 !!),
+     - sql{{conn::statement}}            : execute a select sql statement sql and return the value of
+                                           the first field of the first selected record.
+                                           The 'conn' parameter is the JNDI name of a DataSource
+     - sqllist{{conn[::sep]::statement}} : execute a select sql statement sql and return the value of
+                                           the first field of all selected records as a 'sep' separated list.
+                                           The 'conn' parameter is the JNDI name of a DataSource
+                                           The 'sep' parameter defaults to comma
+     - sqltable{{conn::statement}}       : executes a select sql statement and returns all values of
+                                           returned cursor as an XML.
+                                           The 'conn' parameter is the JNDI name of a DataSource
+-->
+<!ATTLIST PropertyDef   value CDATA #REQUIRED>
+<!--
+    If "yes" the GVBuffer body is overwitten with the GVBuffer's property value
+    or with the current property value, or is set to null.
+
+    The body overwrite is execute prior of 'compress', 'crypto' o 'base64' operations.
+
+    WARNING!!!!!!!
+    The 'clear-data' operation is still performed invalidating the body overwriting.
+-->
+<!ATTLIST PropertyDef   overwrite-body (yes|no) #IMPLIED>
+
+
+<!--
+    Defines service name translation for VCL operations.
+
+    #Table: | ServiceAlias | AliasMapping | Real Name | @real-name | Alias | @alias | Description | Description
+    #Icon: default.png
+    #SelectOnInsert
+    #Template:
+        <xsl:template match="ServiceAlias">
+            <xsl:if test="Description">
+                <small><xsl:value-of select="Description"/></small><p/>
+            </xsl:if>
+        </xsl:template>
+-->
+<!ELEMENT ServiceAlias (Description?, AliasMapping+)>
+<!--
+    Defines a service name mapping.
+
+    #Icon: default.png
+    #SelectOnInsert
+-->
+<!ELEMENT AliasMapping (Description?)>
+<!--
+    Input service name.
+
+    #Unique: ../AliasMapping/@real-name
+    #NotNull
+-->
+<!ATTLIST AliasMapping real-name CDATA #REQUIRED>
+<!--
+    Translated service name.
+
+    #NotNull
+-->
+<!ATTLIST AliasMapping  alias CDATA #REQUIRED>
+
+
+
+<!--
+    #Label: @source
+-->
+<!ELEMENT MergeInfo EMPTY>
+<!--
+    Source document name.
+
+    #NotNull
+-->
+<!ATTLIST MergeInfo source CDATA #REQUIRED>
+<!--
+    Source nodes xpath.
+
+    #NotNull
+-->
+<!ATTLIST MergeInfo xpath-source CDATA #IMPLIED>
+<!--
+    Destination node spath.
+
+    #NotNull
+-->
+<!ATTLIST MergeInfo xpath-dest CDATA #IMPLIED>
+
+<!ELEMENT XMLMerge (MergeInfo*)>
+
+<!--
+    #CompositeLabel: || @namespace | : | @root
+-->
+<!ELEMENT XMLAggregate EMPTY>
+<!--
+    Aggregate document root node name.
+
+    #NotNull
+-->
+<!ATTLIST XMLAggregate root CDATA #REQUIRED>
+<!--
+    Root node namespace URI.
+
+    #NotNull
+-->
+<!ATTLIST XMLAggregate namespace CDATA #IMPLIED>

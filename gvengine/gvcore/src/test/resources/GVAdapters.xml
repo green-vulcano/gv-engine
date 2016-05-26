@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE GVAdapters SYSTEM "http://www.greenvulcano.com/gvesb/dtds/GVAdapters.dtd">
+
+<GVAdapters version="1.0">
+  <GVDataProviderManager name="GVDP" type="module">
+    <DataProviders>
+      <JMSBytesMessageDataProvider class="it.greenvulcano.gvesb.gvdp.impl.JMSBytesMessageDataProvider"
+        name="toupperTestJMSBytesMessageDataProvider" type="dataProvider">
+        <Field direction="OUT" key="system" type="field">
+          <Expression type="ognl">setStringProperty(&apos;SYSTEM&apos;, #input.system)</Expression>
+        </Field>
+        <Field direction="OUT" key="service" type="field">
+          <Expression type="ognl">setStringProperty(&apos;SERVICE&apos;, #input.service)</Expression>
+        </Field>
+        <Field direction="OUT" key="id" type="field">
+          <Expression type="ognl">setStringProperty(&apos;ID&apos;, #input.id)</Expression>
+        </Field>
+        <Field direction="OUT" key="retcode" type="field">
+          <Expression type="ognl">setStringProperty(&apos;RETCODE&apos;, #input.retCode)</Expression>
+        </Field>
+        <Field direction="OUT" key="output" type="field">
+          <Expression type="ognl">writeBytes(#input.object.bytes)</Expression>
+        </Field>
+      </JMSBytesMessageDataProvider>
+      <StringDataProvider class="it.greenvulcano.gvesb.gvdp.impl.StringDataProvider" name="toupperTestJMSBytesMessageToStringDataProvider"
+        type="dataProvider">
+        <Field direction="INOUT" key="buffer" type="field">
+          <Expression type="ognl">#bArr = new
+            byte[object.getBodyLength()], object.reset(),
+            object.readBytes(#bArr), new java.lang.String(#bArr, &apos;UTF-8&apos;)</Expression>
+        </Field>
+      </StringDataProvider>
+      <StringDataProvider class="it.greenvulcano.gvesb.gvdp.impl.StringDataProvider" name="stringFromNodeDataProvider"
+        type="dataProvider">
+        <Field direction="INOUT" key="buffer" type="field">
+          <Expression type="ognl">object.getNodeValue()</Expression>
+        </Field>
+      </StringDataProvider>
+      <CollectionDataProvider class="it.greenvulcano.gvesb.gvdp.impl.CollectionDataProvider" name="xpathCollectionDataProvider"
+        source-selector="object" type="dataProvider">
+        <Field direction="INOUT" key="buffer" type="field">
+          <Expression type="xpath">/Radice/data/text()</Expression>
+        </Field>
+      </CollectionDataProvider>
+      <CollectionDataProvider class="it.greenvulcano.gvesb.gvdp.impl.CollectionDataProvider" name="xpathSplitter"
+        source-selector="object" type="dataProvider">
+        <Field direction="INOUT" key="buffer" type="field">
+          <Expression type="xpath">/root/element</Expression>
+        </Field>
+      </CollectionDataProvider>
+      <CollectionDataProvider class="it.greenvulcano.gvesb.gvdp.impl.CollectionDataProvider" name="ognlCollectionDataProvider"
+        source-selector="object" type="dataProvider">
+        <Field direction="INOUT" key="buffer" type="field">
+          <Expression type="ognl">split(&quot;,&quot;)</Expression>
+        </Field>
+      </CollectionDataProvider>
+      <StringDataProvider class="it.greenvulcano.gvesb.gvdp.impl.StringDataProvider" name="first"
+        source-selector="object" type="dataProvider">
+        <Field direction="INOUT" key="buffer" type="field">
+          <Expression type="ognl">split(&quot;,&quot;)[0]</Expression>
+        </Field>
+      </StringDataProvider>
+      <StringDataProvider class="it.greenvulcano.gvesb.gvdp.impl.StringDataProvider" name="second"
+        source-selector="object" type="dataProvider">
+        <Field direction="INOUT" key="buffer" type="field">
+          <Expression type="ognl">split(&quot;,&quot;)[1]</Expression>
+        </Field>
+      </StringDataProvider>
+    </DataProviders>
+  </GVDataProviderManager>
+</GVAdapters>

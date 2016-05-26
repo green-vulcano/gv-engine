@@ -1,0 +1,1426 @@
+<!ENTITY % gvcommons SYSTEM "http://www.greenvulcano.com/gvesb/dtds/GVCommons.dtd">
+%gvcommons;
+
+<!ENTITY % Finder "jboss-mbean-server-finder|jboss-distributed-mbean-server-finder|weblogic-mbean-server-finder|wls-distributed-mbean-server-finder|standard-mbean-server-finder">
+<!ENTITY % Initializer "generic-initializer|JMSForward-initializer|TimerTask-initializer|HL7Listener-initializer|JavaProperties-initializer|SavePoint-initializer|Bpel-initializer">
+
+<!ELEMENT jmx (entry-point,mbeans-descriptors)>
+<!ATTLIST jmx version CDATA #FIXED "R1">
+
+<!--
+
+    #Template:
+        <xsl:template match="entry-point">
+            Configuration of startup features of the JMX functionalities.
+        </xsl:template>
+-->
+<!ELEMENT entry-point ((%Finder;),ObjectNameBuilders,Initializers)>
+
+<!--
+    Contains a list of elements enabled to enrich a
+    MBean ObjectName under various conditions.
+
+    #Table: | ObjectName Builders | ObjectNameBuilder | Name | @name | Apply | @apply-to-name | Class | @class | Apply | @apply-to-class | Description | @description
+-->
+<!ELEMENT ObjectNameBuilders (ObjectNameBuilder*)>
+
+<!ELEMENT Initializers ((%Initializer;)*)>
+
+<!--
+    Find JBoss's MBeanServer.
+-->
+<!ELEMENT jboss-mbean-server-finder EMPTY>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST jboss-mbean-server-finder type CDATA #FIXED "server-finder">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST jboss-mbean-server-finder class CDATA #FIXED "it.greenvulcano.jboss.jmx.JBossMBeanServerFinder">
+
+<!--
+    Find the JBoss MBeanServer in case of cluster configuration.
+
+    #Table: | JNDI Context | JNDIContext | Initial Context Factory | @initial-context-factory | Provider URL | @provider-url | Security Prncipal | @security-principal | Security Credentials | @security-credentials
+
+    #Template:
+        <xsl:template match="jboss-distributed-mbean-server-finder">
+            <xsl:if test="@user or @password or @login-context or @hajndi-mbean-name or @RMIAdaptor-jndi-name">
+                <table cellspacing ="0" cellpadding="0">
+                    <xsl:if test="@user">
+                        <tr>
+                            <td>User:</td>
+                            <td width="20"></td>
+                            <td><b><xsl:value-of select="@user"/></b></td>
+                        </tr>
+                    </xsl:if>
+                    <xsl:if test="@password">
+                        <tr>
+                            <td>Password:</td>
+                            <td width="20"></td>
+                            <td><b><xsl:value-of select="@password"/></b></td>
+                        </tr>
+                    </xsl:if>
+                    <xsl:if test="@login-context">
+                        <tr>
+                            <td>Login Context:</td>
+                            <td width="20"></td>
+                            <td><b><xsl:value-of select="@login-context"/></b></td>
+                        </tr>
+                    </xsl:if>
+                    <xsl:if test="@hajndi-mbean-name">
+                        <tr>
+                            <td>HA JNDI MBean Name:</td>
+                            <td width="20"></td>
+                            <td><b><xsl:value-of select="@hajndi-mbean-name"/></b></td>
+                        </tr>
+                    </xsl:if>
+                    <xsl:if test="@RMIAdaptor-jndi-name">
+                        <tr>
+                            <td>RMIAdaptor JNDI Name:</td>
+                            <td width="20"></td>
+                            <td><b><xsl:value-of select="@RMIAdaptor-jndi-name"/></b></td>
+                        </tr>
+                    </xsl:if>
+                </table>
+            </xsl:if>
+        </xsl:template>
+
+-->
+<!ELEMENT jboss-distributed-mbean-server-finder (JNDIHelper?)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST jboss-distributed-mbean-server-finder type CDATA #FIXED "server-finder">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST jboss-distributed-mbean-server-finder class CDATA #FIXED "it.greenvulcano.jboss.jmx.DistributedMBeanServerFinder">
+<!--
+    Default to: admin
+
+    #NotNull
+-->
+<!ATTLIST jboss-distributed-mbean-server-finder user CDATA #IMPLIED>
+<!--
+    Default to: admin
+
+    #NotNull
+-->
+<!ATTLIST jboss-distributed-mbean-server-finder password CDATA #IMPLIED>
+<!--
+    Default to : jboss
+
+    #NotNull
+-->
+<!ATTLIST jboss-distributed-mbean-server-finder login-context CDATA #IMPLIED>
+<!--
+    Default to : jboss:service=HAJNDI
+
+    #NotNull
+-->
+<!ATTLIST jboss-distributed-mbean-server-finder hajndi-mbean-name CDATA #IMPLIED>
+<!--
+    Default to : jmx/rmi/RMIAdaptor
+
+    #NotNull
+-->
+<!ATTLIST jboss-distributed-mbean-server-finder RMIAdaptor-jndi-name CDATA #IMPLIED>
+
+
+
+<!--
+    Find the WLS MBean server using the weblogic.management.Helper class
+    (see the Bea documentation for more details).
+
+     #Template:
+        <xsl:template match="weblogic-mbean-server-finder">
+            <table cellspacing ="0" cellpadding="0">
+                <tr>
+                    <td>Administration:</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="@admin"/></b></td>
+                </tr>
+                <tr>
+                    <td>User:</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="@user"/></b></td>
+                </tr>
+                <tr>
+                    <td>Server URL:</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="@server-url"/></b></td>
+                </tr>
+                <tr>
+                    <td>Server name:</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="@server-name"/></b></td>
+                </tr>
+            </table>
+        </xsl:template>
+-->
+<!ELEMENT weblogic-mbean-server-finder EMPTY>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST weblogic-mbean-server-finder type CDATA #FIXED "server-finder">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST weblogic-mbean-server-finder class CDATA #FIXED "it.greenvulcano.jmx.WebLogicMBeanServerFinder">
+<!--
+    #Warn: {{../weblogic-mbean-server-finder[@admin='no'][not(@server-name)]}} You must specify the server-name too
+-->
+<!ATTLIST weblogic-mbean-server-finder admin (no|yes) #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST weblogic-mbean-server-finder user CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST weblogic-mbean-server-finder password CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST weblogic-mbean-server-finder server-url CDATA #REQUIRED>
+<!--
+    #NotNull
+    #Warn: {{../weblogic-mbean-server-finder[@admin='yes']}} The server name is not required for the administration server
+-->
+<!ATTLIST weblogic-mbean-server-finder server-name CDATA #IMPLIED>
+
+
+
+<!--
+    Find the WLS MBean server using the weblogic.management.Helper class
+    (see the BEA documentation for more details).
+
+     #Template:
+        <xsl:template match="wls-distributed-mbean-server-finder">
+            <table cellspacing ="0" cellpadding="0">
+                <tr>
+                    <td>User:</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="@user"/></b></td>
+                </tr>
+                <tr>
+                    <td>Admin server URL:</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="@admin-server-url"/></b></td>
+                </tr>
+                <tr>
+                    <td>Cluster name:</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="@cluster-name"/></b></td>
+                </tr>
+            </table>
+        </xsl:template>
+-->
+<!ELEMENT wls-distributed-mbean-server-finder EMPTY>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST wls-distributed-mbean-server-finder type CDATA #FIXED "server-finder">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST wls-distributed-mbean-server-finder class CDATA #FIXED "it.greenvulcano.jmx.DistributedMBeanServerFinder">
+<!--
+    #NotNull
+-->
+<!ATTLIST wls-distributed-mbean-server-finder user CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST wls-distributed-mbean-server-finder password CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST wls-distributed-mbean-server-finder admin-server-url CDATA #REQUIRED>
+
+
+<!--
+    Use the MBeanServerFactory to obtain a MBeanServer (see JMX documentation
+    for more details).
+
+     #Template:
+        <xsl:template match="standard-mbean-server-finder">
+            <table cellspacing ="0" cellpadding="0">
+                <tr>
+                    <td>Mode:</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="@mode"/></b></td>
+                </tr>
+                <tr>
+                    <td>Domain:</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="@domain"/></b></td>
+                </tr>
+                <tr>
+                    <td>Agent ID:</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="@agent-id"/></b></td>
+                </tr>
+            </table>
+        </xsl:template>
+-->
+<!ELEMENT standard-mbean-server-finder EMPTY>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST standard-mbean-server-finder type CDATA #FIXED "server-finder">
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST standard-mbean-server-finder class CDATA #FIXED "it.greenvulcano.jmx.StandardMBeanServerFinder">
+<!--
+    #Warn: {{../standard-mbean-server-finder[@mode='find'][not(@agent-id)]}} Please specify the agent-id
+-->
+<!ATTLIST standard-mbean-server-finder mode (create|find|new) #REQUIRED>
+<!--
+    #NotNull
+    #Warn: {{../standard-mbean-server-finder[@mode='find']}} The domain attribute cannot be used when mode is 'find'
+-->
+<!ATTLIST standard-mbean-server-finder domain CDATA #IMPLIED>
+<!--
+    #NotNull
+    #Warn: {{../standard-mbean-server-finder[@mode!='find']}} The agent-id attribute cannot be used when mode is not 'find'
+-->
+<!ATTLIST standard-mbean-server-finder agent-id CDATA #IMPLIED>
+
+
+<!--
+     The ObjectNameBuilder element defines a list of properties name/value to be used to
+     enrich the ObjectName of a MBean.
+     These properties must be added to the ObjectName only if the MBean to be registered
+     match some condition:
+     - if attribute "class" is set:
+         a) the attribute 'apply-to-class' is equals to:
+            1) 'only-current'                : the properties are added only if the MBean class matches the 'class' value;
+            2) 'current-or-descendent'       : the properties are added only if the MBean class matches the 'class' value,
+                                               or is a 'class' descendent;
+            3) 'only-descendent'             : the properties are added only if the MBean is a 'class' descendent;
+            4) 'no-current-nor-descendent'   : the properties are added only if the MBean class does not match the 'class' value and
+                                               isn't a 'class' descendent;
+     - if attribute "name" is set:
+         a) the attribute 'apply-to-name' is equal to:
+            1) 'yes' : the properties are added only if the MBean name matches the 'name' value;
+            2) 'no'  : the properties are added only if the MBean name dont' matches the 'name' value;
+     - if attributes 'class' and 'name' are set, the properties are added only if the MBean matches all the condition;
+     - if attributes 'class' and 'name' are not set, the properties are added for every MBean;
+
+     #CompositeLabel: | Class: '| @class |', Name: '| @name |'
+     #Warn: {{../ObjectNameBuilder[(@class and not(@apply-to-class)) or (@apply-to-class and not(@class))]}} The attributes 'class' and 'apply-to-class' must be defined together
+
+     #Template:
+        <xsl:template match="ObjectNameBuilder">
+            <table cellspacing ="0" cellpadding="0">
+                <tr>
+                    <td>Name:</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="@name"/></b></td>
+                </tr>
+                <tr>
+                    <td>Class:</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="@class"/></b></td>
+                </tr>
+                <tr><td>...</td></tr>
+            </table>
+        </xsl:template>
+
+-->
+<!ELEMENT ObjectNameBuilder (Description?, ObjectNameProperty*)>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST ObjectNameBuilder type CDATA #FIXED "object-name-builder">
+<!--
+    #NotNull
+-->
+<!ATTLIST ObjectNameBuilder class CDATA #IMPLIED>
+<!--
+    #NotNull
+-->
+<!ATTLIST ObjectNameBuilder apply-to-class (only-current|current-or-descendent|only-descendent|no-current-nor-descendent) #IMPLIED>
+<!--
+    #NotNull
+-->
+<!ATTLIST ObjectNameBuilder name CDATA #IMPLIED>
+<!--
+    #NotNull
+-->
+<!ATTLIST ObjectNameBuilder apply-to-name (yes|no) #IMPLIED>
+
+
+<!--
+    #Label: @name
+-->
+<!ELEMENT ObjectNameProperty EMPTY>
+<!--
+    #NotNull
+-->
+<!ATTLIST ObjectNameProperty name  CDATA #REQUIRED>
+<!--
+    The property value can be a combination of:
+     - fixed : a text string;
+     - %{{class}}         : the obj class name;
+     - %{{fqclass}}       : the obj fully qualified class name;
+     - %{{package}}       : the obj package name;
+     - ${{propname}}      : a System property name;
+     - sp{{propname}}     : a System property name;
+     - env{{varname}}     : an Environment variable value;
+     - @{{propname}}      : a inProperties property name;
+     - timestamp{{pattern}} : return the current timestamp formatted as 'pattern'
+     - dateformat{{date::source-pattern::dest-pattern}} : reformat 'date' from 'source-pattern' to 'dest-pattern'
+     - decode{{field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                               evaluate as if-then-else; if 'field' is equal to cond1...n,
+                               return the value of val1...n, otherwise 'default'
+     - decodeL{{sep::field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                               is equivalent to 'decode', with the difference that 'condX'
+                               can be a list of values separated by 'sep'
+     - script{{lang::[scope::]script}} : evaluate a 'lang' script, using the base context 'scope',
+                               the inProperties map is added to the context as 'inProperties',
+                               the object is added to the context as 'object',
+                               the extra is added to the context as 'extra'
+     - js{{[scope::]script}} : evaluate a JavaScript script, using the context 'scope',
+                               the inProperties map is added to the context as 'inProperties',
+                               the object is added to the context as 'object',
+                               the extra is added to the context as 'extra'
+     - ognl{{script}} : evaluate a OGNL script,
+                               the inProperties map is added to the context as 'inProperties',
+                               the object is added to the context as 'object' (and is also the object on which execute the script !! NO MORE FROM 3.5 !!),
+                               the extra is added to the context as 'extra'
+     - sql{{conn::statement}}      : executes a select sql statement and returns the value of
+                                     the first field of the first selected record.
+                                     The 'conn' parameter is the JNDI name of a DataSource
+     - sqllist{{conn::statement}}  : executes a select sql statement and returns the value of
+                                     the first field of all selected records as a comma separated list.
+                                     The 'conn' parameter is the JNDI name of a DataSource
+     - sqltable{{conn::statement}} : executes a select sql statement and returns all values of
+                                     returned cursor as an XML.
+                                     The 'conn' parameter is the JNDI name of a DataSource
+
+    #NotNull
+-->
+<!ATTLIST ObjectNameProperty value CDATA #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST ObjectNameProperty default-value CDATA #IMPLIED>
+
+<!--
+    Element useful to register a generic initializer.
+
+     #Template:
+        <xsl:template match="generic-initializer">
+            <table cellspacing ="0" cellpadding="0">
+                <tr>
+                    <td>Class:</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="@class"/></b></td>
+                </tr>
+            </table>
+        </xsl:template>
+-->
+<!ELEMENT generic-initializer ANY>
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST generic-initializer type CDATA #FIXED "initializer">
+<!--
+    Initializer's implementation class.
+    Used by GreenVulcanoESB factory framework.
+
+    #NotNull
+-->
+<!ATTLIST generic-initializer class CDATA #REQUIRED>
+<!--
+    A comma separated list of target server of the initializer.
+    The initializer is activated only if the current server instance is in the list.
+    If not defined then the target check isn't executed.
+
+    This value can be a static value or contain placeholders that at runtime can be replaced in the following manner:
+     - fixed : a text string;
+     - ${{propname}}           :  a System property name;
+     - sp{{propname}}          :  a System property name;
+     - env{{varname}}          :  an Environment variable value;
+     - timestamp{{pattern}} : return the current timestamp formatted as 'pattern'
+     - dateformat{{date::source-pattern::dest-pattern}} : reformat 'date' from 'source-pattern' to 'dest-pattern'
+     - decode{{field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                                evaluate as if-then-else; if 'field' is equal to cond1...n,
+                                return the value of val1...n, otherwise 'default'
+     - decodeL{{sep::field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                                is equivalent to 'decode', with the difference that 'condX'
+                                can be a list of values separated by 'sep'
+     - script{{lang::[scope::]script}} : evaluate a 'lang' script, using the base context 'scope',
+                               the inProperties map is added to the context as 'inProperties',
+                               the object is added to the context as 'object',
+                               the extra is added to the context as 'extra'
+     - js{{[scope::]script}} : evaluate a JavaScript script, using the context 'scope',
+                               the inProperties map is added to the context as 'inProperties',
+                               the object is added to the context as 'object',
+                               the extra is added to the context as 'extra'
+     - ognl{{script}} : evaluate a OGNL script,
+                               the inProperties map is added to the context as 'inProperties',
+                               the object is added to the context as 'object' (and is also the object on which execute the script !! NO MORE FROM 3.5 !!),
+                               the extra is added to the context as 'extra'
+     - sql{{conn::statement}}     : execute a select sql statement sql and return the value of
+                                    the first field of the first selected record.
+                                    The 'conn' parameter is the JNDI name of a DataSource
+     - sqllist{{conn::statement}}  : execute a select sql statement sql and return the value of
+                                     the first field of all selected records as a comma separated list.
+                                     The 'conn' parameter is the JNDI name of a DataSource
+     - sqltable{{conn::statement}} : executes a select sql statement and returns all values of
+                                     returned cursor as an XML.
+                                     The 'conn' parameter is the JNDI name of a DataSource
+
+    #NotNull
+-->
+<!ATTLIST generic-initializer target CDATA #IMPLIED>
+<!--
+    Defines the number of seconds to wait, during ESB start-up, before initialize the module.
+    Default to -1 == disabled.
+
+    #NotNull
+-->
+<!ATTLIST generic-initializer delayed-init CDATA #IMPLIED>
+
+<!--
+     The inizializer that allows to set a group of Java properties within
+     the runtime environment of GreenVulcano ESB.
+     Immediately after the startup of GreenVulcano ESB, these properties
+     will be accessible from each module using the Java API
+
+     System.getProperty().
+
+     #Template:
+        <xsl:template match="JavaProperties-initializer">
+            <table cellspacing ="0" cellpadding="0">
+                <tr>
+                    <td>Class:</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="@class"/></b></td>
+                </tr>
+            </table>
+        </xsl:template>
+-->
+<!ELEMENT JavaProperties-initializer (Description?, PropertySetting+)>
+
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST JavaProperties-initializer type CDATA #FIXED "initializer">
+
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST JavaProperties-initializer class CDATA #FIXED "it.greenvulcano.util.runtime.RegisterJavaProperties">
+
+<!--
+    A comma separated list of target server of the initializer.
+    The initializer is activated only if the current server instance is in the list.
+    If not defined then the target check isn't executed.
+
+    This value can be a static value or contain placeholders that at runtime can be replaced in the following manner:
+     - fixed : a text string;
+     - ${{propname}}           :  a System property name;
+     - sp{{propname}}          :  a System property name;
+     - env{{varname}}          :  an Environment variable value;
+     - timestamp{{pattern}} : return the current timestamp formatted as 'pattern'
+     - dateformat{{date::source-pattern::dest-pattern}} : reformat 'date' from 'source-pattern' to 'dest-pattern'
+     - decode{{field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                                evaluate as if-then-else; if 'field' is equal to cond1...n,
+                                return the value of val1...n, otherwise 'default'
+     - decodeL{{sep::field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                                is equivalent to 'decode', with the difference that 'condX'
+                                can be a list of values separated by 'sep'
+     - script{{lang::[scope::]script}} : evaluate a 'lang' script, using the base context 'scope',
+                               the inProperties map is added to the context as 'inProperties',
+                               the object is added to the context as 'object',
+                               the extra is added to the context as 'extra'
+     - js{{[scope::]script}} : evaluate a JavaScript script, using the context 'scope',
+                               the inProperties map is added to the context as 'inProperties',
+                               the object is added to the context as 'object',
+                               the extra is added to the context as 'extra'
+     - ognl{{script}} : evaluate a OGNL script,
+                               the inProperties map is added to the context as 'inProperties',
+                               the object is added to the context as 'object' (and is also the object on which execute the script !! NO MORE FROM 3.5 !!),
+                               the extra is added to the context as 'extra'
+     - sql{{conn::statement}}      : execute a select sql statement sql and return the value of
+                                     the first field of the first selected record.
+                                     The 'conn' parameter is the JNDI name of a DataSource
+     - sqllist{{conn::statement}}  : execute a select sql statement sql and return the value of
+                                     the first field of all selected records as a comma separated list.
+                                     The 'conn' parameter is the JNDI name of a DataSource
+     - sqltable{{conn::statement}} : executes a select sql statement and returns all values of
+                                     returned cursor as an XML.
+                                     The 'conn' parameter is the JNDI name of a DataSource
+
+    #NotNull
+-->
+<!ATTLIST JavaProperties-initializer target CDATA #IMPLIED>
+<!--
+    Defines the number of seconds to wait, during ESB start-up, before initialize the module.
+    Default to -1 == disabled.
+
+    #NotNull
+-->
+<!ATTLIST JavaProperties-initializer delayed-init CDATA #IMPLIED>
+
+<!--
+    The Java property that you wish to set within the runtime
+    environment of GreenVulcano ESB.
+-->
+<!ELEMENT PropertySetting (Description?)>
+
+<!--
+    Java property name.
+
+    #NotNull
+-->
+<!ATTLIST PropertySetting name CDATA #REQUIRED>
+
+<!--
+    The value of the Java property to set.
+
+    This value can be a static value or contain placeholders that at runtime can be replaced in the following manner:
+     - fixed : a text string;
+     - ${{propname}}           :  a System property name;
+     - sp{{propname}}          :  a System property name;
+     - env{{varname}}          :  an Environment variable value;
+     - timestamp{{pattern}} : return the current timestamp formatted as 'pattern'
+     - dateformat{{date::source-pattern::dest-pattern}} : reformat 'date' from 'source-pattern' to 'dest-pattern'
+     - decode{{field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                                evaluate as if-then-else; if 'field' is equal to cond1...n,
+                                return the value of val1...n, otherwise 'default'
+     - decodeL{{sep::field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                                is equivalent to 'decode', with the difference that 'condX'
+                                can be a list of values separated by 'sep'
+     - script{{lang::[scope::]script}} : evaluate a 'lang' script, using the base context 'scope',
+                               the inProperties map is added to the context as 'inProperties',
+                               the object is added to the context as 'object',
+                               the extra is added to the context as 'extra'
+     - js{{[scope::]script}} : evaluate a JavaScript script, using the context 'scope',
+                               the inProperties map is added to the context as 'inProperties',
+                               the object is added to the context as 'object',
+                               the extra is added to the context as 'extra'
+     - ognl{{script}} : evaluate a OGNL script,
+                               the inProperties map is added to the context as 'inProperties',
+                               the object is added to the context as 'object' (and is also the object on which execute the script !! NO MORE FROM 3.5 !!),
+                               the extra is added to the context as 'extra'
+     - sql{{conn::statement}}      : execute a select sql statement sql and return the value of
+                                     the first field of the first selected record.
+                                     The 'conn' parameter is the JNDI name of a DataSource
+     - sqllist{{conn::statement}}  : execute a select sql statement sql and return the value of
+                                     the first field of all selected records as a comma separated list.
+                                     The 'conn' parameter is the JNDI name of a DataSource
+     - sqltable{{conn::statement}} : executes a select sql statement and returns all values of
+                                     returned cursor as an XML.
+                                     The 'conn' parameter is the JNDI name of a DataSource
+
+    #NotNull
+-->
+<!ATTLIST PropertySetting value CDATA #REQUIRED>
+
+<!--
+     The inizializer for TimerTask.
+
+     #Template:
+        <xsl:template match="TimerTask-initializer">
+            <table cellspacing ="0" cellpadding="0">
+                <tr>
+                    <td>Class:</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="@class"/></b></td>
+                </tr>
+            </table>
+        </xsl:template>
+-->
+<!ELEMENT TimerTask-initializer (Description?)>
+
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST TimerTask-initializer type CDATA #FIXED "initializer">
+
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST TimerTask-initializer class CDATA #FIXED "it.greenvulcano.scheduler.util.RegisterTaskManagerFactory">
+
+<!--
+    A comma separated list of target server of the initializer.
+    The initializer is activated only if the current server instance is in the list.
+    If not defined then the target check isn't executed.
+
+    This value can be a static value or contain placeholders that at runtime can be replaced in the following manner:
+     - fixed : a text string;
+     - ${{propname}}           :  a System property name;
+     - sp{{propname}}          :  a System property name;
+     - env{{varname}}          :  an Environment variable value;
+     - timestamp{{pattern}} : return the current timestamp formatted as 'pattern'
+     - dateformat{{date::source-pattern::dest-pattern}} : reformat 'date' from 'source-pattern' to 'dest-pattern'
+     - decode{{field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                                evaluate as if-then-else; if 'field' is equal to cond1...n,
+                                return the value of val1...n, otherwise 'default'
+     - decodeL{{sep::field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                                is equivalent to 'decode', with the difference that 'condX'
+                                can be a list of values separated by 'sep'
+     - script{{lang::[scope::]script}} : evaluate a 'lang' script, using the base context 'scope',
+                               the inProperties map is added to the context as 'inProperties',
+                               the object is added to the context as 'object',
+                               the extra is added to the context as 'extra'
+     - js{{[scope::]script}} : evaluate a JavaScript script, using the context 'scope',
+                               the inProperties map is added to the context as 'inProperties',
+                               the object is added to the context as 'object',
+                               the extra is added to the context as 'extra'
+     - ognl{{script}} : evaluate a OGNL script,
+                               the inProperties map is added to the context as 'inProperties',
+                               the object is added to the context as 'object' (and is also the object on which execute the script !! NO MORE FROM 3.5 !!),
+                               the extra is added to the context as 'extra'
+     - sql{{conn::statement}}      : execute a select sql statement sql and return the value of
+                                     the first field of the first selected record.
+                                     The 'conn' parameter is the JNDI name of a DataSource
+     - sqllist{{conn::statement}}  : execute a select sql statement sql and return the value of
+                                     the first field of all selected records as a comma separated list.
+                                     The 'conn' parameter is the JNDI name of a DataSource
+     - sqltable{{conn::statement}} : executes a select sql statement and returns all values of
+                                     returned cursor as an XML.
+                                     The 'conn' parameter is the JNDI name of a DataSource
+
+    #NotNull
+-->
+<!ATTLIST TimerTask-initializer target CDATA #IMPLIED>
+<!--
+    Defines the number of seconds to wait, during ESB start-up, before initialize the module.
+    Default to -1 == disabled.
+
+    #NotNull
+-->
+<!ATTLIST TimerTask-initializer delayed-init CDATA #IMPLIED>
+
+<!--
+     The inizializer for HL7Listener.
+
+     #Template:
+        <xsl:template match="HL7Listener-initializer">
+            <table cellspacing ="0" cellpadding="0">
+                <tr>
+                    <td>Class:</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="@class"/></b></td>
+                </tr>
+            </table>
+        </xsl:template>
+-->
+<!ELEMENT HL7Listener-initializer (Description?)>
+
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST HL7Listener-initializer type CDATA #FIXED "initializer">
+
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST HL7Listener-initializer class CDATA #FIXED "it.greenvulcano.gvesb.gvhl7.listener.jmx.RegisterHL7ListenerManager">
+
+<!--
+    A comma separated list of target server of the initializer.
+    The initializer is activated only if the current server instance is in the list.
+    If not defined then the target check isn't executed.
+
+    This value can be a static value or contain placeholders that at runtime can be replaced in the following manner:
+     - fixed : a text string;
+     - ${{propname}}           :  a System property name;
+     - sp{{propname}}          :  a System property name;
+     - env{{varname}}          :  an Environment variable value;
+     - timestamp{{pattern}} : return the current timestamp formatted as 'pattern'
+     - dateformat{{date::source-pattern::dest-pattern}} : reformat 'date' from 'source-pattern' to 'dest-pattern'
+     - decode{{field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                                evaluate as if-then-else; if 'field' is equal to cond1...n,
+                                return the value of val1...n, otherwise 'default'
+     - decodeL{{sep::field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                                is equivalent to 'decode', with the difference that 'condX'
+                                can be a list of values separated by 'sep'
+     - script{{lang::[scope::]script}} : evaluate a 'lang' script, using the base context 'scope',
+                               the inProperties map is added to the context as 'inProperties',
+                               the object is added to the context as 'object',
+                               the extra is added to the context as 'extra'
+     - js{{[scope::]script}} : evaluate a JavaScript script, using the context 'scope',
+                               the inProperties map is added to the context as 'inProperties',
+                               the object is added to the context as 'object',
+                               the extra is added to the context as 'extra'
+     - ognl{{script}} : evaluate a OGNL script,
+                               the inProperties map is added to the context as 'inProperties',
+                               the object is added to the context as 'object' (and is also the object on which execute the script !! NO MORE FROM 3.5 !!),
+                               the extra is added to the context as 'extra'
+     - sql{{conn::statement}}      : execute a select sql statement sql and return the value of
+                                     the first field of the first selected record.
+                                     The 'conn' parameter is the JNDI name of a DataSource
+     - sqllist{{conn::statement}}  : execute a select sql statement sql and return the value of
+                                     the first field of all selected records as a comma separated list.
+                                     The 'conn' parameter is the JNDI name of a DataSource
+     - sqltable{{conn::statement}} : executes a select sql statement and returns all values of
+                                     returned cursor as an XML.
+                                     The 'conn' parameter is the JNDI name of a DataSource
+
+    #NotNull
+-->
+<!ATTLIST HL7Listener-initializer target CDATA #IMPLIED>
+<!--
+    Defines the number of seconds to wait, during ESB start-up, before initialize the module.
+    Default to -1 == disabled.
+
+    #NotNull
+-->
+<!ATTLIST HL7Listener-initializer delayed-init CDATA #IMPLIED>
+
+<!--
+     The inizializer for JMSForward.
+
+     #Template:
+        <xsl:template match="JMSForward-initializer">
+            <table cellspacing ="0" cellpadding="0">
+                <tr>
+                    <td>Class:</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="@class"/></b></td>
+                </tr>
+            </table>
+        </xsl:template>
+-->
+<!ELEMENT JMSForward-initializer (Description?)>
+
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST JMSForward-initializer type CDATA #FIXED "initializer">
+
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST JMSForward-initializer class CDATA #FIXED "it.greenvulcano.gvesb.core.forward.jmx.RegisterJMSForwardManager">
+
+<!--
+    A comma separated list of target server of the initializer.
+    The initializer is activated only if the current server instance is in the list.
+    If not defined then the target check isn't executed.
+
+    This value can be a static value or contain placeholders that at runtime can be replaced in the following manner:
+     - fixed : a text string;
+     - ${{propname}}           :  a System property name;
+     - sp{{propname}}          :  a System property name;
+     - env{{varname}}          :  an Environment variable value;
+     - timestamp{{pattern}} : return the current timestamp formatted as 'pattern'
+     - dateformat{{date::source-pattern::dest-pattern}} : reformat 'date' from 'source-pattern' to 'dest-pattern'
+     - decode{{field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                                evaluate as if-then-else; if 'field' is equal to cond1...n,
+                                return the value of val1...n, otherwise 'default'
+     - decodeL{{sep::field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                                is equivalent to 'decode', with the difference that 'condX'
+                                can be a list of values separated by 'sep'
+     - script{{lang::[scope::]script}} : evaluate a 'lang' script, using the base context 'scope',
+                               the inProperties map is added to the context as 'inProperties',
+                               the object is added to the context as 'object',
+                               the extra is added to the context as 'extra'
+     - js{{[scope::]script}} : evaluate a JavaScript script, using the context 'scope',
+                               the inProperties map is added to the context as 'inProperties',
+                               the object is added to the context as 'object',
+                               the extra is added to the context as 'extra'
+     - ognl{{script}} : evaluate a OGNL script,
+                               the inProperties map is added to the context as 'inProperties',
+                               the object is added to the context as 'object' (and is also the object on which execute the script !! NO MORE FROM 3.5 !!),
+                               the extra is added to the context as 'extra'
+     - sql{{conn::statement}}      : execute a select sql statement sql and return the value of
+                                     the first field of the first selected record.
+                                     The 'conn' parameter is the JNDI name of a DataSource
+     - sqllist{{conn::statement}}  : execute a select sql statement sql and return the value of
+                                     the first field of all selected records as a comma separated list.
+                                     The 'conn' parameter is the JNDI name of a DataSource
+     - sqltable{{conn::statement}} : executes a select sql statement and returns all values of
+                                     returned cursor as an XML.
+                                     The 'conn' parameter is the JNDI name of a DataSource
+
+    #NotNull
+-->
+<!ATTLIST JMSForward-initializer target CDATA #IMPLIED>
+<!--
+    Defines the number of seconds to wait, during ESB start-up, before initialize the module.
+    Default to -1 == disabled.
+
+    #NotNull
+-->
+<!ATTLIST JMSForward-initializer delayed-init CDATA #IMPLIED>
+
+<!--
+     The inizializer for Bpel.
+
+     #Template:
+        <xsl:template match="Bpel-initializer">
+            <table cellspacing ="0" cellpadding="0">
+                <tr>
+                    <td>Class:</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="@class"/></b></td>
+                </tr>
+            </table>
+        </xsl:template>
+-->
+<!ELEMENT Bpel-initializer (Description?)>
+
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST Bpel-initializer type CDATA #FIXED "initializer">
+
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST Bpel-initializer class CDATA #FIXED "it.greenvulcano.gvesb.core.bpel.jmx.RegisterBpelManager">
+
+<!--
+    A comma separated list of target server of the initializer.
+    The initializer is activated only if the current server instance is in the list.
+    If not defined then the target check isn't executed.
+
+    This value can be a static value or contain placeholders that at runtime can be replaced in the following manner:
+     - fixed : a text string;
+     - ${{propname}}           :  a System property name;
+     - sp{{propname}}          :  a System property name;
+     - env{{varname}}          :  an Environment variable value;
+     - timestamp{{pattern}} : return the current timestamp formatted as 'pattern'
+     - dateformat{{date::source-pattern::dest-pattern}} : reformat 'date' from 'source-pattern' to 'dest-pattern'
+     - decode{{field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                                evaluate as if-then-else; if 'field' is equal to cond1...n,
+                                return the value of val1...n, otherwise 'default'
+     - decodeL{{sep::field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                                is equivalent to 'decode', with the difference that 'condX'
+                                can be a list of values separated by 'sep'
+     - script{{lang::[scope::]script}} : evaluate a 'lang' script, using the base context 'scope',
+                               the inProperties map is added to the context as 'inProperties',
+                               the object is added to the context as 'object',
+                               the extra is added to the context as 'extra'
+     - js{{[scope::]script}} : evaluate a JavaScript script, using the context 'scope',
+                               the inProperties map is added to the context as 'inProperties',
+                               the object is added to the context as 'object',
+                               the extra is added to the context as 'extra'
+     - ognl{{script}} : evaluate a OGNL script,
+                               the inProperties map is added to the context as 'inProperties',
+                               the object is added to the context as 'object' (and is also the object on which execute the script !! NO MORE FROM 3.5 !!),
+                               the extra is added to the context as 'extra'
+     - sql{{conn::statement}}      : execute a select sql statement sql and return the value of
+                                     the first field of the first selected record.
+                                     The 'conn' parameter is the JNDI name of a DataSource
+     - sqllist{{conn::statement}}  : execute a select sql statement sql and return the value of
+                                     the first field of all selected records as a comma separated list.
+                                     The 'conn' parameter is the JNDI name of a DataSource
+     - sqltable{{conn::statement}} : executes a select sql statement and returns all values of
+                                     returned cursor as an XML.
+                                     The 'conn' parameter is the JNDI name of a DataSource
+
+    #NotNull
+-->
+<!ATTLIST Bpel-initializer target CDATA #IMPLIED>
+<!--
+    Defines the number of seconds to wait, during ESB start-up, before initialize the module.
+    Default to -1 == disabled.
+
+    #NotNull
+-->
+<!ATTLIST Bpel-initializer delayed-init CDATA #IMPLIED>
+
+<!--
+     The inizializer for SavePoint.
+
+     #Template:
+        <xsl:template match="SavePoint-initializer">
+            <table cellspacing ="0" cellpadding="0">
+                <tr>
+                    <td>Class:</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="@class"/></b></td>
+                </tr>
+            </table>
+        </xsl:template>
+-->
+<!ELEMENT SavePoint-initializer (Description?)>
+
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST SavePoint-initializer type CDATA #FIXED "initializer">
+
+<!--
+    Unmodifiable.
+    Used by GreenVulcanoESB factory framework.
+-->
+<!ATTLIST SavePoint-initializer class CDATA #FIXED "it.greenvulcano.gvesb.core.savepoint.jmx.ResetGVCoreSavePoint">
+
+<!--
+    A comma separated list of target server of the initializer.
+    The initializer is activated only if the current server instance is in the list.
+    If not defined then the target check isn't executed.
+
+    This value can be a static value or contain placeholders that at runtime can be replaced in the following manner:
+     - fixed : a text string;
+     - ${{propname}}           :  a System property name;
+     - sp{{propname}}          :  a System property name;
+     - env{{varname}}          :  an Environment variable value;
+     - timestamp{{pattern}} : return the current timestamp formatted as 'pattern'
+     - dateformat{{date::source-pattern::dest-pattern}} : reformat 'date' from 'source-pattern' to 'dest-pattern'
+     - decode{{field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                                evaluate as if-then-else; if 'field' is equal to cond1...n,
+                                return the value of val1...n, otherwise 'default'
+     - decodeL{{sep::field[::cond1::val1][::cond2::val2][cond...n::val...n]::default}} :
+                                is equivalent to 'decode', with the difference that 'condX'
+                                can be a list of values separated by 'sep'
+     - script{{lang::[scope::]script}} : evaluate a 'lang' script, using the base context 'scope',
+                               the inProperties map is added to the context as 'inProperties',
+                               the object is added to the context as 'object',
+                               the extra is added to the context as 'extra'
+     - js{{[scope::]script}} : evaluate a JavaScript script, using the context 'scope',
+                               the inProperties map is added to the context as 'inProperties',
+                               the object is added to the context as 'object',
+                               the extra is added to the context as 'extra'
+     - ognl{{script}} : evaluate a OGNL script,
+                               the inProperties map is added to the context as 'inProperties',
+                               the object is added to the context as 'object' (and is also the object on which execute the script !! NO MORE FROM 3.5 !!),
+                               the extra is added to the context as 'extra'
+     - sql{{conn::statement}}      : execute a select sql statement sql and return the value of
+                                     the first field of the first selected record.
+                                     The 'conn' parameter is the JNDI name of a DataSource
+     - sqllist{{conn::statement}}  : execute a select sql statement sql and return the value of
+                                     the first field of all selected records as a comma separated list.
+                                     The 'conn' parameter is the JNDI name of a DataSource
+     - sqltable{{conn::statement}} : executes a select sql statement and returns all values of
+                                     returned cursor as an XML.
+                                     The 'conn' parameter is the JNDI name of a DataSource
+
+    #NotNull
+-->
+<!ATTLIST SavePoint-initializer target CDATA #IMPLIED>
+<!--
+    Defines the number of seconds to wait, during ESB start-up, before initialize the module.
+    Default to -1 == disabled.
+
+    #NotNull
+-->
+<!ATTLIST SavePoint-initializer delayed-init CDATA #IMPLIED>
+<!--
+     DTD for the Model MBeans Configuration File
+
+     To support validation of your configuration file, include the following
+     DOCTYPE element at the beginning (after the "xml" declaration):
+
+     <!DOCTYPE mbeans-descriptors PUBLIC
+      "-//Apache Software Foundation//DTD Model MBeans Configuration File"
+      "http://jakarta.apache.org/commons/dtds/mbeans-descriptors.dtd">
+-->
+
+
+<!-- Types Definitions -->
+
+
+<!--
+     A "Boolean" is the string representation of a boolean (true or false) variable.
+-->
+<!ENTITY % Boolean "(true|false|yes|no)">
+
+
+<!--
+     A "ClassName" is the fully qualified name of a Java class that is
+     instantiated to provide the functionality of the enclosing element.
+-->
+<!ENTITY % ClassName "CDATA">
+
+
+<!--
+     A "MethodName" is the name of a constructor or method, which must
+     be legal according to the syntax requirements of the Java language.
+-->
+<!ENTITY % MethodName "CDATA">
+
+
+<!--
+     A "VariableName" is the name of a variable or parameter, which must
+     be legal according to the syntax requirements of the Java language.
+-->
+<!ENTITY % VariableName "CDATA">
+
+
+<!-- Element Definitions -->
+
+
+<!--
+     The "mbeans-descriptors" element is the root of the configuration file
+     hierarchy, and contains nested elements for all the other configuration settings.
+     Remaining elements definitions are listed in alphabetical order.
+
+     #Table: | JMX Managed Beans | mbean | Name | @name | Domain | @domain | Group | @group | Type | @type |Description | @description
+     #Template:
+            <xsl:template match="mbeans-descriptors">
+                This section contains the configuration for the ModelMBean.
+            </xsl:template>
+-->
+<!ELEMENT mbeans-descriptors (mbean*)>
+<!ATTLIST mbeans-descriptors id          ID             #IMPLIED>
+
+
+<!--
+     The "attribute" element describes a JavaBeans property of an MBean.
+     The following attributes are supported:
+
+     description      Human-readable description of this attribute.
+
+     displayName      Display name of this attribute.
+
+     getMethod        Name of the property getter method, if it does
+                      not follow standard JavaBeans naming patterns.
+
+     is               Boolean value indicating whether or not this
+                      attribute is a boolean with an "is" getter method.
+                      By default, this is set to "false".
+
+     name             Name of this JavaBeans property, conforming to
+                      standard naming design patterns.
+
+     readable         Boolean value indicating whether or not this
+                      attribute is readable by management applications.
+                      By default, this is set to "true".
+
+     setMethod        Name of the property setter method, if it does
+                      not follow standard JavaBeans naming patterns.
+
+     type             Fully qualified Java class name of this attribute.
+
+     writeable        Boolean value indicating whether or not this
+                      attribute is writeable by management applications.
+                      By default, this is set to "true".
+
+     #SelectOnInsert
+     #Label: @name
+-->
+<!ELEMENT attribute (descriptor?)>
+<!--
+    #NotNull
+    #Unique: ../attribute/@name
+-->
+<!ATTLIST attribute         name         %VariableName; #REQUIRED>
+<!--
+    #NotNull
+    #Unique: //@id
+-->
+<!ATTLIST attribute         id           ID             #IMPLIED>
+<!ATTLIST attribute         description  CDATA          #IMPLIED>
+<!--
+    #NotNull
+-->
+<!ATTLIST attribute         displayName  CDATA          #IMPLIED>
+<!--
+    #NotNull
+-->
+<!ATTLIST attribute         getMethod    %MethodName;   #IMPLIED>
+<!ATTLIST attribute         is           %Boolean;      #IMPLIED>
+<!ATTLIST attribute         readable     %Boolean;      #IMPLIED>
+<!--
+    #NotNull
+-->
+<!ATTLIST attribute         setMethod    %MethodName;   #IMPLIED>
+<!--
+    #NotNull
+-->
+<!ATTLIST attribute         type         %ClassName;    #IMPLIED>
+<!ATTLIST attribute         writeable    %Boolean;      #IMPLIED>
+
+
+<!--
+     The "constructor" element describes a public constructor for the
+     underlying actual class.  It may contain nested "parameter" elements
+     for the various arguments to this constructor.  The following attributes
+     are supported:
+
+     displayName      Display name of this constructor.
+
+     name             Name of this constructor (by Java convention, this must
+                      be the same as the base class name).
+
+     #SelectOnInsert
+     #Label: @name
+-->
+<!ELEMENT constructor (descriptor?, parameter*)>
+<!--
+    #NotNull
+-->
+<!ATTLIST constructor       name         %VariableName; #REQUIRED>
+<!--
+    #NotNull
+    #Unique: //@id
+-->
+<!ATTLIST constructor       id           ID             #IMPLIED>
+<!--
+    #NotNull
+-->
+<!ATTLIST constructor       displayName  CDATA          #IMPLIED>
+
+<!--
+     The "descriptor" element groups a set of descriptor fields whose
+     values will be included in the Descriptor for the corresponding
+     metatdata info classes.
+
+    #SelectOnInsert
+-->
+<!ELEMENT descriptor (field*)>
+<!--
+    #NotNull
+-->
+<!ATTLIST descriptor        id           ID             #IMPLIED>
+
+
+<!--
+     The "field" element represents a single name/value pair that will
+     be included in the Descriptor corresponding to our enclosing
+     "descriptor" element.  The following attributes are supported:
+
+     name             Field name of the field to be included
+
+     value            Field value of the field to be included
+                      (will be stored as a String)
+
+    #SelectOnInsert
+    #Label: @name
+-->
+<!ELEMENT field EMPTY>
+<!--
+    #Unique: //@id
+    #NotNull
+-->
+<!ATTLIST field             id           ID             #IMPLIED>
+<!--
+    #Unique: ../field/@name
+    #NotNull
+-->
+<!ATTLIST field             name         CDATA          #REQUIRED>
+<!--
+    #NotNull
+-->
+<!ATTLIST field             value        CDATA          #REQUIRED>
+
+
+
+<!--
+     The "mbean" element describes a particular JMX ModelMBean implementation,
+     including the information necessary to construct the corresponding
+     ModelMBeanInfo structures.  The following attributes are supported:
+
+     className        Fully qualified Java class name of the ModelMBean
+                      implementation class.  If not specified, the standard
+                      implementation provided by JMX will be utilized.
+
+     description      Human-readable description of this managed bean.
+
+     domain           The JMX MBeanServer domain in which the ModelMBean
+                      created by this managed bean should be registered,
+                      when creating its ObjectName.
+
+     group            Optional name of a "grouping classification" that can
+                      be used to select groups of similar MBean implementation
+                      classes.
+
+     name             Unique name of this MBean (normally corresponds to the
+                      base class name of the corresponding server component).
+
+     type             Fully qualified Java class name of the underlying
+                      managed resource implementation class.
+
+     #Table: | Attributes    | attribute | Name | @name | Display name | @displayName | Type | @type | Description | @description
+     #Table: | Constructors  | constructor | Name | @name | Display name | @displayName | Parameters | parameter/@name
+     #Table: | Notifications | notification | Name | @name | Description | @description
+     #Table: | Operations    | operation | Name | @name | Parameters | parameter/@name | Return type | @returnType | Description | @description
+
+     #SelectOnInsert
+     #Label: @name
+-->
+<!ELEMENT mbean (descriptor?, attribute*, constructor*, notification*, operation*)>
+<!--
+    #NotNull
+    #Unique: //mbean/@name
+-->
+<!ATTLIST mbean             name         %MethodName;   #REQUIRED>
+<!--
+    #NotNull
+    #Unique: //@id
+-->
+<!ATTLIST mbean             id           ID             #IMPLIED>
+<!--
+    #NotNull
+-->
+<!ATTLIST mbean             className    %ClassName;    #IMPLIED>
+<!ATTLIST mbean             description  CDATA          #IMPLIED>
+<!--
+    #NotNull
+-->
+<!ATTLIST mbean             domain       CDATA          #IMPLIED>
+<!--
+    #NotNull
+-->
+<!ATTLIST mbean             group        CDATA          #IMPLIED>
+<!--
+    #NotNull
+-->
+<!ATTLIST mbean             type         %ClassName;    #IMPLIED>
+
+
+<!--
+     The "notification" element describes the notification types that are
+     generated by a particular managed bean.  The following attributes
+     are supported:
+
+     description      Human-readable description of these notification events.
+
+     name             Name of this set of notification event types.
+
+     #SelectOnInsert
+     #Label: @name
+-->
+<!ELEMENT notification (descriptor?, notification-type*)>
+<!--
+    #NotNull
+-->
+<!ATTLIST notification      name         %VariableName; #REQUIRED>
+<!--
+    #NotNull
+    #Unique: //@id
+-->
+<!ATTLIST notification      id           ID             #IMPLIED>
+<!ATTLIST notification      description  CDATA          #IMPLIED>
+
+
+<!-- The nested content of the "notification-type" element is the event string
+     of an event that can be emitted by this MBean.
+
+     #SelectOnInsert
+     #Label: @id
+-->
+<!ELEMENT notification-type (#PCDATA)>
+<!--
+    #NotNull
+    #Unique: //@id
+-->
+<!ATTLIST notification-type id           ID             #IMPLIED>
+
+
+<!--
+     The "operation" element describes a the signature of a public method
+     that is accessible to management applications.  The following attributes
+     are supported:
+
+     description      Human-readable description of this operation.
+
+     impact           Indication of the impact of this method:
+                      ACTION (write), ACTION-INFO (write+read)
+                      INFO (read), or UNKNOWN.
+
+     name             Name of this public method.
+
+     returnType       Fully qualified Java class name of the return
+                      type of this method.
+
+     #SelectOnInsert
+     #Label: @name
+-->
+<!ELEMENT operation   (descriptor?, parameter*)>
+<!--
+    #NotNull
+-->
+<!ATTLIST operation         name         %VariableName; #REQUIRED>
+<!--
+    #NotNull
+    #Unique: //@id
+-->
+<!ATTLIST operation         id           ID             #IMPLIED>
+<!ATTLIST operation         description  CDATA          #IMPLIED>
+<!--
+    #NotNull
+-->
+<!ATTLIST operation         impact       CDATA          #IMPLIED>
+<!--
+    #NotNull
+-->
+<!ATTLIST operation         returnType   %ClassName;    #IMPLIED>
+
+
+<!-- The "parameter" element describes a single argument that will be passed
+     to a constructor or operation.  The following attributes are supported:
+
+     description      Human-readable description of this parameter.
+
+     name             Java language name of this parameter.
+
+     type             Fully qualified Java class name of this parameter.
+
+     #SelectOnInsert
+     #Label: @name
+
+     #Template:
+        <xsl:template match="parameter">
+            <table cellspacing ="0" cellpadding="0">
+                <tr>
+                    <td>Name:</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="@name"/></b></td>
+                </tr>
+                <tr>
+                    <td>Type:</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="@type"/></b></td>
+                </tr>
+                <tr>
+                    <td>Description:</td>
+                    <td width="20"></td>
+                    <td><b><xsl:value-of select="@description"/></b></td>
+                </tr>
+            </table>
+        </xsl:template>
+-->
+<!ELEMENT parameter EMPTY>
+<!--
+    #NotNull
+-->
+<!ATTLIST parameter         name         %VariableName; #REQUIRED>
+<!--
+    #NotNull
+    #Unique: //@id
+-->
+<!ATTLIST parameter         id           ID             #IMPLIED>
+<!ATTLIST parameter         description  CDATA          #IMPLIED>
+<!--
+    #NotNull
+-->
+<!ATTLIST parameter         type         %ClassName;    #IMPLIED>

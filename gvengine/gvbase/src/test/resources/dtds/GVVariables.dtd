@@ -1,0 +1,26 @@
+<!ENTITY % commons SYSTEM "http://www.greenvulcano.com/gvesb/dtds/GVCommons.dtd">
+
+%commons;
+
+<!ELEMENT GVVariables (Description?, variable*)>
+
+<!--
+    #Label: @name
+-->
+<!ELEMENT variable (Description?)>
+
+<!--
+    #NotNull
+    #Unique: parent::GVVariables/variable/@name
+-->
+<!ATTLIST variable name CDATA #REQUIRED>
+
+<!--
+    #NotNull
+-->
+<!ATTLIST variable value CDATA #REQUIRED>
+
+<!--
+    #NotNull
+-->
+<!ATTLIST variable type CDATA #REQUIRED>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bib>
+    <book price="55.65" publisher="Addison-Wesley" title="TCP/IP Illustrated" year="1994">
+        <author first="W." last="Stevens"/>
+    </book>
+    <book price="65.95" publisher="Addison-Wesley" title="Advanced Programming in the Unix environment" year="1992">
+        <author first="W." last="Stevens"/>
+    </book>
+    <book price="39.95" publisher="Morgan Kaufmann Publishers" title="Data on the Web" year="2000">
+        <author first="Serge" last="Abiteboul"/>
+        <author first="Peter" last="Buneman"/>
+        <author first="Dan" last="Suciu"/>
+    </book>
+    <book price="129.95" publisher="Kluwer Academic Publishers"
+        title="The Economics of Technology and Content for Digital TV" year="1999">
+        <editor affiliation="CITI" first="Darcy" last="Gerbarg"/>
+    </book>
+</bib>

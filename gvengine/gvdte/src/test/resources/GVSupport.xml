@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE GVSupport SYSTEM "http://www.greenvulcano.com/gvesb/dtds/GVSupport.dtd">
+
+<GVSupport version="1.0">
+    <GVLog4JConfiguration name="LOG4J" type="module">
+        <log4j:configuration debug="false" threshold="all"
+                             xmlns:log4j="http://jakarta.apache.org/log4j/">
+            <appender class="org.apache.log4j.ConsoleAppender" name="CONSOLE">
+                <layout class="org.apache.log4j.PatternLayout">
+                    <param name="ConversionPattern"
+                           value="[%d{yyyy-MM-dd HH:mm:ss,SSS}][%-5.5p][%X{ID}][%X{SYSTEM}][%X{SERVICE}][%X{OPERATION}] - %m [%c]%n"/>
+                </layout>
+            </appender>          
+
+			 <logger name="it.greenvulcano.gvesb">
+		        <level value="DEBUG"/>
+		        <appender-ref ref="CONSOLE"/>
+		    </logger>
+			</log4j:configuration>
+    </GVLog4JConfiguration>
+
+    <GVScriptConfig name="SCRIPT" type="module">
+        <ScriptCache base-path="sp{{gv.app.home}}/scripts"/>
+        <ScriptEngines>
+            <ScriptEngine lang="js" default-context="gvesb" type="script-engine">
+                <BaseContext name="basic"/>
+                <BaseContext name="gvesb" file="js/initscope.js"/>
+                <BaseContext name="JavaScriptRetriever" file="js/initscope.js"/>
+            </ScriptEngine>
+            <ScriptEngine lang="ognl" type="script-engine" />
+            <ScriptEngine lang="groovy" type="script-engine" />
+            <ScriptEngine lang="jython" type="script-engine"/>
+            <ScriptEngine lang="jruby" default-context="gvesb" type="script-engine">
+                <BaseContext name="basic"/>
+                <BaseContext name="gvesb" file="jruby/initscope.rb"/>
+            </ScriptEngine>
+        </ScriptEngines>
+    </GVScriptConfig>
+
+    <GVDateUtils name="DATE_UTILS" type="module">
+        <Description>DateUtils configuration</Description>
+        <Locale country="IT" lang="it" timezone="Europe/Rome">
+            <DayLightSaving endDay="-1" endDayOfWeek="1" endMonth="10" endTime="02:00"
+                            startDay="-1" startDayOfWeek="1" startMonth="3"
+                            startTime="02:00"/>
+        </Locale>
+        <Holidays have-easter-day="true">
+            <Holiday day="1" month="1">
+                <Description>New Year</Description>
+            </Holiday>
+            <Holiday day="6" month="1">
+                <Description>Epiphany</Description>
+            </Holiday>
+            <Holiday day="25" month="4">
+                <Description>Liberation Day</Description>
+            </Holiday>
+            <Holiday day="1" month="5">
+                <Description>Labor Day</Description>
+            </Holiday>
+            <Holiday day="2" month="6">
+                <Description>Republic Day</Description>
+            </Holiday>
+            <Holiday day="29" month="6">
+                <Description>Holy Peter and Paul</Description>
+            </Holiday>
+            <Holiday day="15" month="8">
+                <Description>Ferragosto</Description>
+            </Holiday>
+            <Holiday day="1" month="11">
+                <Description>All Saints</Description>
+            </Holiday>
+            <Holiday day="8" month="12">
+                <Description>Immaculate Conception</Description>
+            </Holiday>
+            <Holiday day="25" month="12">
+                <Description>Christmas</Description>
+            </Holiday>
+            <Holiday day="26" month="12">
+                <Description>Boxing Day</Description>
+            </Holiday>
+        </Holidays>
+    </GVDateUtils>
+
+    <GVStatisticsConfig name="STATISTICS" type="module">
+        <Writers default="DUMMY_STORE">
+            <JMSStatisticsWriter class="it.greenvulcano.gvesb.statistics.plugin.JMSStatisticsWriter"
+                                 connectionFactory="java:/XAConnectionFactory"
+                                 id="JMSStore" queue="gvesb/jms/queue/Statistics_Queue"
+                                 type="stat-writer"/>
+            <JDBCStatisticsWriter class="it.greenvulcano.gvesb.statistics.plugin.JDBCStatisticsWriter"
+                                  dataSource="gv_stats" id="DBStore"
+                                  type="stat-writer"/>
+            <DUMMYStatisticsWriter class="it.greenvulcano.gvesb.statistics.plugin.DUMMYStatisticsWriter"
+                                   id="DUMMY_STORE" type="stat-writer"/>
+        </Writers>
+    </GVStatisticsConfig>
+
+    <GVMonitoringConfig name="MONITORING" type="module">
+        <MonitoredProcesses>
+            <MonitoredProcess name="LocalGV">
+                <Description>Local Server Monitoring</Description>
+            </MonitoredProcess>
+        </MonitoredProcesses>
+    </GVMonitoringConfig>
+
+    <GVWorkbenchConfig name="WORKBENCH" type="module">
+        <EJBTest class="it.greenvulcano.gvesb.gvconsole.workbench.plugin.EjbCorePlugin"
+                 fileNameInput="sp{{gv.app.home}}/log/GVBufferIn.txt"
+                 fileNameOutput="sp{{gv.app.home}}/log/TestOutput.txt" id="Core"
+                 jndiName="gvesb/core/GreenVulcano" type="test">
+            <Description>Parameters to invoke the Core Ejb</Description>
+            <JNDIHelper provider-url="jnp://sp{{java.rmi.server.hostname}}:env{{JBOSS_JNP_PORT}}"/>
+            <Loop className="it.greenvulcano.gvesb.gvconsole.workbench.plugin.TestGVBufferObject"
+                  fileName="sp{{gv.app.home}}/log/Output.txt" id="Core" type="loop">
+                <Test enabled="yes" transaction="NoTransaction">
+                    <Input jndiName="Test">
+                        <GVBuffer service="TOUPPER" system="GVESB">
+                            <Data encoding="UTF-8" value="Test loop 1"/>
+                            <TestFlow method="RequestReply"/>
+                        </GVBuffer>
+                    </Input>
+                </Test>
+            </Loop>
+        </EJBTest>
+        <LogConsole jdbc-connection-name="gv_log">
+            <LogFilter><![CDATA[select  SOURCE, ID_MSG, to_char(TSTAMP, 'DD/MM/YYYY HH24:MI:SS.FF') as TSTAMP,
+        PRIO, IPRIO, CAT, THREAD, SERVER, ID, SYSTEM_N as "SYSTEM", SERVICE, OPERATION_N as "OPERATION", MSG_SIZE,
+case when MSG_SIZE < 500
+    then MSG
+    else null
+end as MSG,
+case when length(THROWABLE) = 0
+    then 0
+    else 1
+end as THROWABLE_PRESENT
+from VW_GV_LOG
+where TSTAMP >= to_timestamp('@{{DATE_FROM}}', 'DD/MM/YYYY HH24:MI')
+and TSTAMP <= to_timestamp('@{{DATE_TO}}', 'DD/MM/YYYY HH24:MI') + 1 MINUTE
+decode{{@{{SYSTEM}}::NULL::::and SYSTEM_N = '@{{SYSTEM}}'}}
+decode{{@{{SERVICE}}::NULL::::and SERVICE like '%@{{SERVICE}}%'}}
+decode{{@{{OPERATION}}::NULL::::and OPERATION_N like '%@{{OPERATION}}%'}}
+decode{{@{{ID}}::NULL::::and ID = '@{{ID}}'}}
+decode{{@{{PRIO}}::NULL::::and PRIO in (decode{{@{{PRIO}}::DEBUG::'DEBUG','INFO','WARNING','ERROR'::INFO::'INFO','WARNING','ERROR'::WARNING::'WARNING','ERROR'::ERROR::'ERROR'::''}})}}
+order by decode{{@{{ORDER}}::DESC::TSTAMP desc::TSTAMP}}]]></LogFilter>
+            <Message>select decode{{@{{MSG_FIELD}}::Msg::MSG::Exc::THROWABLE::NONE}} as MESSAGE from VW_GV_LOG where ID_MSG=@{{ID_MSG}}</Message>
+            <LogDownload/>
+        </LogConsole>
+    </GVWorkbenchConfig>
+
+    <GVHTTPClientProtocolConfig name="HTTP_CLIENT_PROTOCOLS" type="module"></GVHTTPClientProtocolConfig>
+
+    <GVHeartBeatConfig name="HEART_BEAT" type="module">
+        <SimpleHeartBeat class="it.greenvulcano.util.heartbeat.impl.SimpleHeartBeat" type="heartbeat"/>
+    </GVHeartBeatConfig>
+
+    <GVTaskManagerFactory name="TASK_MANAGER_FACTORY" type="module">
+        <TaskManager name="GVTaskManager" type="task-manager" config-file="GVTaskManager-Configuration.xml"
+                     class="it.greenvulcano.scheduler.TaskManager"/>
+    </GVTaskManagerFactory>
+</GVSupport>
