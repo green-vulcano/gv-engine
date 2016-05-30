@@ -25,13 +25,13 @@ import java.util.Set;
 import it.greenvulcano.configuration.XMLConfigException;
 import it.greenvulcano.gvesb.utils.concurrency.ConcurrencyHandler;
 import it.greenvulcano.gvesb.utils.concurrency.ConcurrencyHandler.SubSystem;
-import junit.framework.TestCase;
+import tests.unit.BaseTestCase;
 
 /**
  * @version 3.0.0 Feb 17, 2010
  * @author GreenVulcano Developer Team
  */
-public class ConcurrencyHandlerTestCase extends TestCase
+public class ConcurrencyHandlerTestCase extends BaseTestCase
 {
     /**
      * @throws XMLConfigException

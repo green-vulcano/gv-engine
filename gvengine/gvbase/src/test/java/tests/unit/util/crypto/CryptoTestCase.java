@@ -20,12 +20,10 @@
 package tests.unit.util.crypto;
 
 import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-
 import java.util.Base64;
 
-import it.greenvulcano.configuration.XMLConfig;
 import it.greenvulcano.util.crypto.CryptoHelper;
+import tests.unit.BaseTestCase;
 
 import org.junit.After;
 import org.junit.Before;
@@ -36,7 +34,7 @@ import org.junit.Test;
  * @version 3.0.0 08/giu/2010
  * @author GreenVulcano Developer Team
  */
-public class CryptoTestCase
+public class CryptoTestCase extends BaseTestCase
 {
     private static final String TEST_STRING_CLEAR                          = "Test string!";
     private static final String TEST_STRING_CYPHER_3DES                    = "{3DES}Gxr7ntesEtC7R76H5bfRAQ==";
@@ -48,9 +46,8 @@ public class CryptoTestCase
      * @throws java.lang.Exception
      */
     @Before
-    public void setUp() throws Exception
-    {
-    	XMLConfig.setBaseConfigPath(getClass().getClassLoader().getResource(".").getPath());
+    public void setUp() throws Exception {
+    	super.setUp();
     }
 
     /**

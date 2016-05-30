@@ -27,14 +27,14 @@ import java.math.BigInteger;
 
 import org.apache.commons.io.FileUtils;
 
-import junit.framework.TestCase;
+import tests.unit.BaseTestCase;
 
 /**
  * @version 3.0.0 Mar 15, 2010
  * @author GreenVulcano Developer Team
  *
  */
-public class ZipHelperTestCase extends TestCase
+public class ZipHelperTestCase extends BaseTestCase
 {
     private static final String EMPTY_STRING             = "";
     private static final String ONE_CHAR_STRING          = BigInteger.valueOf(0x248).toString();

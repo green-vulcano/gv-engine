@@ -27,7 +27,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import junit.framework.TestCase;
+import tests.unit.BaseTestCase;
 
 import org.junit.Test;
 
@@ -36,7 +36,7 @@ import org.junit.Test;
  * @version 3.0.0 17/giu/2010
  * @author GreenVulcano Developer Team
  */
-public class DateUtilsTestCase extends TestCase
+public class DateUtilsTestCase extends BaseTestCase
 {
 
     /**

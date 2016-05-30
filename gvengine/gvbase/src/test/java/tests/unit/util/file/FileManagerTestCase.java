@@ -30,13 +30,13 @@ import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 
-import junit.framework.TestCase;
+import tests.unit.BaseTestCase;
 
 /**
  * @version 3.0.0 Feb 17, 2010
  * @author GreenVulcano Developer Team
  */
-public class FileManagerTestCase extends TestCase
+public class FileManagerTestCase extends BaseTestCase
 {
     private static final String TEST_FILE_RESOURCES;
     private static final String TEST_FILE_DIR             = "TestFileManager";
@@ -68,8 +68,7 @@ public class FileManagerTestCase extends TestCase
     protected void setUp() throws Exception
     {
         super.setUp();
-      
-        System.setProperty("it.greenvulcano.util.xpath.search.XPathAPIFactory.cfgFileXPath", "GVCore.xml|/GVCore/GVXPath/XPath");
+             
         FileUtils.deleteQuietly(new File(TEST_FILE_DEST_RESOURCES));
         FileUtils.forceMkdir(new File(TEST_FILE_DEST_RESOURCES));
         assertTrue("System property 'it.greenvulcano.util.xpath.search.XPathAPIFactory.cfgFileXPath' not set.",

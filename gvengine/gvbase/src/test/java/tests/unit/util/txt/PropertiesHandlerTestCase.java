@@ -19,6 +19,7 @@
  */
 package tests.unit.util.txt;
 
+import it.greenvulcano.configuration.XMLConfig;
 import it.greenvulcano.util.metadata.PropertiesHandler;
 import it.greenvulcano.util.txt.DateUtils;
 
@@ -46,7 +47,8 @@ public class PropertiesHandlerTestCase extends TestCase
 	@Override
 	protected void setUp() throws Exception {		
 		super.setUp();
-		 System.setProperty("gv.app.home", BASE_DIR);
+		XMLConfig.setBaseConfigPath(getClass().getClassLoader().getResource(".").getPath());
+		System.setProperty("gv.app.home", BASE_DIR);
 	}
 	
     /**

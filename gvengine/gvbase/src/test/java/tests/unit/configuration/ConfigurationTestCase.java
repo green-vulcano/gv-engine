@@ -39,15 +39,14 @@ import it.greenvulcano.util.crypto.KeyID;
 import it.greenvulcano.util.crypto.KeyStoreID;
 import it.greenvulcano.util.crypto.KeyStoreUtils;
 import it.greenvulcano.util.xml.DOMWriter;
-import junit.framework.TestCase;
+import tests.unit.BaseTestCase;
 
 /**
  * @version 3.0.0 Feb 17, 2010
  * @author GreenVulcano Developer Team
  */
-public class ConfigurationTestCase extends TestCase
-{
-	private static final String BASE_DIR = "target" + File.separator + "test-classes";
+public class ConfigurationTestCase extends BaseTestCase {
+	
     private static final String CONFIGURATION_FILE       = "GVCore.xml";
     private static final String CONFIGURATION_FILE_PROPS = "test.xml";
     private static final String CONFIGURATION_FILE_FUNC  = "testFunc1.xml";
@@ -59,14 +58,7 @@ public class ConfigurationTestCase extends TestCase
     private static final String TEST_KS_XPATH            = "/GVCore/GVCryptoHelper/KeyStoreID[@id='testKS']";
     private static final String TEST_K_XPATH             = "/GVCore/GVCryptoHelper/KeyID[@id='test']";
 
-    /**
-     * @param name
-     */
-    public ConfigurationTestCase(String name)
-    {
-        super(name);
-    }
-
+    
     /**
      * @see junit.framework.TestCase#setUp()
      */
@@ -74,9 +66,7 @@ public class ConfigurationTestCase extends TestCase
     protected void setUp() throws Exception
     {
         super.setUp();
-        XMLConfig.setBaseConfigPath(getClass().getClassLoader().getResource(".").getPath());
-        System.setProperty("gv.app.home", BASE_DIR);
-        
+            
         try {
             FileUtils.moveFile(new File(BASE_DIR + File.separator+ KEYSTORE_NAME), 
             				   new File(BASE_DIR + File.separator+ KEYSTORE_NAME + ".orig"));
@@ -124,7 +114,7 @@ public class ConfigurationTestCase extends TestCase
             				   new File(BASE_DIR  + File.separator+ KEYSTORE_NAME));
         }
         catch (Exception exc) {
-            // TODO: handle exception
+        	exc.printStackTrace();
         }
         super.tearDown();
     }

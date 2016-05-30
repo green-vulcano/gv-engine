@@ -21,14 +21,14 @@ package tests.unit.gvesb.utils;
 
 import it.greenvulcano.gvesb.buffer.GVBuffer;
 import it.greenvulcano.gvesb.utils.ExpressionEvaluatorPlaceholderExpander;
-import junit.framework.TestCase;
+import tests.unit.BaseTestCase;
 
 /**
  * @version 3.0.0 Feb 17, 2010
  * @author GreenVulcano Developer Team
  * 
  */
-public class ExpressionEvaluatorPHExpanderTestCase extends TestCase
+public class ExpressionEvaluatorPHExpanderTestCase extends BaseTestCase
 {
 
     private static final String EXPECTED_RESULT = "hello_world_expander";

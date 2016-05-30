@@ -32,7 +32,7 @@ import java.util.TreeMap;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 
-import junit.framework.TestCase;
+import tests.unit.BaseTestCase;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -47,14 +47,13 @@ import org.w3c.dom.Node;
  *
  */
 @RunWith(JUnit4.class)
-public class ScriptExecutorTestCase extends TestCase
+public class ScriptExecutorTestCase extends BaseTestCase
 {
     private static String[] svc = new String[]{"LIST_PDF", "LIST_PIPPO"};
     
     @Before
-    public void init() {
-    	System.setProperty("gv.app.home", "target/test-classes");
-    	XMLConfig.setBaseConfigPath(getClass().getClassLoader().getResource(".").getPath());
+    public void init() throws Exception {
+    	super.setUp();
     }
     
     @Test

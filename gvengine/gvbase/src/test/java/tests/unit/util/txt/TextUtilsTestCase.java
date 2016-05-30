@@ -19,10 +19,8 @@
  */
 package tests.unit.util.txt;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import it.greenvulcano.util.txt.TextUtils;
+import tests.unit.BaseTestCase;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -37,7 +35,7 @@ import org.junit.Test;
  * @version 3.4.0 10/mar/2013
  * @author GreenVulcano Developer Team
  */
-public class TextUtilsTestCase
+public class TextUtilsTestCase extends BaseTestCase
 {
 
     /**

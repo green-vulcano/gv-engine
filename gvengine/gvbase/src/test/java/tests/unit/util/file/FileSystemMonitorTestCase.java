@@ -28,7 +28,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import tests.unit.BaseTestCase;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
@@ -38,7 +38,7 @@ import org.w3c.dom.Node;
  * @version 3.0.0 Feb 17, 2010
  * @author GreenVulcano Developer Team
  */
-public class FileSystemMonitorTestCase extends TestCase
+public class FileSystemMonitorTestCase extends BaseTestCase
 {
     private static final String TEST_FILE_DIR_MAIN       = "TESTFS";
     private static final String TEST_FILE_DIR            = "TestSearch";
@@ -108,7 +108,7 @@ public class FileSystemMonitorTestCase extends TestCase
     protected void setUp() throws Exception
     {
         super.setUp();
-        XMLConfig.setBaseConfigPath(getClass().getClassLoader().getResource(".").getPath());
+ 
         FileUtils.deleteQuietly(new File(TEST_FILE_DEST_RESOURCES));
         FileUtils.copyDirectory(new File(TEST_FILE_RESOURCES), new File(TEST_FILE_DEST_RESOURCES));
         assertTrue("System property 'it.greenvulcano.util.xpath.search.XPathAPIFactory.cfgFileXPath' not set.",

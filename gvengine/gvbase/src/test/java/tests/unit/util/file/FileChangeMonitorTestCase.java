@@ -29,7 +29,7 @@ import it.greenvulcano.util.file.change.FileChangeMonitor;
 import java.io.File;
 import java.io.FileNotFoundException;
 
-import junit.framework.TestCase;
+import tests.unit.BaseTestCase;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.FixMethodOrder;
@@ -40,7 +40,7 @@ import org.junit.runners.MethodSorters;
  * @author GreenVulcano Developer Team
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class FileChangeMonitorTestCase extends TestCase
+public class FileChangeMonitorTestCase extends BaseTestCase
 {
     private static final String TEST_FILE_DIR = System.getProperty("user.dir") + File.separator
                                                       + "target" + File.separator + "test-classes" + File.separator + "TestFileChange";

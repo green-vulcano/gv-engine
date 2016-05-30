@@ -19,9 +19,9 @@
  */
 package tests.unit.util.clazz;
 
-import static org.junit.Assert.assertEquals;
 import it.greenvulcano.gvesb.buffer.GVBuffer;
 import it.greenvulcano.util.clazz.ClassUtils;
+import tests.unit.BaseTestCase;
 
 import org.junit.After;
 import org.junit.Before;
@@ -31,7 +31,7 @@ import org.junit.Test;
  * @version 3.2.0 31/gen/2012
  * @author GreenVulcano Developer Team
  */
-public class ClassUtilsTestCase
+public class ClassUtilsTestCase extends BaseTestCase
 {
 
     /**
@@ -40,7 +40,7 @@ public class ClassUtilsTestCase
     @Before
     public void setUp() throws Exception
     {
-        // do nothing
+        super.setUp();
     }
 
     /**

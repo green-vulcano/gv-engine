@@ -24,13 +24,13 @@ import it.greenvulcano.gvesb.buffer.Id;
 import java.util.HashSet;
 import java.util.Set;
 
-import junit.framework.TestCase;
+import tests.unit.BaseTestCase;
 
 /**
  * @version 3.0.0 Feb 17, 2010
  * @author GreenVulcano Developer Team
  */
-public class IdTestCase extends TestCase
+public class IdTestCase extends BaseTestCase
 {
     /**
      * @throws Exception

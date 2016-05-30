@@ -30,13 +30,13 @@ import java.io.OutputStream;
 import java.security.MessageDigest;
 import org.apache.commons.io.FileUtils;
 
-import junit.framework.TestCase;
+import tests.unit.BaseTestCase;
 
 /**
  * @version 3.0.0 Feb 17, 2010
  * @author GreenVulcano Developer Team
  */
-public class DumpTestCase extends TestCase
+public class DumpTestCase extends BaseTestCase
 {
     private static final String EXPECTED_DUMP = "00000000; 74 65 73 74 20 64 61 74 61 20 74 6F 20 64 75 6D ; test data to dum\n"
                                                       + "00000010; 70                                              ; p\n";

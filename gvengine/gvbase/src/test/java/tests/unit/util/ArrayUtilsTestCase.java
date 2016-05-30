@@ -22,14 +22,14 @@ package tests.unit.util;
 import java.util.List;
 
 import it.greenvulcano.util.ArrayUtils;
-import junit.framework.TestCase;
+import tests.unit.BaseTestCase;
 
 /**
  * @version 3.0.0 Feb 27, 2010
  * @author GreenVulcano Developer Team
  *
  */
-public class ArrayUtilsTestCase extends TestCase
+public class ArrayUtilsTestCase extends BaseTestCase
 {
 
     /**

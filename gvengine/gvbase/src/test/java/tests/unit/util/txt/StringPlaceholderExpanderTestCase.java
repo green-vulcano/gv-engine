@@ -26,13 +26,13 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import junit.framework.TestCase;
+import tests.unit.BaseTestCase;
 
 /**
  * @version 3.0.0 Feb 26, 2010
  * @author GreenVulcano Developer Team
  */
-public class StringPlaceholderExpanderTestCase extends TestCase
+public class StringPlaceholderExpanderTestCase extends BaseTestCase
 {
     private static final String EXPECTED_EXPANDED = "firstProp_secondProp.";
 

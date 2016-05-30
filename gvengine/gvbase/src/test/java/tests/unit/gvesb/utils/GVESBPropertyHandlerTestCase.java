@@ -21,7 +21,7 @@ package tests.unit.gvesb.utils;
 
 import it.greenvulcano.gvesb.buffer.GVBuffer;
 import it.greenvulcano.util.metadata.PropertiesHandler;
-import junit.framework.TestCase;
+import tests.unit.BaseTestCase;
 
 
 /**
@@ -29,7 +29,7 @@ import junit.framework.TestCase;
  * @version 3.0.0 10/giu/2010
  * @author GreenVulcano Developer Team
  */
-public class GVESBPropertyHandlerTestCase extends TestCase
+public class GVESBPropertyHandlerTestCase extends BaseTestCase
 {
     private static final String EXPECTED_RESULT         = "hello_world_expander";
     private static final String EXPECTED_RESULT_REVERSE = "expander_world_hello";

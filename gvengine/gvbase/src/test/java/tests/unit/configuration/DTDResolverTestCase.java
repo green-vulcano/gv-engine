@@ -21,7 +21,7 @@ package tests.unit.configuration;
 
 import java.net.URLDecoder;
 
-import junit.framework.TestCase;
+import tests.unit.BaseTestCase;
 
 import org.apache.xml.resolver.Catalog;
 import org.apache.xml.resolver.CatalogManager;
@@ -31,8 +31,7 @@ import org.apache.xml.resolver.CatalogManager;
  * @author GreenVulcano Developer Team
  *
  */
-public class DTDResolverTestCase extends TestCase
-{
+public class DTDResolverTestCase extends BaseTestCase {
     /**
      * @throws Exception
      */

@@ -27,7 +27,7 @@ import java.util.Collection;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import junit.framework.TestCase;
+import tests.unit.BaseTestCase;
 
 import org.junit.Ignore;
 import org.w3c.dom.Document;
@@ -39,7 +39,7 @@ import org.w3c.dom.Node;
  * 
  */
 @Ignore
-public class DataProviderTestCase extends TestCase
+public class DataProviderTestCase extends BaseTestCase
 {
     private static final String TEST_SYSTEM          = "TEST_SYSTEM";
     private static final String TEST_SERVICE         = "TEST_SERVICE";
@@ -52,8 +52,8 @@ public class DataProviderTestCase extends TestCase
      * @see junit.framework.TestCase#setUp()
      */
     @Override
-    protected void setUp() throws Exception
-    {
+    protected void setUp() throws Exception {
+    	super.setUp();
         dataProvidersManager = DataProviderManager.instance();
     }
 

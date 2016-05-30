@@ -23,13 +23,13 @@ import it.greenvulcano.expression.ExpressionEvaluator;
 import it.greenvulcano.expression.ExpressionEvaluatorHelper;
 import it.greenvulcano.gvesb.buffer.GVBuffer;
 import it.greenvulcano.gvesb.buffer.Id;
-import junit.framework.TestCase;
+import tests.unit.BaseTestCase;
 
 /**
  * @version 3.0.0 Feb 17, 2010
  * @author GreenVulcano Developer Team
  */
-public class GVBufferTestCase extends TestCase
+public class GVBufferTestCase extends BaseTestCase
 {
     private static final String SYSTEM_NAME    = "TEST_SYSTEM";
     private static final String SERVICE_NAME   = "TEST_SERVICE";

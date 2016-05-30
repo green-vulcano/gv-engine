@@ -30,7 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import junit.framework.TestCase;
+import tests.unit.BaseTestCase;
 
 import org.apache.commons.io.FileUtils;
 import org.mockftpserver.fake.FakeFtpServer;
@@ -42,9 +42,9 @@ import org.w3c.dom.Node;
  * @version 3.0.0 Feb 17, 2010
  * @author GreenVulcano Developer Team
  */
-public class RemotePropsTestCase extends TestCase
+public class RemotePropsTestCase extends BaseTestCase
 {
-	private static final String BASE_DIR = "target" + File.separator + "test-classes";
+	
     private static final String TEST_FILE_DEST_RESOURCES = System.getProperty("java.io.tmpdir") + File.separator
                                                                  + "TestFTP";
 
@@ -60,9 +60,7 @@ public class RemotePropsTestCase extends TestCase
     protected void setUp() throws Exception
     {
         super.setUp();
-        
-        System.setProperty("gv.app.home", BASE_DIR);
-
+              
         File destDir = new File(TEST_FILE_DEST_RESOURCES);
         destDir.mkdirs();
         BinaryUtils.writeBytesToFile("123456789012345".getBytes(), new File(TEST_FILE_DEST_RESOURCES, "TestX.txt"));
