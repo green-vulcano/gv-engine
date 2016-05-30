@@ -1,9 +1,9 @@
 package it.greenvulcano.gvesb.api.controller;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -14,10 +14,11 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +44,10 @@ public class GvServicesControllerRest implements GvServicesController{
 	private static final Logger LOG = LoggerFactory.getLogger(GvServicesControllerRest.class);
 	
 	private final static Optional<GreenVulcanoPool> gvpool;
+	
+	@Context
+	private UriInfo uriInfo;
+	
 	
 	static {
 		GreenVulcanoPool gvpoolInstance = null;
@@ -125,8 +130,7 @@ public class GvServicesControllerRest implements GvServicesController{
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)	
 	@Override public Response execute(@PathParam("service") String service, 
-						  			  @PathParam("operation")String operation, 
-						  			  @QueryParam("") Map<String, String> properties,
+						  			  @PathParam("operation")String operation,						  			 
 						  			  String data) {
 		
 		String response = null;
@@ -134,8 +138,9 @@ public class GvServicesControllerRest implements GvServicesController{
 		GVBuffer input = null;
 		try {
 			input = new GVBuffer();
-			for (Entry<String, String> prop : properties.entrySet()){
-				input.setProperty(prop.getKey(), prop.getValue());
+			
+			for (Entry<String, List<String>> prop : uriInfo.getQueryParameters().entrySet()){
+				input.setProperty(prop.getKey(), prop.getValue().stream().collect(Collectors.joining(";")));
 			}
 			
 			input.setService(service);
@@ -149,7 +154,20 @@ public class GvServicesControllerRest implements GvServicesController{
 			
 			GVBuffer output = gvpool.orElseThrow(()-> new WebApplicationException(Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("GreenVulcanoPool not available for subsystem HttpInboundGateway").build()))
 									.forward(input, operation);
-			response = new ObjectMapper().writeValueAsString(output.getObject());
+			if (output.getObject() instanceof String) {
+				response = output.getObject().toString();
+			} else if (output.getObject() instanceof org.json.JSONObject) {
+				response = org.json.JSONObject.class.cast(output.getObject()).toString();
+			}  else if (output.getObject() instanceof org.json.JSONArray) {
+				response = org.json.JSONArray.class.cast(output.getObject()).toString();
+			} else if (Objects.nonNull(output.getObject())) {
+				
+				response = new ObjectMapper().writeValueAsString(output.getObject());
+								
+			} else {
+				return Response.ok().build();
+			}
+			
 		
 		} catch (GVPublicException e) {			
 			LOG.error("gvcoreapi - Error performing operation "+operation+" on "+service+" service", e);

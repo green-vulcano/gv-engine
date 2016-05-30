@@ -41,6 +41,12 @@
       <version>2.7.4</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+		<groupId>org.json</groupId>
+		<artifactId>json</artifactId>
+		<version>20151123</version>
+		<scope>provided</scope>
+	</dependency>
   </dependencies>
 
   <build>
@@ -62,6 +68,7 @@
               it.greenvulcano.gvesb.buffer,
               it.greenvulcano.gvesb.core.pool,
               it.greenvulcano.configuration,
+              org.json,
               org.slf4j;version="[1.6,2)";provider=paxlogging,
               org.w3c.dom,
               com.fasterxml.jackson.core,
