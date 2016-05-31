@@ -9,8 +9,10 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -40,15 +42,14 @@ import it.greenvulcano.gvesb.core.pool.GreenVulcanoPool;
 import it.greenvulcano.gvesb.core.pool.GreenVulcanoPoolException;
 import it.greenvulcano.gvesb.core.pool.GreenVulcanoPoolManager;
 
-public class GvServicesControllerRest implements GvServicesController{
+public class GvServicesControllerRest implements GvServicesController<Response>{
 	private static final Logger LOG = LoggerFactory.getLogger(GvServicesControllerRest.class);
 	
 	private final static Optional<GreenVulcanoPool> gvpool;
 	
 	@Context
 	private UriInfo uriInfo;
-	
-	
+		
 	static {
 		GreenVulcanoPool gvpoolInstance = null;
 		try {
@@ -126,15 +127,52 @@ public class GvServicesControllerRest implements GvServicesController{
 	}
 	
 	@Path("/{service}/{operation}")
-	@POST @GET
+	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)	
 	@Override public Response execute(@PathParam("service") String service, 
 						  			  @PathParam("operation")String operation,						  			 
 						  			  String data) {
+		return runOperation(service, operation, data);
+	}
 		
-		String response = null;
+	@Path("/{service}/{operation}")
+	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)	
+	@Override
+	public Response query(@PathParam("service") String service, 
+			  @PathParam("operation")String operation,						  			 
+			  String data) {
+		return runOperation(service, operation, data);
+	}
+
+	@Path("/{service}/{operation}")
+	@PUT
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)	
+	@Override
+	public Response modify(@PathParam("service") String service, 
+			  @PathParam("operation")String operation,						  			 
+			  String data) {
+		return runOperation(service, operation, data);
+	}
+
+	@Path("/{service}/{operation}")
+	@DELETE
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)	
+	@Override
+	public Response drop(@PathParam("service") String service, 
+			  @PathParam("operation")String operation,						  			 
+			  String data) {
+		return runOperation(service, operation, data);
+	}	
+	
 		
+	private Response runOperation(String service, String operation, String data ) {
+		
+		String response = null;		
 		GVBuffer input = null;
 		try {
 			input = new GVBuffer();
@@ -223,7 +261,5 @@ public class GvServicesControllerRest implements GvServicesController{
 		
 		return Optional.empty();
 		
-	}
-	
-	
+	}	
 }

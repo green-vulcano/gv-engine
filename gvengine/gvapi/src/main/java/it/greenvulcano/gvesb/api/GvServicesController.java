@@ -1,12 +1,16 @@
 package it.greenvulcano.gvesb.api;
 
-import javax.ws.rs.core.Response;
-
-public interface GvServicesController {
+public interface GvServicesController<T> {
 	
-	Response getServices();
+	T getServices();	
 
-	Response execute(String service, String operation, String data);
-
-	Response getOperations(String service);
+	T getOperations(String service);
+	
+	T query(String service, String operation, String data);
+	
+	T execute(String service, String operation, String data);
+	
+	T modify(String service, String operation, String data);
+	
+	T drop(String service, String operation, String data);
 }
