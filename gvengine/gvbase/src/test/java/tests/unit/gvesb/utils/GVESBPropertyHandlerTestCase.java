@@ -22,6 +22,7 @@ package tests.unit.gvesb.utils;
 import it.greenvulcano.gvesb.buffer.GVBuffer;
 import it.greenvulcano.util.metadata.PropertiesHandler;
 import tests.unit.BaseTestCase;
+import tests.unit.gvrules.bean.figure.Circle;
 
 
 /**
@@ -38,9 +39,6 @@ public class GVESBPropertyHandlerTestCase extends BaseTestCase
     @Override
     protected void setUp() throws Exception {    	
     	super.setUp();
-    	
-    	System.setProperty("gv.app.home", "target/test-classes");
-        
     }
     
     /**
@@ -84,5 +82,39 @@ public class GVESBPropertyHandlerTestCase extends BaseTestCase
 
         assertEquals(gvBuffer2.getProperty("prop1"), gvBuffer1.getProperty("prop1"));
         assertEquals(gvBuffer2.getProperty("prop2"), gvBuffer1.getProperty("prop2"));
+    }
+    
+    public final void testGVBufferObject() throws Exception{
+        GVBuffer gvBuffer1 = new GVBuffer("SYS1", "SRV1");
+        gvBuffer1.setProperty("prop1", "SRV1_value1");
+        gvBuffer1.setProperty("prop2", "SRV1_value2");
+        
+        gvBuffer1.setObject(new Circle("cyano"));
+      
+        String input = "#{{object.color}}";
+
+        String output = PropertiesHandler.expand(input, null, gvBuffer1, null);
+
+        assertEquals(Circle.class.cast(gvBuffer1.getObject()).getColor(), output);
+       
+    }
+    
+    public final void testGVBufferJSON() throws Exception{
+        GVBuffer gvBuffer1 = new GVBuffer("SYS1", "SRV1");
+        gvBuffer1.setProperty("prop1", "SRV1_value1");
+        gvBuffer1.setProperty("prop2", "SRV1_value2");
+        
+        gvBuffer1.setObject("{\"type\":\"json\",\"nested\":{\"value\":\"it works\"}}");
+      
+        String input = "json{{type}}";
+        String output = PropertiesHandler.expand(input, null, gvBuffer1.getObject(), null);
+
+        assertEquals("json", output);
+        
+        input = "json{{nested.value}}";
+        output = PropertiesHandler.expand(input, null, gvBuffer1.getObject(), null);
+
+        assertEquals("it works", output);
+       
     }
 }

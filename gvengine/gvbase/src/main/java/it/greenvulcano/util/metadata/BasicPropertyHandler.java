@@ -26,6 +26,7 @@ import it.greenvulcano.util.txt.TextUtils;
 import it.greenvulcano.util.xml.XMLUtils;
 
 import java.io.StringReader;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,6 +36,8 @@ import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 
+import org.apache.commons.beanutils.BeanUtils;
+import org.json.JSONObject;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
@@ -57,6 +60,8 @@ public class BasicPropertyHandler implements PropertyHandler
        managedTypes.add("sp");
        managedTypes.add("env");
        managedTypes.add("@");
+       managedTypes.add("#");
+       managedTypes.add("json");
        managedTypes.add("xpath");
        managedTypes.add("timestamp");
        managedTypes.add("dateformat");
@@ -153,6 +158,12 @@ public class BasicPropertyHandler implements PropertyHandler
         }
         else if (type.startsWith("@")) {
             return expandInProperties(str, inProperties, object, extra);
+        }
+        else if (type.startsWith("#")) {
+            return expandObject(str, inProperties, object, extra);
+        }
+        else if (type.startsWith("json")) {
+            return expandJSON(str, inProperties, object, extra);
         }
         else if (type.startsWith("env")) {
             return expandEnvVariable(str, inProperties, object, extra);
@@ -275,6 +286,69 @@ public class BasicPropertyHandler implements PropertyHandler
             paramValue = PropertiesHandler.expand(paramValue, inProperties, object, extra);
         }
         return paramValue;
+    }
+    
+    private static String expandObject(String str, Map<String, Object> inProperties, Object object,
+            Object extra) throws PropertiesHandlerException {
+    	
+    	String propName = str;
+        if (!PropertiesHandler.isExpanded(propName)) {
+            propName = PropertiesHandler.expand(propName, inProperties, object, extra);
+        }
+        
+        if (object == null) {
+            return "#" + PROP_START + str + PROP_END;
+        }
+        
+        String value = null;
+        try {
+        	value = BeanUtils.getProperty(object, propName);
+        } catch (Exception e) {
+        	value = "#" + PROP_START + str + PROP_END;        	
+        }
+                
+        return value;
+    }
+    
+    private static String expandJSON(String str, Map<String, Object> inProperties, Object object, Object extra) throws PropertiesHandlerException {
+    	
+    	String propName = str;
+        if (!PropertiesHandler.isExpanded(propName)) {
+            propName = PropertiesHandler.expand(propName, inProperties, object, extra);
+        }
+        
+        String value = null;
+        try {
+        	JSONObject jsonObject;
+	        if (object instanceof String) {
+	        	jsonObject = new JSONObject(object.toString());        	       	
+	        } else if (object instanceof JSONObject)  {
+	        	jsonObject = JSONObject.class.cast(object);
+	        } else  {
+	        	jsonObject = new JSONObject();	        	
+	        }
+	        
+	        if (propName.contains(".")) {
+	        	List<String> hieararchy = Arrays.asList(propName.split("\\."));
+	        	for (String prop : hieararchy) {
+	        		Object child = jsonObject.get(prop);
+	        		if (child instanceof JSONObject) {
+	        			jsonObject = JSONObject.class.cast(child);
+	        		} else {
+	        			value = child.toString();
+	        			break;
+	        		}
+	        	}
+	        } else {	        
+	        	value = jsonObject.get(propName).toString();      
+	        }
+	        
+        } catch (Exception e) {
+        	value = "json" + PROP_START + str + PROP_END;
+        }
+        
+        
+        return value;
     }
 
     /**
