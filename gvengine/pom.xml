@@ -13,7 +13,32 @@
     <url>http://www.greenvulcanotechnologies.com</url>
   </organization>
 
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <maven-compiler-plugin.version>2.5.1</maven-compiler-plugin.version>
+    <maven-bundle-plugin.version>3.0.1</maven-bundle-plugin.version>
+
+    <version.osgi>5.0.0</version.osgi>
+    <version.slf4j>1.6.1</version.slf4j>
+    <version.junit>4.11</version.junit>
+
+    <cloud.nexus.content>http://mvn.greenvulcano.com/nexus/content</cloud.nexus.content>
+  </properties>
+
+
   <repositories>
+    <repository>
+      <id>nexus-cloud</id>
+      <name>Cloud Nexus instance - PUBLIC</name>
+      <url>${cloud.nexus.content}/groups/public</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
     <repository>
       <id>central</id>
       <url>http://repo1.maven.org/maven2</url>
@@ -30,17 +55,19 @@
     </repository>
   </repositories>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  <distributionManagement>
+    <repository>
+      <id>nexus-cloud</id>
+      <name>Cloud Nexus instance - RELEASES </name>
+      <url>${cloud.nexus.content}/repositories/releases</url>
+    </repository>
+    <snapshotRepository>
+      <id>nexus-cloud</id>
+      <name>Cloud Nexus instance - SNAPSHOTS</name>
+      <url>${cloud.nexus.content}/repositories/snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
 
-    <maven-compiler-plugin.version>2.5.1</maven-compiler-plugin.version>
-    <maven-bundle-plugin.version>3.0.1</maven-bundle-plugin.version>
-
-    <version.osgi>5.0.0</version.osgi>
-    <version.slf4j>1.6.1</version.slf4j>
-    <version.junit>4.11</version.junit>
-
-  </properties>
 
   <dependencies>
     <dependency>
