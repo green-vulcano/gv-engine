@@ -57,6 +57,12 @@
 		    <scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20151123</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.4</version>
@@ -118,6 +124,7 @@
 							javax.management.modelmbean,
 							javax.transaction,
 							org.apache.log4j,
+							org.json,
 							org.osgi.framework,
 							org.w3c.dom,
 							it.greenvulcano.configuration,
