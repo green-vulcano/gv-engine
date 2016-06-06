@@ -1,3 +1,22 @@
+/*
+ * Copyright (c) 2009-2016 GreenVulcano ESB Open Source Project. All rights
+ * reserved.
+ *
+ * This file is part of GreenVulcano ESB.
+ *
+ * GreenVulcano ESB is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by the
+ * Free Software Foundation, either version 3 of the License, or (at your
+ * option) any later version.
+ *
+ * GreenVulcano ESB is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with GreenVulcano ESB. If not, see <http://www.gnu.org/licenses/>.
+ */
 package it.greenvulcano.gvesb.core.flow.iteration.controller;
 
 import java.util.Optional;
@@ -17,7 +36,7 @@ import it.greenvulcano.gvesb.core.flow.iteration.LoopController;
  * 
  */
 public class JSONObjectLoopController extends BaseLoopController {
-	public static final String GV_LOOP_KEY = "GV_LOOP_KEY";
+	protected static final String GV_LOOP_KEY = "GV_LOOP_KEY";
 	private JSONObject jsonObject = null; 
 	
 	@Override
@@ -67,17 +86,19 @@ public class JSONObjectLoopController extends BaseLoopController {
 				json = new JSONObject(data.getObject());
 			}
 		} catch (Exception e) {
-			LOG.error("Invalid json data ", e);
+			LOG.error("Invalid json data "+data.getObject(), e);
 		}
 		
 		return Optional.ofNullable(json);
 	}
 	
-	private JSONObject bindResults(JSONObject jsonResult, GVBuffer data){
+	protected JSONObject bindResults(JSONObject jsonResult, GVBuffer data){
 		try {
-			Optional<JSONObject> jsonData = parseGVBuffer(data);
-			if (jsonData.isPresent()) {
-				jsonResult.put(data.getProperty(GV_LOOP_KEY), jsonData.get());
+			Optional<JSONObject> responseData = parseGVBuffer(data);
+			if (responseData.isPresent()) {				
+				jsonResult.put(data.getProperty(GV_LOOP_KEY), responseData.get());
+			} else {
+				jsonResult.put(data.getProperty(GV_LOOP_KEY), data.getObject());
 			}
 		} catch (Exception e) {
 			LOG.error("Invalid json data ", e);
@@ -86,7 +107,7 @@ public class JSONObjectLoopController extends BaseLoopController {
 		return jsonResult;
 	}
 	
-	private JSONObject mergeResults(JSONObject jsonResult, JSONObject otherJsonResult) {
+	protected JSONObject mergeResults(JSONObject jsonResult, JSONObject otherJsonResult) {
 		JSONObject merged = new JSONObject(jsonResult, JSONObject.getNames(jsonResult));
 		otherJsonResult.keySet().stream().forEach(k-> merged.put(k, otherJsonResult.get(k)));
 		return merged;

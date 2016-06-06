@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 GreenVulcano ESB Open Source Project. All rights
+ * Copyright (c) 2009-2016 GreenVulcano ESB Open Source Project. All rights
  * reserved.
  *
  * This file is part of GreenVulcano ESB.

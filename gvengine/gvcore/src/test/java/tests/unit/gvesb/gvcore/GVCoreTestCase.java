@@ -21,6 +21,7 @@ package tests.unit.gvesb.gvcore;
 
 import it.greenvulcano.configuration.XMLConfig;
 import it.greenvulcano.gvesb.buffer.GVBuffer;
+import it.greenvulcano.gvesb.buffer.GVException;
 import it.greenvulcano.gvesb.buffer.Id;
 import it.greenvulcano.gvesb.core.GreenVulcano;
 import it.greenvulcano.gvesb.core.jmx.RegisterJMXServiceManager;
@@ -47,6 +48,8 @@ import java.util.Set;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.w3c.dom.Document;
 
 /**
@@ -127,6 +130,66 @@ public class GVCoreTestCase extends TestCase
         assertEquals(id, gvBufferout.getId());
     }
 
+    public void testJSONObjectLoop() throws GVException {
+    	String SYSTEM_NAME = "GVESB";
+        String SERVICE_NAME = "TOUPPER_LOOP";
+        
+        JSONObject TEST_BUFFER = new JSONObject();
+        TEST_BUFFER
+        	.put("val1", "value1")
+        	.put("val2", "value2")
+        	.put("val3", "value3")
+        	.put("val4", "value4");
+        
+        Id id = new Id();
+        GVBuffer gvBuffer = new GVBuffer(SYSTEM_NAME, SERVICE_NAME, id);
+        gvBuffer.setObject(TEST_BUFFER);
+        GreenVulcano greenVulcano = new GreenVulcano();
+        GVBuffer gvBufferout = greenVulcano.forward(gvBuffer, "loopOnJsonObject");
+        assertEquals(SYSTEM_NAME, gvBufferout.getSystem());
+        assertEquals(SERVICE_NAME, gvBufferout.getService());
+        assertEquals(id, gvBufferout.getId());
+        
+        for (String key : TEST_BUFFER.keySet()) {
+        	assertEquals(TEST_BUFFER.getString(key).toUpperCase(), JSONObject.class.cast(gvBufferout.getObject()).getString(key));
+        }
+        
+        GVBuffer gvBufferString = new GVBuffer(SYSTEM_NAME, SERVICE_NAME, id);
+        gvBufferString.setObject("{\"val1\":\"value1\", \"val2\":\"value2\", \"val3\":\"value3\", \"val4\":\"value4\"}");
+        
+        GVBuffer gvBufferoutString = greenVulcano.forward(gvBufferString, "loopOnJsonObject");
+        for (String key : TEST_BUFFER.keySet()) {
+        	assertEquals(JSONObject.class.cast(gvBufferoutString.getObject()).getString(key), JSONObject.class.cast(gvBufferout.getObject()).getString(key));
+        }
+        
+    }
+    
+    public void testJSONArrayLoop() throws GVException {
+    	String SYSTEM_NAME = "GVESB";
+        String SERVICE_NAME = "TOUPPER_LOOP";
+        
+        JSONArray TEST_BUFFER = new JSONArray();
+        TEST_BUFFER
+        	.put("value1")
+        	.put("value2")
+        	.put("value3")
+        	.put("value5");
+        
+        Id id = new Id();
+        GVBuffer gvBuffer = new GVBuffer(SYSTEM_NAME, SERVICE_NAME, id);
+        gvBuffer.setObject(TEST_BUFFER);
+        GreenVulcano greenVulcano = new GreenVulcano();
+        GVBuffer gvBufferout = greenVulcano.forward(gvBuffer, "loopOnJsonArray");
+        assertEquals(SYSTEM_NAME, gvBufferout.getSystem());
+        assertEquals(SERVICE_NAME, gvBufferout.getService());
+        assertEquals(id, gvBufferout.getId());
+        
+        for (int i =0; i<TEST_BUFFER.length(); i++){
+        	assertEquals(TEST_BUFFER.getString(i).toUpperCase(), JSONArray.class.cast(gvBufferout.getObject()).getString(i));
+        }
+        
+    }
+    
     /**
      * @throws Exception
      */
@@ -162,7 +225,7 @@ public class GVCoreTestCase extends TestCase
         assertEquals(SYSTEM_NAME, gvBufferout.getSystem());
         assertEquals(SERVICE_NAME, gvBufferout.getService());
         assertEquals(id, gvBufferout.getId());
-    }
+    }    
     
 
     /**
