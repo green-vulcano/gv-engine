@@ -73,6 +73,8 @@ public class GVBuffer implements Serializable, Cloneable
      *
      */
     public static final String  GVBUFFER         = "GVBuffer";
+    
+    public static final String  OBJECT_REF         = "*OBJECT";
 
     private static final long   serialVersionUID = 1356337373910L;
     private String              system;
@@ -353,6 +355,9 @@ public class GVBuffer implements Serializable, Cloneable
      */
     public String getProperty(String name)
     {
+    	if(OBJECT_REF.equals(name)) {
+    		return ""+getObject();
+    	} 
         return getProperties().get(name);
     }
 
@@ -393,16 +398,24 @@ public class GVBuffer implements Serializable, Cloneable
         checkNull(Field.PROPERTY + " '" + property + "'", property);
         checkNull(property, value);
 
-        getProperties().put(property, value);
+        if (OBJECT_REF.equals(property)) {
+        	setObject(value);
+        } else {
+        	getProperties().put(property, value);
+        }
     }
 
     /**
      * @param property
      *
      */
-    public void removeProperty(String property)
-    {
-        getProperties().remove(property);
+    public void removeProperty(String property) {
+    	 if (OBJECT_REF.equals(property)) {
+    		 object = null;
+    	 } else {
+    		 getProperties().remove(property);
+    	 }
+        
     }
 
     /**
@@ -412,7 +425,7 @@ public class GVBuffer implements Serializable, Cloneable
     {
         if (properties != null) {
             for (Entry<String, String> entry : props.entrySet()) {
-                properties.remove(entry.getKey());
+            	removeProperty(entry.getKey());
             }
         }
     }

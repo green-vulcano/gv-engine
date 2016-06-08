@@ -20,6 +20,7 @@
 package it.greenvulcano.util.metadata;
 
 import it.greenvulcano.configuration.XMLConfig;
+import it.greenvulcano.gvesb.buffer.GVBuffer;
 import it.greenvulcano.script.ScriptExecutor;
 import it.greenvulcano.util.txt.DateUtils;
 import it.greenvulcano.util.txt.TextUtils;
@@ -32,6 +33,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -271,19 +273,28 @@ public class BasicPropertyHandler implements PropertyHandler
             Object extra) throws PropertiesHandlerException
     {
         String propName = str;
-        if (!PropertiesHandler.isExpanded(propName)) {
-            propName = PropertiesHandler.expand(propName, inProperties, object, extra);
-        }
         String paramValue = null;
-        if (inProperties == null) {
-            return "@" + PROP_START + str + PROP_END;
-        }
-        paramValue = (String) inProperties.get(propName);
-        if ((paramValue == null)) {// || (paramValue.equals(""))) {
-            return "@" + PROP_START + str + PROP_END;
-        }
-        if (!PropertiesHandler.isExpanded(paramValue)) {
-            paramValue = PropertiesHandler.expand(paramValue, inProperties, object, extra);
+        if (propName.equals(GVBuffer.OBJECT_REF)){
+        	if(object instanceof GVBuffer) {
+        		object = GVBuffer.class.cast(object).getObject();
+        	} 
+       		paramValue = Objects.nonNull(object)? object.toString() : "";
+        	
+        } else {
+        	if (!PropertiesHandler.isExpanded(propName)) {
+                propName = PropertiesHandler.expand(propName, inProperties, object, extra);
+            }
+            
+            if (inProperties == null) {
+                return "@" + PROP_START + str + PROP_END;
+            }
+            paramValue = (String) inProperties.get(propName);
+            if ((paramValue == null)) {// || (paramValue.equals(""))) {
+                return "@" + PROP_START + str + PROP_END;
+            }
+            if (!PropertiesHandler.isExpanded(paramValue)) {
+                paramValue = PropertiesHandler.expand(paramValue, inProperties, object, extra);
+            }            
         }
         return paramValue;
     }
@@ -292,6 +303,12 @@ public class BasicPropertyHandler implements PropertyHandler
             Object extra) throws PropertiesHandlerException {
     	
     	String propName = str;
+    	if ("this".equals(propName)){
+    		if(object instanceof GVBuffer) {
+        		object = GVBuffer.class.cast(object).getObject();
+        	} 
+       		return Objects.nonNull(object)? object.toString() : "";
+    	}
         if (!PropertiesHandler.isExpanded(propName)) {
             propName = PropertiesHandler.expand(propName, inProperties, object, extra);
         }
@@ -324,14 +341,34 @@ public class BasicPropertyHandler implements PropertyHandler
 	        	jsonObject = new JSONObject(object.toString());        	       	
 	        } else if (object instanceof JSONObject)  {
 	        	jsonObject = JSONObject.class.cast(object);
-	        } else  {
-	        	jsonObject = new JSONObject();	        	
+	        } else if (object instanceof GVBuffer) {
+	        	
+	        	GVBuffer gvBuffer = (GVBuffer)object;
+	        	if (gvBuffer.getObject() instanceof String) {
+		        	jsonObject = new JSONObject(gvBuffer.getObject().toString());        	       	
+		        } else if (gvBuffer.getObject() instanceof JSONObject)  {
+		        	jsonObject = JSONObject.class.cast(gvBuffer.getObject());
+		        } else {
+		        	jsonObject = new JSONObject(gvBuffer.getObject());
+		        }
+	        		        	
+	        } else {
+	        	jsonObject = new JSONObject(object);
 	        }
 	        
-	        if (propName.contains(".")) {
+	        if ("this".equals(propName)) {
+	        	value = jsonObject.toString();
+	        } else if (propName.contains(".")) {
 	        	List<String> hieararchy = Arrays.asList(propName.split("\\."));
 	        	for (String prop : hieararchy) {
-	        		Object child = jsonObject.get(prop);
+	        		Object child =  null;
+	        		if (prop.matches("^.*\\[[0-9]+\\]")) {
+	        			String[] arrayRef = prop.split("[\\[,\\]]");
+	        			child = jsonObject.getJSONArray(arrayRef[0]).get(Integer.valueOf(arrayRef[1]));	        		
+	        		} else {
+	        			child = jsonObject.get(prop);
+	        		}
+	        			        		
 	        		if (child instanceof JSONObject) {
 	        			jsonObject = JSONObject.class.cast(child);
 	        		} else {
@@ -339,8 +376,13 @@ public class BasicPropertyHandler implements PropertyHandler
 	        			break;
 	        		}
 	        	}
-	        } else {	        
-	        	value = jsonObject.get(propName).toString();      
+	        } else {
+	        	if (propName.matches("^.*\\[[0-9]+\\]")) {
+        			String[] arrayRef = propName.split("[\\[,\\]]");
+        			value = jsonObject.getJSONArray(arrayRef[0]).get(Integer.valueOf(arrayRef[1])).toString();	        		
+        		} else {
+        			value = jsonObject.get(propName).toString();
+        		}
 	        }
 	        
         } catch (Exception e) {
