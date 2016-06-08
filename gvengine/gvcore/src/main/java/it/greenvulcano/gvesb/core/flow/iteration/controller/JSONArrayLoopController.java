@@ -27,8 +27,17 @@ import org.json.JSONObject;
 
 import it.greenvulcano.gvesb.buffer.GVBuffer;
 import it.greenvulcano.gvesb.buffer.GVException;
+import it.greenvulcano.gvesb.core.flow.iteration.LoopController;
 
-
+/**
+ * A {@link LoopController} implementation to iteratw over a json array.
+ *
+ * The results are returned in a {@link JSONArray} using the same order in the input object
+ * 
+ * @version 4.0.0 20160606
+ * @author GreenVulcano Developer Team
+ * 
+ */
 public class JSONArrayLoopController extends JSONObjectLoopController {
 	
 	private JSONArray jsonArray;
