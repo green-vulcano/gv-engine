@@ -47,7 +47,7 @@ public interface LoopController {
 	enum Type { JAVA_COLLECTION("javaCollection"), 
 		JSON_OBJECT("jsonObject"), 
 		JSON_ARRAY("jsonArray"), 
-		XML_NODE("xmlNode");
+		XML_NODE("xml");
 
 		private static final Map<String, Type> typesMap;
 

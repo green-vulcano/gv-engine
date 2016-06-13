@@ -97,25 +97,22 @@ public abstract class BaseLoopController implements LoopController {
 				
 		switch (controllerType) {
 			case JAVA_COLLECTION:
-				//TODO: A LoopController implementation to handle a Collection
+				loopController = new CollectionLoopController();				
 				break;
 			case JSON_ARRAY: 
-				loopController = new JSONArrayLoopController();
-				loopController.init(node);
+				loopController = new JSONArrayLoopController();			
 				break;
 			case JSON_OBJECT: 
-				loopController = new JSONObjectLoopController();
-				loopController.init(node);
+				loopController = new JSONObjectLoopController();				
 				break;
 			
 			case XML_NODE:
-				//TODO: A LoopController implementation to handle XML nodes
-				break;
-			default:
-				break;
+				loopController = new XmlLoopCotroller();				
+				break;			
 		
 		}
 		
+		loopController.init(node);
 		return loopController;
 	}
 		

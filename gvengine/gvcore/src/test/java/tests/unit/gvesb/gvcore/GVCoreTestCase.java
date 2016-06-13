@@ -42,8 +42,11 @@ import junit.framework.TestCase;
 import tests.unit.gvesb.gvcore.jmx.Test;
 import tests.unit.gvesb.gvcore.jmx.TestMBean;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -188,6 +191,39 @@ public class GVCoreTestCase extends TestCase
         	assertEquals(TEST_BUFFER.getString(i).toUpperCase(), JSONArray.class.cast(gvBufferout.getObject()).getString(i));
         }
         
+    }
+    
+    public void testXMLloop() throws GVException {
+    	String SYSTEM_NAME = "GVESB";
+        String SERVICE_NAME = "TOUPPER_LOOP";
+        
+        String TEST_BUFFER = "<RootNode><child1>aaaa</child1><child2>bbbbb</child2></RootNode>";
+        Id id = new Id();
+        GVBuffer gvBuffer = new GVBuffer(SYSTEM_NAME, SERVICE_NAME, id);
+        gvBuffer.setObject(TEST_BUFFER);
+        GreenVulcano greenVulcano = new GreenVulcano();
+        GVBuffer gvBufferout = greenVulcano.forward(gvBuffer, "loopOnXML");
+        assertEquals(SYSTEM_NAME, gvBufferout.getSystem());
+        assertEquals(SERVICE_NAME, gvBufferout.getService());
+        assertEquals(id, gvBufferout.getId());
+        
+        
+    }
+    
+    public void testCollectionLoop() throws GVException {
+       	String SYSTEM_NAME = "GVESB";
+        String SERVICE_NAME = "TOUPPER_LOOP";
+        
+        Collection<?> TEST_BUFFER = Stream.of("alpha","beta", "gamma").collect(Collectors.toSet()); 
+        
+        Id id = new Id();
+        GVBuffer gvBuffer = new GVBuffer(SYSTEM_NAME, SERVICE_NAME, id);
+        gvBuffer.setObject(TEST_BUFFER);
+        GreenVulcano greenVulcano = new GreenVulcano();
+        GVBuffer gvBufferout = greenVulcano.forward(gvBuffer, "loopOnCollection");
+        assertEquals(SYSTEM_NAME, gvBufferout.getSystem());
+        assertEquals(SERVICE_NAME, gvBufferout.getService());
+        assertEquals(id, gvBufferout.getId());
     }
     
     /**

@@ -545,6 +545,40 @@ STACK  : ${stackTrace}
 	              point-x="700" point-y="250" type="flow-node" end-business-process="yes"/>
         	</Flow>
         </Operation>
+        <Operation name="loopOnXML" operation-activation="on" out-check-type="sys-svc-id" 
+                   type="operation" class="it.greenvulcano.gvesb.core.flow.GVFlowWF">
+        	<Flow first-node="request" point-x="50" point-y="150">
+	        	<GVIteratorOperationNode class="it.greenvulcano.gvesb.core.flow.iteration.GvLoopOperationNode"
+	              collection-type="xml" id="request" input="input_toupper" next-node-id="check_status" op-type="corecall"
+	              output="output_toupper" point-x="200" point-y="150" type="flow-node">
+	              <CoreCall id-service="TOUPPER" id-system="PIPPO"  id-channel="TEST_CHANNEL" operation="RequestReply" ref-dp="stringFromNodeDataProvider" change-log-context="true"/>
+	            </GVIteratorOperationNode>
+	            
+	            <GVNodeCheck class="it.greenvulcano.gvesb.core.flow.GVNodeCheck" default-id="return_status" id="check_status"
+	              input="output_toupper" on-exception-id="return_error" op-type="check" point-x="350" point-y="150" type="flow-node" />
+	            <GVEndNode class="it.greenvulcano.gvesb.core.flow.GVEndNode" id="return_status" op-type="end" output="output_toupper"
+	              point-x="700" point-y="50" type="flow-node" end-business-process="yes"/>
+	            <GVEndNode class="it.greenvulcano.gvesb.core.flow.GVEndNode" id="return_error" op-type="end" output="output_toupper"
+	              point-x="700" point-y="250" type="flow-node" end-business-process="yes"/>
+        	</Flow>
+        </Operation>
+        <Operation name="loopOnCollection" operation-activation="on" out-check-type="sys-svc-id" 
+                   type="operation" class="it.greenvulcano.gvesb.core.flow.GVFlowWF">
+        	<Flow first-node="request" point-x="50" point-y="150">
+	        	<GVIteratorOperationNode class="it.greenvulcano.gvesb.core.flow.iteration.GvLoopOperationNode"
+	              collection-type="javaCollection" id="request" input="input_toupper" next-node-id="check_status" op-type="corecall"
+	              output="output_toupper" point-x="200" point-y="150" type="flow-node">
+	              <CoreCall id-service="TOUPPER" id-system="PIPPO"  id-channel="TEST_CHANNEL" operation="RequestReply" ref-dp="stringFromNodeDataProvider" change-log-context="true"/>
+	            </GVIteratorOperationNode>
+	            
+	            <GVNodeCheck class="it.greenvulcano.gvesb.core.flow.GVNodeCheck" default-id="return_status" id="check_status"
+	              input="output_toupper" on-exception-id="return_error" op-type="check" point-x="350" point-y="150" type="flow-node" />
+	            <GVEndNode class="it.greenvulcano.gvesb.core.flow.GVEndNode" id="return_status" op-type="end" output="output_toupper"
+	              point-x="700" point-y="50" type="flow-node" end-business-process="yes"/>
+	            <GVEndNode class="it.greenvulcano.gvesb.core.flow.GVEndNode" id="return_error" op-type="end" output="output_toupper"
+	              point-x="700" point-y="250" type="flow-node" end-business-process="yes"/>
+        	</Flow>
+        </Operation>
      </Service>
      
      <Service group-name="DEFAULT_GRP" id-service="TOUPPER_ITER_REGEX" service-activation="on">

@@ -70,10 +70,10 @@ public class GvLoopOperationNode extends GVFlowNode {
             throw new GVCoreConfException("GVCORE_MISSED_CFG_PARAM_ERROR", new String[][]{{"name", "'next-node-id'"},
                     {"node", XPathFinder.buildXPath(defNode)}});
         }
-        
-        String collectionTypeId = XMLConfig.get(defNode, "@collection-type", "invalid");
-        LoopController.Type collectionType = LoopController.Type.getById(collectionTypeId).orElseThrow(NoSuchElementException::new); 
         try {
+	        String collectionTypeId = XMLConfig.get(defNode, "@collection-type", "invalid");
+	        LoopController.Type collectionType = LoopController.Type.getById(collectionTypeId).orElseThrow(NoSuchElementException::new); 
+        
         	loopController = BaseLoopController.create(collectionType, defNode);
         } catch (Exception e) {
         	throw new GVCoreConfException("GVCORE_MISSED_CFG_PARAM_ERROR", new String[][]{{"name", "'collection-type'"},
