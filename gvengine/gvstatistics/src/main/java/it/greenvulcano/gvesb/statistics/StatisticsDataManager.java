@@ -25,6 +25,7 @@ import it.greenvulcano.configuration.XMLConfig;
 import it.greenvulcano.gvesb.buffer.GVBuffer;
 import it.greenvulcano.gvesb.buffer.GVException;
 import it.greenvulcano.gvesb.statistics.datawrapper.ExtendedDataWrapper;
+import it.greenvulcano.gvesb.statistics.plugin.DUMMYStatisticsWriter;
 
 import java.util.Hashtable;
 import java.util.Map;
@@ -70,9 +71,15 @@ public class StatisticsDataManager implements ConfigurationListener
         try {
             Node swNode = XMLConfig.getNode(DEFAULT_CONF_FILE_NAME,
                     "/GVStatisticsConfig/Writers/*[@type='stat-writer' and @id=/GVStatisticsConfig/Writers/@default]");
-            statisticsWriter = (IStatisticsWriter) Class.forName(XMLConfig.get(swNode, "@class")).newInstance();
-            statisticsWriter.init(swNode);
-            initExtDataWrappers();
+            
+            if (swNode!=null) {            
+	            statisticsWriter = (IStatisticsWriter) Class.forName(XMLConfig.get(swNode, "@class")).newInstance();
+	            statisticsWriter.init(swNode);
+	            initExtDataWrappers();
+	            
+            } else {
+            	statisticsWriter = new DUMMYStatisticsWriter();
+            }
             confChangedFlag = false;
         }
         catch (GVStatisticsException exc) {

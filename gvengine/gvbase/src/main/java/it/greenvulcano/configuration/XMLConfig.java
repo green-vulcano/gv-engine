@@ -1783,15 +1783,19 @@ public final class XMLConfig {
     public static Node getNode(String file, String xpath) throws XMLConfigException
     {
         Document doc = getDocument(file);
-        try {
-            synchronized (doc) {
-                return (Node) xpathAPI.selectSingleNode(doc, new XPath(xpath));
-            }
-        }
-        catch (Throwable thr) {
-            thr.printStackTrace();
-
-            throw new XMLConfigException("XML XMLConfig error (File:" + file + ", Node:-, XPath:" + xpath + ")", thr);
+        if (doc!=null) {
+	        try {
+	            synchronized (doc) {
+	                return (Node) xpathAPI.selectSingleNode(doc, new XPath(xpath));
+	            }
+	        }
+	        catch (Throwable thr) {
+	            thr.printStackTrace();
+	
+	            throw new XMLConfigException("XML XMLConfig error (File:" + file + ", Node:-, XPath:" + xpath + ")", thr);
+	        }
+        } else {
+        	return null;
         }
     }
 
