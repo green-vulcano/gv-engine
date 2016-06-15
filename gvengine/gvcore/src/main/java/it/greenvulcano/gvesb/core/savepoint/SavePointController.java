@@ -28,7 +28,6 @@ import it.greenvulcano.event.util.shutdown.ShutdownEventListener;
 import it.greenvulcano.gvesb.core.config.GreenVulcanoConfig;
 import it.greenvulcano.gvesb.core.exc.GVCoreException;
 import it.greenvulcano.gvesb.j2ee.db.connections.JDBCConnectionBuilder;
-import it.greenvulcano.jmx.JMXEntryPoint;
 import it.greenvulcano.log.NMDC;
 import it.greenvulcano.util.thread.BaseThread;
 
@@ -95,7 +94,7 @@ public class SavePointController implements ShutdownEventListener, Configuration
             }
 
             try {
-                serverName = JMXEntryPoint.getServerName();
+            
                 Node persNode = XMLConfig.getNode(GreenVulcanoConfig.getServicesConfigFileName(),
                         "/GVServices/Persistence");
 

@@ -25,9 +25,6 @@ import it.greenvulcano.configuration.XMLConfig;
 import it.greenvulcano.event.util.shutdown.ShutdownEvent;
 import it.greenvulcano.event.util.shutdown.ShutdownEventLauncher;
 import it.greenvulcano.event.util.shutdown.ShutdownEventListener;
-import it.greenvulcano.jmx.JMXEntryPoint;
-import it.greenvulcano.jmx.JMXUtils;
-
 import it.greenvulcano.scheduler.util.quartz.SchedulerBuilder;
 import it.greenvulcano.util.thread.BaseThread;
 import it.greenvulcano.util.txt.DateUtils;
@@ -59,23 +56,16 @@ public class TaskManager implements ConfigurationListener, ShutdownEventListener
     private Map<String, TaskGroup> groups            = new HashMap<String, TaskGroup>();
     private SchedulerBuilder       schedulerBuilder  = null;
 
-    private String                 location          = "";
     private String                 descriptorName    = null;
-    private String                 jmxFilterLocal    = null;
 
     private String                 cfgFileName       = null;
     private boolean                confChangedFlag   = false;
-    private boolean                forceTaskRecovery = false;
-    private boolean                firstTime         = false;
-
-
     public TaskManager(String name, String cfgFileName)
     {
         this.managerName = name;
         this.cfgFileName = cfgFileName;
 
         try {
-            firstTime = true;
             init();
 
             XMLConfig.addConfigurationListener(this, cfgFileName);
@@ -88,7 +78,6 @@ public class TaskManager implements ConfigurationListener, ShutdownEventListener
             // MidnightReloadConfigTimer.getInstance().watchFile(cfgFileName);
         }
         finally {
-            firstTime = false;
         }
     }
 
@@ -115,9 +104,8 @@ public class TaskManager implements ConfigurationListener, ShutdownEventListener
     {
         try {
             descriptorName = XMLConfig.get(cfgFileName, "/GVTaskManagerConfiguration/@jmx-descriptor-name");
-            jmxFilterLocal = "*:*,Group=management,GVInternal=Yes,Component=" + descriptorName;
-            location = JMXEntryPoint.getServerName();
-            forceTaskRecovery = XMLConfig.getBoolean(cfgFileName, "/GVTaskManagerConfiguration/@force-task-recovery",
+                     
+            XMLConfig.getBoolean(cfgFileName, "/GVTaskManagerConfiguration/@force-task-recovery",
                     false);
 
             Node sbNode = XMLConfig.getNode(cfgFileName, "/GVTaskManagerConfiguration/*[@type='scheduler-builder']");
@@ -240,24 +228,7 @@ public class TaskManager implements ConfigurationListener, ShutdownEventListener
         XMLConfig.removeConfigurationListener(this);
         ShutdownEventLauncher.removeEventListener(this);
 
-        boolean destroy = true;
-        try {
-            String oname = "GreenVulcano:Location=" + JMXEntryPoint.getServerName() + ",Name=DomainInfo_Internal,*";
-            Object[] resp = JMXUtils.get(oname, "serversNames", logger);
-            if (resp.length > 0) {
-                destroy = ((String[]) resp[0]).length <= 1;
-            }
-        }
-        catch (Exception exc) {
-            // do nothing
-            exc.printStackTrace();
-        }
-        if (destroy) {
-            //destroy(); TEST TEST TEST
-        }
-        else {
-            logger.info("TaskManager[" + managerName + "] - No last active server... Skip destroy");
-        }
+       
     }
 
     public void execTask(String groupN, String taskN, JobExecutionContext context)
@@ -313,127 +284,6 @@ public class TaskManager implements ConfigurationListener, ShutdownEventListener
             catch (Exception exc) {
                 logger.error("TaskManager[" + managerName + "] - Error starting TaskGroup[" + groupN + "]", exc);
             }
-        }
-    }
-
-    /*public synchronized TaskData[][] getTaskList() throws TaskException
-    {
-        try {
-            Object[] object = JMXUtils.get(jmxFilterLocal, "taskList_Internal", true, null);
-            TaskData[][] taskList = new TaskData[object.length][];
-            System.arraycopy(object, 0, taskList, 0, object.length);
-            return taskList;
-        }
-        catch (Exception exc) {
-            throw new TaskException("TaskManager[" + managerName + "] - Error reading Task list", exc);
-        }
-    }*/
-
-    public synchronized void startAllTask() throws TaskException
-    {
-        try {
-            JMXUtils.invoke(jmxFilterLocal, "startAllTask_Internal", new Object[0], new String[0], true, null);
-        }
-        catch (Exception exc) {
-            throw new TaskException("TaskManager[" + managerName + "] - Error starting all Tasks", exc);
-        }
-    }
-
-    public synchronized void stopAllTask() throws TaskException
-    {
-        try {
-            JMXUtils.invoke(jmxFilterLocal, "stopAllTask_Internal", new Object[0], new String[0], true, null);
-        }
-        catch (Exception exc) {
-            throw new TaskException("TaskManager[" + managerName + "] - Error stopping all Tasks", exc);
-        }
-    }
-
-    public synchronized void resumeAllTask() throws TaskException
-    {
-        try {
-            JMXUtils.invoke(jmxFilterLocal, "resumeAllTask_Internal", new Object[0], new String[0], true, null);
-        }
-        catch (Exception exc) {
-            throw new TaskException("TaskManager[" + managerName + "] - Error resuming all Tasks", exc);
-        }
-    }
-
-    public synchronized void suspendAllTask() throws TaskException
-    {
-        try {
-            JMXUtils.invoke(jmxFilterLocal, "suspendAllTask_Internal", new Object[0], new String[0], true, null);
-        }
-        catch (Exception exc) {
-            throw new TaskException("TaskManager[" + managerName + "] - Error suspending all Tasks", exc);
-        }
-    }
-
-    public synchronized void startTask(String group, String name) throws TaskException
-    {
-        try {
-            JMXUtils.invoke(jmxFilterLocal, "startTask_Internal", new Object[]{group, name}, new String[]{
-                    "java.lang.String", "java.lang.String"}, true, null);
-        }
-        catch (Exception exc) {
-            throw new TaskException("TaskManager[" + managerName + "] - Error starting Task: " + group + "." + name,
-                    exc);
-        }
-    }
-
-    public synchronized void stopTask(String group, String name) throws TaskException
-    {
-        try {
-            JMXUtils.invoke(jmxFilterLocal, "stopTask_Internal", new Object[]{group, name}, new String[]{
-                    "java.lang.String", "java.lang.String"}, true, null);
-        }
-        catch (Exception exc) {
-            throw new TaskException("TaskManager[" + managerName + "] - Error stopping Task: " + group + "." + name,
-                    exc);
-        }
-    }
-
-    public synchronized void resumeTask(String group, String name) throws TaskException
-    {
-        try {
-            JMXUtils.invoke(jmxFilterLocal, "resumeTask_Internal", new Object[]{group, name}, new String[]{
-                    "java.lang.String", "java.lang.String"}, true, null);
-        }
-        catch (Exception exc) {
-            throw new TaskException("TaskManager[" + managerName + "] - Error resuming Task: " + group + "." + name,
-                    exc);
-        }
-    }
-
-    public synchronized void suspendTask(String group, String name) throws TaskException
-    {
-        try {
-            JMXUtils.invoke(jmxFilterLocal, "suspendTask_Internal", new Object[]{group, name}, new String[]{
-                    "java.lang.String", "java.lang.String"}, true, null);
-        }
-        catch (Exception exc) {
-            throw new TaskException("TaskManager[" + managerName + "] - Error suspending Task: " + group + "." + name,
-                    exc);
-        }
-    }
-
-    public synchronized void startTimer() throws TaskException
-    {
-        try {
-            JMXUtils.invoke(jmxFilterLocal, "startTimer_Internal", new Object[0], new String[0], true, null);
-        }
-        catch (Exception exc) {
-            throw new TaskException("TaskManager[" + managerName + "] - Error starting timer: ", exc);
-        }
-    }
-
-    public synchronized void stopTimer() throws TaskException
-    {
-        try {
-            JMXUtils.invoke(jmxFilterLocal, "stopTimer_Internal", new Object[0], new String[0], true, null);
-        }
-        catch (Exception exc) {
-            throw new TaskException("TaskManager[" + managerName + "] - Error stopping timer: ", exc);
         }
     }
 

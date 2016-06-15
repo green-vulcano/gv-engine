@@ -28,8 +28,6 @@ import it.greenvulcano.gvesb.buffer.GVPublicException;
 import it.greenvulcano.gvesb.core.GreenVulcano;
 import it.greenvulcano.gvesb.core.exc.GVCoreException;
 import it.greenvulcano.gvesb.log.GVBufferMDC;
-import it.greenvulcano.jmx.JMXEntryPoint;
-
 import it.greenvulcano.util.Stats;
 
 import java.util.HashSet;
@@ -715,14 +713,7 @@ public class GreenVulcanoPool implements ShutdownEventListener
         this.maximumSize = maximumSize;
         this.maximumCreation = maximumCreation;
         this.subsystem = subsystem;
-        try {
-            serverName = JMXEntryPoint.getServerName();
-        }
-        catch (Exception exc) {
-            throw new GVCoreException("Error initializing GreenVulcanoPool", exc);
-        }
-
-       
+              
         for (int i = 0; i < initialSize; ++i) {
             pool.add(createGreenVulcano());
         }

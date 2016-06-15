@@ -188,6 +188,7 @@ public class CallSPSimpleBaseFormatter implements BaseFormatter
                             inStream = loader.getResourceAsStream("xsl/" + strStylesheet);
                             if (inStream == null) {
                                 logger.error("getValue - The resource xsl/" + strStylesheet + " cannot be found");
+                                rs.close();
                                 throw new GVDBException("GV_GENERIC_ERROR", new String[][]{{"msg",
                                         "The resource xsl/" + strStylesheet + " cannot be found"}}, null);
                             }

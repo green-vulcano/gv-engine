@@ -28,8 +28,6 @@ import it.greenvulcano.gvesb.core.exc.GVCoreServiceNotFoundException;
 import it.greenvulcano.gvesb.core.exc.GVCoreWrongInterfaceException;
 import it.greenvulcano.gvesb.core.exc.GVCoreWrongOpException;
 import it.greenvulcano.gvesb.core.flow.GVFlow;
-import it.greenvulcano.gvesb.core.jmx.ServiceOperationInfo;
-import it.greenvulcano.gvesb.core.jmx.ServiceOperationInfoManager;
 import it.greenvulcano.gvesb.statistics.StatisticsDataManager;
 import it.greenvulcano.util.xpath.XPathFinder;
 
@@ -83,10 +81,7 @@ public class GVServiceConf
      * The status of the service activation.
      */
     private boolean               serviceActivation      = true;
-    /**
-     * The JMX management object
-     */
-    private ServiceOperationInfo  gvServiceOperationInfo = null;
+
     /**
      * The name to GreenVulcano Operation map
      */
@@ -317,10 +312,7 @@ public class GVServiceConf
      */
     public boolean getActivation()
     {
-        getServiceOperationInfo();
-        if (gvServiceOperationInfo != null) {
-            return gvServiceOperationInfo.getActivation();
-        }
+               
         return (serviceActivation && groupActivation);
     }
 
@@ -359,9 +351,7 @@ public class GVServiceConf
             throw new GVCoreDisabledServiceException("GVCORE_GVOPERATION_NOT_ACTIVE_ERROR", new String[][]{
                     {"service", serviceName}, {"operation", name}});
         }
-        if (gvServiceOperationInfo != null) {
-            setStatisticsEnabled(gvServiceOperationInfo.getStatisticsEnabled());
-        }
+        
         return gvOp;
     }
 
@@ -591,20 +581,5 @@ public class GVServiceConf
         }
     }
 
-    /**
-     * Create the associated ServiceOperationInfo instance.
-     */
-    private void getServiceOperationInfo()
-    {
-        if (gvServiceOperationInfo == null) {
-            try {
-                gvServiceOperationInfo = ServiceOperationInfoManager.instance().getServiceOperationInfo(serviceName,
-                        true);
-            }
-            catch (Exception exc) {
-                logger.warn("Error on MBean registration", exc);
-                gvServiceOperationInfo = null;
-            }
-        }
-    }
+   
 }

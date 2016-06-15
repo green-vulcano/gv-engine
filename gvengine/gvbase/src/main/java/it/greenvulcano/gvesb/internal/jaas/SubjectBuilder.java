@@ -177,7 +177,6 @@ public abstract class SubjectBuilder
      * @throws PrivilegedActionException
      *         if an error occurs
      */
-    @SuppressWarnings("unchecked")
-    public abstract Object runAs(PrivilegedExceptionAction action) throws GVInternalException,
+    public abstract Object runAs(PrivilegedExceptionAction<?> action) throws GVInternalException,
             PrivilegedActionException;
 }

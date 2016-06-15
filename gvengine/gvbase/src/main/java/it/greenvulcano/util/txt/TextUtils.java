@@ -599,7 +599,8 @@ public class TextUtils
      *        If true the data are appended to existent file
      * @throws IOException
      */
-    public static void writeFile(StringBuffer contentString, String filename, boolean append) throws IOException
+    @SuppressWarnings("deprecation")
+	public static void writeFile(StringBuffer contentString, String filename, boolean append) throws IOException
     {
         PrintWriter out = null;
         try {
@@ -729,7 +730,8 @@ public class TextUtils
      *        If true the data are appended to existent file
      * @throws IOException
      */
-    public static void writeFile(StringBuffer contentString, File file, boolean append) throws IOException
+    @SuppressWarnings("deprecation")
+	public static void writeFile(StringBuffer contentString, File file, boolean append) throws IOException
     {
         PrintWriter out = null;
         try {

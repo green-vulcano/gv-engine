@@ -32,8 +32,6 @@ import it.greenvulcano.gvesb.internal.data.ChangeGVBuffer;
 import it.greenvulcano.gvesb.j2ee.XAHelper;
 import it.greenvulcano.gvesb.log.GVBufferMDC;
 import it.greenvulcano.gvesb.utils.MessageFormatter;
-import it.greenvulcano.jmx.JMXEntryPoint;
-
 import it.greenvulcano.log.NMDC;
 import it.greenvulcano.scheduler.Task;
 import it.greenvulcano.scheduler.TaskException;
@@ -134,9 +132,7 @@ public class GVServiceCallerTask extends Task
         NMDC.clear();
         NMDC.setSubSystem(SUBSYSTEM);
         try {
-            location = JMXEntryPoint.getServerName();
-            NMDC.setServer(location);
-
+           
             // Create a template GVBuffer instance
             GVBufferIn = new GVBuffer();
             GVBufferIn.setSystem(XMLConfig.get(node, "@id-system", GVBuffer.DEFAULT_SYS));

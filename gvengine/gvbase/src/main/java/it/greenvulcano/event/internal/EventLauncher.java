@@ -20,7 +20,6 @@
 package it.greenvulcano.event.internal;
 
 import it.greenvulcano.event.interfaces.EventListener;
-import it.greenvulcano.jmx.JMXEntryPoint;
 import it.greenvulcano.log.NMDC;
 import it.greenvulcano.util.thread.BaseThread;
 import it.greenvulcano.util.thread.ThreadMap;
@@ -82,7 +81,7 @@ public class EventLauncher extends BaseThread
     {
         NMDC.push();
         NMDC.clear();
-        NMDC.setServer(JMXEntryPoint.getServerName());
+      
         try {
             Map<EventListener, EventListenerData> elListenersData = EventListenerHandler.getEventListeners();
             EventListenerData elData = null;

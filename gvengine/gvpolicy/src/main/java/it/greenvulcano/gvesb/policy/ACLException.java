@@ -27,15 +27,16 @@ import it.greenvulcano.gvesb.buffer.GVException;
  * @author GreenVulcano Developer Team
  */
 public class ACLException extends GVException
-{
+{   
+	private static final long serialVersionUID = -9135114009947730038L;
 
-    /**
+	/**
      * @param idMessage
      */
     public ACLException(String idMessage)
     {
         super(idMessage);
-        // TODO Auto-generated constructor stub
+       
     }
 
     /**

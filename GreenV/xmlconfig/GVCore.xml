@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE GVCore SYSTEM "http://www.greenvulcano.com/gvesb/dtds/GVCore.dtd">
+
+<GVCore version="1.0">
+
+	<GVPoolManager name="POOL_MANAGER" type="module">
+
+        <GreenVulcanoPool default-timeout="5000" initial-size="1" maximum-creation="16"
+                          maximum-size="16" shrink-timeout="120000"
+                          subsystem="gvapi"/>
+	</GVPoolManager>
+
+	<GVServices name="SERVICES" type="module">
+
+		<Groups>
+			<Description>This section contains all the service groups.</Description>			
+			<Group group-activation="on" id-group="DEFAULT_GROUP" />
+		</Groups>
+		<Services>
+			<Description>This section contains a list of all services provided by
+				GreenVulcano ESB</Description>
+
+		<Service group-name="DEFAULT_GROUP" id-service="ECHO"
+                     service-activation="on" statistics="off">
+				<Conditions>
+				    <ScriptCondition class="it.greenvulcano.gvesb.core.flow.condition.ScriptCondition"
+				                         condition="FirstCaseIsUpper" scope-name="gvesb"
+				                         type="condition">
+				        <Script>
+				          		(function(){
+				          		    var inputString = environment.get("input").getObject();
+				          			if (inputString) {
+				          		 		var c = inputString.substr(0, 1);
+				          		 		return c == c.toUpperCase();
+				          		    } else {
+				          		    	return false;
+				          		    } 
+				          		})();                          		
+				          		
+				              </Script>
+				    </ScriptCondition>
+				    <ScriptCondition class="it.greenvulcano.gvesb.core.flow.condition.ScriptCondition"
+				                         condition="FirstCaseIsLower" scope-name="gvesb"
+				                         type="condition">
+				        <Script>
+				          		(function(){
+				          		    var inputString = environment.get("input").getObject();
+				          			if (inputString) {
+				          		 		var c = inputString.substr(0, 1);
+				          		 		return c == c.toLowerCase();
+				          		    } else {
+				          		    	return false;
+				          		    } 
+				          		})();  
+				              </Script>
+				    </ScriptCondition>
+				</Conditions>
+				<Operation class="it.greenvulcano.gvesb.core.flow.GVFlowWF"
+				           name="normalize" 
+				           operation-activation="on"
+				           out-check-type="none" type="operation">
+                           
+                    			<Description>Transform a string in lower-case or upper-case depending first case</Description>
+                                      
+					<Flow first-node="check_input" point-x="30" point-y="259">
+						<GVNodeCheck class="it.greenvulcano.gvesb.core.flow.GVNodeCheck"
+						             default-id="tolower-js" id="check_input"
+						             input="input" on-exception-id="invalid-op-js"
+						             op-type="check" point-x="199" point-y="109"
+						             type="flow-node">
+						    <GVRouting condition="FirstCaseIsUpper"
+						               next-node-id="toupper-js"/>
+						    <GVRouting condition="FirstCaseIsLower"
+						               next-node-id="tolower-js"/>
+						</GVNodeCheck>
+						<ChangeGVBufferNode class="it.greenvulcano.gvesb.core.flow.ChangeGVBufferNode"
+						                    id="toupper-js" input="input"
+						                    next-node-id="toupper-js-end"
+						                    op-type="change GVBuffer" output="output"
+						                    point-x="179" point-y="259" type="flow-node">
+						    <ChangeGVBuffer clear-data="false">
+						        <Script>data.setObject(data.getObject().toUpperCase());</Script>
+						    </ChangeGVBuffer>
+						</ChangeGVBufferNode>
+						<ChangeGVBufferNode class="it.greenvulcano.gvesb.core.flow.ChangeGVBufferNode"
+						                    id="tolower-js" input="input"
+						                    next-node-id="toupper-js-end"
+						                    op-type="change GVBuffer" output="output"
+						                    point-x="390" point-y="199" type="flow-node">
+						    <ChangeGVBuffer clear-data="false">
+						        <Script>data.setObject(data.getObject().toLowerCase());</Script>
+						    </ChangeGVBuffer>
+						</ChangeGVBufferNode>
+						<ChangeGVBufferNode class="it.greenvulcano.gvesb.core.flow.ChangeGVBufferNode"
+						                    id="invalid-op-js" input="input"
+						                    next-node-id="toupper-js-end"
+						                    op-type="change GVBuffer" output="output"
+						                    point-x="444" point-y="79" type="flow-node">
+						    <ChangeGVBuffer clear-data="false">
+						        <Script><![CDATA[data.setObject("Input is invalid");]]></Script>
+						    </ChangeGVBuffer>
+						</ChangeGVBufferNode>
+						<GVEndNode class="it.greenvulcano.gvesb.core.flow.GVEndNode"
+						           id="toupper-js-end" op-type="end" output="output"
+						           point-x="767" point-y="259" type="flow-node"/>
+					</Flow>
+				</Operation>
+			</Service>
+		</Services>
+	</GVServices>
+
+	<GVSystems name="SYSTEMS" type="module">
+		<Systems>
+			<Description>This section contains a list of all systems connected to
+				GreenVulcano ESB</Description>
+
+		</Systems>
+	</GVSystems>
+
+	<GVXPath name="XPATH" type="module">
+		<XPath xpath-factory="it.greenvulcano.util.xpath.search.jaxen.JaxenXPathAPIFactoryImpl">
+			<Description>Extension functions and namespaces for XPath.</Description>
+			<XPathExtension
+				class="it.greenvulcano.util.xpath.search.extension.ExternalDocumentXPathFunction"
+				function-name="document">
+				<Description><![CDATA[Accede ad un documento esterno. Uso: gvf:document('xml file path')]]></Description>
+			</XPathExtension>
+			<XPathNamespace namespace="http://www.w3.org/2001/XMLSchema"
+				prefix="xsd" />
+			<XPathNamespace namespace="http://www.w3.org/2001/XMLSchema-instance"
+				prefix="xsi" />
+			<XPathNamespace namespace="http://www.w3.org/XML/1998/namespace"
+				prefix="xml" />
+		</XPath>
+	</GVXPath>
+
+	<GVPolicy name="POLICY_MANAGER" type="module">
+		<Roles>
+			<Role name="ROLE_ADMIN">
+				<Description>Platform administrator</Description>
+			</Role>
+			<Role name="ROLE_USER" />
+			<Role name="ROLE_GUEST" />
+		</Roles>
+		<Addresses>
+			<AddressSet name="local">
+				<Description>AddressSet description</Description>
+				<Address address="127.0.0.1" />
+			</AddressSet>
+		</Addresses>
+		<ACLGreenVulcano class="it.greenvulcano.gvesb.policy.impl.ACLGreenVulcano"
+			type="acl-manager">
+			<DefaultRes type="resource" />
+		</ACLGreenVulcano>
+	</GVPolicy>
+
+	<GVConcurrencyHandler name="CONCURRENCY_HANDLER"
+		type="module">
+		<SubSystems>
+			<SubSystem name="GVCore"/>
+		</SubSystems>
+	</GVConcurrencyHandler>
+	<GVBufferDump log-dump-size="-1" name="BUFFER_DUMP" type="module" />
+
+	<GVDataTransformation name="GVDT" type="module">
+		<Transformations/>
+	</GVDataTransformation>
+
+</GVCore>

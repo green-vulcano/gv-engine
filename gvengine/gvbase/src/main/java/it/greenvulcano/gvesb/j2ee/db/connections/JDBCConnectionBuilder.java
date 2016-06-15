@@ -205,7 +205,8 @@ public class JDBCConnectionBuilder implements ConfigurationListener, ShutdownEve
         connBuilders.clear();
     }
 
-    private Connection intGetConnection(String name, boolean useThreadMap) throws GVDBException
+    @SuppressWarnings("unchecked")
+	private Connection intGetConnection(String name, boolean useThreadMap) throws GVDBException
     {
         try {
             Map<String, Connection> thConns = null;
@@ -249,7 +250,8 @@ public class JDBCConnectionBuilder implements ConfigurationListener, ShutdownEve
         }
     }
 
-    private void intReleaseConnection(String name, Connection conn, boolean useThreadMap) throws GVDBException
+    @SuppressWarnings("unchecked")
+	private void intReleaseConnection(String name, Connection conn, boolean useThreadMap) throws GVDBException
     {
         Map<String, Connection> thConns = null;
         boolean foundInMap = false;

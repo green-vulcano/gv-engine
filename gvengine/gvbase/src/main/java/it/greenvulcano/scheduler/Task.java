@@ -56,9 +56,6 @@ public abstract class Task
     private boolean             suspended             = false;
     private boolean             autoStart             = false;
     private boolean             enabled               = false;
-    private boolean             autoStopOnInvalidTime = true;
-
-
     private String              group                 = "UNDEFINED";
     private String              name                  = "UNDEFINED";
     private TaskManager         manager               = null;
@@ -266,7 +263,7 @@ public abstract class Task
 
         NMDC.push();
         int id = -1;
-        long startT = System.currentTimeMillis();
+      
         try {
             currentThread = Thread.currentThread();
             running = true;
@@ -284,7 +281,7 @@ public abstract class Task
         }
         finally {
             currentThread = null;
-            long execT = System.currentTimeMillis() - startT;
+          
             if (mustDestroy) {
                 try {
                     logger.info("Destroing Task[" + getFullName() + "]");

@@ -21,7 +21,6 @@ package it.greenvulcano.scheduler.util.quartz.impl;
 
 import it.greenvulcano.configuration.XMLConfig;
 import it.greenvulcano.gvesb.j2ee.db.connections.impl.ConnectionBuilder;
-import it.greenvulcano.jmx.JMXEntryPoint;
 import it.greenvulcano.scheduler.TaskException;
 import it.greenvulcano.scheduler.util.quartz.CalendarBuilder;
 import it.greenvulcano.scheduler.util.quartz.SchedulerBuilder;
@@ -125,7 +124,7 @@ public class GVSchedulerBuilder implements SchedulerBuilder
             SchedulerRepository schedRep = SchedulerRepository.getInstance();
             Scheduler scheduler = schedRep.lookup(schedulerName);
             if (scheduler == null) {
-                String instanceId = schedulerName + "#" + JMXEntryPoint.getServerName() + "#"
+                String instanceId = schedulerName + "#"
                         + DateUtils.nowToString(DateUtils.FORMAT_ISO_TIMESTAMP_L);
 
                 logger.debug("BEGIN - creating Scheduler[" + instanceId + "]");

@@ -19,7 +19,6 @@
  */
 package it.greenvulcano.scheduler.util.quartz;
 
-import it.greenvulcano.jmx.JMXEntryPoint;
 import it.greenvulcano.log.NMDC;
 import it.greenvulcano.scheduler.TaskManagerFactory;
 import it.greenvulcano.util.thread.ThreadMap;
@@ -63,7 +62,7 @@ public class StatefulJob implements org.quartz.StatefulJob
             tName = context.getJobDetail().getName();
             currentThread.setName(cthName + "#" + gName + "." + tName);
             
-            NMDC.setServer(JMXEntryPoint.getServerName());
+         
             TaskManagerFactory.instance().executeTask(sName, gName, tName, context);
         }
         catch (Exception exc) {

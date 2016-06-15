@@ -22,12 +22,10 @@ package it.greenvulcano.gvesb.core.pool;
 import it.greenvulcano.configuration.ConfigurationEvent;
 import it.greenvulcano.configuration.ConfigurationListener;
 import it.greenvulcano.configuration.XMLConfig;
-import it.greenvulcano.gvesb.core.jmx.GreenVulcanoPoolInfo;
-import it.greenvulcano.jmx.JMXEntryPoint;
+//import it.greenvulcano.jmx.JMXEntryPoint;
 import it.greenvulcano.script.util.BaseContextManager;
 
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -161,7 +159,8 @@ public final class GreenVulcanoPoolManager implements ConfigurationListener
                 for (int i = 0; i < nl.getLength(); i++) {
                     GreenVulcanoPool pool = new GreenVulcanoPool(nl.item(i));
                     logger.debug("Initialized GreenVulcanoPool(" + pool.getSubsystem() + ")");
-                    register(pool);
+                    // TODO: JMX is disabled
+                    //register(pool);
                     greenVulcanoPools.put(pool.getSubsystem(), pool);
                 }
                 initialized = true;
@@ -182,7 +181,8 @@ public final class GreenVulcanoPoolManager implements ConfigurationListener
                     pool.init(nl.item(p));
                 }
                 logger.debug("Initialized GreenVulcanoPool(" + pool.getSubsystem() + ")");
-                register(pool);
+                // TODO: JMX is disabled
+                //register(pool);
                 // save already configured pools removed from configuration...
                 tmp.put(pool.getSubsystem(), pool);
             }
@@ -190,7 +190,7 @@ public final class GreenVulcanoPoolManager implements ConfigurationListener
             // destroy pools removed from configuration...
             for (GreenVulcanoPool pool : greenVulcanoPools.values()) {
                 logger.debug("Destroying GreenVulcanoPool(" + pool.getSubsystem() + ")");
-                deregister(pool, true);
+                //deregister(pool, true);
                 try {
                     pool.destroy(true);
                 }
@@ -214,7 +214,7 @@ public final class GreenVulcanoPoolManager implements ConfigurationListener
         for (GreenVulcanoPool pool : greenVulcanoPools.values()) {
             try {
                 logger.debug("Destroying GreenVulcanoPool(" + pool.getSubsystem() + ")");
-                deregister(pool, true);
+                //deregister(pool, true);
                 pool.destroy(true);
             }
             catch (Exception exc) {
@@ -229,8 +229,9 @@ public final class GreenVulcanoPoolManager implements ConfigurationListener
      * 
      * @param pool
      *        the instance to register.
-     */
-    private void register(GreenVulcanoPool pool)
+         
+    @SuppressWarnings("unused")
+	private void register(GreenVulcanoPool pool)
     {
         logger.debug("Registering MBean for GreenVulcanoPool(" + pool.getSubsystem() + ")");
         Hashtable<String, String> properties = getMBeanProperties(pool);
@@ -242,14 +243,14 @@ public final class GreenVulcanoPoolManager implements ConfigurationListener
         catch (Exception exc) {
             logger.warn("Error registering MBean for GreenVulcanoPool(" + pool.getSubsystem() + ")", exc);
         }
-    }
+    }*/
 
     /**
      * Deregister the pool as MBean.
      * 
      * @param pool
      *        the instance to deregister.
-     */
+     
     private void deregister(GreenVulcanoPool pool, boolean showError)
     {
         logger.debug("Deregistering MBean for GreenVulcanoPool(" + pool.getSubsystem() + ")");
@@ -270,5 +271,5 @@ public final class GreenVulcanoPoolManager implements ConfigurationListener
         Hashtable<String, String> properties = new Hashtable<String, String>();
         properties.put("Subsystem", pool.getSubsystem());
         return properties;
-    }
+    }*/
 }

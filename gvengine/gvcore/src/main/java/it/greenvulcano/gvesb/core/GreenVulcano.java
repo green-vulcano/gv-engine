@@ -41,8 +41,6 @@ import it.greenvulcano.gvesb.core.exc.GVCoreWrongInterfaceException;
 import it.greenvulcano.gvesb.core.exc.GVCoreWrongOpException;
 import it.greenvulcano.gvesb.core.exc.GVCoreWrongParameterException;
 import it.greenvulcano.gvesb.core.flow.GVFlow;
-import it.greenvulcano.gvesb.core.jmx.ServiceOperationInfo;
-import it.greenvulcano.gvesb.core.jmx.ServiceOperationInfoManager;
 import it.greenvulcano.gvesb.gvdte.controller.DTEController;
 import it.greenvulcano.gvesb.identity.GVIdentityHelper;
 import it.greenvulcano.gvesb.log.GVBufferDump;
@@ -272,7 +270,6 @@ public class GreenVulcano
             GVBuffer returnData = null;
             GVServiceConf gvsConfig = null;
             ServiceConcurrencyInfo serviceConcInfo = null;
-            boolean success = false;
             long startTime = 0;
 
             gvContext.setContext(gvsOperation, gvBuffer);
@@ -305,8 +302,6 @@ public class GreenVulcano
                 if (logger.isInfoEnabled()) {
                     logger.info(GVFormatLog.formatENDOperation(returnData, endTime - startTime).toString());
                 }
-    
-                success = true;
             }
             catch (GVCoreCallSvcException exc) {
                 throwGVPublicException("GV_CALL_SERVICE_ERROR", gvBuffer, exc, startTime);
@@ -358,16 +353,7 @@ public class GreenVulcano
                 if (serviceConcInfo != null) {
                     serviceConcInfo.remove();
                 }
-                try {
-                    if (gvsConfig != null) {
-                        ServiceOperationInfo serviceInfo = ServiceOperationInfoManager.instance().getServiceOperationInfo(
-                                gvsConfig.getServiceName(), true);
-                        serviceInfo.flowTerminated(gvsOperation, id, success);
-                    }
-                }
-                catch (Exception exc) {
-                    logger.warn("Error on MBean registration");
-                }
+                
 
                 gvContext.pop();
                 NMDC.pop();
@@ -464,8 +450,7 @@ public class GreenVulcano
             GVBuffer returnData = null;
             GVServiceConf gvsConfig = null;
             ServiceConcurrencyInfo serviceConcInfo = null;
-            boolean success = false;
-            String id = gvBuffer.getId().toString();
+            gvBuffer.getId().toString();
             long startTime = 0;
 
             gvContext.setContext(gvsOperation, gvBuffer);
@@ -511,8 +496,6 @@ public class GreenVulcano
                 if (logger.isInfoEnabled()) {
                     logger.info(GVFormatLog.formatENDOperation(returnData, endTime - startTime).toString());
                 }
-    
-                success = true;
             }
             catch (GVCoreCallSvcException exc) {
                 throwGVPublicException("GV_CALL_SERVICE_ERROR", gvBuffer, exc, startTime);
@@ -567,16 +550,7 @@ public class GreenVulcano
                 if (serviceConcInfo != null) {
                     serviceConcInfo.remove();
                 }
-                try {
-                    if (gvsConfig != null) {
-                        ServiceOperationInfo serviceInfo = ServiceOperationInfoManager.instance().getServiceOperationInfo(
-                                gvsConfig.getServiceName(), true);
-                        serviceInfo.flowTerminated(gvsOperation, id, success);
-                    }
-                }
-                catch (Exception exc) {
-                    logger.warn("Error on MBean registration");
-                }
+                
 
                 gvContext.pop();
                 gvContext.cleanup();

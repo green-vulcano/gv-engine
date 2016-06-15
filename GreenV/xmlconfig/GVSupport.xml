@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE GVSupport SYSTEM "http://www.greenvulcano.com/gvesb/dtds/GVSupport.dtd">
+
+<GVSupport version="1.0">
+
+	<GVScriptConfig name="SCRIPT" type="module">
+		<ScriptCache base-path="sp{{gv.app.home}}/scripts" />
+		<ScriptEngines>
+			<ScriptEngine lang="js" default-context="gvesb" type="script-engine">
+				<BaseContext name="basic" />
+				<BaseContext name="gvesb" file="js/initscope.js" />
+			</ScriptEngine>
+		</ScriptEngines>
+	</GVScriptConfig>
+
+	<GVStatisticsConfig name="STATISTICS" type="module">
+      <Writers default="DUMMY_STORE">
+          <DUMMYStatisticsWriter class="it.greenvulcano.gvesb.statistics.plugin.DUMMYStatisticsWriter"
+                                 id="DUMMY_STORE" type="stat-writer"/>
+      </Writers>
+  </GVStatisticsConfig>
+
+</GVSupport>

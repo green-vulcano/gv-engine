@@ -91,8 +91,8 @@ public class DriverPoolConnectionBuilder implements ConnectionBuilder
         }
 
         ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(url, user, password);
-        PoolableConnectionFactory poolableConnectionFactory = new PoolableConnectionFactory(connectionFactory,
-                connectionPool, null, validationQuery, false, true);
+        new PoolableConnectionFactory(connectionFactory, connectionPool, null, validationQuery, false, true);
+        
         dataSource = new PoolingDataSource(connectionPool);
 
         logger.debug("Crated DriverPoolConnectionBuilder(" + name + "). className: " + className + " - user: " + user

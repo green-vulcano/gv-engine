@@ -42,7 +42,7 @@ import javax.jms.TextMessage;
  */
 public class JMSMessageDump
 {
-    private static final String DATE_TOSTRING_FORMAT = "dd.MM.yyyy HH:mm:ss.SSS";
+    protected static final String DATE_TOSTRING_FORMAT = "dd.MM.yyyy HH:mm:ss.SSS";
 
     private Message             message              = null;
     private String              description          = null;

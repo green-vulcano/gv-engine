@@ -170,7 +170,8 @@ public class FTPManager extends RemoteManager
      * @see it.greenvulcano.util.remotefs.RemoteManager#connect(Map<String,
      *      String>)
      */
-    @Override
+    @SuppressWarnings("deprecation")
+	@Override
     public void connect(Map<String, String> optProperties) throws RemoteManagerException
     {
         if (!isConnected) {

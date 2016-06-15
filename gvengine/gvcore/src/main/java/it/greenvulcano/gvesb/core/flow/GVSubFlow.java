@@ -29,8 +29,6 @@ import it.greenvulcano.gvesb.core.debug.DebuggingInvocationHandler;
 import it.greenvulcano.gvesb.core.debug.ExecutionInfo;
 import it.greenvulcano.gvesb.core.exc.GVCoreConfException;
 import it.greenvulcano.gvesb.core.exc.GVCoreException;
-import it.greenvulcano.gvesb.core.jmx.ServiceOperationInfoManager;
-import it.greenvulcano.gvesb.core.jmx.SubFlowInfo;
 import it.greenvulcano.gvesb.gvdte.controller.DTEController;
 import it.greenvulcano.gvesb.log.GVFormatLog;
 import it.greenvulcano.gvesb.statistics.StatisticsDataManager;
@@ -67,11 +65,7 @@ public class GVSubFlow
      * the flow name
      */
     private String                  flowName       = "";
-    /**
-     * the jmx subflow info instance
-     */
-    private SubFlowInfo             subflowInfo    = null;
-
+   
     /**
      * Used to get an GVServiceConf of a specific service (SYSTEM + SERVICE).
      */
@@ -303,7 +297,7 @@ public class GVSubFlow
      */
     public GVBuffer internalPerform(GVBuffer gvBuffer, boolean onDebug) throws GVCoreException, InterruptedException
     {
-        boolean success = false;
+
         String inID = gvBuffer.getId().toString();
         try {
           
@@ -311,8 +305,7 @@ public class GVSubFlow
             if (logger.isDebugEnabled()) {
                 logger.debug(GVFormatLog.formatBEGIN(flowName, gvBuffer).toString());
             }
-            getGVSubFlowInfo();
-    
+               
             GVFlowNode flowNode = flowNodes.get(firstNode);
             if (flowNode == null) {
                 logger.error("FlowNode " + firstNode + " not configured. Check configuration.");
@@ -331,9 +324,7 @@ public class GVSubFlow
                 info.setSubflow(flowName);
                 synchObj.setExecutionInfo(info);
                 while (!nextNode.equals("") && !isInterrupted()) {
-                    if (subflowInfo != null) {
-                        subflowInfo.setFlowStatus(inID, nextNode);
-                    }
+               
                     flowNode = flowNodes.get(nextNode);
                     if (flowNode == null) {
                         logger.error("FlowNode " + nextNode + " not configured. Check configuration.");
@@ -347,9 +338,7 @@ public class GVSubFlow
             }
             else {
                 while (!nextNode.equals("") && !isInterrupted()) {
-                    if (subflowInfo != null) {
-                        subflowInfo.setFlowStatus(inID, nextNode);
-                    }
+                 
                     flowNode = flowNodes.get(nextNode);
                     if (flowNode == null) {
                         logger.error("FlowNode " + nextNode + " not configured. Check configuration.");
@@ -376,46 +365,14 @@ public class GVSubFlow
             if (logger.isDebugEnabled()) {
                 logger.debug(GVFormatLog.formatEND(flowName, (GVBuffer) output).toString());
             }
-            success = true;
-
+          
             return (GVBuffer) output;
         }
         catch (InterruptedException exc) {
             logger.error("Subflow [" + flowName + "] interrupted!", exc);
             throw exc;
         }
-        finally {
-            if (subflowInfo != null) {
-                subflowInfo.flowTerminated(inID, success);
-            }
-           
-        }
-    }
-
-    /**
-     * Initialize the associated SubFlowInfo instance
-     */
-    private void getGVSubFlowInfo()
-    {
-        if (subflowInfo == null) {
-            try {
-                subflowInfo = ServiceOperationInfoManager.instance().getSubFlowInfo(serviceName, operationName, 
-                        flowName, true);
-            }
-            catch (Exception exc) {
-                logger.warn("Error on MBean registration: " + exc);
-                subflowInfo = null;
-            }
-        }
-    }
-
-    /**
-     * @return the actual logger level
-     */
-    public Level getLoggerLevel() {
-        getGVSubFlowInfo();
         
-        return this.loggerLevel;
     }
 
     /**

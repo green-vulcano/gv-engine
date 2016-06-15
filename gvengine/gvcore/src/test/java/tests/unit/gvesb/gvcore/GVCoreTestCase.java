@@ -24,8 +24,6 @@ import it.greenvulcano.gvesb.buffer.GVBuffer;
 import it.greenvulcano.gvesb.buffer.GVException;
 import it.greenvulcano.gvesb.buffer.Id;
 import it.greenvulcano.gvesb.core.GreenVulcano;
-import it.greenvulcano.gvesb.core.jmx.RegisterJMXServiceManager;
-import it.greenvulcano.gvesb.core.jmx.RegisterServiceOperationInfoManager;
 import it.greenvulcano.gvesb.identity.GVIdentityHelper;
 import it.greenvulcano.gvesb.identity.impl.DummyIdentityInfo;
 import it.greenvulcano.gvesb.virtual.OperationFactory;
@@ -35,21 +33,11 @@ import it.greenvulcano.gvesb.virtual.internal.ScriptCallOperation;
 import it.greenvulcano.gvesb.virtual.internal.TestServiceCall;
 import it.greenvulcano.gvesb.virtual.internal.xml.XMLValidationCallOperation;
 import it.greenvulcano.gvesb.virtual.pool.OperationManagerPool;
-import it.greenvulcano.jmx.JMXEntryPoint;
-import it.greenvulcano.jmx.MBeanServerInitializerFactory;
 import it.greenvulcano.util.xml.XMLUtils;
 import junit.framework.TestCase;
-import tests.unit.gvesb.gvcore.jmx.Test;
-import tests.unit.gvesb.gvcore.jmx.TestMBean;
-
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -61,10 +49,8 @@ import org.w3c.dom.Document;
  */
 public class GVCoreTestCase extends TestCase
 {
-    private static JMXEntryPoint jmx                = null;
-
-    private static Set<String>   result             = new HashSet<String>();
-
+    
+  
     /**
      * @see junit.framework.TestCase#setUp()
      */
@@ -77,23 +63,6 @@ public class GVCoreTestCase extends TestCase
 		OperationFactory.registerSupplier("gvdte-context-call", DTEServiceContextCall::new);
 		OperationFactory.registerSupplier("test-service-call", TestServiceCall::new);
     	
-		MBeanServerInitializerFactory.registerSupplier("it.greenvulcano.gvesb.core.jmx.RegisterServiceOperationInfoManager", RegisterServiceOperationInfoManager::new);
-		MBeanServerInitializerFactory.registerSupplier("it.greenvulcano.gvesb.core.jmx.RegisterJMXServiceManager", RegisterJMXServiceManager::new);
-        if (jmx == null) {
-        	
-            jmx = JMXEntryPoint.instance();
-            MBeanServer server = jmx.getServer();
-
-            Set<ObjectName> set = server.queryNames(new ObjectName("GreenVulcano:*"), null);
-            for (ObjectName objectName : set) {
-                System.out.println(objectName);
-            }
-            assertTrue("No JMX object returned in GreenVulcano domain", set != null && !set.isEmpty());
-                    
-            TestMBean t = new Test(result);
-            server.registerMBean(t, new ObjectName("GreenVulcano:service=GVTestNotification"));
-            
-        }
     }
 
     /**
@@ -436,35 +405,7 @@ public class GVCoreTestCase extends TestCase
         assertEquals(SERVICE_NAME, gvBufferout.getService());
         assertEquals(id, gvBufferout.getId());
     }
-
-    /**
-     * @throws Exception
-     */
-    public void testGVCoreNotification() throws Exception
-    {
-        String SYSTEM_NAME = "GVESB";
-        String SERVICE_NAME = "TEST_NOTIF";
-        String TEST_BUFFER = "AaAaAaAa";
-        Id id = new Id();
-        GVBuffer gvBuffer = new GVBuffer(SYSTEM_NAME, SERVICE_NAME, id);
-        gvBuffer.setProperty("PROP_TEST_1", "value 1");
-        gvBuffer.setProperty("PROP_TEST_2", "value 2");
-        gvBuffer.setProperty("PROP_TEST_3", "value 3");
-        gvBuffer.setObject(TEST_BUFFER);
-
-        GreenVulcano greenVulcano = new GreenVulcano();
-        GVBuffer gvBufferout = greenVulcano.requestReply(gvBuffer);
-        assertEquals(SYSTEM_NAME, gvBufferout.getSystem());
-        assertEquals(SERVICE_NAME, gvBufferout.getService());
-        assertEquals(id, gvBufferout.getId());
-        assertEquals(TEST_BUFFER, gvBufferout.getObject());
-        assertEquals(2, result.size());
-        StringBuilder not1 = new StringBuilder();
-        not1.append(SYSTEM_NAME).append('#').append(SERVICE_NAME).append('#').append(id.toString());
-        assertTrue(result.contains(not1.toString()));
-        assertTrue(result.contains("it.greenvulcano.gvesb.virtual.CallException: BOOM!!!! [it.greenvulcano.gvesb.virtual.CallException]: "));
-    }
-
+    
     /**
      * @throws Exception
      */
