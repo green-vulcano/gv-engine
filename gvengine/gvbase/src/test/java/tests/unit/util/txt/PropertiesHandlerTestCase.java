@@ -24,8 +24,10 @@ import it.greenvulcano.util.metadata.PropertiesHandler;
 import it.greenvulcano.util.txt.DateUtils;
 
 import java.io.File;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.TimeZone;
@@ -105,6 +107,37 @@ public class PropertiesHandlerTestCase extends TestCase
         String src = "script{{js::basic:: var i=5; var r = new Number(i*2); r.toFixed(0);}}";
         String dest = PropertiesHandler.expand(src);
         assertEquals(match, dest);
+    }
+    
+    @Test
+    public void testExpandEncoding() throws Exception
+    {
+        String match = Base64.getEncoder().encodeToString("test123".getBytes());
+        String src = "enc{{base64::test123}}";
+        String dest = PropertiesHandler.expand(src);
+        assertEquals(match, dest);      
+        
+        src = "dec{{base64::" + dest + "}}";
+        dest = PropertiesHandler.expand(src);
+        assertEquals("test123", dest);
+        
+        match = URLEncoder.encode("tè§t v£", "UTF-8");       
+        src = "enc{{url::tè§t v£}}";
+        dest = PropertiesHandler.expand(src);       
+        assertEquals(match, dest);
+        
+        src = "dec{{url::" + dest + "}}";
+        dest = PropertiesHandler.expand(src);
+        assertEquals("tè§t v£", dest);
+        
+        match = "74657374313233";
+        src = "enc{{hex::test123}}";
+        dest = PropertiesHandler.expand(src);
+        assertEquals(match, dest);
+        
+        src = "dec{{hex::" + dest + "}}";
+        dest = PropertiesHandler.expand(src);
+        assertEquals("test123", dest);
     }
 
     /**

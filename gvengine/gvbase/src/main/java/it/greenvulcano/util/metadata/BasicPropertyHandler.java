@@ -27,7 +27,11 @@ import it.greenvulcano.util.txt.TextUtils;
 import it.greenvulcano.util.xml.XMLUtils;
 
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,6 +39,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.xml.parsers.DocumentBuilder;
 
@@ -79,6 +85,9 @@ public class BasicPropertyHandler implements PropertyHandler
        managedTypes.add("urlEnc");
        managedTypes.add("urlDec");
        managedTypes.add("xmlp");
+       managedTypes.add("enc");
+       managedTypes.add("dec");
+       
        Collections.unmodifiableSet(managedTypes);
     } 
     
@@ -211,6 +220,9 @@ public class BasicPropertyHandler implements PropertyHandler
         }
         else if (type.startsWith("urlDec")) {
             return expandUrlDec(str, inProperties, object, extra);
+        }
+        else if (type.startsWith("enc") || type.startsWith("dec")) {
+            return expandEncoding(type, str, inProperties, object, extra);
         }
         else if (type.startsWith("xmlp")) {
             // DUMMY replacement - Must be handled by XMLConfig
@@ -875,8 +887,7 @@ public class BasicPropertyHandler implements PropertyHandler
     		return TextUtils.urlDecode(string);
     	}
         catch (Exception exc) {
-            System.out.println("Error handling 'urlDec' metadata '" + str + "': " + exc);
-            exc.printStackTrace();
+           
             if (PropertiesHandler.isExceptionOnErrors()) {
                 if (exc instanceof PropertiesHandlerException) {
                     throw (PropertiesHandlerException) exc;
@@ -885,6 +896,77 @@ public class BasicPropertyHandler implements PropertyHandler
             }
             return "urlDec" + PROP_START + str + PROP_END;
         }
+    }
+    
+    private static String expandEncoding(String type, String str, Map<String, Object> inProperties, Object object,
+            Object extra) throws PropertiesHandlerException
+    {
+    	try {
+    		String string = str;
+    		
+    		if (!PropertiesHandler.isExpanded(string)) {
+    			string = PropertiesHandler.expand(string, inProperties, object, extra);
+    		}
+    		if (!PropertiesHandler.isExpanded(string)) {
+    			return "enc" + PROP_START + str + PROP_END;
+    		}
+    		
+    		String encoder = "base64";
+    		if (string.contains("::")){
+    			String[] parts = string.split("::");
+    			encoder = parts[0];
+    			string = parts[1];
+    		}
+    		    		
+    		return type.startsWith("enc") ? encode(encoder, string): decode(encoder, string);
+    		 		
+    		
+    	} catch (Exception exc) {
+           
+            if (PropertiesHandler.isExceptionOnErrors()) {
+                if (exc instanceof PropertiesHandlerException) {
+                    throw (PropertiesHandlerException) exc;
+                }
+                throw new PropertiesHandlerException("Error handling 'urlDec' metadata '" + str + "'", exc);
+            }
+            return "enc" + PROP_START + str + PROP_END;
+        }
+    }
+    
+    private static String encode(String encoder, String string) throws UnsupportedEncodingException {
+    	switch (encoder) {
+			
+			case "base64":
+				return Base64.getEncoder().encodeToString(string.getBytes());
+				
+			case "url":
+				return URLEncoder.encode(string, "UTF-8");
+								
+			case "hex":
+				return string.chars().mapToObj(Integer::toHexString).collect(Collectors.joining());
+				
+			default:
+				return "enc" + PROP_START + string + PROP_END;
+    	}   
+    }
+    
+    private static String decode(String encoder, String string) throws UnsupportedEncodingException {
+    	switch (encoder) {
+			
+			case "base64":
+				return new String(Base64.getDecoder().decode(string.getBytes()));
+				
+			case "url":
+				return URLDecoder.decode(string, "UTF-8");
+								
+			case "hex":
+				return Stream.of(string.split("(?<=\\G.{2})"))
+						.map(h->(char)Integer.parseInt(h, 16))
+						.reduce(new StringBuffer(), (b,h)->b.append(h), (b,b1) ->b.append(b1.toString())).toString();
+				
+			default:
+				return "dec" + PROP_START + string + PROP_END;
+    	}   
     }
 
 }
