@@ -1,10 +1,12 @@
 package it.greenvulcano.gvesb.api.controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -43,21 +45,23 @@ import it.greenvulcano.gvesb.core.pool.GreenVulcanoPoolException;
 import it.greenvulcano.gvesb.core.pool.GreenVulcanoPoolManager;
 
 public class GvServicesControllerRest implements GvServicesController<Response>{
-	private static final Logger LOG = LoggerFactory.getLogger(GvServicesControllerRest.class);
+	private final static Logger LOG = LoggerFactory.getLogger(GvServicesControllerRest.class);
 	
-	private final static Optional<GreenVulcanoPool> gvpool;
-	
+	private final static Optional<GreenVulcanoPool> GVPOOL;
+	private final static ObjectMapper OBJECT_MAPPER;
 	@Context
 	private UriInfo uriInfo;
 		
 	static {
+		OBJECT_MAPPER = new ObjectMapper();
+		
 		GreenVulcanoPool gvpoolInstance = null;
 		try {
 			gvpoolInstance = GreenVulcanoPoolManager.instance().getGreenVulcanoPool("gvapi");
 		} catch (Exception e) {
 			LOG.error("gvcoreapi - Error retriving a GreenVulcanoPool instance for subsystem HttpInboundGateway", e);						
 		}
-		gvpool = Optional.ofNullable(gvpoolInstance);
+		GVPOOL = Optional.ofNullable(gvpoolInstance);
 	}
 	
 	@Path("/probe")
@@ -77,14 +81,15 @@ public class GvServicesControllerRest implements GvServicesController<Response>{
 			NodeList serviceNodes = XMLConfig.getNodeList("GVServices.xml", "//Service");
 			
 			
-			List<Service> services = IntStream.range(0, serviceNodes.getLength())
+			Map<String, Service> services = IntStream.range(0, serviceNodes.getLength())
 							 .mapToObj(serviceNodes::item)
 							 .map(this::buildServiceFromConfig)
 							 .filter(Optional::isPresent)
 							 .map(Optional::get)
-							 .collect(Collectors.toList());
+							 .collect(Collectors.toMap(Service::getIdService, Function.identity()));
+			
 			LOG.debug("Services found "+serviceNodes.getLength());
-			response = new ObjectMapper().writeValueAsString(services);
+			response = OBJECT_MAPPER.writeValueAsString(services);
 		} catch (XMLConfigException | JsonProcessingException xmlConfigException){
 			LOG.error("Error reading services configuration", xmlConfigException);
 			new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Configuration error").build());
@@ -98,14 +103,14 @@ public class GvServicesControllerRest implements GvServicesController<Response>{
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Override public Response getOperations(@PathParam("service") String service) {
+	
 		String response = null;
-		
 		try {
 			Node serviceNode = Optional.ofNullable(XMLConfig.getNode("GVServices.xml", "//Service[@id-service='"+service+"']"))
 									   .orElseThrow(NoSuchElementException::new);
 			
-		    List<Operation>	 operations = getOperations(serviceNode); 
-		    response = new ObjectMapper().writeValueAsString(operations);		   
+			Map<String, Operation> operations = getOperations(serviceNode).stream().collect(Collectors.toMap(Operation::getName, Function.identity())); 
+		    response = OBJECT_MAPPER.writeValueAsString(operations);		   
 			
 		} catch (NoSuchElementException noSuchElementException) {
 			new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity("Service not found").build());
@@ -190,7 +195,7 @@ public class GvServicesControllerRest implements GvServicesController<Response>{
 		
 		try {
 			
-			GVBuffer output = gvpool.orElseThrow(()-> new WebApplicationException(Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("GreenVulcanoPool not available for subsystem HttpInboundGateway").build()))
+			GVBuffer output = GVPOOL.orElseThrow(()-> new WebApplicationException(Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("GreenVulcanoPool not available for subsystem HttpInboundGateway").build()))
 									.forward(input, operation);
 			if (output.getObject() instanceof String) {
 				response = output.getObject().toString();
@@ -200,7 +205,7 @@ public class GvServicesControllerRest implements GvServicesController<Response>{
 				response = org.json.JSONArray.class.cast(output.getObject()).toString();
 			} else if (Objects.nonNull(output.getObject())) {
 				
-				response = new ObjectMapper().writeValueAsString(output.getObject());
+				response = OBJECT_MAPPER.writeValueAsString(output.getObject());
 								
 			} else {
 				return Response.ok().build();
@@ -237,10 +242,8 @@ public class GvServicesControllerRest implements GvServicesController<Response>{
 										  XMLConfig.get(config, "@service-activation").equals("on"), 
 										  XMLConfig.get(config, "@statistics").equals("on"));
 						
-			List<Operation> operations = getOperations(config);
-			if (!operations.isEmpty()) {
-				service.getOperations().addAll(operations);
-			}
+			getOperations(config).stream().forEach( op -> service.getOperations().put(op.getName(), op) );
+			
 			return Optional.of(service);
 		} catch (NullPointerException|XMLConfigException xmlConfigException){
 			LOG.error("Error reading service configuration", xmlConfigException);

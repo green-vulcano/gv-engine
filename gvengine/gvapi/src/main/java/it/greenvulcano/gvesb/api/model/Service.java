@@ -1,21 +1,21 @@
 package it.greenvulcano.gvesb.api.model;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class Service {
 
 	private final String idService, groupName;
     private final boolean statisticsEnabled, enabled;
-	private final List<Operation> operations;
+	private final Map<String, Operation> operations;
 	
     public Service(String idService, String groupName, boolean enabled, boolean statisticsEnabled) {
 		this.idService = Objects.requireNonNull(idService);
 		this.groupName = Objects.requireNonNull(groupName);
 		this.statisticsEnabled = statisticsEnabled;
 		this.enabled = enabled;
-		this.operations = new LinkedList<>();
+		this.operations = new LinkedHashMap<>();
 	}    
 	    
     
@@ -35,7 +35,7 @@ public class Service {
 		return enabled;
 	}
 		
-	public List<Operation> getOperations() {
+	public Map<String, Operation> getOperations() {
 		return operations;
 	}
 

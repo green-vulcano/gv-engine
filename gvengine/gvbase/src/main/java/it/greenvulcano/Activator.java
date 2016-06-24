@@ -1,8 +1,13 @@
 package it.greenvulcano;
 
 import java.io.File;
+import java.util.Optional;
+
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+import org.osgi.service.cm.Configuration;
+import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +21,15 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext context) throws Exception {
 		LOG.debug("****** GVBase started");
 		
-		String configurationPath = System.getProperty("gv.app.home") + File.separator + "xmlconfig";
+		ServiceReference<?> configurationAdminReference = context.getServiceReference(ConfigurationAdmin.class.getName());
+        ConfigurationAdmin configurationAdmin = (ConfigurationAdmin) context.getService(configurationAdminReference);        
+        
+        Configuration gvcfg = configurationAdmin.getConfiguration("it.greenvulcano.gvesb.bus");
+        	
+        String userConfiguration = (String) Optional.ofNullable(gvcfg.getProperties().get("gvbus.apikey"))
+        											.orElse(XMLConfig.DEFAULT_FOLDER);
+   		
+		String configurationPath = System.getProperty("gv.app.home") + File.separator + userConfiguration;
 		try {
 			
 			File configDir = new File(configurationPath);

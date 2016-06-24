@@ -1,5 +1,8 @@
 package it.greenvulcano.gvesb.osgi.bus.connectors;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Dictionary;
 import java.util.LinkedHashSet;
 import java.util.Optional;
@@ -17,6 +20,7 @@ import org.apache.karaf.config.core.ConfigRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import it.greenvulcano.configuration.XMLConfig;
 import it.greenvulcano.gvesb.osgi.bus.BusLink;
 
 public class GVBusLink implements  BusLink {
@@ -87,7 +91,9 @@ public class GVBusLink implements  BusLink {
 		this.busId = busId;
 		
 		try {
-			createSession();			
+			createSession();
+			
+			createUserFolder();
 			
 			@SuppressWarnings("unchecked")
 			Dictionary<String, Object> gvesbCfg = configRepository.getConfigProperties("it.greenvulcano.gvesb.bus");				 
@@ -119,6 +125,34 @@ public class GVBusLink implements  BusLink {
 			notifyConnection();
 			
 		
+	}
+	
+	private void createUserFolder(){
+		String defaultConfigPath = System.getProperty("gv.app.home") + File.separator + XMLConfig.DEFAULT_FOLDER;
+		String configurationPath = System.getProperty("gv.app.home") + File.separator + busId;
+		try {
+			
+			File defaultConfigDir = new File(defaultConfigPath);			
+			File configDir = new File(configurationPath);
+						
+			if(!configDir.exists()){
+				configDir.mkdir();
+				Files.walk(defaultConfigDir.toPath()).forEach(path -> 
+				{
+					try {
+						Files.copy(path, configDir.toPath().resolve(path.getFileName()));
+					} catch (IOException ioException) {
+						LOG.error("Fail to copy "+path+" to " + configurationPath);
+					}
+				});
+			} 
+			
+			XMLConfig.setBaseConfigPath(configurationPath);
+			XMLConfig.reloadAll();
+		
+		} catch (Exception exception) {
+			LOG.error("Fail to set configuration path " + configurationPath);
+		}
 	}
 	
 	private void notifyConnection() throws JMSException {	

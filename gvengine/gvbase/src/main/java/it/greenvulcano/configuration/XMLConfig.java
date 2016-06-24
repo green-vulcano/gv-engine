@@ -205,6 +205,8 @@ public final class XMLConfig {
 	
 	private final static Logger LOG = LoggerFactory.getLogger(XMLConfig.class);
 	
+	public static final String DEFAULT_FOLDER = "xmlconfig";
+	
     /**
      * XMLConfig events source.
      */
