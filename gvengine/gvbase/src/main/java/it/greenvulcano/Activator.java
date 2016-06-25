@@ -1,6 +1,7 @@
 package it.greenvulcano;
 
 import java.io.File;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.osgi.framework.BundleActivator;
@@ -27,7 +28,11 @@ public class Activator implements BundleActivator {
         Configuration gvcfg = configurationAdmin.getConfiguration("it.greenvulcano.gvesb.bus");
         	
         String userConfiguration = (String) Optional.ofNullable(gvcfg.getProperties().get("gvbus.apikey"))
-        											.orElse(XMLConfig.DEFAULT_FOLDER);
+        											 .filter(Objects::nonNull)
+        											 .map(c->c.toString().trim())
+        											 .filter(c-> c.length()>0)
+        											 .filter(c-> !c.equalsIgnoreCase("undefined"))
+        											 .orElse(XMLConfig.DEFAULT_FOLDER);
    		
 		String configurationPath = System.getProperty("gv.app.home") + File.separator + userConfiguration;
 		try {

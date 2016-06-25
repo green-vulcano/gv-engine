@@ -9,13 +9,24 @@
 	  			http://cxf.apache.org/blueprint/core http://cxf.apache.org/schemas/blueprint/core.xsd"
 	  			default-activation="eager">
 	
+	<reference id="gvBusLink" interface="it.greenvulcano.gvesb.osgi.bus.BusLink"  activation="eager" availability="mandatory" />	
+		
+	<bean id="instanceController" class="it.greenvulcano.gvesb.api.controller.GvInstanceControllerRest">
+		<property name="busLink" ref="gvBusLink"/>
+	</bean>
+
+	<jaxrs:server address="/gvengine" id="gvengineapi">
+        <jaxrs:serviceBeans>
+            <ref component-id="instanceController" />           
+        </jaxrs:serviceBeans>        
+    </jaxrs:server>
+
 	<bean id="servicesController" class="it.greenvulcano.gvesb.api.controller.GvServicesControllerRest"/>
 			
-	<jaxrs:server address="/gvesb" id="gvServicesController">
-        <jaxrs:serviceBeans>
+	<jaxrs:server address="/gvesb" id="gvesbapi">
+        <jaxrs:serviceBeans>            
             <ref component-id="servicesController" />
         </jaxrs:serviceBeans>        
     </jaxrs:server>
-	
-
+    
 </blueprint>

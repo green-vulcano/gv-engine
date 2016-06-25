@@ -109,8 +109,8 @@ public class GvServicesControllerRest implements GvServicesController<Response>{
 			Node serviceNode = Optional.ofNullable(XMLConfig.getNode("GVServices.xml", "//Service[@id-service='"+service+"']"))
 									   .orElseThrow(NoSuchElementException::new);
 			
-			Map<String, Operation> operations = getOperations(serviceNode).stream().collect(Collectors.toMap(Operation::getName, Function.identity())); 
-		    response = OBJECT_MAPPER.writeValueAsString(operations);		   
+			Service svc = buildServiceFromConfig(serviceNode).orElseThrow(NoSuchElementException::new);;
+		    response = OBJECT_MAPPER.writeValueAsString(svc);		   
 			
 		} catch (NoSuchElementException noSuchElementException) {
 			new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity("Service not found").build());

@@ -85,15 +85,29 @@ public class GVBusLink implements  BusLink {
 	}	
 	
 	@Override
-	public String connect(String busId) {
+	public String connect(String busId) throws IOException {
 		String message = "Bus connection established";
 		
 		this.busId = busId;
 		
 		try {
-			createSession();
+			if (busId != null && busId.trim().length()>1 && !busId.equals("undefined")){
+				createSession();
 			
-			createUserFolder();
+				createUserFolder();
+			} else {
+				String defaultConfigPath = System.getProperty("gv.app.home") + File.separator + XMLConfig.DEFAULT_FOLDER;
+				XMLConfig.setBaseConfigPath(defaultConfigPath);
+				XMLConfig.reloadAll();
+				
+				if (session!=null) {
+					try {
+						session.close();
+					} catch (JMSException jmsException) {
+						LOG.error("Error disconnecting session on queue "+busId, jmsException);
+					}
+				}
+			}
 			
 			@SuppressWarnings("unchecked")
 			Dictionary<String, Object> gvesbCfg = configRepository.getConfigProperties("it.greenvulcano.gvesb.bus");				 
@@ -102,7 +116,16 @@ public class GVBusLink implements  BusLink {
 						
 		} catch (Exception e) {
 			LOG.error("Error connecting session on queue "+busId, e);
-			message = "Bus connection failed: " + e.getMessage();
+			
+			if (session!=null) {
+				try {
+					session.close();
+				} catch (JMSException jmsException) {
+					LOG.error("Error disconnecting session on queue "+busId, jmsException);
+				}
+			}
+			
+			throw new IOException("Bus connection failed: " + e.getMessage());
 		} 
 		
 		return message;

@@ -22,6 +22,13 @@
   		<type>bundle</type>
   		<scope>provided</scope>
   	</dependency>
+  	 <dependency>
+      <groupId>it.greenvulcano.gvesb</groupId>
+      <artifactId>gvbus</artifactId>
+      <version>${project.version}</version>
+      <type>bundle</type>
+      <scope>provided</scope>
+    </dependency>
   	<dependency>
   		<groupId>it.greenvulcano.gvesb</groupId>
   		<artifactId>gvcore</artifactId>
@@ -63,11 +70,13 @@
             <Export-Package/>
             <Import-Package>
               org.osgi.framework,
+              org.osgi.service.cm,
               javax.ws.rs,
               javax.ws.rs.core,
               it.greenvulcano.gvesb.buffer,
               it.greenvulcano.gvesb.core.pool,
               it.greenvulcano.configuration,
+              it.greenvulcano.gvesb.osgi.bus,
               org.json,
               org.slf4j;version="[1.6,2)";provider=paxlogging,
               org.w3c.dom,

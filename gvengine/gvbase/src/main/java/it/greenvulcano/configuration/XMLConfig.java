@@ -2253,7 +2253,7 @@ public final class XMLConfig {
             fullProps.putAll(PropertiesFileReader.propertiesToMap(props));
         }
         catch (Exception exc) {
-        	LOG.error("Error reading " + propFile , exc);
+        	LOG.warn("Error reading " + propFile + ": (" + exc.getClass() + ") " + exc.getMessage());
         }
          
         if (!fullProps.isEmpty()) {
