@@ -28,7 +28,7 @@ public class GvInstanceControllerRest implements GvInstanceController<Response> 
 		Response response = null;
 		
 		if (key==null || key.trim().equals("")) {
-			response = Response.status(Status.NOT_ACCEPTABLE).entity("Missing equired param apikey").build();
+			response = Response.status(Status.NOT_ACCEPTABLE).entity("Missing required param apikey").build();
 		} else {
 			 try {
 				response = Response.status(Status.CREATED).entity(busLink.connect(key)).build();

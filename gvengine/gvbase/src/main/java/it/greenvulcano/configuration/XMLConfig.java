@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -271,7 +272,7 @@ public final class XMLConfig {
         }
     }
 
-    private static String                         baseConfigPath      = "";
+    private static AtomicReference<String>                         baseConfigPath      = new AtomicReference<String>("");
 
     /**
      * Entity resolver used to resolve entity contained in the configuration
@@ -2036,12 +2037,12 @@ public final class XMLConfig {
         }
 
         try {
-            if ((XMLConfig.baseConfigPath != null) && !("".equals(XMLConfig.baseConfigPath))) {
-                File f = new File(baseConfigPath + File.separatorChar + file);
-                if (f.exists()) {
-                    url = new URL("file", null, f.getAbsolutePath());
-                }
+            
+            File f = new File(baseConfigPath.get() + File.separatorChar + file);
+            if (f.exists()) {
+                url = new URL("file", null, f.getAbsolutePath());
             }
+            
         }
         catch (MalformedURLException e) {
             // do nothing
@@ -2234,7 +2235,7 @@ public final class XMLConfig {
 
         if (baseProps == null) {
             try {            	
-                Properties props = PropertiesFileReader.readFile("XMLConfig.properties",baseConfigPath);
+                Properties props = PropertiesFileReader.readFile("XMLConfig.properties", baseConfigPath.get());
                 baseProps = PropertiesFileReader.propertiesToMap(props);
             }
             catch (Exception exc) {
@@ -2266,17 +2267,16 @@ public final class XMLConfig {
     /**
      * @param baseConfigPath
      */
-    public static void setBaseConfigPath(String baseConfigPath)
-    {
-        XMLConfig.baseConfigPath = baseConfigPath;
+    public static void setBaseConfigPath(String baseConfigPath) {
+    	if (baseConfigPath!=null)
+        XMLConfig.baseConfigPath.set(baseConfigPath);
     }
 
     /**
      * @return the base configuration path
      */
-    public static String getBaseConfigPath()
-    {
-        return XMLConfig.baseConfigPath;
+    public static String getBaseConfigPath() {
+        return XMLConfig.baseConfigPath.get();
     }
 
     private static Document readDocument(URL url, String file) throws Exception
@@ -2371,7 +2371,7 @@ public final class XMLConfig {
         splitConfig = new HashMap<String, SplitConfig>();
         mainToSplitFile = new HashMap<String, List<String>>();
         
-        Properties props = PropertiesFileReader.readFile("XMLConfigSplit.properties", baseConfigPath);
+        Properties props = PropertiesFileReader.readFile("XMLConfigSplit.properties", baseConfigPath.get());
 
         Enumeration<String> dests = (Enumeration<String>) props.propertyNames();
         while (dests.hasMoreElements()) {
