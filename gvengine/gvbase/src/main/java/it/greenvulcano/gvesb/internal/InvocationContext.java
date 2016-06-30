@@ -86,6 +86,17 @@ public class InvocationContext
     {
         // do nothing
     }
+    
+    /**
+     * Copy constructor.
+     */
+    public InvocationContext(InvocationContext toClone)
+    {
+    	this.operation = toClone.operation;
+    	this.service = toClone.service;
+    	this.system = toClone.system;
+    	this.id = toClone.id;
+    }
 
     /**
      * It inserts the request of InvocationContext in associated top to the

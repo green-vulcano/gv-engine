@@ -1,0 +1,209 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	
+	<parent>
+		<groupId>it.greenvulcano.gvesb</groupId>
+		<artifactId>gvengine</artifactId>
+		<version>4.0.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>gv-console-interceptor</artifactId>
+	<packaging>bundle</packaging>
+
+	<name>gv-console-interceptor</name>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+				
+		<spring.version>3.1.4.RELEASE</spring.version>
+		<maven-compiler-plugin.version>2.5.1</maven-compiler-plugin.version>
+		<maven-bundle-plugin.version>3.0.1</maven-bundle-plugin.version>
+		<osgi.version>5.0.0</osgi.version>
+		<version.slf4j>1.6.1</version.slf4j>
+		<version.junit>4.11</version.junit>
+		<gvesb.vcl.version>4.0.1-SNAPSHOT</gvesb.vcl.version>
+		<gvesb.core.version>4.0.1-SNAPSHOT</gvesb.core.version>
+		<gvesb.commons.version>4.0.1-SNAPSHOT</gvesb.commons.version>
+
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>${spring.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${spring.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+			<version>${spring.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- MONGODB - ASYNCH DRIVER - START -->
+		<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>mongodb-driver-async</artifactId>
+			<version>3.0.4</version>
+		</dependency>
+		<!-- MONGODB - ASYNCH DRIVER - END -->
+		
+		<dependency>
+          <groupId>org.mongodb</groupId>
+          <artifactId>mongo-java-driver</artifactId>
+          <version>3.0.1</version>
+        </dependency>	
+		
+		<!-- GREENVULCANO DEPENDENCIES -->
+		<dependency>
+			<groupId>it.greenvulcano.gvesb</groupId>
+			<artifactId>gvdte</artifactId>
+			<version>${gvesb.commons.version}</version>
+			<type>bundle</type>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>it.greenvulcano.gvesb</groupId>
+			<artifactId>gvpolicy</artifactId>
+			<version>${gvesb.commons.version}</version>
+			<type>bundle</type>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>it.greenvulcano.gvesb</groupId>
+			<artifactId>gvcore</artifactId>
+			<version>${gvesb.core.version}</version>
+			<type>bundle</type>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>it.greenvulcano.gvesb</groupId>
+			<artifactId>gvvcl</artifactId>
+			<version>${gvesb.vcl.version}</version>
+			<type>bundle</type>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.core</artifactId>
+			<version>${osgi.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.compendium</artifactId>
+			<version>${osgi.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${version.slf4j}</version>
+			<scope>provided</scope>			
+		</dependency>
+		
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+			<version>${version.junit}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${spring.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+	
+	<build>
+	
+	<plugins>
+			<plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <inherited>true</inherited>
+                <version>${maven-compiler-plugin.version}</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>${maven-bundle-plugin.version}</version>
+				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+						<Bundle-Version>${project.version}</Bundle-Version>
+						<Spring-Context>application-context.xml</Spring-Context>
+						<Export-Package/>
+						<Import-Package>
+						    javax.net,
+						    javax.net.ssl,
+						    javax.security.sasl,
+						    javax.security.auth.callback,
+						    org.ietf.jgss,
+						    
+							javax.management,
+							javax.xml.transform,
+							javax.xml.transform.stream,   							
+							org.springframework.context,
+							org.springframework.context.support,
+							org.springframework.util,
+							org.springframework.context.weaving,
+							org.springframework.instrument.classloading,
+							org.springframework.beans.factory.config,							
+							it.greenvulcano.gvesb.buffer,
+							it.greenvulcano.gvesb.core.config,
+							it.greenvulcano.gvesb.core.flow.hub,
+							it.greenvulcano.gvesb.internal,
+							it.greenvulcano.jmx,
+							org.slf4j;version="[1.6,2)";provider=paxlogging,
+							org.osgi.framework;version="[1.7,2)",
+							org.osgi.service.blueprint;version="[1.0.0,2.0.0)",							
+							org.w3c.dom						
+						</Import-Package>
+						<Embed-Dependency>*;scope=compile;type=jar</Embed-Dependency>						
+						<Bundle-Activator>it.greenvulcano.gvesb.aop.Activator</Bundle-Activator>
+					</instructions>
+				</configuration>
+			</plugin>
+          
+	
+	</plugins>
+	   
+	</build>
+	
+	
+</project>

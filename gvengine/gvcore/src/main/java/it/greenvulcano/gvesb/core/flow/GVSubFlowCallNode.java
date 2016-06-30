@@ -23,6 +23,7 @@ import it.greenvulcano.configuration.XMLConfig;
 import it.greenvulcano.configuration.XMLConfigException;
 import it.greenvulcano.gvesb.buffer.GVBuffer;
 import it.greenvulcano.gvesb.buffer.GVException;
+import it.greenvulcano.gvesb.core.config.InvocationContext;
 import it.greenvulcano.gvesb.core.exc.GVCoreConfException;
 import it.greenvulcano.gvesb.core.exc.GVCoreException;
 import it.greenvulcano.gvesb.gvdp.DataProviderManager;
@@ -198,7 +199,16 @@ public class GVSubFlowCallNode extends GVFlowNode
                     }
                 }
                 internalData = inputServices.perform(internalData);
-                internalData = subFlow.perform(internalData, onDebug);
+                InvocationContext gvCtx = (InvocationContext) InvocationContext.getInstance();
+                String prevSubOperation = gvCtx.getSubOperation();
+                try {
+                	gvCtx.setSubOperation(localFlowOp);
+                	
+                	internalData = subFlow.perform(internalData, onDebug);
+                }
+                finally {
+                	gvCtx.setSubOperation(prevSubOperation);
+                }
                 internalData = outputServices.perform(internalData);
                 if ((outputRefDP != null) && (outputRefDP.length() > 0)) {
                     IDataProvider dataProvider = dataProviderManager.getDataProvider(outputRefDP);

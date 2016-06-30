@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	   					   http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context 
+                           http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<context:component-scan base-package="it.greenvulcano.gvesb.aop" />
+	
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location">
+			<value>classpath:mongodb.properties</value>
+		</property>
+	</bean>
+	 
+	<bean id="mongoClientStub" class="it.greenvulcano.gvesb.aop.MongoDBClientStub">
+		<property name="connectionString" value="${mongo_conn_string}" />
+		<property name="database" value="${mongo_database}" />
+		<property name="collection" value="${mongo_collection}" />
+		<!-- Trace Level -->
+		<!-- <property name="traceLevelCollection" value="${mongo_trace_level_collection}" /> -->
+	</bean>
+	
+	<bean id="mongoClientSynchStub" class="it.greenvulcano.gvesb.aop.MongoDBSynchClientStub">
+		<property name="connectionString" value="${mongo_conn_string}" />
+		<property name="database" value="${mongo_database}" />
+		<!-- <property name="collection" value="${mongo_collection}" /> -->
+		<!-- Trace Level -->
+		<property name="traceLevelCollection" value="${mongo_trace_level_collection}" />
+	</bean>
+	
+	<!-- 
+	<bean id="mongoClientStub" class="it.greenvulcano.gvesb.aop.MongoDBClientStub">
+		<property name="connectionString" value="mongodb://localhost:27017" />
+		<property name="database" value="mydbtest_gv" />
+		<property name="collection" value="mydbtest_gv" />
+	</bean>
+	-->
+</beans>

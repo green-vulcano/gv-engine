@@ -29,8 +29,12 @@ import it.greenvulcano.gvesb.core.debug.ExecutionInfo;
 import it.greenvulcano.gvesb.core.exc.GVCoreConfException;
 import it.greenvulcano.gvesb.core.exc.GVCoreException;
 import it.greenvulcano.gvesb.core.exc.GVCoreWrongInterfaceException;
+import it.greenvulcano.gvesb.core.flow.hub.Event;
+import it.greenvulcano.gvesb.core.flow.hub.EventResult;
+import it.greenvulcano.gvesb.core.flow.hub.Subject;
 import it.greenvulcano.gvesb.core.jmx.OperationInfo;
 import it.greenvulcano.gvesb.core.jmx.ServiceOperationInfoManager;
+import it.greenvulcano.gvesb.internal.GVInternalException;
 import it.greenvulcano.gvesb.log.GVFormatLog;
 import it.greenvulcano.gvesb.statistics.StatisticsData;
 import it.greenvulcano.gvesb.statistics.StatisticsDataManager;
@@ -229,7 +233,6 @@ public class GVFlowWF implements GVFlow
      *         if errors occurs
      */
     public GVBuffer perform(GVBuffer gvBuffer, boolean onDebug) throws GVCoreException, InterruptedException {
-        
         if (!onDebug) {
             onDebug = "true".equalsIgnoreCase(gvBuffer.getProperty("GV_FLOW_DEBUG"));
             if (!onDebug) {
@@ -244,11 +247,41 @@ public class GVFlowWF implements GVFlow
             businessFlowTerminated = false;
 
             if (useStatistics) {
-                sd = statisticsDataManager.startStatistics(gvBuffer, "core", flowName);
+            	sd = statisticsDataManager.startStatistics(gvBuffer, "core", flowName);
             }
-            GVBuffer outData = internalPerform(gvBuffer, onDebug);
 
+            //START STATISTICS HUB with gvBuffer event input (popola Event)
+            logger.error("GVFlowWF Subject.startStatistics() - START ... ");
+            try {
+            	InvocationContext invocationContext = (InvocationContext)InvocationContext.getInstance();
+            	Event eventStart = new Event(invocationContext, gvBuffer);
+				Subject.startStatistics(eventStart);
+			} catch (GVInternalException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+            logger.error("GVFlowWF Subject.startStatistics() - STOP ... ");
+            //START STATISTICS HUB with gvBuffer event input (popola Event)
+            
+            GVBuffer outData = internalPerform(gvBuffer, onDebug);
+            
+            //STOP STATISTICS HUB with outData gvBuffer event input (popola Event con Result popolato con outData)
+            logger.error("GVFlowWF Subject.stopStatistics() - START... ");
+            try {
+            	InvocationContext invocationContext = (InvocationContext)InvocationContext.getInstance();
+            	Event eventEnd = new Event(invocationContext, gvBuffer);
+            	eventEnd.setEventResult(new EventResult(outData));
+				Subject.stopStatistics(eventEnd);
+			} catch (GVInternalException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+            logger.error("GVFlowWF Subject.stopStatistics() - STOP... ");
+            //STOP STATISTICS HUB with outData gvBuffer event input (popola Event con Result popolato con outData)
+        	
+            
             if (useStatistics) {
+            	
                 try {
                     if (businessFlowTerminated) {
                         statisticsDataManager.stopStatistics(sd, outData, 1);

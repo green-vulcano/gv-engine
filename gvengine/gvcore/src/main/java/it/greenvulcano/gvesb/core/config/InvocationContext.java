@@ -61,6 +61,18 @@ public class InvocationContext extends it.greenvulcano.gvesb.internal.Invocation
         super();
         init();
     }
+    
+    /**
+     * Copy constructor.
+     */
+    public InvocationContext(InvocationContext toClone)
+    {
+    	super(toClone);
+    	this.gvServiceConfigManager = toClone.gvServiceConfigManager;
+    	this.opMgr = toClone.opMgr;
+    	this.statisticsDataManager = toClone.statisticsDataManager;
+    	init();
+    }
 
     /**
      * The initialize method.
