@@ -7,7 +7,7 @@
                            http://www.springframework.org/schema/context 
                            http://www.springframework.org/schema/context/spring-context.xsd">
 
-	<context:component-scan base-package="it.greenvulcano.gvesb.aop" />
+	<context:component-scan base-package="it.greenvulcano.gvesb.interceptor" />
 	
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="location">
@@ -15,7 +15,7 @@
 		</property>
 	</bean>
 	 
-	<bean id="mongoClientStub" class="it.greenvulcano.gvesb.aop.MongoDBClientStub">
+	<bean id="mongoClientStub" class="it.greenvulcano.gvesb.interceptor.MongoDBClientStub">
 		<property name="connectionString" value="${mongo_conn_string}" />
 		<property name="database" value="${mongo_database}" />
 		<property name="collection" value="${mongo_collection}" />
@@ -23,7 +23,7 @@
 		<!-- <property name="traceLevelCollection" value="${mongo_trace_level_collection}" /> -->
 	</bean>
 	
-	<bean id="mongoClientSynchStub" class="it.greenvulcano.gvesb.aop.MongoDBSynchClientStub">
+	<bean id="mongoClientSynchStub" class="it.greenvulcano.gvesb.interceptor.MongoDBSynchClientStub">
 		<property name="connectionString" value="${mongo_conn_string}" />
 		<property name="database" value="${mongo_database}" />
 		<!-- <property name="collection" value="${mongo_collection}" /> -->
@@ -32,7 +32,7 @@
 	</bean>
 	
 	<!-- 
-	<bean id="mongoClientStub" class="it.greenvulcano.gvesb.aop.MongoDBClientStub">
+	<bean id="mongoClientStub" class="it.greenvulcano.gvesb.interceptor.MongoDBClientStub">
 		<property name="connectionString" value="mongodb://localhost:27017" />
 		<property name="database" value="mydbtest_gv" />
 		<property name="collection" value="mydbtest_gv" />

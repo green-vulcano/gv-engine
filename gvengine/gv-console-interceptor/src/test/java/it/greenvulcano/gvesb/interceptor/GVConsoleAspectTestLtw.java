@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package it.greenvulcano.gvesb.aop;
+package it.greenvulcano.gvesb.interceptor;
 
 import it.greenvulcano.gvesb.buffer.GVBuffer;
 import it.greenvulcano.gvesb.buffer.Id;

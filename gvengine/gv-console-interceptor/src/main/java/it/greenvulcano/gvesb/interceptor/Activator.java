@@ -1,4 +1,4 @@
-package it.greenvulcano.gvesb.aop;
+package it.greenvulcano.gvesb.interceptor;
 
 import it.greenvulcano.gvesb.core.flow.hub.Subject;
 

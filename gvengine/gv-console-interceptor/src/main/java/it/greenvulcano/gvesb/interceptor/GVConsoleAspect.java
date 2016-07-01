@@ -1,23 +1,23 @@
-package it.greenvulcano.gvesb.aop;
+package it.greenvulcano.gvesb.interceptor;
 
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
-import static it.greenvulcano.gvesb.aop.GVServiceInstanceFields.GVC_END_DATE;
-import static it.greenvulcano.gvesb.aop.GVServiceInstanceFields.GVC_GV_BUFFER_OBJECT;
-import static it.greenvulcano.gvesb.aop.GVServiceInstanceFields.GVC_GV_BUFFER_OBJECT_OUT;
-import static it.greenvulcano.gvesb.aop.GVServiceInstanceFields.GVC_GV_BUFFER_PROPS;
-import static it.greenvulcano.gvesb.aop.GVServiceInstanceFields.GVC_GV_BUFFER_PROPS_OUT;
-import static it.greenvulcano.gvesb.aop.GVServiceInstanceFields.GVC_INPUT_OBJECT_TYPE;
-import static it.greenvulcano.gvesb.aop.GVServiceInstanceFields.GVC_INPUT_OBJECT_TYPE_OUT;
-import static it.greenvulcano.gvesb.aop.GVServiceInstanceFields.GVC_OPERATION_NAME;
-import static it.greenvulcano.gvesb.aop.GVServiceInstanceFields.GVC_SERVICE_INSTANCE_ID;
-import static it.greenvulcano.gvesb.aop.GVServiceInstanceFields.GVC_SERVICE_NAME;
-import static it.greenvulcano.gvesb.aop.GVServiceInstanceFields.GVC_START_DATE;
-import static it.greenvulcano.gvesb.aop.GVServiceInstanceFields.GVC_SUBOPERATION_NAME;
-import static it.greenvulcano.gvesb.aop.GVServiceInstanceFields.GVC_SUBSYSTEM;
-import static it.greenvulcano.gvesb.aop.GVServiceInstanceFields.GVC_SYSTEM;
-import static it.greenvulcano.gvesb.aop.GVServiceInstanceFields.GVC_THREAD_NAME;
-import static it.greenvulcano.gvesb.aop.GVTraceLevelServiceFields.GVC_TRACE_LEVEL_SERVICE_NAME;
+import static it.greenvulcano.gvesb.interceptor.GVServiceInstanceFields.GVC_END_DATE;
+import static it.greenvulcano.gvesb.interceptor.GVServiceInstanceFields.GVC_GV_BUFFER_OBJECT;
+import static it.greenvulcano.gvesb.interceptor.GVServiceInstanceFields.GVC_GV_BUFFER_OBJECT_OUT;
+import static it.greenvulcano.gvesb.interceptor.GVServiceInstanceFields.GVC_GV_BUFFER_PROPS;
+import static it.greenvulcano.gvesb.interceptor.GVServiceInstanceFields.GVC_GV_BUFFER_PROPS_OUT;
+import static it.greenvulcano.gvesb.interceptor.GVServiceInstanceFields.GVC_INPUT_OBJECT_TYPE;
+import static it.greenvulcano.gvesb.interceptor.GVServiceInstanceFields.GVC_INPUT_OBJECT_TYPE_OUT;
+import static it.greenvulcano.gvesb.interceptor.GVServiceInstanceFields.GVC_OPERATION_NAME;
+import static it.greenvulcano.gvesb.interceptor.GVServiceInstanceFields.GVC_SERVICE_INSTANCE_ID;
+import static it.greenvulcano.gvesb.interceptor.GVServiceInstanceFields.GVC_SERVICE_NAME;
+import static it.greenvulcano.gvesb.interceptor.GVServiceInstanceFields.GVC_START_DATE;
+import static it.greenvulcano.gvesb.interceptor.GVServiceInstanceFields.GVC_SUBOPERATION_NAME;
+import static it.greenvulcano.gvesb.interceptor.GVServiceInstanceFields.GVC_SUBSYSTEM;
+import static it.greenvulcano.gvesb.interceptor.GVServiceInstanceFields.GVC_SYSTEM;
+import static it.greenvulcano.gvesb.interceptor.GVServiceInstanceFields.GVC_THREAD_NAME;
+import static it.greenvulcano.gvesb.interceptor.GVTraceLevelServiceFields.GVC_TRACE_LEVEL_SERVICE_NAME;
 import it.greenvulcano.gvesb.buffer.GVBuffer;
 import it.greenvulcano.gvesb.core.config.InvocationContext;
 import it.greenvulcano.gvesb.core.flow.hub.Event;
@@ -33,6 +33,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
 
 //import org.aspectj.lang.JoinPoint;
 //import org.aspectj.lang.annotation.AfterReturning;
@@ -54,27 +55,15 @@ public class GVConsoleAspect {
 	private static final Logger logger = LoggerFactory.getLogger(GVConsoleAspect.class);
 
 
-	//@Before("execution(* it.greenvulcano.gvesb.core.flow.GVFlowWF.perform(it.greenvulcano.gvesb.buffer.GVBuffer,boolean)) || execution(* it.greenvulcano.gvesb.core.flow.GVSubFlow.internalPerform(it.greenvulcano.gvesb.buffer.GVBuffer,boolean))")
-	//public void logGVFlowPerformBefore(JoinPoint joinPoint) {
 	public static void logGVFlowPerformBefore(Event event)
 	{
 		logger.debug("************************logGVFlowPerformBefore - START************************");
 
 		try {
-			//InvocationContext context = (InvocationContext)InvocationContext.getInstance();
 			InvocationContext context = event.getInvocationContext();
-
-			logger.debug("SERVICE_GVFLOW_XXX:" +context.getService());
-			logger.debug("SERVICE_OPERATION_XXX:" +context.getOperation());
-
 			String serviceInstanceId = context.getId().toString();
-			logger.debug("getId:" +serviceInstanceId);
-			logger.debug("getSystem:" +context.getSystem());
-			logger.debug("getSubSystem:" +context.getSubSystem());
-			logger.debug("getService:" +context.getService());
-			logger.debug("getOperation:" +context.getOperation());
-			logger.debug("getSubOperation:" +context.getSubOperation());
-
+			logger.debug("logGVFlowPerformBefore -> serviceInstanceId: " + serviceInstanceId + "-System: " + context.getSystem() + "-SubSystem: "+ context.getSubSystem() + "-Service: " + context.getService() + "-Operation: " +context.getOperation() + "-SubOperation: " + context.getSubOperation());
+			
 			//MongoCollection<org.bson.Document> traceLevelCollection = MongoDBSynchClientStub.getMongoDBCollection();
 			Document docTraceLevel = new Document(GVC_TRACE_LEVEL_SERVICE_NAME, context.getService());
 			com.mongodb.client.MongoCollection<Document> traceLevelCollection = MongoDBSynchClientStub.getMongoDBTraceLevelCollection();
@@ -96,45 +85,37 @@ public class GVConsoleAspect {
 				if(enabled > 0) {
 					if(GVConsoleConstants.GVC_TRACE_LEVEL_DEBUG.equals(traceLevelUsed)) {
 
-						//						for(Object objItem : joinPoint.getArgs())
-						//						{
 						GVBuffer buffer = event.getGvBuffer();
-						//							GVBuffer buffer = null;
-						//							logger.debug("INSTANCE_OF: " + objItem.getClass());
-						//
-						//							if(objItem instanceof GVBuffer) {
-						//								buffer = (GVBuffer) objItem;
+						if(buffer != null) {
+							logger.debug("BUFFER: " + buffer.toString());
+							logger.debug("BUFFER_PROPERTIES: " + buffer.getPropertyNames().toString());
 
-						logger.debug("BUFFER: " + buffer.toString());
-						logger.debug("BUFFER_PROPERTIES: " + buffer.getPropertyNames().toString());
+							if(buffer.getPropertyNamesSet() != null && buffer.getPropertyNamesSet().size() > 0) {
+								propertiesDoc = new ArrayList<Document>();
 
-						if(buffer.getPropertyNamesSet().size() > 0) {
-							propertiesDoc = new ArrayList<Document>();
+								for(String keyProp : buffer.getPropertyNamesSet()) {
+									logger.debug("keyProp: " + keyProp + " - valueProp: " +buffer.getProperty(keyProp));
+									propertiesDoc.add(new Document(keyProp, buffer.getProperty(keyProp)));
+								}
 
-							for(String keyProp : buffer.getPropertyNamesSet()) {
-								logger.debug("keyProp: " + keyProp + " - valueProp: " +buffer.getProperty(keyProp));
-								propertiesDoc.add(new Document(keyProp, buffer.getProperty(keyProp)));
+							}
+							if(buffer.getObject() instanceof org.w3c.dom.Document) {
+								printXmlProps((org.w3c.dom.Document)buffer.getObject());
+
+								//PRINT XML STRING INPUT.
+								inputObject = XML2String((org.w3c.dom.Document)buffer.getObject());
+
+								inputType	= "application/xml";
+							} else if(buffer.getObject() instanceof java.lang.String) { 
+								inputObject = (String)buffer.getObject();
+								inputType	= "application/json";
+							} else {
+								logger.debug("CONTENT NOT AVAILABLE");
+								inputType	= "application/octet-stream";
 							}
 
+							logger.debug("buffer: " + buffer);
 						}
-						if(buffer.getObject() instanceof org.w3c.dom.Document) {
-							printXmlProps((org.w3c.dom.Document)buffer.getObject());
-
-							//PRINT XML STRING INPUT.
-							inputObject = XML2String((org.w3c.dom.Document)buffer.getObject());
-
-							inputType	= "application/xml";
-						} else if(buffer.getObject() instanceof java.lang.String) { 
-							inputObject = (String)buffer.getObject();
-							inputType	= "application/json";
-						} else {
-							logger.debug("CONTENT NOT AVAILABLE");
-							inputType	= "application/octet-stream";
-						}
-
-						logger.debug("buffer: " + buffer);
-						//}
-						//}
 					}
 
 					//final CountDownLatch latch = new CountDownLatch(1);
@@ -191,31 +172,16 @@ public class GVConsoleAspect {
 		logger.debug("************************logGVFlowPerformBefore - END************************");
 	}
 
-	//@AfterReturning(pointcut = "execution(* it.greenvulcano.gvesb.core.flow.GVFlowWF.perform(it.greenvulcano.gvesb.buffer.GVBuffer,boolean)) || execution(* it.greenvulcano.gvesb.core.flow.GVSubFlow.internalPerform(it.greenvulcano.gvesb.buffer.GVBuffer,boolean))", returning= "result" )
-	//public void logGVFlowPerformAfterReturning(JoinPoint joinPoint, Object result) {
+
 	public static void logGVFlowPerformAfterReturning(Event event) {
 		logger.debug("************************logGVFlowPerformAfterReturning - START************************");
 
 		try {
 			//InvocationContext context = (InvocationContext)InvocationContext.getInstance();
 			InvocationContext context = event.getInvocationContext();
-
-			logger.debug("logGVFlowPerformAfterReturning - SERVICE_GVFLOW_XXX:" +context.getService());
-			logger.debug("logGVFlowPerformAfterReturning - SERVICE_OPERATION_XXX:" +context.getOperation());
-			String serviceInstanceId 	= context.getId().toString();
-			String system 				= context.getSystem();
-			String subSystem 			= context.getSubSystem();
-			String serviceName 			= context.getService();
-			String operationName 		= context.getOperation();
-			String subOperationName 	= context.getSubOperation();
-
-			logger.debug("serviceInstanceId:" +serviceInstanceId);
-			logger.debug("system:" +system);
-			logger.debug("subSystem:" +subSystem);
-			logger.debug("serviceName:" +serviceName);
-			logger.debug("operationName:" +operationName);
-			logger.debug("subOperationName:" +subOperationName);
-
+			String serviceInstanceId = context.getId().toString();
+			logger.debug("logGVFlowPerformAfterReturning -> serviceInstanceId: " + serviceInstanceId + "-System: " + context.getSystem() + "-SubSystem: "+ context.getSubSystem() + "-Service: " + context.getService() + "-Operation: " +context.getOperation() + "-SubOperation: " + context.getSubOperation());
+			
 			Document docTraceLevel = new Document(GVC_TRACE_LEVEL_SERVICE_NAME, context.getService());
 			com.mongodb.client.MongoCollection<Document> traceLevelCollection = MongoDBSynchClientStub.getMongoDBTraceLevelCollection();
 			Document traceLevelFound = traceLevelCollection.find(docTraceLevel).first();
@@ -230,45 +196,41 @@ public class GVConsoleAspect {
 				Object outputObject = null;				
 
 				GVBuffer buffer = null;
-				
+
 				if(enabled > 0) {
-					//					if(outputObject instanceof GVBuffer) {
-					//						buffer = (GVBuffer) outputObject;
 					if(event != null && event.getEventResult() != null && event.getEventResult().getObject() != null) {
 						outputObject = event.getEventResult().getObject();
 						buffer = (GVBuffer)outputObject;
 
-						logger.debug("BUFFER: " + buffer.toString());
-						logger.debug("BUFFER_PROPERTIES: " + buffer.getPropertyNames().toString());
+						if(buffer != null) {
+							logger.debug("BUFFER: " + buffer.toString());
+							logger.debug("BUFFER_PROPERTIES: " + buffer.getPropertyNames().toString());
 
-						if(buffer.getPropertyNamesSet().size() > 0) {
-							propertiesDoc = new ArrayList<Document>();
+							if(buffer.getPropertyNamesSet() != null && buffer.getPropertyNamesSet().size() > 0) {
+								propertiesDoc = new ArrayList<Document>();
 
-							for(String keyProp : buffer.getPropertyNamesSet()) {
-								logger.debug("keyProp: " + keyProp + " - valueProp: " +buffer.getProperty(keyProp));
-								propertiesDoc.add(new Document(keyProp, buffer.getProperty(keyProp)));
+								for(String keyProp : buffer.getPropertyNamesSet()) {
+									logger.debug("keyProp: " + keyProp + " - valueProp: " +buffer.getProperty(keyProp));
+									propertiesDoc.add(new Document(keyProp, buffer.getProperty(keyProp)));
+								}
+
 							}
+							if(buffer.getObject() instanceof org.w3c.dom.Document) {
+								printXmlProps((org.w3c.dom.Document)buffer.getObject());
 
-						}
-						if(buffer.getObject() instanceof org.w3c.dom.Document) {
-							printXmlProps((org.w3c.dom.Document)buffer.getObject());
+								//PRINT XML STRING INPUT.
+								outputObject = XML2String((org.w3c.dom.Document)buffer.getObject());
 
-							//PRINT XML STRING INPUT.
-							outputObject = XML2String((org.w3c.dom.Document)buffer.getObject());
-
-							outputType	= "application/xml";
-						} else if(buffer.getObject() instanceof java.lang.String) { 
-							outputObject = (String)buffer.getObject();
-							outputType	= "application/json";
-						} else {
-							logger.debug("CONTENT NOT AVAILABLE");
-							outputType	= "application/octet-stream";
+								outputType	= "application/xml";
+							} else if(buffer.getObject() instanceof java.lang.String) { 
+								outputObject = (String)buffer.getObject();
+								outputType	= "application/json";
+							} else {
+								logger.debug("CONTENT NOT AVAILABLE");
+								outputType	= "application/octet-stream";
+							}
 						}
 					}
-
-					//					} else {
-					//						logger.debug("OUTPUT METHOD: " + outputObject);
-					//					}
 				}
 
 				String threadName = Thread.currentThread().getName();
@@ -288,8 +250,8 @@ public class GVConsoleAspect {
 				}
 				Document updateFieldsDoc = new Document("$set", fieldsDoc);
 
-				logger.debug("Document to Update -> [serviceName: " + serviceName + "-operationName: " + operationName + "-serviceInstanceId: " + serviceInstanceId + "-threadName: " + threadName);
-				collection.updateOne(and(eq(GVC_SERVICE_NAME, serviceName), eq(GVC_OPERATION_NAME, operationName), eq(GVC_SUBOPERATION_NAME, subOperationName), eq(GVC_SERVICE_INSTANCE_ID, serviceInstanceId), eq(GVC_THREAD_NAME, threadName) ), updateFieldsDoc,
+				logger.debug("Document to Update -> [serviceName: " + context.getService() + "-operationName: " + context.getOperation() + "-serviceInstanceId: " + serviceInstanceId + "-threadName: " + threadName);
+				collection.updateOne(and(eq(GVC_SERVICE_NAME, context.getService()), eq(GVC_OPERATION_NAME, context.getOperation()), eq(GVC_SUBOPERATION_NAME, context.getSubOperation()), eq(GVC_SERVICE_INSTANCE_ID, serviceInstanceId), eq(GVC_THREAD_NAME, threadName) ), updateFieldsDoc,
 						new SingleResultCallback<UpdateResult>() {
 					//@Override
 					public void onResult(final UpdateResult result, final Throwable t) {

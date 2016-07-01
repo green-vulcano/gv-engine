@@ -1,4 +1,4 @@
-package it.greenvulcano.gvesb.aop;
+package it.greenvulcano.gvesb.interceptor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +21,6 @@ public class GVConsoleObserver extends Observer {
 	public void update(Event event, State state) {
 		LOG.info("STATE: " + subject.getState() ); 
 		
-		//CALL ACTION on the EXECUTOR. Nel nostro caso in base allo state e' possibile chiamare BEFORE or AFTER METHOD sul bean aspect.
-	
 		if(state == State.START) {
 			LOG.info("CALLING GVConsoleAspect.logGVFlowPerformBefore");
 			GVConsoleAspect.logGVFlowPerformBefore(event);

@@ -1,6 +1,6 @@
-package it.greenvulcano.gvesb.aop;
+package it.greenvulcano.gvesb.interceptor;
 
-import static it.greenvulcano.gvesb.aop.GVServiceInstanceFields.GVC_SERVICE_NAME;
+import static it.greenvulcano.gvesb.interceptor.GVServiceInstanceFields.GVC_SERVICE_NAME;
 
 import org.bson.Document;
 import org.slf4j.Logger;

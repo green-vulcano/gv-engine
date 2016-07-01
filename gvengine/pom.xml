@@ -122,9 +122,9 @@
     <module>gvpolicy</module>
     <module>gvstatistics</module>
     <module>gvvcl</module>
-    <module>gvvcl-internal</module>  
-    <module>features</module>
-	<!-- <module>gv-console-interceptor</module> -->
+    <module>gvvcl-internal</module>
+    <module>gv-console-interceptor</module>
+    <module>features</module>	
   </modules>
 
 </project>
