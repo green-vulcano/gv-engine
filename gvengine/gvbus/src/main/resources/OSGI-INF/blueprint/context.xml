@@ -61,7 +61,6 @@
 		<property name="busId" value="${gvbus.apikey}" />	
 		<property name="connectionFactory" ref="pooledConnectionFactory"/>
 		<property name="connector" ref="gvBusDeployer"/>
-		<property name="connector" ref="gvBusDebugger"/>
 	</bean>
 	
 	<service id="gvBusConnector" interface="it.greenvulcano.gvesb.osgi.bus.BusLink" ref="gvBusLink" />
