@@ -34,7 +34,6 @@ import it.greenvulcano.gvesb.core.flow.hub.EventResult;
 import it.greenvulcano.gvesb.core.flow.hub.Subject;
 import it.greenvulcano.gvesb.core.jmx.OperationInfo;
 import it.greenvulcano.gvesb.core.jmx.ServiceOperationInfoManager;
-import it.greenvulcano.gvesb.internal.GVInternalException;
 import it.greenvulcano.gvesb.log.GVFormatLog;
 import it.greenvulcano.gvesb.statistics.StatisticsData;
 import it.greenvulcano.gvesb.statistics.StatisticsDataManager;
@@ -250,34 +249,32 @@ public class GVFlowWF implements GVFlow
             	sd = statisticsDataManager.startStatistics(gvBuffer, "core", flowName);
             }
 
-            //START STATISTICS HUB with gvBuffer event input (popola Event)
+            //START STATISTICS HUB
             logger.error("GVFlowWF Subject.startStatistics() - START ... ");
             try {
             	InvocationContext invocationContext = (InvocationContext)InvocationContext.getInstance();
             	Event eventStart = new Event(invocationContext, gvBuffer);
 				Subject.startStatistics(eventStart);
-			} catch (GVInternalException e) {
-				// TODO Auto-generated catch block
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
             logger.error("GVFlowWF Subject.startStatistics() - STOP ... ");
-            //START STATISTICS HUB with gvBuffer event input (popola Event)
+            //START STATISTICS HUB
             
             GVBuffer outData = internalPerform(gvBuffer, onDebug);
             
-            //STOP STATISTICS HUB with outData gvBuffer event input (popola Event con Result popolato con outData)
+            //STOP STATISTICS HUB
             logger.error("GVFlowWF Subject.stopStatistics() - START... ");
             try {
             	InvocationContext invocationContext = (InvocationContext)InvocationContext.getInstance();
             	Event eventEnd = new Event(invocationContext, gvBuffer);
             	eventEnd.setEventResult(new EventResult(outData));
 				Subject.stopStatistics(eventEnd);
-			} catch (GVInternalException e) {
-				// TODO Auto-generated catch block
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
             logger.error("GVFlowWF Subject.stopStatistics() - STOP... ");
-            //STOP STATISTICS HUB with outData gvBuffer event input (popola Event con Result popolato con outData)
+            //STOP STATISTICS HUB
         	
             
             if (useStatistics) {
