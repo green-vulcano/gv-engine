@@ -6,7 +6,7 @@
 	 						   http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd" 
 			default-activation="eager">
 			                               
-	<cm:property-placeholder persistent-id="it.greenvulcano.gvesb.bus" update-strategy="reload" >
+	<cm:property-placeholder persistent-id="it.greenvulcano.gvesb.bus" >
 			<cm:default-properties>
 				<cm:property name="gvbus.apikey" value="" />				
 				<cm:property name="gvbus.endpoint" value="" />
@@ -60,7 +60,13 @@
 		<property name="configRepository" ref="sysConfigRepo" />
 		<property name="busId" value="${gvbus.apikey}" />	
 		<property name="connectionFactory" ref="pooledConnectionFactory"/>
-		<property name="connector" ref="gvBusDeployer"/>
+		<property name="connectors"> 
+			<set>
+				<ref component-id="gvBusDeployer" />
+				<ref component-id="gvBusDebugger" />
+			</set>
+		</property>
+		
 	</bean>
 	
 	<service id="gvBusConnector" interface="it.greenvulcano.gvesb.osgi.bus.BusLink" ref="gvBusLink" />

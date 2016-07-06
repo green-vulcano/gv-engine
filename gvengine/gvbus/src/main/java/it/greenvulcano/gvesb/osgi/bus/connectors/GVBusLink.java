@@ -3,11 +3,11 @@ package it.greenvulcano.gvesb.osgi.bus.connectors;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Collections;
 import java.util.Dictionary;
 import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
-
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
@@ -32,8 +32,12 @@ public class GVBusLink implements  BusLink {
 	
 	private ConfigRepository configRepository;
 	
-	private final Set<GVBusConnector> connectors = new LinkedHashSet<>();
+	private final static Set<GVBusConnector> connectors;
 	
+	static {
+		connectors = Collections.synchronizedSet(new LinkedHashSet<>());
+	}
+		
 	public void setBusId(String busId) {
 		LOG.debug("Configured BUS "+busId);
 		this.busId = busId;		
@@ -54,8 +58,8 @@ public class GVBusLink implements  BusLink {
 		}
 	}
 		
-	public void setConnector(GVBusConnector connector) {
-		connectors.add(connector);
+	public void setConnectors(Set<GVBusConnector> connectors) {			
+		GVBusLink.connectors.addAll(connectors);
 	}
 	
 	public void init() {
@@ -141,9 +145,11 @@ public class GVBusLink implements  BusLink {
 								.orElseThrow(()-> new JMSException("Bus connection not ready"))
 								.createSession(false, Session.AUTO_ACKNOWLEDGE);
 			
-			for (GVBusConnector connector : connectors) {
-				connector.connect(session, busId);
-			}			
+			synchronized (connectors) {
+				for (GVBusConnector connector : connectors) {					
+					connector.connect(session, busId);
+				}	
+			}					
 			
 			notifyConnection();
 			
