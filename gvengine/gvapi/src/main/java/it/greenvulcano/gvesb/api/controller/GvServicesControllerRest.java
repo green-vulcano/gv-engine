@@ -47,7 +47,7 @@ import it.greenvulcano.gvesb.core.pool.GreenVulcanoPoolManager;
 public class GvServicesControllerRest implements GvServicesController<Response>{
 	private final static Logger LOG = LoggerFactory.getLogger(GvServicesControllerRest.class);
 	
-	private final static Optional<GreenVulcanoPool> GVPOOL;
+	
 	private final static ObjectMapper OBJECT_MAPPER;
 	@Context
 	private UriInfo uriInfo;
@@ -55,13 +55,7 @@ public class GvServicesControllerRest implements GvServicesController<Response>{
 	static {
 		OBJECT_MAPPER = new ObjectMapper();
 		
-		GreenVulcanoPool gvpoolInstance = null;
-		try {
-			gvpoolInstance = GreenVulcanoPoolManager.instance().getGreenVulcanoPool("gvapi");
-		} catch (Exception e) {
-			LOG.error("gvcoreapi - Error retriving a GreenVulcanoPool instance for subsystem HttpInboundGateway", e);						
-		}
-		GVPOOL = Optional.ofNullable(gvpoolInstance);
+		
 	}
 	
 	@Path("/probe")
@@ -193,10 +187,18 @@ public class GvServicesControllerRest implements GvServicesController<Response>{
 			throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("GVBuffer creation failed").build());
 		}
 		
+		
+		GreenVulcanoPool gvpoolInstance = null;
+		try {
+			gvpoolInstance = GreenVulcanoPoolManager.instance().getGreenVulcanoPool("gvapi");
+		} catch (Exception e) {
+			LOG.error("gvcoreapi - Error retriving a GreenVulcanoPool instance for subsystem gvapi", e);						
+			throw new WebApplicationException(Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("GreenVulcanoPool not available for subsystem gvapi").build());
+		}
+				
 		try {
 			
-			GVBuffer output = GVPOOL.orElseThrow(()-> new WebApplicationException(Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("GreenVulcanoPool not available for subsystem HttpInboundGateway").build()))
-									.forward(input, operation);
+			GVBuffer output = gvpoolInstance.forward(input, operation);
 			if (output.getObject() instanceof String) {
 				response = output.getObject().toString();
 			} else if (output.getObject() instanceof org.json.JSONObject) {
