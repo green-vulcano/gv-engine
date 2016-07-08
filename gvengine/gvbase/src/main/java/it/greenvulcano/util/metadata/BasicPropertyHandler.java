@@ -38,13 +38,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.xml.parsers.DocumentBuilder;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -347,26 +350,38 @@ public class BasicPropertyHandler implements PropertyHandler
         }
         
         String value = null;
-        try {
+        
+        Function<Object, Optional<JSONObject>>  objProvider = (Object o) -> {
         	JSONObject jsonObject;
-	        if (object instanceof String) {
-	        	jsonObject = new JSONObject(object.toString());        	       	
-	        } else if (object instanceof JSONObject)  {
-	        	jsonObject = JSONObject.class.cast(object);
-	        } else if (object instanceof GVBuffer) {
-	        	
-	        	GVBuffer gvBuffer = (GVBuffer)object;
-	        	if (gvBuffer.getObject() instanceof String) {
-		        	jsonObject = new JSONObject(gvBuffer.getObject().toString());        	       	
-		        } else if (gvBuffer.getObject() instanceof JSONObject)  {
-		        	jsonObject = JSONObject.class.cast(gvBuffer.getObject());
-		        } else {
-		        	jsonObject = new JSONObject(gvBuffer.getObject());
-		        }
-	        		        	
-	        } else {
-	        	jsonObject = new JSONObject(object);
-	        }
+        	 try {
+             	
+     	        if (o instanceof String) {
+     	        	if (o.toString().startsWith("{")) {
+     	        		jsonObject = new JSONObject(o.toString());	
+     	        	} else if (o.toString().startsWith("[")){
+     	        		jsonObject = new JSONObject("{ \"array\":"+o.toString()+"}");
+     	        	} else {
+     	        		jsonObject = new JSONObject("{ \"value\":\""+o.toString()+"\"}");
+     	        	}
+     	        } else if (o instanceof JSONArray)  {
+    	        	jsonObject = new JSONObject("{ \"array\":"+o.toString()+"}");
+    	        	    	             	        	
+     	        } else if (o instanceof JSONObject)  {
+     	        	jsonObject = JSONObject.class.cast(o);
+     	        }  else {
+     	        	jsonObject = new JSONObject(o);
+     	        }
+        	 } catch (Exception e) {
+     	    	return Optional.empty();  
+     	     }
+     	
+        	 return Optional.of(jsonObject);
+        }; 
+        
+        try {
+        	JSONObject jsonObject = object instanceof GVBuffer ?
+        							objProvider.apply(GVBuffer.class.cast(object).getObject()).orElseThrow(IllegalArgumentException::new):
+        							objProvider.apply(object).orElseThrow(IllegalArgumentException::new);
 	        
 	        if ("this".equals(propName)) {
 	        	value = jsonObject.toString();

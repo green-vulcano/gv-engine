@@ -45,9 +45,9 @@ import it.greenvulcano.util.xpath.XPathFinder;
  * @author GreenVulcano Developer Team
  * 
  */
-public class GvLoopOperationNode extends GVFlowNode {
+public class GVLoopOperationNode extends GVFlowNode {
 
-	private static final Logger LOG = LoggerFactory.getLogger(GvLoopOperationNode.class);
+	private static final Logger LOG = LoggerFactory.getLogger(GVLoopOperationNode.class);
 	
 	private String nextNodeId = "";
 	private LoopController loopController;
