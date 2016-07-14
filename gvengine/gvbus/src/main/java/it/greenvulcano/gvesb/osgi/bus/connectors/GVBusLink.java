@@ -111,6 +111,7 @@ public class GVBusLink implements  BusLink {
 						LOG.error("Error disconnecting session on queue "+busId, jmsException);
 					}
 				}
+				message = "Bus "+busId+ " disconnected";
 			}
 			
 			@SuppressWarnings("unchecked")
