@@ -1,0 +1,6 @@
+osgi.jdbc.driver.name=H2-pool
+url=jdbc:h2:file:${gv.app.home}/db/gviam
+dataSourceName=gviam-ds
+pool.maxIdle=4
+pool.maxTotal=16
+pool.minIdle=2

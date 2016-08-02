@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <artifactId>gvengine</artifactId>
+    <groupId>it.greenvulcano.gvesb</groupId>
+    <version>4.0.0-SNAPSHOT</version>
+  </parent>
+
+    <artifactId>gviam</artifactId>
+    <packaging>bundle</packaging>
+
+    <name>GreenVulcano IAM</name>
+    
+	<dependencies>		
+		<dependency>
+			<groupId>org.apache.karaf.jaas</groupId>
+			<artifactId>org.apache.karaf.jaas.modules</artifactId>
+			<version>4.0.5</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.karaf.jaas</groupId>
+			<artifactId>org.apache.karaf.jaas.boot</artifactId>
+			<version>4.0.5</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>4.3.6.Final</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>3.0.1</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Version>${project.version}</Bundle-Version>
+                        <Export-Package>
+                        		it.greenvulcano.gvesb.iam.domain;version=${project.version},
+                        		it.greenvulcano.gvesb.iam.jaas;version=${project.version},
+                        		it.greenvulcano.gvesb.iam.service;version=${project.version},	
+                        		it.greenvulcano.gvesb.iam.exception;version=${project.version}
+                        </Export-Package>
+                        <Private-Package>
+                        		it.greenvulcano.gvesb.iam.service.internal,
+                        		it.greenvulcano.gvesb.iam.repository,
+                        		it.greenvulcano.gvesb.iam.repository.hibernate,
+                        </Private-Package>                        
+                        <Import-Package>org.hibernate.proxy,javassist.util.proxy,org.apache.karaf.jaas.config,*</Import-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
