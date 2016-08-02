@@ -1,3 +1,22 @@
+/*******************************************************************************
+ * Copyright (c) 2009, 2016 GreenVulcano ESB Open Source Project.
+ * All rights reserved.
+ *
+ * This file is part of GreenVulcano ESB.
+ *
+ * GreenVulcano ESB is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GreenVulcano ESB is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with GreenVulcano ESB. If not, see <http://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package it.greenvulcano.gvesb.api.controller;
 
 import java.util.List;
@@ -22,8 +41,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-
+import org.apache.cxf.jaxrs.ext.MessageContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
@@ -37,25 +55,26 @@ import it.greenvulcano.configuration.XMLConfigException;
 import it.greenvulcano.gvesb.api.GvServicesController;
 import it.greenvulcano.gvesb.api.model.Operation;
 import it.greenvulcano.gvesb.api.model.Service;
+import it.greenvulcano.gvesb.api.security.JaxRsIdentityInfo;
 import it.greenvulcano.gvesb.buffer.GVBuffer;
 import it.greenvulcano.gvesb.buffer.GVException;
 import it.greenvulcano.gvesb.buffer.GVPublicException;
 import it.greenvulcano.gvesb.core.pool.GreenVulcanoPool;
 import it.greenvulcano.gvesb.core.pool.GreenVulcanoPoolException;
 import it.greenvulcano.gvesb.core.pool.GreenVulcanoPoolManager;
+import it.greenvulcano.gvesb.identity.GVIdentityHelper;
 
 public class GvServicesControllerRest implements GvServicesController<Response>{
 	private final static Logger LOG = LoggerFactory.getLogger(GvServicesControllerRest.class);
 	
 	
 	private final static ObjectMapper OBJECT_MAPPER;
+	
 	@Context
-	private UriInfo uriInfo;
+	private MessageContext jaxrsContext;
 		
 	static {
-		OBJECT_MAPPER = new ObjectMapper();
-		
-		
+		OBJECT_MAPPER = new ObjectMapper();		
 	}
 	
 	@Path("/probe")
@@ -170,13 +189,15 @@ public class GvServicesControllerRest implements GvServicesController<Response>{
 	
 		
 	private Response runOperation(String service, String operation, String data ) {
+
+		GVIdentityHelper.push(new JaxRsIdentityInfo(jaxrsContext.getSecurityContext(), jaxrsContext.getHttpServletRequest().getRemoteAddr()));
 		
 		String response = null;		
 		GVBuffer input = null;
 		try {
 			input = new GVBuffer();
 			
-			for (Entry<String, List<String>> prop : uriInfo.getQueryParameters().entrySet()){
+			for (Entry<String, List<String>> prop : jaxrsContext.getUriInfo().getQueryParameters().entrySet()){
 				input.setProperty(prop.getKey(), prop.getValue().stream().collect(Collectors.joining(";")));
 			}
 			
@@ -221,6 +242,8 @@ public class GvServicesControllerRest implements GvServicesController<Response>{
 				throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity("Service "+service+" not found").build());
 			} else if (e.getMessage().contains("GVCORE_BAD_GVOPERATION_NAME_ERROR")) {
 				throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity("Operation "+operation+" not found").build());
+			}  else if (e.getMessage().contains("GV_SERVICE_POLICY_ERROR")) {
+				throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
 			}
 			
 			throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Operation failed").build());

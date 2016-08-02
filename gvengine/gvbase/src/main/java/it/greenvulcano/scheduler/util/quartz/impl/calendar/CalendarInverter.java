@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2009-2012 GreenVulcano ESB Open Source Project.
+/*******************************************************************************
+ * Copyright (c) 2009, 2016 GreenVulcano ESB Open Source Project.
  * All rights reserved.
  *
  * This file is part of GreenVulcano ESB.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with GreenVulcano ESB. If not, see <http://www.gnu.org/licenses/>.
- */
+ *******************************************************************************/
 package it.greenvulcano.scheduler.util.quartz.impl.calendar;
 
 import org.quartz.Calendar;

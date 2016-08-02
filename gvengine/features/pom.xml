@@ -53,7 +53,12 @@
 									<file>target/classes/bus.cfg</file>
 									<type>cfg</type>
 									<classifier>bus</classifier>
-								</artifact>							
+								</artifact>
+								<artifact>									
+									<file>target/classes/gviam.ds</file>
+									<type>ds</type>
+									<classifier>gviam</classifier>
+								</artifact>								
 							</artifacts>
 						</configuration>
 					</execution>

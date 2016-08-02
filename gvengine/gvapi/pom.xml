@@ -22,6 +22,20 @@
   		<type>bundle</type>
   		<scope>provided</scope>
   	</dependency>
+  	<dependency>
+  		<groupId>it.greenvulcano.gvesb</groupId>
+  		<artifactId>gvpolicy</artifactId>
+  		<version>${project.version}</version>
+  		<type>bundle</type>
+  		<scope>provided</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>it.greenvulcano.gvesb</groupId>
+  		<artifactId>gviam</artifactId>
+  		<version>${project.version}</version>
+  		<type>bundle</type>
+  		<scope>provided</scope>
+  	</dependency>
   	 <dependency>
       <groupId>it.greenvulcano.gvesb</groupId>
       <artifactId>gvbus</artifactId>
@@ -35,6 +49,19 @@
   		<version>${project.version}</version>
   		<type>bundle</type>
   		<scope>provided</scope>
+  	</dependency>
+  	<dependency>
+		<groupId>commons-net</groupId>
+		<artifactId>commons-net</artifactId>
+		<version>2.2</version>
+		<scope>provided</scope>
+		<type>jar</type>
+	</dependency>
+  	<dependency>
+  		<groupId>javax.servlet</groupId>
+    	<artifactId>javax.servlet-api</artifactId>
+    	<version>3.1.0</version>
+    	<scope>provided</scope>
   	</dependency>
     <dependency>
       <groupId>org.apache.cxf</groupId>
@@ -71,12 +98,26 @@
             <Import-Package>
               org.osgi.framework,
               org.osgi.service.cm,
+              org.apache.cxf.jaxrs.security,
+              org.apache.cxf.security,
+              org.apache.cxf.common.security,
+              org.apache.cxf.jaxrs.ext,
+              org.apache.cxf.jaxrs.utils,
+              org.apache.cxf.message,
+              org.apache.commons.net.util,
               javax.ws.rs,
+              javax.ws.rs.container,
               javax.ws.rs.core,
+              javax.servlet.http,
               it.greenvulcano.gvesb.buffer,
               it.greenvulcano.gvesb.core.pool,
               it.greenvulcano.configuration,
               it.greenvulcano.gvesb.osgi.bus,
+              it.greenvulcano.gvesb.identity,
+              it.greenvulcano.gvesb.identity.impl,
+              it.greenvulcano.gvesb.iam.service,
+              it.greenvulcano.gvesb.iam.exception,
+              it.greenvulcano.gvesb.iam.domain,
               org.json,
               org.slf4j;version="[1.6,2)";provider=paxlogging,
               org.w3c.dom,

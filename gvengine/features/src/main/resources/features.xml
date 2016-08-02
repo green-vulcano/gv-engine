@@ -59,6 +59,24 @@
 		<bundle start-level="92">mvn:it.greenvulcano.gvesb/gvcore/${project.version}</bundle>
 	</feature>
 	
+	<feature name="gviam-ds" version="${project.version}" description="GreenVulcano IAM datasource">		
+		<configfile finalname="${karaf.etc}/org.ops4j.datasource-gviam.cfg" override="true">mvn:it.greenvulcano.gvesb/${project.artifactId}/${pom.version}/ds/gviam</configfile>
+	</feature>
+	
+	<feature name="gviam" version="${project.version}" description="GreenVulcano IAM">		  
+		
+		<feature prerequisite="true">jaas</feature>		
+		<feature prerequisite="true">jdbc</feature>
+		<feature prerequisite="true">transaction</feature>
+		<feature prerequisite="true">jndi</feature>
+		<feature prerequisite="true" version="4.3.6.Final" >hibernate</feature>
+		<feature prerequisite="true">pax-jdbc-h2</feature>		
+		<feature prerequisite="true">pax-jdbc-pool-dbcp2</feature>
+		<feature prerequisite="true">gviam-ds</feature>
+		
+		<bundle start-level="90">mvn:it.greenvulcano.gvesb/gviam/${project.version}</bundle>
+	</feature>
+	
 	<feature name="gvengine" version="${project.version}" description="GreenVulcano Engine">
 		
 		<bundle start-level="80">mvn:com.fasterxml.jackson.core/jackson-core/2.7.4</bundle>
@@ -71,11 +89,12 @@
 		
 		<feature>gvcore</feature>
 		<feature>gvvcl-internal</feature>		
+		<feature>gviam</feature>
 		
 		<configfile finalname="${karaf.etc}/it.greenvulcano.gvesb.bus.cfg" override="true">mvn:it.greenvulcano.gvesb/${project.artifactId}/${pom.version}/cfg/bus</configfile>		
 		<bundle start-level="96">mvn:it.greenvulcano.gvesb/gvbus/${project.version}</bundle>
 		<bundle start-level="96">mvn:it.greenvulcano.gvesb/gvapi/${project.version}</bundle>
 		<bundle start-level="99">mvn:it.greenvulcano.gvesb/gvcommands/${project.version}</bundle>
-	</feature>
+	</feature>		
 	
 </features>

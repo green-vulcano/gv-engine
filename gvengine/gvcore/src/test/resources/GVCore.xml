@@ -442,7 +442,7 @@
      	<Operation name="loopOnJsonObject" operation-activation="on" out-check-type="sys-svc-id" 
                    type="operation" class="it.greenvulcano.gvesb.core.flow.GVFlowWF">
         	<Flow first-node="request" point-x="50" point-y="150">
-	        	<GVIteratorOperationNode class="it.greenvulcano.gvesb.core.flow.iteration.GvLoopOperationNode"
+	        	<GVIteratorOperationNode class="it.greenvulcano.gvesb.core.flow.iteration.GVLoopOperationNode"
 	              collection-type="jsonObject" id="request" input="input_toupper" next-node-id="check_status" op-type="corecall"
 	              output="output_toupper" point-x="200" point-y="150" type="flow-node">
 	              <CoreCall id-service="TOUPPER" id-system="PIPPO"  id-channel="TEST_CHANNEL" operation="RequestReply" ref-dp="stringFromNodeDataProvider" change-log-context="true"/>
@@ -459,7 +459,7 @@
         <Operation name="loopOnJsonArray" operation-activation="on" out-check-type="sys-svc-id" 
                    type="operation" class="it.greenvulcano.gvesb.core.flow.GVFlowWF">
         	<Flow first-node="request" point-x="50" point-y="150">
-	        	<GVIteratorOperationNode class="it.greenvulcano.gvesb.core.flow.iteration.GvLoopOperationNode"
+	        	<GVIteratorOperationNode class="it.greenvulcano.gvesb.core.flow.iteration.GVLoopOperationNode"
 	              collection-type="jsonArray" id="request" input="input_toupper" next-node-id="check_status" op-type="corecall"
 	              output="output_toupper" point-x="200" point-y="150" type="flow-node">
 	              <CoreCall id-service="TOUPPER" id-system="PIPPO"  id-channel="TEST_CHANNEL" operation="RequestReply" ref-dp="stringFromNodeDataProvider" change-log-context="true"/>
@@ -476,7 +476,7 @@
         <Operation name="loopOnXML" operation-activation="on" out-check-type="sys-svc-id" 
                    type="operation" class="it.greenvulcano.gvesb.core.flow.GVFlowWF">
         	<Flow first-node="request" point-x="50" point-y="150">
-	        	<GVIteratorOperationNode class="it.greenvulcano.gvesb.core.flow.iteration.GvLoopOperationNode"
+	        	<GVIteratorOperationNode class="it.greenvulcano.gvesb.core.flow.iteration.GVLoopOperationNode"
 	              collection-type="xml" id="request" input="input_toupper" next-node-id="check_status" op-type="corecall"
 	              output="output_toupper" point-x="200" point-y="150" type="flow-node">
 	              <CoreCall id-service="TOUPPER" id-system="PIPPO"  id-channel="TEST_CHANNEL" operation="RequestReply" ref-dp="stringFromNodeDataProvider" change-log-context="true"/>
@@ -493,7 +493,7 @@
         <Operation name="loopOnCollection" operation-activation="on" out-check-type="sys-svc-id" 
                    type="operation" class="it.greenvulcano.gvesb.core.flow.GVFlowWF">
         	<Flow first-node="request" point-x="50" point-y="150">
-	        	<GVIteratorOperationNode class="it.greenvulcano.gvesb.core.flow.iteration.GvLoopOperationNode"
+	        	<GVIteratorOperationNode class="it.greenvulcano.gvesb.core.flow.iteration.GVLoopOperationNode"
 	              collection-type="javaCollection" id="request" input="input_toupper" next-node-id="check_status" op-type="corecall"
 	              output="output_toupper" point-x="200" point-y="150" type="flow-node">
 	              <CoreCall id-service="TOUPPER" id-system="PIPPO"  id-channel="TEST_CHANNEL" operation="RequestReply" ref-dp="stringFromNodeDataProvider" change-log-context="true"/>
