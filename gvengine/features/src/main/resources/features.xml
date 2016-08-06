@@ -60,21 +60,25 @@
 	</feature>
 	
 	<feature name="gviam-ds" version="${project.version}" description="GreenVulcano IAM datasource">		
+		<capability>
+            osgi.service;effective:=active;objectClass=org.hibernate.SessionFactory
+        </capability>
+        <feature>hibernate</feature>
 		<configfile finalname="${karaf.etc}/org.ops4j.datasource-gviam.cfg" override="true">mvn:it.greenvulcano.gvesb/${project.artifactId}/${pom.version}/ds/gviam</configfile>
 	</feature>
 	
 	<feature name="gviam" version="${project.version}" description="GreenVulcano IAM">		  
+				
+		<feature>jaas</feature>		
+		<feature>jdbc</feature>
+		<feature>transaction</feature>
+		<feature>jndi</feature>
 		
-		<feature prerequisite="true">jaas</feature>		
-		<feature prerequisite="true">jdbc</feature>
-		<feature prerequisite="true">transaction</feature>
-		<feature prerequisite="true">jndi</feature>
-		<feature prerequisite="true" version="4.3.6.Final" >hibernate</feature>
-		<feature prerequisite="true">pax-jdbc-h2</feature>		
-		<feature prerequisite="true">pax-jdbc-pool-dbcp2</feature>
-		<feature prerequisite="true">gviam-ds</feature>
+		<feature>pax-jdbc-h2</feature>		
+		<feature>pax-jdbc-pool-dbcp2</feature>
+		<feature>gviam-ds</feature>
 		
-		<bundle start-level="90">mvn:it.greenvulcano.gvesb/gviam/${project.version}</bundle>
+		<bundle start-level="90">mvn:it.greenvulcano.gvesb/gviam/4.0.0-SNAPSHOT</bundle>
 	</feature>
 	
 	<feature name="gvengine" version="${project.version}" description="GreenVulcano Engine">
