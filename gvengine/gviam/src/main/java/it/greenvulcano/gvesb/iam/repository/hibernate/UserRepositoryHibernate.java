@@ -24,8 +24,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 
 import it.greenvulcano.gvesb.iam.domain.User;
 import it.greenvulcano.gvesb.iam.repository.UserRepository;
@@ -69,4 +71,34 @@ public class UserRepositoryHibernate implements UserRepository {
 		getSession().flush();
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public Set<User> find(String fullname, Boolean expired, Boolean enabled, Set<String> roles) {
+		Set<User> result = new LinkedHashSet<>();
+		
+		Criteria criteria = getSession().createCriteria(User.class);
+		
+		if (fullname!=null && fullname.trim().length()>0) {
+			criteria.add(Restrictions.ilike("userInfo.fullname", fullname));
+		}
+		
+		if (expired!=null) {
+			criteria.add(Restrictions.eq("expired", expired));
+		}
+		
+		if (enabled!=null) {
+			criteria.add(Restrictions.eq("enabled", enabled));
+		}
+		
+		if (roles!=null && !roles.isEmpty()) {
+			criteria.createAlias("roles", "role");
+			
+			roles.stream().map(r -> Restrictions.eq("role.name", r)).forEach(criteria::add);
+			
+		}
+		
+		result.addAll(criteria.list());
+		
+		return result;
+	}
 }

@@ -22,6 +22,7 @@ package it.greenvulcano.gvesb.iam.service;
 import java.util.Set;
 
 import it.greenvulcano.gvesb.iam.domain.Role;
+import it.greenvulcano.gvesb.iam.domain.User;
 import it.greenvulcano.gvesb.iam.domain.UserInfo;
 import it.greenvulcano.gvesb.iam.exception.InvalidPasswordException;
 import it.greenvulcano.gvesb.iam.exception.InvalidUsernameException;
@@ -31,28 +32,30 @@ import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
 
 public interface SecurityManager {
 	
-		void createUser(String username, String password) throws InvalidUsernameException, InvalidPasswordException, UserExistException;
+		User createUser(String username, String password) throws InvalidUsernameException, InvalidPasswordException, UserExistException;
 		
+		User getUser(String username) throws UserNotFoundException;
+		
+		User validateUser(String username, String password) throws UserNotFoundException, PasswordMissmatchException;
+		
+		Set<User> getUsers();
+		
+		Set<Role> getRoles();
+				
 		void saveUserInfo(String username, UserInfo userInfo) throws UserNotFoundException;
-	
-		UserInfo getUserInfo(String username) throws UserNotFoundException;
+			
+		void enableUser(String username, boolean enable);		
 		
-		void deleteUser(String userName);
-		
-		void resetUserPassword(String userName) throws UserNotFoundException;
+		void resetUserPassword(String username) throws UserNotFoundException;
 		
 		void changeUserPassword(String username, String oldPassword, String newPassword) throws UserNotFoundException, PasswordMissmatchException;
-		
-		void validateUser(String username, String password) throws UserNotFoundException, PasswordMissmatchException;
 		
 		void addRole(String username, Role role) throws UserNotFoundException;
 		
 		void revokeRole(String username, String roleName) throws UserNotFoundException;
 		
-		void deleteRole(String roleName);
-		
-		Set<Role> getUserRoles(String userName);
-		
-		Set<Role> getRoles();
+		void deleteUser(String username);
+			
+		void deleteRole(String roleName);		
 
 }

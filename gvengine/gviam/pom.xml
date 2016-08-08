@@ -47,10 +47,10 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Export-Package>
-                        		it.greenvulcano.gvesb.iam.domain;version=${project.version},
-                        		it.greenvulcano.gvesb.iam.jaas;version=${project.version},
-                        		it.greenvulcano.gvesb.iam.service;version=${project.version},	
-                        		it.greenvulcano.gvesb.iam.exception;version=${project.version}
+                        		it.greenvulcano.gvesb.iam.domain,
+                        		it.greenvulcano.gvesb.iam.jaas,
+                        		it.greenvulcano.gvesb.iam.service,	
+                        		it.greenvulcano.gvesb.iam.exception
                         </Export-Package>
                         <Private-Package>
                         		it.greenvulcano.gvesb.iam.service.internal,

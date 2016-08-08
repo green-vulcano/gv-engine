@@ -33,5 +33,7 @@ public interface UserRepository {
 	Set<User> getAll();
 	
 	void remove(User user);
+	
+	Set<User> find(String fullname, Boolean expired, Boolean enabled, Set<String> roles);
 
 }

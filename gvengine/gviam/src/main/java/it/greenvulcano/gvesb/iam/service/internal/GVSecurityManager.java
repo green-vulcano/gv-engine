@@ -56,9 +56,11 @@ public class GVSecurityManager implements SecurityManager {
 	}
 	
 	@Override
-	public void createUser(String username, String password)
+	public User createUser(String username, String password)
 			throws InvalidUsernameException, InvalidPasswordException, UserExistException {		
 		jaasEngine.addUser(username, password);
+		
+		return userRepository.get(username).get();
 	}
 
 	@Override
@@ -70,9 +72,9 @@ public class GVSecurityManager implements SecurityManager {
 	}
 
 	@Override
-	public UserInfo getUserInfo(String username) throws UserNotFoundException {
+	public User getUser(String username) throws UserNotFoundException {
 		User user = userRepository.get(username).orElseThrow(()->new UserNotFoundException(username));
-		return user.getUserInfo();
+		return user;
 	}
 
 	@Override
@@ -107,7 +109,7 @@ public class GVSecurityManager implements SecurityManager {
 	}
 
 	@Override
-	public void validateUser(String username, String password)
+	public User validateUser(String username, String password)
 			throws UserNotFoundException, PasswordMissmatchException {
 		
 		User user = userRepository.get(username).orElseThrow(()->new UserNotFoundException(username));
@@ -120,6 +122,8 @@ public class GVSecurityManager implements SecurityManager {
 		} else {
 			throw new PasswordMissmatchException(username);
 		}
+		
+		return user;
 
 	}
 
@@ -142,14 +146,20 @@ public class GVSecurityManager implements SecurityManager {
 	}
 
 	@Override
-	public Set<Role> getUserRoles(String username) throws UserNotFoundException {
-		User user = userRepository.get(username).orElseThrow(()->new UserNotFoundException(username));
-		return user.getRoles();
+	public Set<Role> getRoles() {		
+		return roleRepository.getAll();
 	}
 
 	@Override
-	public Set<Role> getRoles() {		
-		return roleRepository.getAll();
+	public Set<User> getUsers() {		
+		return userRepository.getAll();
+	}
+
+	@Override
+	public void enableUser(String username, boolean enable) throws UserNotFoundException {
+		User user = userRepository.get(username).orElseThrow(()->new UserNotFoundException(username));
+		user.setEnabled(enable);
+		userRepository.add(user);
 	}
 
 }
