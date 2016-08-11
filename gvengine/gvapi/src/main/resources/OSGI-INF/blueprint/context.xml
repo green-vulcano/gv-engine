@@ -21,21 +21,32 @@
 	<bean id="instanceController" class="it.greenvulcano.gvesb.api.controller.GvInstanceControllerRest">
 		<property name="busLink" ref="gvBusLink"/>
 	</bean>
+	
+	<!-- TODO: endpoint security  
+	<bean id="gvengineAuthorizationInterceptor" class="org.apache.cxf.interceptor.security.SimpleAuthorizingInterceptor">	   
+	   <property name="globalRoles" value="gvadmin"/>
+	</bean>
 
+	<bean id="gvengineAuthorizationFilter" class="org.apache.cxf.jaxrs.security.SimpleAuthorizingFilter">	   
+	   <property name="interceptor" ref="gvengineAuthorizationInterceptor"/>
+	</bean>	
+	-->
+	
 	<jaxrs:server address="/gvengine" id="gvengineapi">
         <jaxrs:serviceBeans>
             <ref component-id="instanceController" />           
         </jaxrs:serviceBeans>
         <jaxrs:providers>
 	       <ref component-id="authenticationFilter"/>
-	    </jaxrs:providers>        
+	 <!--  <ref component-id="gvengineAuthorizationFilter"/> -->
+	    </jaxrs:providers>       
     </jaxrs:server>
 
 	<bean id="servicesController" class="it.greenvulcano.gvesb.api.controller.GvServicesControllerRest"/>
 			
 	<jaxrs:server address="/gvesb" id="gvesbapi">
         <jaxrs:serviceBeans>            
-            <ref component-id="servicesController" />
+           <ref component-id="servicesController" />
         </jaxrs:serviceBeans> 
         <jaxrs:providers>
 	       <ref component-id="authenticationFilter"/>

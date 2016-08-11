@@ -155,8 +155,7 @@ public class GvServicesControllerRest implements GvServicesController<Response>{
 	}
 		
 	@Path("/{service}/{operation}")
-	@GET
-	@Consumes(MediaType.APPLICATION_JSON)
+	@GET	
 	@Produces(MediaType.APPLICATION_JSON)	
 	@Override
 	public Response query(@PathParam("service") String service, 
@@ -178,7 +177,6 @@ public class GvServicesControllerRest implements GvServicesController<Response>{
 
 	@Path("/{service}/{operation}")
 	@DELETE
-	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)	
 	@Override
 	public Response drop(@PathParam("service") String service, 

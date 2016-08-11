@@ -100,6 +100,7 @@
               org.osgi.service.cm,
               org.apache.cxf.jaxrs.security,
               org.apache.cxf.security,
+              org.apache.cxf.interceptor.security,
               org.apache.cxf.common.security,
               org.apache.cxf.jaxrs.ext,
               org.apache.cxf.jaxrs.utils,

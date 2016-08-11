@@ -40,6 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import it.greenvulcano.gvesb.iam.domain.Role;
+import it.greenvulcano.gvesb.iam.domain.User;
 import it.greenvulcano.gvesb.iam.service.SecurityManager;
 
 public class GVSecurityFilter implements ContainerRequestFilter {
@@ -69,8 +70,8 @@ public class GVSecurityFilter implements ContainerRequestFilter {
 	        	try {
 	        		String[] credentials = new String(Base64.getDecoder().decode(parts[1])).split(":");
 	        
-	        		securityManager.validateUser(credentials[0], credentials[1]);        		       		
-	        		SecurityContext securityContext = new GVSecurityContext(credentials[0], securityManager.getUserRoles(credentials[0]));
+	        		User user = securityManager.validateUser(credentials[0], credentials[1]);        		       		
+	        		SecurityContext securityContext = new GVSecurityContext(user.getUsername(), user.getRoles());
 	        		        		
 	        		JAXRSUtils.getCurrentMessage().put(SecurityContext.class, securityContext);
 	        		LOG.debug("User authenticated");

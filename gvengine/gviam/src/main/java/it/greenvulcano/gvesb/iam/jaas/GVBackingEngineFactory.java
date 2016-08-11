@@ -89,9 +89,7 @@ public class GVBackingEngineFactory implements BackingEngineFactory {
 			admin.setExpired(true);
 			
 			userRepository.add(admin);
-		} else {
-			System.out.println("Found an admin");
-		}
+		} 
 		
 		return backingEngine;
 	}
