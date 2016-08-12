@@ -111,8 +111,9 @@ public class BasicPropertyHandler implements PropertyHandler
      * - ${{propname}}      : a System property value;
      * - sp{{propname}}     : a System property value;
      * - env{{varname}}     : an Environment variable value;
-     * - @{{propname}}      : a inProperties property value;
-     * - xmlp{{propname}}   : a inProperties property value, only used by
+     * - @{{propname[::fallback]}} : a inProperties property value and an optional default value;
+     * - json{{expression}} : a json expression to parse against object;
+     * 	 xmlp{{propname}}   : a inProperties property value, only used by
      *                        XMLConfig on xml files reading;
      * - xpath{{field::path}} : parse the inProperties 'field' value, then
      *                          apply the xpath and return the found value
@@ -146,6 +147,8 @@ public class BasicPropertyHandler implements PropertyHandler
      * - replace{{string::search::subst}}   : replace in 'string' all occurrences of 'search' with 'replace'
      * - urlEnc{{string}}   : URL encode invalid characters from 'string'
      * - urlDec{{string}}   : decode URL encoded characters from 'string'
+     * - enc{{format::string}}   : encode the 'string' in the specified format between base64 (default), hex, url
+     * - dec{{format::string}}   : decode the 'string' from the specified format between base64 (default), hex, url
      * </pre>
      * 
      * @param type
@@ -287,7 +290,17 @@ public class BasicPropertyHandler implements PropertyHandler
     private static String expandInProperties(String str, Map<String, Object> inProperties, Object object,
             Object extra) throws PropertiesHandlerException
     {
-        String propName = str;
+        String propName;
+        String fallback;
+        if (str.matches("^.+::.+$")) {
+        	String[] values = str.split("::");
+        	propName = values[0];
+        	fallback = values[1];
+        } else {
+        	propName = str;
+        	fallback = null;
+        }
+        
         String paramValue = null;
         if (propName.equals(GVBuffer.OBJECT_REF)){
         	if(object instanceof GVBuffer) {
@@ -305,6 +318,12 @@ public class BasicPropertyHandler implements PropertyHandler
             }
             paramValue = (String) inProperties.get(propName);
             if ((paramValue == null)) {// || (paramValue.equals(""))) {
+            	
+            	if (fallback!=null) {
+            	  return PropertiesHandler.isExpanded(fallback)	?
+            			  fallback : PropertiesHandler.expand(fallback, inProperties, object, extra);
+            	}
+            	
                 return "@" + PROP_START + str + PROP_END;
             }
             if (!PropertiesHandler.isExpanded(paramValue)) {
@@ -379,9 +398,16 @@ public class BasicPropertyHandler implements PropertyHandler
         }; 
         
         try {
-        	JSONObject jsonObject = object instanceof GVBuffer ?
-        							objProvider.apply(GVBuffer.class.cast(object).getObject()).orElseThrow(IllegalArgumentException::new):
-        							objProvider.apply(object).orElseThrow(IllegalArgumentException::new);
+        	JSONObject jsonObject; 
+        	
+        	if (object instanceof GVBuffer) {
+        		jsonObject = objProvider.apply(GVBuffer.class.cast(object).getObject()).orElseThrow(IllegalArgumentException::new);
+        	} else if (object instanceof byte[])  {
+        		String rawdata = new String((byte[])object, "UTF-8");
+        		jsonObject = objProvider.apply(rawdata).orElseThrow(IllegalArgumentException::new);					
+        	} else {
+        		jsonObject = objProvider.apply(object).orElseThrow(IllegalArgumentException::new);
+        	}        							
 	        
 	        if ("this".equals(propName)) {
 	        	value = jsonObject.toString();
@@ -927,7 +953,7 @@ public class BasicPropertyHandler implements PropertyHandler
     		}
     		
     		String encoder = "base64";
-    		if (string.contains("::")){
+    		if (string.matches("^.+::.+$")){
     			String[] parts = string.split("::");
     			encoder = parts[0];
     			string = parts[1];

@@ -19,6 +19,9 @@
  *******************************************************************************/
 package tests.unit.gvesb.utils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import it.greenvulcano.gvesb.buffer.GVBuffer;
 import it.greenvulcano.util.metadata.PropertiesHandler;
 import tests.unit.BaseTestCase;
@@ -84,6 +87,37 @@ public class GVESBPropertyHandlerTestCase extends BaseTestCase
         assertEquals(gvBuffer2.getProperty("prop2"), gvBuffer1.getProperty("prop2"));
     }
     
+    public final void testGVBufferDefaultProperty() throws Exception{
+        GVBuffer gvBuffer1 = new GVBuffer("SYS1", "SRV1");
+        gvBuffer1.setProperty("prop1", "SRV1_value1");
+        gvBuffer1.setProperty("prop2", "SRV1_value2");
+        
+        gvBuffer1.setObject(new Circle("cyano"));
+      
+        Map<String,Object> props = new HashMap<>();
+        for (String propName : gvBuffer1.getPropertyNamesSet()) {
+        	props.put(propName, gvBuffer1.getProperty(propName));
+        }
+        
+        String input = "@{{prop1}}";
+        String output = PropertiesHandler.expand(input, props, gvBuffer1, null);
+        assertEquals(gvBuffer1.getProperty("prop1"), output);
+        
+        input = "@{{prop2::notthis}}";
+        output = PropertiesHandler.expand(input, props, gvBuffer1, null);
+        assertEquals(gvBuffer1.getProperty("prop2"), output);
+        
+        input = "@{{prop3::yeah}}";
+        output = PropertiesHandler.expand(input, props, gvBuffer1, null);
+        assertEquals("yeah", output);
+        
+        input = "@{{prop3::@{{prop1}}}}";
+        output = PropertiesHandler.expand(input, props, gvBuffer1, null);
+        assertEquals(gvBuffer1.getProperty("prop1"), output);
+       
+       
+    }
+    
     public final void testGVBufferObject() throws Exception{
         GVBuffer gvBuffer1 = new GVBuffer("SYS1", "SRV1");
         gvBuffer1.setProperty("prop1", "SRV1_value1");
@@ -116,5 +150,11 @@ public class GVESBPropertyHandlerTestCase extends BaseTestCase
 
         assertEquals("it works", output);
        
+        gvBuffer1.setObject("{\"type\":\"bytes\",\"nested\":{\"value\":\"it works\"}}".getBytes());
+        input = "json{{nested.value}}";
+        output = PropertiesHandler.expand(input, null, gvBuffer1.getObject(), null);
+        
+        assertEquals("it works", output);
+        
     }
 }
