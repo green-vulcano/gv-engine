@@ -28,11 +28,7 @@ import javax.persistence.Embeddable;
 public class UserInfo implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
-	
-	UserInfo() {
-	
-	}
-	
+		
 	@Column(length=256)
 	private String fullname;
 	

@@ -17,19 +17,19 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with GreenVulcano ESB. If not, see <http://www.gnu.org/licenses/>.
  *******************************************************************************/
-package it.greenvulcano.gvesb.api.model;
+package it.greenvulcano.gvesb.api.dto;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class Service {
+public class ServiceDTO {
 
 	private final String idService, groupName;
     private final boolean statisticsEnabled, enabled;
-	private final Map<String, Operation> operations;
+	private final Map<String, OperationDTO> operations;
 	
-    public Service(String idService, String groupName, boolean enabled, boolean statisticsEnabled) {
+    public ServiceDTO(String idService, String groupName, boolean enabled, boolean statisticsEnabled) {
 		this.idService = Objects.requireNonNull(idService);
 		this.groupName = Objects.requireNonNull(groupName);
 		this.statisticsEnabled = statisticsEnabled;
@@ -54,7 +54,7 @@ public class Service {
 		return enabled;
 	}
 		
-	public Map<String, Operation> getOperations() {
+	public Map<String, OperationDTO> getOperations() {
 		return operations;
 	}
 
@@ -77,7 +77,7 @@ public class Service {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Service other = (Service) obj;
+		ServiceDTO other = (ServiceDTO) obj;
 		if (enabled != other.enabled)
 			return false;
 		if (groupName == null) {

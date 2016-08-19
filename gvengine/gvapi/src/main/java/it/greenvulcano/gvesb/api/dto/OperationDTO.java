@@ -17,19 +17,26 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with GreenVulcano ESB. If not, see <http://www.gnu.org/licenses/>.
  *******************************************************************************/
-package it.greenvulcano.gvesb.api;
+package it.greenvulcano.gvesb.api.dto;
 
-public interface GvServicesController<T> {
-	
-	T getServices();	
+import java.util.Objects;
 
-	T getOperations(String service);
+public class OperationDTO {
+
+	private final String name;
+	private final boolean enabled;
 	
-	T query(String service, String operation, String data);
+	public OperationDTO(String name, boolean enabled) {	
+		this.name = Objects.requireNonNull(name);
+		this.enabled = enabled;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public boolean isEnabled() {
+		return enabled;
+	}	
 	
-	T execute(String service, String operation, String data);
-	
-	T modify(String service, String operation, String data);
-	
-	T drop(String service, String operation, String data);
 }

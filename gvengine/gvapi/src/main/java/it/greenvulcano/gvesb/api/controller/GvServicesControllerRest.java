@@ -48,13 +48,10 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import it.greenvulcano.configuration.XMLConfig;
 import it.greenvulcano.configuration.XMLConfigException;
-import it.greenvulcano.gvesb.api.GvServicesController;
-import it.greenvulcano.gvesb.api.model.Operation;
-import it.greenvulcano.gvesb.api.model.Service;
+import it.greenvulcano.gvesb.api.dto.OperationDTO;
+import it.greenvulcano.gvesb.api.dto.ServiceDTO;
 import it.greenvulcano.gvesb.api.security.JaxRsIdentityInfo;
 import it.greenvulcano.gvesb.buffer.GVBuffer;
 import it.greenvulcano.gvesb.buffer.GVException;
@@ -64,19 +61,9 @@ import it.greenvulcano.gvesb.core.pool.GreenVulcanoPoolException;
 import it.greenvulcano.gvesb.core.pool.GreenVulcanoPoolManager;
 import it.greenvulcano.gvesb.identity.GVIdentityHelper;
 
-public class GvServicesControllerRest implements GvServicesController<Response>{
+public class GvServicesControllerRest extends BaseControllerRest {
 	private final static Logger LOG = LoggerFactory.getLogger(GvServicesControllerRest.class);
-	
-	
-	private final static ObjectMapper OBJECT_MAPPER;
-	
-	@Context
-	private MessageContext jaxrsContext;
 		
-	static {
-		OBJECT_MAPPER = new ObjectMapper();		
-	}
-	
 	@Path("/probe")
 	@GET
 	public String probe(){
@@ -86,7 +73,7 @@ public class GvServicesControllerRest implements GvServicesController<Response>{
 	@Path("/")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Override public Response getServices() {
+	public Response getServices() {
 		
 		String response = null;
 		try {
@@ -94,18 +81,18 @@ public class GvServicesControllerRest implements GvServicesController<Response>{
 			NodeList serviceNodes = XMLConfig.getNodeList("GVServices.xml", "//Service");
 			
 			
-			Map<String, Service> services = IntStream.range(0, serviceNodes.getLength())
+			Map<String, ServiceDTO> services = IntStream.range(0, serviceNodes.getLength())
 							 .mapToObj(serviceNodes::item)
 							 .map(this::buildServiceFromConfig)
 							 .filter(Optional::isPresent)
 							 .map(Optional::get)
-							 .collect(Collectors.toMap(Service::getIdService, Function.identity()));
+							 .collect(Collectors.toMap(ServiceDTO::getIdService, Function.identity()));
 			
 			LOG.debug("Services found "+serviceNodes.getLength());
-			response = OBJECT_MAPPER.writeValueAsString(services);
+			response = toJson(services);
 		} catch (XMLConfigException | JsonProcessingException xmlConfigException){
 			LOG.error("Error reading services configuration", xmlConfigException);
-			new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Configuration error").build());
+			new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(toJson(xmlConfigException)).build());
 		}	
 		
 		return Response.ok(response).build();
@@ -115,26 +102,26 @@ public class GvServicesControllerRest implements GvServicesController<Response>{
 	@Path("/{service}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Override public Response getOperations(@PathParam("service") String service) {
+	public Response getOperations(@PathParam("service") String service) {
 	
 		String response = null;
 		try {
 			Node serviceNode = Optional.ofNullable(XMLConfig.getNode("GVServices.xml", "//Service[@id-service='"+service+"']"))
 									   .orElseThrow(NoSuchElementException::new);
 			
-			Service svc = buildServiceFromConfig(serviceNode).orElseThrow(NoSuchElementException::new);;
-		    response = OBJECT_MAPPER.writeValueAsString(svc);		   
+			ServiceDTO svc = buildServiceFromConfig(serviceNode).orElseThrow(NoSuchElementException::new);;
+		    response = toJson(svc);		   
 			
 		} catch (NoSuchElementException noSuchElementException) {
 			new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity("Service not found").build());
 		} catch (XMLConfigException | JsonProcessingException xmlConfigException) {
-			new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Configuration error").build());
+			new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(toJson(xmlConfigException)).build());
 		}		
 		
 		return Response.ok(response).build();
 	}
 	
-	private List<Operation> getOperations(Node serviceNode) throws XMLConfigException{
+	private List<OperationDTO> getOperations(Node serviceNode) throws XMLConfigException{
 		NodeList operationNodes = XMLConfig.getNodeList(serviceNode, "./Operation");
 		return IntStream.range(0, operationNodes.getLength())
 							  .mapToObj(operationNodes::item)
@@ -148,45 +135,33 @@ public class GvServicesControllerRest implements GvServicesController<Response>{
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)	
-	@Override public Response execute(@PathParam("service") String service, 
-						  			  @PathParam("operation")String operation,						  			 
-						  			  String data) {
-		return runOperation(service, operation, data);
+	public Response execute(@Context MessageContext jaxrsContext, @PathParam("service") String service, @PathParam("operation")String operation, String data) {
+		return runOperation(jaxrsContext, service, operation, data);
 	}
 		
 	@Path("/{service}/{operation}")
 	@GET	
 	@Produces(MediaType.APPLICATION_JSON)	
-	@Override
-	public Response query(@PathParam("service") String service, 
-			  @PathParam("operation")String operation,						  			 
-			  String data) {
-		return runOperation(service, operation, data);
+	public Response query(@Context MessageContext jaxrsContext, @PathParam("service") String service, @PathParam("operation")String operation, String data) {
+		return runOperation(jaxrsContext, service, operation, data);
 	}
 
 	@Path("/{service}/{operation}")
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)	
-	@Override
-	public Response modify(@PathParam("service") String service, 
-			  @PathParam("operation")String operation,						  			 
-			  String data) {
-		return runOperation(service, operation, data);
+	public Response modify(@Context MessageContext jaxrsContext, @PathParam("service") String service, @PathParam("operation")String operation, String data) {
+		return runOperation(jaxrsContext, service, operation, data);
 	}
 
 	@Path("/{service}/{operation}")
 	@DELETE
-	@Produces(MediaType.APPLICATION_JSON)	
-	@Override
-	public Response drop(@PathParam("service") String service, 
-			  @PathParam("operation")String operation,						  			 
-			  String data) {
-		return runOperation(service, operation, data);
-	}	
-	
-		
-	private Response runOperation(String service, String operation, String data ) {
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response drop(@Context MessageContext jaxrsContext, @PathParam("service") String service, @PathParam("operation")String operation, String data) {
+		return runOperation(jaxrsContext, service, operation, data);
+	}
+			
+	private Response runOperation(MessageContext jaxrsContext, String service, String operation, String data ) {
 
 		GVIdentityHelper.push(new JaxRsIdentityInfo(jaxrsContext.getSecurityContext(), jaxrsContext.getHttpServletRequest().getRemoteAddr()));
 		
@@ -226,7 +201,7 @@ public class GvServicesControllerRest implements GvServicesController<Response>{
 				response = org.json.JSONArray.class.cast(output.getObject()).toString();
 			} else if (Objects.nonNull(output.getObject())) {
 				
-				response = OBJECT_MAPPER.writeValueAsString(output.getObject());
+				response = toJson(output.getObject());
 								
 			} else {
 				return Response.ok().build();
@@ -237,30 +212,30 @@ public class GvServicesControllerRest implements GvServicesController<Response>{
 			LOG.error("gvcoreapi - Error performing operation "+operation+" on "+service+" service", e);
 			
 			if (e.getMessage().contains("GV_SERVICE_NOT_FOUND_ERROR")){
-				throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity("Service "+service+" not found").build());
+				throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity(toJson(e)).build());
 			} else if (e.getMessage().contains("GVCORE_BAD_GVOPERATION_NAME_ERROR")) {
-				throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity("Operation "+operation+" not found").build());
+				throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity(toJson(e)).build());
 			}  else if (e.getMessage().contains("GV_SERVICE_POLICY_ERROR")) {
-				throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
+				throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).entity(toJson(e)).build());
 			}
 			
-			throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Operation failed").build());
+			throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(toJson(e)).build());
 		
 		} catch (GreenVulcanoPoolException e) {
 			LOG.error("gvcoreapi - Error performing forward on GreenVulcanoPool instance for subsystem HttpInboundGateway", e);
-			throw new WebApplicationException(Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("GreenVulcanoPool not available for subsystem HttpInboundGateway").build());			
+			throw new WebApplicationException(Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(toJson(e)).build());			
 		
 		} catch (JsonProcessingException e) {
 			LOG.error("gvcoreapi - Unparsable response data", e);
-			throw new WebApplicationException(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).entity("JSON parsing failed").build());			
+			throw new WebApplicationException(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).entity(toJson(e)).build());			
 		}
 		
 		return Response.ok(response).build();
 	}	
 		
-	private Optional<Service> buildServiceFromConfig(Node config) {
+	private Optional<ServiceDTO> buildServiceFromConfig(Node config) {
 		try {
-			Service service = new Service(XMLConfig.get(config, "@id-service"), 
+			ServiceDTO service = new ServiceDTO(XMLConfig.get(config, "@id-service"), 
 										  XMLConfig.get(config, "@group-name"), 
 										  XMLConfig.get(config, "@service-activation").equals("on"), 
 										  XMLConfig.get(config, "@statistics").equals("on"));
@@ -276,9 +251,9 @@ public class GvServicesControllerRest implements GvServicesController<Response>{
 		
 	}
 	
-	private Optional<Operation> buildOperationFromConfig(Node config) {
+	private Optional<OperationDTO> buildOperationFromConfig(Node config) {
 		try {
-			Operation operation = new Operation(XMLConfig.get(config, "@forward-name", XMLConfig.get(config, "@name") ), 
+			OperationDTO operation = new OperationDTO(XMLConfig.get(config, "@forward-name", XMLConfig.get(config, "@name") ), 
 										  XMLConfig.get(config, "@operation-activation").equals("on"));
 			return Optional.of(operation);
 		} catch (NullPointerException|XMLConfigException xmlConfigException){

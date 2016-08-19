@@ -25,6 +25,7 @@ import it.greenvulcano.gvesb.iam.domain.Role;
 import it.greenvulcano.gvesb.iam.domain.User;
 import it.greenvulcano.gvesb.iam.domain.UserInfo;
 import it.greenvulcano.gvesb.iam.exception.InvalidPasswordException;
+import it.greenvulcano.gvesb.iam.exception.InvalidRoleException;
 import it.greenvulcano.gvesb.iam.exception.InvalidUsernameException;
 import it.greenvulcano.gvesb.iam.exception.PasswordMissmatchException;
 import it.greenvulcano.gvesb.iam.exception.UserExistException;
@@ -33,6 +34,8 @@ import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
 public interface SecurityManager {
 	
 		User createUser(String username, String password) throws InvalidUsernameException, InvalidPasswordException, UserExistException;
+		
+		Role createRole(String name, String description) throws InvalidRoleException;
 		
 		User getUser(String username) throws UserNotFoundException;
 		
@@ -48,9 +51,9 @@ public interface SecurityManager {
 		
 		void resetUserPassword(String username) throws UserNotFoundException;
 		
-		void changeUserPassword(String username, String oldPassword, String newPassword) throws UserNotFoundException, PasswordMissmatchException;
+		User changeUserPassword(String username, String oldPassword, String newPassword) throws UserNotFoundException, PasswordMissmatchException;
 		
-		void addRole(String username, Role role) throws UserNotFoundException;
+		void addRole(String username, Role role) throws UserNotFoundException, InvalidRoleException;
 		
 		void revokeRole(String username, String roleName) throws UserNotFoundException;
 		

@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.annotation.Priority;
+import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Response;
@@ -41,8 +43,10 @@ import org.slf4j.LoggerFactory;
 
 import it.greenvulcano.gvesb.iam.domain.Role;
 import it.greenvulcano.gvesb.iam.domain.User;
+import it.greenvulcano.gvesb.iam.exception.UserExpiredException;
 import it.greenvulcano.gvesb.iam.service.SecurityManager;
 
+@Priority(Priorities.AUTHENTICATION)
 public class GVSecurityFilter implements ContainerRequestFilter {
 	
 	private final static Logger LOG = LoggerFactory.getLogger(GVSecurityFilter.class);
@@ -74,7 +78,9 @@ public class GVSecurityFilter implements ContainerRequestFilter {
 	        		SecurityContext securityContext = new GVSecurityContext(user.getUsername(), user.getRoles());
 	        		        		
 	        		JAXRSUtils.getCurrentMessage().put(SecurityContext.class, securityContext);
-	        		LOG.debug("User authenticated");
+	        		LOG.debug("User authenticated: "+securityContext.getUserPrincipal().getName());
+	        	} catch (UserExpiredException userExpiredException) {	        		
+	        		requestContext.abortWith(Response.status(Response.Status.FORBIDDEN).entity("User expired, password change needed").build());					        	
 	        	} catch (Exception e) {
 	        		LOG.warn("Authentication process failed", e);
 	        		requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());

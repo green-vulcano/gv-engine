@@ -28,11 +28,10 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import it.greenvulcano.gvesb.api.GvInstanceController;
 import it.greenvulcano.gvesb.osgi.bus.BusLink;
 
 @Path("/instance")
-public class GvInstanceControllerRest implements GvInstanceController<Response> {
+public class GvInstanceControllerRest {
 
 	private BusLink busLink;
 	
@@ -41,8 +40,7 @@ public class GvInstanceControllerRest implements GvInstanceController<Response> 
 	}	
 	
 	@Path("/link")
-	@PUT
-	@Override
+	@PUT	
 	public Response bind(@QueryParam(value="apikey") String key) {
 		Response response = null;
 		
@@ -61,7 +59,6 @@ public class GvInstanceControllerRest implements GvInstanceController<Response> 
 	
 	@Path("/link")
 	@DELETE
-	@Override
 	public Response unbind() {
 		Response response = null; 
 		try {

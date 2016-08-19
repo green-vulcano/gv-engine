@@ -26,6 +26,7 @@ import it.greenvulcano.gvesb.iam.domain.Role;
 import it.greenvulcano.gvesb.iam.domain.User;
 import it.greenvulcano.gvesb.iam.domain.UserInfo;
 import it.greenvulcano.gvesb.iam.exception.InvalidPasswordException;
+import it.greenvulcano.gvesb.iam.exception.InvalidRoleException;
 import it.greenvulcano.gvesb.iam.exception.InvalidUsernameException;
 import it.greenvulcano.gvesb.iam.exception.PasswordMissmatchException;
 import it.greenvulcano.gvesb.iam.exception.UserExistException;
@@ -62,6 +63,16 @@ public class GVSecurityManager implements SecurityManager {
 		
 		return userRepository.get(username).get();
 	}
+	
+	@Override
+	public Role createRole(String name, String description) throws InvalidRoleException {
+		if (!name.matches(Role.ROLE_PATTERN)) throw new InvalidRoleException(name);
+		
+		Role role = new Role(name, description);
+		roleRepository.add(role);
+		return role;
+	}
+	
 
 	@Override
 	public void saveUserInfo(String username, UserInfo userInfo) throws UserNotFoundException {
@@ -93,7 +104,7 @@ public class GVSecurityManager implements SecurityManager {
 	}
 
 	@Override
-	public void changeUserPassword(String username, String oldPassword, String newPassword)
+	public User changeUserPassword(String username, String oldPassword, String newPassword)
 			throws UserNotFoundException, PasswordMissmatchException {
 		
 		User user = userRepository.get(username).orElseThrow(()->new UserNotFoundException(username));
@@ -105,7 +116,8 @@ public class GVSecurityManager implements SecurityManager {
 		user.setExpired(false);
 		
 		userRepository.add(user);
-
+		
+		return user;
 	}
 
 	@Override

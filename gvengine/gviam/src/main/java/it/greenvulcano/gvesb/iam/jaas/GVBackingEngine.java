@@ -40,6 +40,7 @@ import it.greenvulcano.gvesb.iam.repository.UserRepository;
 import it.greenvulcano.gvesb.iam.domain.Role;
 import it.greenvulcano.gvesb.iam.domain.User;
 import it.greenvulcano.gvesb.iam.exception.InvalidPasswordException;
+import it.greenvulcano.gvesb.iam.exception.InvalidRoleException;
 import it.greenvulcano.gvesb.iam.exception.InvalidUsernameException;
 import it.greenvulcano.gvesb.iam.exception.UserExistException;
 import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
@@ -67,11 +68,11 @@ public class GVBackingEngine implements BackingEngine {
 		user.setPassword(getEncryptedPassword(password));
 		user.setPasswordTime(new Date());
 		user.setEnabled(true);
-		user.setExpired(false);
+		user.setExpired(true);
 		
 		try {
 			userRepository.add(user);
-		} catch (ConstraintViolationException constraintViolationException) {
+		} catch (org.hibernate.StaleObjectStateException|ConstraintViolationException constraintViolationException) {
 			throw new UserExistException(username);
 		}
 	}
@@ -84,7 +85,7 @@ public class GVBackingEngine implements BackingEngine {
 
 	@Override
 	public void addRole(String username, String rolename) {
-		if (!rolename.matches(Role.ROLE_PATTERN)) throw new InvalidPasswordException(rolename);
+		if (!rolename.matches(Role.ROLE_PATTERN)) throw new InvalidRoleException(rolename);
 		
 		User user = userRepository.get(username).orElseThrow(()->new UserNotFoundException(username));
 		

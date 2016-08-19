@@ -70,7 +70,7 @@ public class User implements Serializable {
     private int version;
    
     @Embedded
-    private UserInfo userInfo = new UserInfo();
+    private UserInfo userInfo;
         
     @ManyToMany(fetch=FetchType.EAGER)
     @Cascade({CascadeType.SAVE_UPDATE})
@@ -130,7 +130,7 @@ public class User implements Serializable {
 	}
 
 	public void setUserInfo(UserInfo userInfo) {
-		this.userInfo = userInfo!=null ? userInfo: new UserInfo();
+		this.userInfo = userInfo;
 	}
 
 	@Override

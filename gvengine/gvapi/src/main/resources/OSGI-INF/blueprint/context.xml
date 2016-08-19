@@ -15,22 +15,12 @@
 	<bean id="authenticationFilter" class="it.greenvulcano.gvesb.api.security.GVSecurityFilter">        
         <property name="gvSecurityManagerReferences" ref="securityManagerReferences"/>    
     </bean>
-	
+			
 	<reference id="gvBusLink" interface="it.greenvulcano.gvesb.osgi.bus.BusLink"  activation="eager" availability="mandatory" />	
 		
 	<bean id="instanceController" class="it.greenvulcano.gvesb.api.controller.GvInstanceControllerRest">
 		<property name="busLink" ref="gvBusLink"/>
-	</bean>
-	
-	<!-- TODO: endpoint security  
-	<bean id="gvengineAuthorizationInterceptor" class="org.apache.cxf.interceptor.security.SimpleAuthorizingInterceptor">	   
-	   <property name="globalRoles" value="gvadmin"/>
-	</bean>
-
-	<bean id="gvengineAuthorizationFilter" class="org.apache.cxf.jaxrs.security.SimpleAuthorizingFilter">	   
-	   <property name="interceptor" ref="gvengineAuthorizationInterceptor"/>
 	</bean>	
-	-->
 	
 	<jaxrs:server address="/gvengine" id="gvengineapi">
         <jaxrs:serviceBeans>
@@ -50,6 +40,32 @@
         </jaxrs:serviceBeans> 
         <jaxrs:providers>
 	       <ref component-id="authenticationFilter"/>
+	    </jaxrs:providers>       
+    </jaxrs:server>
+    
+    <reference id="gvSecurityManager" interface="it.greenvulcano.gvesb.iam.service.SecurityManager" activation="eager" availability="optional" timeout="500"/>
+    
+    <bean id="securityController" class="it.greenvulcano.gvesb.api.controller.GvSecurityControllerRest">
+    	<property name="securityManager" ref="gvSecurityManager"/>
+    </bean>
+		
+	<bean id="gviamAuthorizationInterceptor" class="org.apache.cxf.interceptor.security.SecureAnnotationsInterceptor">
+   		<property name="allowAnonymousUsers" value="true" />
+   		<property name="checkConfiguredRolesOnly" value="false" />
+   		<property name="securedObject" ref="securityController"/>
+	</bean>
+	
+	<bean id="gviamAuthorizationFilter" class="org.apache.cxf.jaxrs.security.SimpleAuthorizingFilter">	   
+	   <property name="interceptor" ref="gviamAuthorizationInterceptor"/>
+	</bean>	
+			
+	<jaxrs:server address="/gviam" id="gviamapi">
+        <jaxrs:serviceBeans>            
+           	<ref component-id="securityController" />
+        </jaxrs:serviceBeans> 
+        <jaxrs:providers>
+	       	<ref component-id="authenticationFilter"/>
+	       	<ref component-id="gviamAuthorizationFilter"/>	     
 	    </jaxrs:providers>       
     </jaxrs:server>
     

@@ -56,7 +56,7 @@ public class RoleRepositoryHibernate implements RoleRepository {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Set<Role> getAll() {		
-		List<Role> roles = getSession().createQuery("from Roles").list();
+		List<Role> roles = getSession().createQuery("from Role").list();
 		return new LinkedHashSet<>(roles);
 	}
 

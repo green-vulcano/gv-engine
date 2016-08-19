@@ -78,8 +78,9 @@ public class GVBackingEngineFactory implements BackingEngineFactory {
 			try {
 				backingEngine.addUser("gvadmin", "gvadmin");
 			} catch (UserExistException e) {
-				
-			}						
+				System.out.println("Restoring default admin user ");
+			}	
+			backingEngine.addRole("gvadmin", "gvadmin");
 			backingEngine.addRole("gvadmin", "admin");
 			backingEngine.addRole("gvadmin", "manager");
 			backingEngine.addRole("gvadmin", "viewer");
