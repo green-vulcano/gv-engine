@@ -99,7 +99,7 @@
 			      					data-uib-typeahead="role.name for role in ctrl.roles | filter:$viewValue | limitTo:8"
 			      					data-ng-model="ctrl.newrole" pattern="(?=^.{4,28}$)^[a-zA-Z][a-zA-Z0-9._@-]*[a-zA-Z0-9]+$"/>
 		      				 
-		      				 <button type="button" class="btn" data-ng-click="ctrl.addRole()">	
+		      				 <button type="button" class="btn" data-ng-click="userForm.newrole.$valid && ctrl.addRole()">	
 		      					<i class="fa fa-plus" aria-hidden="true"></i>
 		      				 </button>
 		      				 
@@ -112,7 +112,7 @@
 				     	<ul class="list-group">
 	  						<li data-ng-repeat="(key,role) in ctrl.user.roles" class="list-group-item">
 	    						{{role.name}}
-	    						<button type="button" class="btn  btn-xs pull-right" data-ng-click="userForm.newrole.$invalid && ctrl.removeRole(key)"><i class="fa fa-times" aria-hidden="true" ></i></button>				     			
+	    						<button type="button" class="btn  btn-xs pull-right" data-ng-click="ctrl.removeRole(key)"><i class="fa fa-times" aria-hidden="true" ></i></button>				     			
 				     		</li>
 				     	</ul>
 			     	</div>		
