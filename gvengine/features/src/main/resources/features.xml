@@ -87,6 +87,7 @@
 		<bundle start-level="81">mvn:com.fasterxml.jackson.core/jackson-annotations/2.7.4</bundle>
 		<bundle start-level="82">mvn:com.fasterxml.jackson.core/jackson-databind/2.7.4</bundle>		
 		
+		<feature>war</feature>
 		<feature>cxf-jaxrs</feature>
 		<feature>jms</feature>
 		<feature>activemq-client</feature>
@@ -99,6 +100,7 @@
 		<bundle start-level="96">mvn:it.greenvulcano.gvesb/gvbus/${project.version}</bundle>
 		<bundle start-level="96">mvn:it.greenvulcano.gvesb/gvapi/${project.version}</bundle>
 		<bundle start-level="99">mvn:it.greenvulcano.gvesb/gvcommands/${project.version}</bundle>
+		<bundle start-level="99">mvn:it.greenvulcano.gvesb/gvconsole/${project.version}/war</bundle>
 	</feature>		
 	
 </features>

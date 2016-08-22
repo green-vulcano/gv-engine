@@ -190,6 +190,7 @@
     <module>gvbus</module>
     <module>gvcommands</module>
     <module>gvcore</module>
+    <module>gvconsole</module>
     <module>gvdte</module>
     <module>gviam</module>
     <module>gvpolicy</module>

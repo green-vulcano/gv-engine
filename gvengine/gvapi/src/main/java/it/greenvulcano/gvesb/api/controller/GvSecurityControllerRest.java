@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -165,7 +166,7 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 			gvSecurityManager.createUser(user.getUsername(), defaultPassword);
 			gvSecurityManager.saveUserInfo(user.getUsername(), user.getUserInfo());
 			
-			for (Role role : user.getRoles()) {
+			for (Role role : user.getRoles().values()) {
 				try {
 					gvSecurityManager.addRole(user.getUsername(), role);
 				} catch (InvalidRoleException invalidRoleException) {
@@ -200,7 +201,7 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 			
 			gvSecurityManager.saveUserInfo(user.getUsername(), user.getUserInfo());
 			gvSecurityManager.enableUser(user.getUsername(), user.isEnabled());
-			for (Role role : user.getRoles()) {
+			for (Role role : user.getRoles().values()) {
 				try {
 					gvSecurityManager.addRole(user.getUsername(), role);
 				} catch (InvalidRoleException invalidRoleException) {
@@ -214,6 +215,77 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 			response = Response.status(Status.NOT_ACCEPTABLE).entity(toJson(e)).build();		
 		} catch (UserExistException e) {
 			response = Response.status(Status.CONFLICT).entity(toJson(e)).build();
+		} catch (Exception e) {
+			LOG.error("API_CALL_ERROR",e);
+			response = Response.status(Status.SERVICE_UNAVAILABLE).entity(toJson(e)).build();
+		}		
+		
+		return response;
+		
+	}
+	
+	@Path("/admin/users/{username}/enabled")
+	@PATCH 
+	@Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed("gvadmin")
+	public Response switchUserStatus(@PathParam("username") String username){
+		Response response = null;
+		
+		try {
+	
+			UserDTO user = new UserDTO(gvSecurityManager.switchUserStatus(username));
+								
+			response = Response.ok(toJson(user)).build();
+	
+		} catch (UserNotFoundException e) {
+			response = Response.status(Status.NOT_FOUND).entity(toJson(e)).build();
+		} catch (Exception e) {
+			LOG.error("API_CALL_ERROR",e);
+			response = Response.status(Status.SERVICE_UNAVAILABLE).entity(toJson(e)).build();
+		}		
+		
+		return response;
+		
+	}
+	
+	@Path("/admin/users/{username}/password")
+	@PATCH 
+	@Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed("gvadmin")
+	public Response resetUserPassword(@PathParam("username") String username) {
+		Response response = null;
+		
+		try {
+			UserDTO user = new UserDTO(gvSecurityManager.resetUserPassword(username));
+			
+			response = Response.ok(toJson(user)).build();
+			
+		} catch (UserNotFoundException e) {
+			response = Response.status(Status.NOT_FOUND).entity(toJson(e)).build();
+		} catch (Exception e) {
+			LOG.error("API_CALL_ERROR",e);
+			response = Response.status(Status.SERVICE_UNAVAILABLE).entity(toJson(e)).build();
+		}		
+		
+		return response;
+		
+	}
+	
+	@Path("/admin/users/{username}")
+	@DELETE
+	@Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed("gvadmin")
+	public Response deleteUser(@PathParam("username") String username) {
+		Response response = null;
+		
+		try {
+		
+			gvSecurityManager.deleteUser(username);			
+					
+			response = Response.accepted().build();
+			
+		} catch (UserNotFoundException e) {
+			response = Response.status(Status.NOT_FOUND).entity(toJson(e)).build();
 		} catch (Exception e) {
 			LOG.error("API_CALL_ERROR",e);
 			response = Response.status(Status.SERVICE_UNAVAILABLE).entity(toJson(e)).build();

@@ -47,9 +47,11 @@ public interface SecurityManager {
 				
 		void saveUserInfo(String username, UserInfo userInfo) throws UserNotFoundException;
 			
-		void enableUser(String username, boolean enable);		
+		User enableUser(String username, boolean enable) throws UserNotFoundException;		
 		
-		void resetUserPassword(String username) throws UserNotFoundException;
+		User switchUserStatus(String username) throws UserNotFoundException;
+		
+		User resetUserPassword(String username) throws UserNotFoundException;
 		
 		User changeUserPassword(String username, String oldPassword, String newPassword) throws UserNotFoundException, PasswordMissmatchException;
 		

@@ -94,12 +94,14 @@ public class GVSecurityManager implements SecurityManager {
 	}
 
 	@Override
-	public void resetUserPassword(String username) throws UserNotFoundException {
+	public User resetUserPassword(String username) throws UserNotFoundException {
 		User user = userRepository.get(username).orElseThrow(()->new UserNotFoundException(username));
 		
 		user.setPassword(jaasEngine.getEncryptedPassword(username));
 		user.setPasswordTime(new Date());
 		user.setExpired(true);
+		userRepository.add(user);
+		return user;
 
 	}
 
@@ -168,10 +170,21 @@ public class GVSecurityManager implements SecurityManager {
 	}
 
 	@Override
-	public void enableUser(String username, boolean enable) throws UserNotFoundException {
+	public User enableUser(String username, boolean enable) throws UserNotFoundException {
 		User user = userRepository.get(username).orElseThrow(()->new UserNotFoundException(username));
 		user.setEnabled(enable);
 		userRepository.add(user);
+		
+		return user;
+	}
+	
+	@Override
+	public User switchUserStatus(String username) throws UserNotFoundException {
+		User user = userRepository.get(username).orElseThrow(()->new UserNotFoundException(username));
+		user.setEnabled(!user.isEnabled());
+		userRepository.add(user);
+		
+		return user;
 	}
 
 }

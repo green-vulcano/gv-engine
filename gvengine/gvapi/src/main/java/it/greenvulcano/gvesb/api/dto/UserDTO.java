@@ -1,8 +1,10 @@
 package it.greenvulcano.gvesb.api.dto;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -22,13 +24,13 @@ public class UserDTO {
 					@JsonProperty("expired") boolean expired, 
 					@JsonProperty("enabled") boolean enabled,
 					@JsonProperty("userInfo") UserInfo userInfo,
-					@JsonProperty("roles") Set<Role> roles) {
+					@JsonProperty("roles") Map<String, Role> roles) {
 		user = new User();
 		user.setUsername(username);;
 		user.setExpired(expired);
 		user.setEnabled(enabled);
 		user.setUserInfo(userInfo);
-		if (roles!=null) user.getRoles().addAll(roles);
+		if (roles!=null) user.getRoles().addAll(roles.values());
 	}
 	
 	@JsonIgnore
@@ -48,8 +50,8 @@ public class UserDTO {
 		return user.isEnabled();
 	}
 		
-	public Set<Role> getRoles() {
-		return user.getRoles();
+	public Map<String, Role> getRoles() {
+		return user.getRoles().stream().collect(Collectors.toMap(Role::getName, Function.identity()));
 	}	
 
 	public UserInfo getUserInfo() {
