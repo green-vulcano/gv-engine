@@ -20,7 +20,11 @@
 package it.greenvulcano.gvesb.iam.service.internal;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import it.greenvulcano.gvesb.iam.domain.Role;
 import it.greenvulcano.gvesb.iam.domain.User;
@@ -185,6 +189,38 @@ public class GVSecurityManager implements SecurityManager {
 		userRepository.add(user);
 		
 		return user;
+	}
+
+	@Override
+	public void checkManagementRequirements() {
+		final Logger logger = LoggerFactory.getLogger(getClass());
+		Set<String> roles = new HashSet<>();
+		roles.add("admin");
+		
+		Set<User> admins = userRepository.find(null, null, null, roles);
+		/**
+		 * Adding default user 'gvadmin' if no present		
+		 */
+		if (admins.isEmpty()) {
+			logger.info("Creating a default 'gvadmin'");
+			try {
+				jaasEngine.addUser("gvadmin", "gvadmin");
+			} catch (UserExistException e) {
+				logger.info("A user named 'gvadmin' exist: restoring his default roles");
+			}	
+			jaasEngine.addRole("gvadmin", "gvadmin");
+			jaasEngine.addRole("gvadmin", "admin");
+			jaasEngine.addRole("gvadmin", "manager");
+			jaasEngine.addRole("gvadmin", "viewer");
+			jaasEngine.addRole("gvadmin", "systembundles");
+			
+			User admin = userRepository.get("gvadmin").get();
+			admin.setExpired(true);
+			
+			userRepository.add(admin);
+		} 
+		
+		
 	}
 
 }

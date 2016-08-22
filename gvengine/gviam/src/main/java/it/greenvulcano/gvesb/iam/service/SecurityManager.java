@@ -33,6 +33,9 @@ import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
 
 public interface SecurityManager {
 	
+		
+		void checkManagementRequirements();
+	
 		User createUser(String username, String password) throws InvalidUsernameException, InvalidPasswordException, UserExistException;
 		
 		Role createRole(String name, String description) throws InvalidRoleException;

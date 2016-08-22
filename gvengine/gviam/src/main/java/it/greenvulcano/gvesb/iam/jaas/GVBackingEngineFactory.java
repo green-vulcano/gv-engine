@@ -20,18 +20,13 @@
 package it.greenvulcano.gvesb.iam.jaas;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
-
 import org.apache.karaf.jaas.modules.BackingEngine;
 import org.apache.karaf.jaas.modules.BackingEngineFactory;
 import org.apache.karaf.jaas.modules.encryption.EncryptionSupport;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 
-import it.greenvulcano.gvesb.iam.domain.User;
-import it.greenvulcano.gvesb.iam.exception.UserExistException;
 import it.greenvulcano.gvesb.iam.repository.RoleRepository;
 import it.greenvulcano.gvesb.iam.repository.UserRepository;
 
@@ -62,36 +57,9 @@ public class GVBackingEngineFactory implements BackingEngineFactory {
 		HashMap<String, BundleContext> options = new HashMap<>();
 		//EncryptionSupport requires the BundleContext in the options
 		options.put(BundleContext.class.getName(), FrameworkUtil.getBundle(EncryptionSupport.class).getBundleContext());
-		
-		
+				
 		BackingEngine backingEngine = build(options);
-		
-		Set<String> roles = new HashSet<>();
-		roles.add("admin");
-		
-		Set<User> admins = userRepository.find(null, null, null, roles);
-		
-		
-		
-		if (admins.isEmpty()) {
-			
-			try {
-				backingEngine.addUser("gvadmin", "gvadmin");
-			} catch (UserExistException e) {
-				System.out.println("Restoring default admin user ");
-			}	
-			backingEngine.addRole("gvadmin", "gvadmin");
-			backingEngine.addRole("gvadmin", "admin");
-			backingEngine.addRole("gvadmin", "manager");
-			backingEngine.addRole("gvadmin", "viewer");
-			backingEngine.addRole("gvadmin", "systembundles");
-			
-			User admin = userRepository.get("gvadmin").get();
-			admin.setExpired(true);
-			
-			userRepository.add(admin);
-		} 
-		
+				
 		return backingEngine;
 	}
 	

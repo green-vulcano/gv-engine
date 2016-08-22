@@ -45,6 +45,14 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 		this.gvSecurityManager = gvSecurityManager;
 	}
 	
+	public void init(){
+		try {
+			gvSecurityManager.checkManagementRequirements();
+		} catch (Exception e) {
+			LOG.error("Error creating default user",e);
+		}
+	}
+	
 	@Path("/authenticate")
 	@POST @Produces(MediaType.APPLICATION_JSON)
 	public Response authenticate(@Context SecurityContext securityContext) {
