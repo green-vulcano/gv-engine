@@ -29,7 +29,6 @@ import org.slf4j.LoggerFactory;
 import it.greenvulcano.gvesb.api.dto.UserDTO;
 import it.greenvulcano.gvesb.iam.domain.Role;
 import it.greenvulcano.gvesb.iam.exception.InvalidPasswordException;
-import it.greenvulcano.gvesb.iam.exception.InvalidRoleException;
 import it.greenvulcano.gvesb.iam.exception.InvalidUsernameException;
 import it.greenvulcano.gvesb.iam.exception.UserExistException;
 import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
@@ -172,15 +171,7 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 			
 			String defaultPassword = user.getUsername();			
 			gvSecurityManager.createUser(user.getUsername(), defaultPassword);
-			gvSecurityManager.saveUserInfo(user.getUsername(), user.getUserInfo());
-			
-			for (Role role : user.getRoles().values()) {
-				try {
-					gvSecurityManager.addRole(user.getUsername(), role);
-				} catch (InvalidRoleException invalidRoleException) {
-					LOG.warn("Creating new user "+user.getUsername() + " skipped role creation: "+invalidRoleException.getMessage());
-				}	
-			}
+			gvSecurityManager.updateUser(user.getUsername(), user.getUserInfo(), user.getGrantedRoles(), user.isEnabled());
 					
 			response = Response.created(URI.create("/admin/users/"+user.getUsername())).build();
 			
@@ -206,17 +197,8 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 		
 		try {
 			UserDTO user = parseJson(data, UserDTO.class);			
+			gvSecurityManager.updateUser(user.getUsername(), user.getUserInfo(), user.getGrantedRoles(), user.isEnabled());
 			
-			gvSecurityManager.saveUserInfo(user.getUsername(), user.getUserInfo());
-			gvSecurityManager.enableUser(user.getUsername(), user.isEnabled());
-			for (Role role : user.getRoles().values()) {
-				try {
-					gvSecurityManager.addRole(user.getUsername(), role);
-				} catch (InvalidRoleException invalidRoleException) {
-					LOG.warn("Creating new user "+user.getUsername() + " skipped role creation: "+invalidRoleException.getMessage());
-				}	
-			}
-					
 			response = Response.ok().build();
 			
 		} catch (InvalidUsernameException|InvalidPasswordException e) {

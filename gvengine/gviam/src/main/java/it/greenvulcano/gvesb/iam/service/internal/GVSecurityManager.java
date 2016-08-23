@@ -21,7 +21,9 @@ package it.greenvulcano.gvesb.iam.service.internal;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,10 +81,22 @@ public class GVSecurityManager implements SecurityManager {
 	
 
 	@Override
-	public void saveUserInfo(String username, UserInfo userInfo) throws UserNotFoundException {
+	public void updateUser(String username, UserInfo userInfo, Set<Role> grantedRoles, boolean enabled) throws UserNotFoundException, InvalidRoleException {
 		User user = userRepository.get(username).orElseThrow(()->new UserNotFoundException(username));
 		user.setUserInfo(userInfo);
-		
+		user.setEnabled(enabled);
+		user.getRoles().clear();
+		if (grantedRoles!=null) {
+			
+			Predicate<Role> roleIsValid = role-> Optional.ofNullable(role.getName()).orElse("").matches(Role.ROLE_PATTERN);
+			
+			Optional<Role> notValidRole = grantedRoles.stream().filter(roleIsValid.negate()).findAny();
+			if (notValidRole.isPresent()){
+				throw new InvalidRoleException(notValidRole.get().getName());
+			} 
+			
+			user.getRoles().addAll(grantedRoles);
+		}
 		userRepository.add(user);
 	}
 
@@ -156,7 +170,7 @@ public class GVSecurityManager implements SecurityManager {
 		jaasEngine.deleteRole(username, roleName);
 
 	}
-
+	
 	@Override
 	public void deleteRole(String roleName) {		
 		roleRepository.get(roleName).ifPresent(roleRepository::remove);
@@ -203,24 +217,26 @@ public class GVSecurityManager implements SecurityManager {
 		 */
 		if (admins.isEmpty()) {
 			logger.info("Creating a default 'gvadmin'");
+			User admin;
 			try {
 				jaasEngine.addUser("gvadmin", "gvadmin");
+				admin = userRepository.get("gvadmin").get();
 			} catch (UserExistException e) {
-				logger.info("A user named 'gvadmin' exist: restoring his default roles");
+				admin = resetUserPassword("gvadmin");
+				logger.info("A user named 'gvadmin' exist: restoring his default settings");
 			}	
-			jaasEngine.addRole("gvadmin", "gvadmin");
-			jaasEngine.addRole("gvadmin", "admin");
-			jaasEngine.addRole("gvadmin", "manager");
-			jaasEngine.addRole("gvadmin", "viewer");
-			jaasEngine.addRole("gvadmin", "systembundles");
 			
-			User admin = userRepository.get("gvadmin").get();
-			admin.setExpired(true);
-			
+			admin.setEnabled(true);
+			admin.getRoles().clear();
+			admin.getRoles().add(new Role("gvadmin", "Created by GV"));
+			admin.getRoles().add(new Role("admin", "Created by GV"));
+			admin.getRoles().add(new Role("manager", "Created by GV"));
+			admin.getRoles().add(new Role("viewer", "Created by GV"));
+			admin.getRoles().add(new Role("systembundles", "Created by GV"));
+						
 			userRepository.add(admin);
-		} 
+		}	
 		
-		
-	}
+	}	
 
 }

@@ -48,7 +48,7 @@ public interface SecurityManager {
 		
 		Set<Role> getRoles();
 				
-		void saveUserInfo(String username, UserInfo userInfo) throws UserNotFoundException;
+		void updateUser(String username, UserInfo userInfo, Set<Role> grantedRoles, boolean enabled) throws UserNotFoundException, InvalidRoleException;
 			
 		User enableUser(String username, boolean enable) throws UserNotFoundException;		
 		
@@ -60,7 +60,7 @@ public interface SecurityManager {
 		
 		void addRole(String username, Role role) throws UserNotFoundException, InvalidRoleException;
 		
-		void revokeRole(String username, String roleName) throws UserNotFoundException;
+		void revokeRole(String username, String roleName) throws UserNotFoundException;		
 		
 		void deleteUser(String username);
 			

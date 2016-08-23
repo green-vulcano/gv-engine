@@ -3,6 +3,7 @@ package it.greenvulcano.gvesb.api.dto;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -52,7 +53,12 @@ public class UserDTO {
 		
 	public Map<String, Role> getRoles() {
 		return user.getRoles().stream().collect(Collectors.toMap(Role::getName, Function.identity()));
-	}	
+	}
+	
+	@JsonIgnore
+	public Set<Role> getGrantedRoles() {
+		return user.getRoles();
+	}
 
 	public UserInfo getUserInfo() {
 		return Optional.ofNullable(user.getUserInfo()).orElse(new UserInfo()) ;
