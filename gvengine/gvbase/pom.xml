@@ -254,6 +254,7 @@
 									javax.xml.transform.stream,
 									org.apache.axiom.om,
 									org.apache.axiom.om.xpath,
+									org.apache.commons.beanutils,
 									org.apache.commons.codec.binary;version="[1.7,2)",
 									org.apache.commons.collections.iterators,
 									org.apache.commons.dbcp;version="[1.3,2)",
