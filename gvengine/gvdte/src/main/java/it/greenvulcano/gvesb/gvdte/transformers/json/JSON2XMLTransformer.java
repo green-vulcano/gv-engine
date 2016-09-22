@@ -37,6 +37,7 @@ import it.greenvulcano.util.xml.XMLUtilsException;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -70,7 +71,8 @@ import org.w3c.dom.NodeList;
  *
  */
 public class JSON2XMLTransformer implements DTETransformer {
-    private static Logger          logger    = org.slf4j.LoggerFactory.getLogger(JSON2XMLTransformer.class);
+  
+	private static Logger          logger    = org.slf4j.LoggerFactory.getLogger(JSON2XMLTransformer.class);
 
     private String                 name;
     private String                 validationType;
@@ -90,7 +92,7 @@ public class JSON2XMLTransformer implements DTETransformer {
     private List<TransformerHelper> helpers = new ArrayList<TransformerHelper>();
     
     private ConversionPolicy        policy          = ConversionPolicy.SIMPLE;
-    
+        
     private Set<String>             forceAttributes = new HashSet<String>();
 
     public JSON2XMLTransformer() {
@@ -143,7 +145,7 @@ public class JSON2XMLTransformer implements DTETransformer {
                     forceAttributes.add(attr.trim());
                 }
             }
-
+                                    
             logger.debug("Loaded parameters: outputXslMapName = " + xslMapName + " - DataSourceSet: "
                     + dataSourceSet + " - validate = " + validateXSL + " - transformerFactory = " + transformerFactory
                     + " - conversionPolicy = " + policy
@@ -183,9 +185,10 @@ public class JSON2XMLTransformer implements DTETransformer {
      * @throws DTETransfException
      */
     private Map<String, Templates> initTemplMap() throws DTETransfException {
-        if (xslMapName == null) {
+        if (xslMapName == null || xslMapName.equalsIgnoreCase("text")) {
             return null;
         }
+        
         String key = dataSourceSet + "::" + xslMapName;
         try {
             templHashMap = new HashMap<String, Templates>();
@@ -253,36 +256,47 @@ public class JSON2XMLTransformer implements DTETransformer {
             else {
                 docXML = (Document) JSONUtils.jsonToXml_BadgerFish(input);
             }
+            
             if (xslMapName != null) {
-                transformer = getTransformer(mapParam);
-                setParams(transformer, mapParam);
-                Source theSource = new DOMSource(docXML);
-                String outputType = transformer.getOutputProperty(OutputKeys.METHOD);
-                if (outputType == null) {
-                    outputType = "xml";
-                }
-                if (outputType.equals("xml")) {
-                    DOMResult theDOMResult = new DOMResult();
-                    transformer.transform(theSource, theDOMResult);
-                    Document docValidation = (Document) theDOMResult.getNode();
-                    if (validate()) {
-                        executeValidation(docValidation, mapParam);
-                    }
-                    logger.debug("Transform stop");
-                    return theDOMResult.getNode();
-                }
-                ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
-                StreamResult theStreamResult = new StreamResult(byteOutputStream);
-                transformer.transform(theSource, theStreamResult);
-                byte[] byteResult = byteOutputStream.toByteArray();
-
-                logger.debug("Transform stop");
-                return byteResult;
+            	if (xslMapName.equalsIgnoreCase("text")) {
+            		DOMSource domSource = new DOMSource(docXML);
+                	StringWriter writer = new StringWriter();
+                	StreamResult result = new StreamResult(writer);
+                
+                	transformer = TransformerFactory.newInstance().newTransformer();
+                	transformer.transform(domSource, result);
+                	logger.debug("Transform stop");
+                	return writer.toString();
+            	} else {
+	                transformer = getTransformer(mapParam);
+	                setParams(transformer, mapParam);
+	                Source theSource = new DOMSource(docXML);
+	                String outputType = transformer.getOutputProperty(OutputKeys.METHOD);
+	                if (outputType == null) {
+	                    outputType = "xml";
+	                }
+	                if (outputType.equals("xml")) {
+	                    DOMResult theDOMResult = new DOMResult();
+	                    transformer.transform(theSource, theDOMResult);
+	                    Document docValidation = (Document) theDOMResult.getNode();
+	                    if (validate()) {
+	                        executeValidation(docValidation, mapParam);
+	                    }
+	                    logger.debug("Transform stop");
+	                    return theDOMResult.getNode();
+	                }
+	                ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
+	                StreamResult theStreamResult = new StreamResult(byteOutputStream);
+	                transformer.transform(theSource, theStreamResult);
+	                byte[] byteResult = byteOutputStream.toByteArray();
+	
+	                logger.debug("Transform stop");
+	                return byteResult;
+            	}
             }
-            else {
-                logger.debug("Transform stop");
-                return docXML;
-            }
+            
+            logger.debug("Transform stop");
+            return docXML;            
         }
         catch (DTETransfException exc) {
             throw exc;
