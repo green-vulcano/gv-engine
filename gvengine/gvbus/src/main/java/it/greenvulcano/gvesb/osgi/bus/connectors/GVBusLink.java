@@ -27,6 +27,8 @@ import java.util.Dictionary;
 import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
@@ -45,7 +47,7 @@ import it.greenvulcano.gvesb.osgi.bus.BusLink;
 public class GVBusLink implements  BusLink {
 	private final static Logger LOG = LoggerFactory.getLogger(GVBusLink.class);
 
-	private String busId;
+	private static final AtomicReference<String> busId = new AtomicReference<>();
 	private Connection connection;	
 	private Session session;
 	
@@ -59,7 +61,11 @@ public class GVBusLink implements  BusLink {
 		
 	public void setBusId(String busId) {
 		LOG.debug("Configured BUS "+busId);
-		this.busId = busId;		
+		GVBusLink.busId.set(busId);		
+	}
+	
+	public static String getBusId(){
+		return GVBusLink.busId.get();
 	}
 		
 	public void setConfigRepository(ConfigRepository configRepository) {
@@ -82,8 +88,8 @@ public class GVBusLink implements  BusLink {
 	}
 	
 	public void init() {
-		
-		if (busId != null && busId.trim().length()>1 && !busId.equals("undefined")){
+		String busId = GVBusLink.busId.get();
+		if (busId != null && !busId.trim().isEmpty() && !busId.equals("undefined")){
 			try {
 				
 				LOG.debug("Connection to "+busId);
@@ -111,14 +117,21 @@ public class GVBusLink implements  BusLink {
 	public String connect(String busId) throws IOException {
 		String message = "Bus connection established";
 		
-		this.busId = busId;
+		setBusId(busId);
 		
 		try {
-			if (busId != null && busId.trim().length()>1 && !busId.equals("undefined")){
-				createSession();
+			@SuppressWarnings("unchecked")
+			Dictionary<String, Object> gvesbCfg = configRepository.getConfigProperties("it.greenvulcano.gvesb.bus");
 			
+			if (busId != null && !busId.trim().isEmpty() && !busId.equals("undefined")){
+				gvesbCfg.put("gvbus.apikey", busId);
+				
+				createSession();			
 				createUserFolder();
+				
 			} else {
+				gvesbCfg.remove("gvbus.apikey");
+				
 				String defaultConfigPath = System.getProperty("gv.app.home") + File.separator + XMLConfig.DEFAULT_FOLDER;
 				XMLConfig.setBaseConfigPath(defaultConfigPath);
 				XMLConfig.reloadAll();
@@ -131,11 +144,8 @@ public class GVBusLink implements  BusLink {
 					}
 				}
 				message = "Bus "+busId+ " disconnected";
-			}
-			
-			@SuppressWarnings("unchecked")
-			Dictionary<String, Object> gvesbCfg = configRepository.getConfigProperties("it.greenvulcano.gvesb.bus");				 
-			gvesbCfg.put("gvbus.apikey", busId);					
+			}							 
+								
 			configRepository.update("it.greenvulcano.gvesb.bus", gvesbCfg);
 						
 		} catch (Exception e) {
@@ -165,6 +175,7 @@ public class GVBusLink implements  BusLink {
 								.orElseThrow(()-> new JMSException("Bus connection not ready"))
 								.createSession(false, Session.AUTO_ACKNOWLEDGE);
 			
+			String busId = GVBusLink.busId.get();
 			synchronized (connectors) {
 				for (GVBusConnector connector : connectors) {					
 					connector.connect(session, busId);

@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
+import it.greenvulcano.gvesb.osgi.bus.connectors.GVBusLink;
 import it.greenvulcano.gvesb.osgi.repository.GVConfigurationRepository;
 import it.greenvulcano.gvesb.osgi.repository.exception.GVResourceException;
 
@@ -41,23 +42,19 @@ public class GVConfigurationRestRepository implements GVConfigurationRepository 
 
 	private final Logger LOG = LoggerFactory.getLogger(getClass());	
 	
-	private String endpoint, authtoken;
+	private String endpoint;
 			
 	public void setEndpoint(String endpoint) {
 		this.endpoint = endpoint;
 	}
-	
-	public void setAuthtoken(String authtoken) {
-		this.authtoken = authtoken;
-	}
-
+		
 	@Override
 	public Document retrieveConfiguration(String uuid) throws GVResourceException {
 		Document document = null;
 		
 		try {
 			DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-			String authenticationToken = "Bearer " +authtoken;
+			String authenticationToken = "Bearer " + GVBusLink.getBusId();
 			String projectURL = endpoint.concat("/project/").concat(uuid); 
 						
 			LOG.debug("GVConfigurationRestRepository - Starting REST call to " + projectURL);
