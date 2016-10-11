@@ -20,16 +20,14 @@
 package it.greenvulcano.util.metadata;
 
 import it.greenvulcano.util.thread.ThreadMap;
+import org.apache.xpath.operations.Bool;
+
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Vector;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Helper class for metadata substitution in strings.
@@ -122,8 +120,8 @@ public final class PropertiesHandler {
         }
     }
 
-    private static HashMap<String, PropertyHandler> propHandlers = new HashMap<String, PropertyHandler>();
-    private static HashSet<String>                  propSet      = new HashSet<String>();
+    private static Map<String, PropertyHandler> propHandlers = new ConcurrentHashMap<String, PropertyHandler>();
+    private static Set<String> propSet = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
     
     static {
     	Path cfgFilePath = null;
@@ -174,16 +172,30 @@ public final class PropertiesHandler {
     }
 
     /**
-     * @param type
-     * @param handler
+     * Registers a new Property Handler
+     * @param handler the property handler to register
      */
-    private static void registerHandler(PropertyHandler handler){
+    public static void registerHandler(PropertyHandler handler){
     	handler.getManagedTypes().forEach(type->{        	
     		LOG.debug("PropertiesHandler.registerHandler: registering "+type+" -> "+handler.getClass().getName());
         	propHandlers.put(type, handler);
 	        propSet.add(type);
         });
     }
+
+    /**
+     * Unregisters a property handler
+     * @param handler the property handler to unregister
+     */
+    public static void unregisterHandler(PropertyHandler handler) {
+        handler.getManagedTypes().forEach(type->{
+            propSet.remove(type);
+            propHandlers.remove(type, handler);
+            LOG.debug("PropertiesHandler.unregisterHandler: unregistered "+type+" -> "+handler.getClass().getName());
+        });
+    }
+
+
 
     /**
      * This method insert the correct values for the dynamic parameter found in
