@@ -30,13 +30,7 @@
       <type>bundle</type>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>it.greenvulcano.gvesb</groupId>
-      <artifactId>gvbus</artifactId>
-      <version>${project.version}</version>
-      <type>bundle</type>
-      <scope>provided</scope>
-    </dependency>
+    
     <dependency>
       <groupId>org.apache.karaf.shell</groupId>
       <artifactId>org.apache.karaf.shell.core</artifactId>
@@ -65,21 +59,11 @@
             <Bundle-Version>${project.version}</Bundle-Version>
             <Karaf-Commands>it.greenvulcano.gvesb.osgi.commands*</Karaf-Commands>
             <Export-Package/>
-            <Import-Package>
-              org.apache.activemq,
-              org.apache.activemq.pool,
+            <Import-Package>             
               org.apache.karaf.shell.api.action,
-              org.apache.karaf.shell.api.action.lifecycle,
-              org.json,
-              org.slf4j;version="[1.6,2)";provider=paxlogging,
-              org.w3c.dom,
-              javax.transaction,
-              javax.jms,
-              it.greenvulcano.configuration,
+              org.apache.karaf.shell.api.action.lifecycle,             
+              org.slf4j;version="[1.6,2)";provider=paxlogging,                    
               it.greenvulcano.gvesb,
-              it.greenvulcano.gvesb.osgi.bus,
-              it.greenvulcano.gvesb.osgi.repository,
-              it.greenvulcano.gvesb.osgi.repository.exception
             </Import-Package>
           </instructions>
         </configuration>

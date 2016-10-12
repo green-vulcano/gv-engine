@@ -49,11 +49,7 @@
 									<type>xml</type>
 									<classifier>features</classifier>
 								</artifact>
-								<artifact>									
-									<file>target/classes/bus.cfg</file>
-									<type>cfg</type>
-									<classifier>bus</classifier>
-								</artifact>
+								
 								<artifact>									
 									<file>target/classes/gviam.ds</file>
 									<type>ds</type>

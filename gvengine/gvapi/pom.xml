@@ -35,14 +35,7 @@
   		<version>${project.version}</version>
   		<type>bundle</type>
   		<scope>provided</scope>
-  	</dependency>
-  	 <dependency>
-      <groupId>it.greenvulcano.gvesb</groupId>
-      <artifactId>gvbus</artifactId>
-      <version>${project.version}</version>
-      <type>bundle</type>
-      <scope>provided</scope>
-    </dependency>
+  	</dependency>  	 
   	<dependency>
   		<groupId>it.greenvulcano.gvesb</groupId>
   		<artifactId>gvcore</artifactId>
@@ -113,7 +106,6 @@
               it.greenvulcano.gvesb.buffer,
               it.greenvulcano.gvesb.core.pool,
               it.greenvulcano.configuration,
-              it.greenvulcano.gvesb.osgi.bus,
               it.greenvulcano.gvesb.identity,
               it.greenvulcano.gvesb.identity.impl,
               it.greenvulcano.gvesb.iam.service,

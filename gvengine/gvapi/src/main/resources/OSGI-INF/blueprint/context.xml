@@ -12,22 +12,6 @@
 	<bean id="authenticationFilter" class="it.greenvulcano.gvesb.api.security.GVSecurityFilter">        
         <property name="gvSecurityManagerReferences" ref="securityManagerReferences"/>    
     </bean>
-			
-	<reference id="gvBusLink" interface="it.greenvulcano.gvesb.osgi.bus.BusLink"  activation="eager" availability="mandatory" />	
-		
-	<bean id="instanceController" class="it.greenvulcano.gvesb.api.controller.GvInstanceControllerRest">
-		<property name="busLink" ref="gvBusLink"/>
-	</bean>	
-	
-	<jaxrs:server address="/gvengine" id="gvengineapi">
-        <jaxrs:serviceBeans>
-            <ref component-id="instanceController" />           
-        </jaxrs:serviceBeans>
-        <jaxrs:providers>
-	       <ref component-id="authenticationFilter"/>
-	 <!--  <ref component-id="gvengineAuthorizationFilter"/> -->
-	    </jaxrs:providers>       
-    </jaxrs:server>
 
 	<bean id="servicesController" class="it.greenvulcano.gvesb.api.controller.GvServicesControllerRest"/>
 			

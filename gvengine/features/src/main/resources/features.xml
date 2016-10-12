@@ -89,15 +89,11 @@
 		
 		<feature>war</feature>
 		<feature>cxf-jaxrs</feature>
-		<feature>jms</feature>
-		<feature>activemq-client</feature>
-		
+				
 		<feature>gvcore</feature>
 		<feature>gvvcl-internal</feature>		
 		<feature>gviam</feature>
-		
-		<configfile finalname="${karaf.etc}/it.greenvulcano.gvesb.bus.cfg" override="true">mvn:it.greenvulcano.gvesb/${project.artifactId}/${pom.version}/cfg/bus</configfile>		
-		<bundle start-level="96">mvn:it.greenvulcano.gvesb/gvbus/${project.version}</bundle>
+
 		<bundle start-level="96">mvn:it.greenvulcano.gvesb/gvapi/${project.version}</bundle>
 		<bundle start-level="99">mvn:it.greenvulcano.gvesb/gvcommands/${project.version}</bundle>
 		<bundle start-level="99">mvn:it.greenvulcano.gvesb/gvconsole/${project.version}/war</bundle>
