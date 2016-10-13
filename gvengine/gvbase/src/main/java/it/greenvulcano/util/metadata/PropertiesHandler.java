@@ -20,8 +20,6 @@
 package it.greenvulcano.util.metadata;
 
 import it.greenvulcano.util.thread.ThreadMap;
-import org.apache.xpath.operations.Bool;
-
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;

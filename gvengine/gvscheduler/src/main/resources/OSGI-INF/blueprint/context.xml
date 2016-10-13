@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" 
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"			
+			xmlns:jaxrs="http://cxf.apache.org/blueprint/jaxrs"
+    		xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+    			http://cxf.apache.org/blueprint/jaxrs http://cxf.apache.org/schemas/blueprint/jaxrs.xsd"
+	  			default-activation="eager">
+
+	 <bean id="gvScheduler" class="org.quartz.impl.StdSchedulerFactory" 
+	      factory-method="getDefaultScheduler" init-method="start" destroy-method="shutdown">
+     </bean>
+     
+     <bean id="gvScheduleManager" class="it.greenvulcano.gvesb.scheduler.job.GVScheduleManager">
+     	 <property name="gvScheduler" ref="gvScheduler"/>
+     </bean>
+     
+     <bean id="gvScheduleController" class="it.greenvulcano.gvesb.scheduler.api.ScheduleControllerRest">
+     	 <property name="gvScheduleManager" ref="gvScheduleManager"/>
+     </bean>
+     
+     <jaxrs:server address="/gvscheduler" id="gvschedulerapi">
+        <jaxrs:serviceBeans>
+            <ref component-id="gvScheduleController" />           
+        </jaxrs:serviceBeans>               
+    </jaxrs:server>
+
+</blueprint>
