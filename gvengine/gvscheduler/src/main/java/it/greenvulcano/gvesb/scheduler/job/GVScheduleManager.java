@@ -68,8 +68,7 @@ public class GVScheduleManager implements ScheduleManager {
 
 	@Override
 	public Optional<Trigger> getTrigger(String triggerName) throws SchedulerException {
-		TriggerKey triggerKey = TriggerKey.triggerKey(triggerName, Scheduler.DEFAULT_GROUP);
-		
+		TriggerKey triggerKey = TriggerKey.triggerKey(triggerName, Scheduler.DEFAULT_GROUP);		
 		return Optional.ofNullable(gvScheduler.getTrigger(triggerKey));
 	}
 
@@ -130,7 +129,7 @@ public class GVScheduleManager implements ScheduleManager {
 	}
 
 	@Override
-	public void resume(String triggerName) throws SchedulerException, NoSuchElementException  {
+	public void resumeTrigger(String triggerName) throws SchedulerException, NoSuchElementException  {
 		TriggerKey triggerKey = getTrigger(triggerName).orElseThrow(NoSuchElementException::new).getKey();
 		gvScheduler.resumeTrigger(triggerKey);
 

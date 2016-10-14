@@ -97,8 +97,14 @@
                         	 org.osgi.framework,
                         	 org.json,
               				 org.slf4j;version="[1.6,2)";provider=paxlogging,
+              				 org.apache.cxf.jaxrs.security,
+				             org.apache.cxf.security,
+				             org.apache.cxf.interceptor.security,
+              				 javax.ws.rs.container,
                         	 javax.ws.rs,              
               				 javax.ws.rs.core,
+              				 it.greenvulcano.gvesb.iam.service,
+              				 it.greenvulcano.gvesb.api.security,
               				 it.greenvulcano.gvesb.buffer,
               				 it.greenvulcano.gvesb.core.pool
                         </Import-Package>

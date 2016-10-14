@@ -9,7 +9,7 @@
 	<reference-list id="securityManagerReferences" interface="it.greenvulcano.gvesb.iam.service.SecurityManager" 
 			   		member-type="service-reference" availability="optional"/>
 		
-	<bean id="authenticationFilter" class="it.greenvulcano.gvesb.api.security.GVSecurityFilter">        
+	<bean id="gvAuthenticationFilter" class="it.greenvulcano.gvesb.api.security.GVSecurityFilter">        
         <property name="gvSecurityManagerReferences" ref="securityManagerReferences"/>    
     </bean>
 
@@ -20,7 +20,7 @@
            <ref component-id="servicesController" />
         </jaxrs:serviceBeans> 
         <jaxrs:providers>
-	       <ref component-id="authenticationFilter"/>
+	       <ref component-id="gvAuthenticationFilter"/>
 	    </jaxrs:providers>       
     </jaxrs:server>
     
@@ -45,9 +45,9 @@
            	<ref component-id="securityController" />
         </jaxrs:serviceBeans> 
         <jaxrs:providers>
-	       	<ref component-id="authenticationFilter"/>
+	       	<ref component-id="gvAuthenticationFilter"/>
 	       	<ref component-id="gviamAuthorizationFilter"/>	     
 	    </jaxrs:providers>       
     </jaxrs:server>
-    
+        
 </blueprint>

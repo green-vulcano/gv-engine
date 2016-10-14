@@ -28,6 +28,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -45,11 +46,15 @@ import org.json.JSONObject;
 import org.quartz.CronTrigger;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import it.greenvulcano.gvesb.scheduler.ScheduleManager;
 
 public class ScheduleControllerRest {
 		
+	private final static Logger LOG = LoggerFactory.getLogger(ScheduleControllerRest.class);
+	
 	private ScheduleManager gvScheduleManager;
 	
 	public void setGvScheduleManager(ScheduleManager gvScheduleManager) {
@@ -75,6 +80,7 @@ public class ScheduleControllerRest {
 		return obj;
 	};
 	
+	@RolesAllowed("gvadmin")
 	@Path("/schedules")
 	@GET @Produces(MediaType.APPLICATION_JSON)
 	public Response getSchedules() {
@@ -89,12 +95,14 @@ public class ScheduleControllerRest {
 			
 			response = Response.ok(responseData.toString()).build();
 		} catch (SchedulerException e) {
+			LOG.error("Fail to read from quartz scheduler",e);
 			response = Response.status(Status.SERVICE_UNAVAILABLE).entity(e.getMessage()).build();
 		}
 		
 		return response;
 	}
 	
+	@RolesAllowed("gvadmin")
 	@Path("/schedules/{id}")
 	@GET @Produces(MediaType.APPLICATION_JSON)
 	public Response getSchedule(@PathParam("id")String id) {
@@ -108,11 +116,13 @@ public class ScheduleControllerRest {
 		} catch (NoSuchElementException e) {
 			response = Response.status(Status.NOT_FOUND).build();
 		} catch (SchedulerException e) {
+			LOG.error("Fail to read from quartz scheduler",e);
 			response = Response.status(Status.SERVICE_UNAVAILABLE).entity(e.getMessage()).build();
 		}
 		return response;
 	}
 	
+	@RolesAllowed("gvadmin")
 	@Path("/schedules/{id}")
 	@DELETE @Produces(MediaType.APPLICATION_JSON)
 	public Response deleteSchedule(@PathParam("id")String id) {
@@ -125,11 +135,13 @@ public class ScheduleControllerRest {
 		} catch (NoSuchElementException e) {
 			response = Response.status(Status.NOT_FOUND).build();
 		} catch (SchedulerException e) {
+			LOG.error("Fail to perform delete trigger on quartz scheduler",e);
 			response = Response.status(Status.SERVICE_UNAVAILABLE).entity(e.getMessage()).build();
 		}
 		return response;
 	}
 	
+	@RolesAllowed("gvadmin")
 	@Path("/schedules/{id}/pause")
 	@PUT @Produces(MediaType.APPLICATION_JSON)
 	public Response pauseSchedule(@PathParam(value = "id")String id) {
@@ -142,6 +154,7 @@ public class ScheduleControllerRest {
 		} catch (NoSuchElementException e) {
 			response = Response.status(Status.NOT_FOUND).build();
 		} catch (SchedulerException e) {
+			LOG.error("Fail to pause trigger on quartz scheduler",e);
 			response = Response.status(Status.SERVICE_UNAVAILABLE).entity(e.getMessage()).build();
 		}
 		return response;
@@ -149,21 +162,22 @@ public class ScheduleControllerRest {
 	
 	@Path("/schedules/{id}/resume")
 	@PUT @Produces(MediaType.APPLICATION_JSON)
-	public Response resumeSchedule(String id) {
+	public Response resumeSchedule(@PathParam(value = "id")String id) {
 		Response response;
 		try{
-		
-			gvScheduleManager.resume(id);
+			gvScheduleManager.resumeTrigger(id);
 			
 			response = Response.accepted().build();
 		} catch (NoSuchElementException e) {
 			response = Response.status(Status.NOT_FOUND).build();
 		} catch (SchedulerException e) {
+			LOG.error("Fail to resume trigger on quartz scheduler",e);
 			response = Response.status(Status.SERVICE_UNAVAILABLE).entity(e.getMessage()).build();
 		}
 		return response;
 	}
 	
+	@RolesAllowed("gvadmin")
 	@Path("/schedule/{service}/{operation}")
 	@POST @Consumes(MediaType.APPLICATION_JSON) @Produces(MediaType.APPLICATION_JSON)
 	public Response scheduleOperation(@PathParam("service")String serviceName, @PathParam("operation")String operationName, String scheduleData) {
@@ -187,6 +201,7 @@ public class ScheduleControllerRest {
 			response = Response.status(Status.BAD_REQUEST).entity("Required JSON body with keys : cronExpression, properties, object").build();
 			
 		} catch (SchedulerException e) {
+			LOG.error("Fail to create trigger on quartz scheduler",e);
 			response = Response.status(Status.SERVICE_UNAVAILABLE).entity(e.getMessage()).build();
 		}
 		

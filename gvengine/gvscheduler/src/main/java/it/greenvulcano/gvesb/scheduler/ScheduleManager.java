@@ -40,7 +40,7 @@ public interface ScheduleManager {
 	
 	public void suspendTrigger(final String triggerName) throws SchedulerException, NoSuchElementException;
 	
-	public void resume(final String triggerName) throws SchedulerException, NoSuchElementException;
+	public void resumeTrigger(final String triggerName) throws SchedulerException, NoSuchElementException;
 	
 	public String getTriggerStatus(final String triggerName) throws SchedulerException, NoSuchElementException;
 
