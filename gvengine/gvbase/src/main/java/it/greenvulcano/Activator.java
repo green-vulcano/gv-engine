@@ -45,14 +45,19 @@ public class Activator implements BundleActivator {
         ConfigurationAdmin configurationAdmin = (ConfigurationAdmin) context.getService(configurationAdminReference);        
         
         Configuration gvcfg = configurationAdmin.getConfiguration("it.greenvulcano.gvesb.bus");
-        	
-        String userConfiguration = (String) Optional.ofNullable(gvcfg.getProperties().get("gvbus.apikey"))
+        
+        String userConfiguration = XMLConfig.DEFAULT_FOLDER;
+        
+        if (Objects.nonNull(gvcfg)){
+        
+        	userConfiguration = (String) Optional.ofNullable(gvcfg.getProperties().get("gvbus.apikey"))
         											 .filter(Objects::nonNull)
         											 .map(c->c.toString().trim())
         											 .filter(c-> c.length()>0)
         											 .filter(c-> !c.equalsIgnoreCase("undefined"))
         											 .orElse(XMLConfig.DEFAULT_FOLDER);
-   		
+        }
+        
 		String configurationPath = System.getProperty("gv.app.home") + File.separator + userConfiguration;
 		try {
 			
