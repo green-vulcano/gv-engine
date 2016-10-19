@@ -48,7 +48,7 @@ public class Activator implements BundleActivator {
         
         String userConfiguration = XMLConfig.DEFAULT_FOLDER;
         
-        if (Objects.nonNull(gvcfg)){
+        if (Objects.nonNull(gvcfg.getProperties())){
         
         	userConfiguration = (String) Optional.ofNullable(gvcfg.getProperties().get("gvbus.apikey"))
         											 .filter(Objects::nonNull)
