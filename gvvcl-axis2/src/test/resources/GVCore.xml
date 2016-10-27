@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE GVCore SYSTEM "http://www.greenvulcano.com/gvesb/dtds/GVCore.dtd">
+
+<GVCore version="1.0">
+  <GVCryptoHelper name="CRYPTO_HELPER" type="module">
+        <KeyStoreID id="HTTPS_KeyStore" key-store-name="keystores/client.jks" key-store-pwd="client" key-store-type="JKS" key-store-prv="SUN"/>
+        <KeyStoreID id="HTTPS_TrustStore" key-store-name="keystores/client_trust.jks" key-store-pwd="client_trust" key-store-type="JKS" key-store-prv="SUN"/>
+        
+        <KeyStoreID id="testKS" key-store-name="teststore.jks" key-store-pwd="testpwd"/>
+        <KeyID id="test" key-alias="testalias" key-pwd="keypwd" key-store-id="testKS" key-type="3DES"/>
+        <!-- KeyID id="test1" key-alias="testalias" key-pwd="keypwd" key-store-id="testKS" key-type="3DES" key-type-mode="CBC" key-type-padding="NoPadding"/>
+        <KeyID id="test2" key-alias="testalias" key-pwd="keypwd" key-store-id="testKS" key-type="3DES" key-type-mode="OFB32" key-type-padding="PKCS5Padding"/-->
+        <KeyID id="test1" key-alias="XMLConfigKey" key-pwd="XMLConfigPassword" key-store-id="GVEsb" key-type="3DES" key-type-mode="CFB8" key-type-padding="NoPadding"/>
+        <KeyID id="test2" key-alias="XMLConfigKey" key-pwd="XMLConfigPassword" key-store-id="GVEsb" key-type="3DES" key-type-mode="CFB8" key-type-padding="NoPadding">
+            <AlgorithmParameters>BAjK0G7M3ZZjIQ==</AlgorithmParameters>
+        </KeyID>
+        <KeyID id="test3" key-alias="XMLConfigKey" key-pwd="XMLConfigPassword" key-store-id="GVEsb" key-type="3DES" key-type-mode="OFB32" key-type-padding="PKCS5Padding">
+            <AlgorithmParameters>BAjK0G7M3ZZjIQ==</AlgorithmParameters>
+        </KeyID>
+  </GVCryptoHelper>
+  <GVXPath name="XPATH" type="module">
+    <XPath xpath-factory="it.greenvulcano.util.xpath.search.jaxen.JaxenXPathAPIFactoryImpl">
+      <Description>Funzioni estese e namespaces per l&apos;XPath.</Description>
+      <XPathExtension class="it.greenvulcano.util.xpath.search.extension.ExternalDocumentXPathFunction"
+                      function-name="document">
+            <Description>Accede ad un documento esterno. Uso: gvf:document('xml file path')</Description>
+      </XPathExtension>
+      <XPathNamespace namespace="http://www.w3.org/2001/XMLSchema" prefix="xsd" />
+      <XPathNamespace namespace="http://www.w3.org/2001/XMLSchema-instance" prefix="xsi" />
+      <XPathNamespace namespace="http://schemas.xmlsoap.org/wsdl/soap/" prefix="soap" />
+      <XPathNamespace namespace="http://schemas.xmlsoap.org/wsdl/" prefix="wsdl" />
+      <XPathNamespace namespace="http://jakarta.apache.org/log4j/" prefix="log4j" />
+      <XPathNamespace namespace="http://www.w3.org/XML/1998/namespace" prefix="xml" />
+      <XPathNamespace namespace="http://www.greenvulcano.it/greenvulcano" prefix="gvesbws"/>
+      <XPathNamespace namespace="http://www.greenvulcano.it/jca/xml" prefix="jca" />
+      <XPathNamespace namespace="http://www.greenvulcano.it/ldap" prefix="ldapc" />
+      <XPathNamespace namespace="http://drools.org/drools-5.0/change-set" prefix="drools-cs"/>
+    </XPath>
+  </GVXPath>
+  <GVSystems name="SYSTEMS" type="module">
+    <Systems>
+      <System id-system="GVESB" system-activation="on">
+        <Channel id-channel="TEST_CHANNEL">
+          <ws-call class="it.greenvulcano.gvesb.virtual.ws.WSCallOperation" name="test-ws-call-echo" type="call">
+            <AxisWebServiceInvoker class="it.greenvulcano.gvesb.virtual.ws.GVWebServiceInvoker" operation="echo"
+              portName="GVAxis2TestPort" ref-dp="testAxis2DataProvider" service="GVAxis2TestService" serviceNS="http://www.greenvulcano.com/gvesb/webservices"
+              type="invoker" returnType="context">
+              <WSDLInfo type="wsdlinfo" wsdl="http://127.0.0.1:4204/GVAxis2TestWSImpl?wsdl" />
+            </AxisWebServiceInvoker>
+          </ws-call>
+          <ws-call class="it.greenvulcano.gvesb.virtual.ws.WSCallOperation" name="test-ws-call-echo-om" type="call">
+            <AxisWebServiceInvoker class="it.greenvulcano.gvesb.virtual.ws.GVWebServiceInvoker" operation="echo"
+              portName="GVAxis2TestPort" ref-dp="testOMAxis2DataProvider" service="GVAxis2TestService" serviceNS="http://www.greenvulcano.com/gvesb/webservices"
+              type="invoker" returnType="context">
+              <WSDLInfo type="wsdlinfo" wsdl="http://127.0.0.1:4204/GVAxis2TestWSImpl?wsdl" />
+            </AxisWebServiceInvoker>
+          </ws-call>
+          <ws-call class="it.greenvulcano.gvesb.virtual.ws.WSCallOperation" name="test-ws-call-echo-with-attachment" type="call">
+            <AxisWebServiceInvoker class="it.greenvulcano.gvesb.virtual.ws.GVWebServiceInvoker" operation="echoWithAttachment"
+              portName="GVAxis2TestPort" ref-dp="customMIMEHeaderAddToAttachmentDataProvider" service="GVAxis2TestService"
+              serviceNS="http://www.greenvulcano.com/gvesb/webservices" type="invoker" use-saaj="true" returnType="context">
+              <WSDLInfo type="wsdlinfo" wsdl="http://127.0.0.1:4204/GVAxis2TestWSImpl?wsdl" />
+            </AxisWebServiceInvoker>
+          </ws-call>
+           <http-call type="call" class="it.greenvulcano.gvesb.virtual.http.HTTPCallOperation" name="test_http_head">
+            <endpoint host="localhost" port="9999" secure="false"></endpoint>
+            <method request-uri="/index.html" name="HEAD"/>
+          </http-call>
+          <http-call type="call" class="it.greenvulcano.gvesb.virtual.http.HTTPCallOperation" name="test_http_get">
+            <endpoint host="localhost" port="9999" secure="false"></endpoint>
+            <method request-uri="/index.html" name="GET"/>
+          </http-call>
+          <http-call type="call" class="it.greenvulcano.gvesb.virtual.http.HTTPCallOperation" name="test_http_get_dynamic">
+            <endpoint host="@{{HOST}}" port="@{{PORT}}" secure="false"></endpoint>
+            <method request-uri="/index.html" name="GET"/>
+          </http-call>
+          <http-call type="call" class="it.greenvulcano.gvesb.virtual.http.HTTPCallOperation" name="test_http_post">
+            <endpoint host="localhost" port="9999" secure="false"></endpoint>
+            <method request-uri="/index.html" name="POST" ref-dp="testHTTPMethodDP"/>
+          </http-call>
+          <http-call type="call" class="it.greenvulcano.gvesb.virtual.http.HTTPCallOperation" name="test_http_simple_post">
+            <endpoint host="localhost" port="9999" secure="false"></endpoint>
+            <method request-uri="/index.html" name="POST" ref-dp="testHTTPMethodSimpleDP"/>
+          </http-call>
+
+          <http-call type="call" class="it.greenvulcano.gvesb.virtual.http.HTTPCallOperation" name="test_http_get_res_timeout">
+            <endpoint host="localhost" port="9999" secure="false" conn-timeout="5000" so-timeout="10000"></endpoint>
+            <method request-uri="/timeout.html" name="GET"/>
+          </http-call>
+          <http-call type="call" class="it.greenvulcano.gvesb.virtual.http.HTTPCallOperation" name="test_http_get_res_timeout2">
+            <endpoint host="localhost" port="9999" secure="false" conn-timeout="2000" so-timeout="5000"></endpoint>
+            <method request-uri="/timeout.html" name="GET"/>
+          </http-call>
+
+          <http-call type="call" class="it.greenvulcano.gvesb.virtual.http.HTTPCallOperation" name="test_http_get_conn_timeout">
+            <endpoint host="10.10.10.10" port="8889" secure="false" conn-timeout="2000" so-timeout="5000"></endpoint>
+            <method request-uri="/index.html" name="GET"/>
+          </http-call>
+        </Channel>
+      </System>
+    </Systems>
+  </GVSystems>
+</GVCore>

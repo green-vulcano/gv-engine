@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE GVAdapters SYSTEM "http://www.greenvulcano.com/gvesb/dtds/GVAdapters.dtd">
+
+<GVAdapters version="1.0">
+  <GVDataProviderManager name="GVDP" type="module">
+    <Description>Elenco dei Data Providers</Description>
+    <DataProviders>
+      <HttpMethodDataProvider name="testHTTPMethodDP" class="it.greenvulcano.gvesb.gvhttp.impl.HttpMethodDataProvider" type="dataProvider">
+        <Field key="test" direction="OUT" type="field">
+          <Expression type="ognl">
+#parts = new org.apache.commons.httpclient.methods.multipart.Part[] {new org.apache.commons.httpclient.methods.multipart.StringPart(&apos;mainBody&apos;,&apos;This is the a multipart message in MIME format&apos;),
+new org.apache.commons.httpclient.methods.multipart.FilePart(&apos;response.txt&apos;, new org.apache.commons.httpclient.methods.multipart.ByteArrayPartSource
+(&apos;response.txt&apos;, #input.object), &apos;text/plain&apos;, &apos;UTF-8&apos;)},
+#multipartRequestEntity = new org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity(#parts, getParams()),
+setRequestEntity(#multipartRequestEntity)
+          </Expression>
+        </Field>
+      </HttpMethodDataProvider>
+      <HttpMethodDataProvider name="testHTTPMethodSimpleDP" class="it.greenvulcano.gvesb.gvhttp.impl.HttpMethodDataProvider" type="dataProvider">
+        <Field key="test" direction="OUT" type="field">
+          <Expression type="ognl">
+setRequestEntity(new org.apache.commons.httpclient.methods.ByteArrayRequestEntity(#input.object))
+          </Expression>
+        </Field>
+      </HttpMethodDataProvider>
+       <Axis2MessageContextDataProvider class="it.greenvulcano.gvesb.gvdp.impl.Axis2MessageContextDataProvider"
+        name="testAxis2DataProvider" type="dataProvider">
+        <Field direction="OUT" key="message" type="field">
+          <Expression type="ognl">envelope.body.addChild(@org.apache.axis2.util.XMLUtils@toOM(#input.object))</Expression>
+          <!--<Expression type="ognl">envelope.body.addChild(@it.greenvulcano.gvesb.ws.axis2.message.MessageConverter@toOM(#input.object))</Expression>-->
+          <!--<Expression type="ognl">@it.greenvulcano.gvesb.ws.axis2.message.MessageConverter@setBody(envelope, #input.object)</Expression>-->
+        </Field>
+      </Axis2MessageContextDataProvider>
+      <Axis2MessageContextDataProvider class="it.greenvulcano.gvesb.gvdp.impl.Axis2MessageContextDataProvider"
+        name="testOMAxis2DataProvider" type="dataProvider">
+        <Field direction="OUT" key="message" type="field">
+          <Expression type="ognl">envelope=#input.object</Expression>
+        </Field>
+      </Axis2MessageContextDataProvider>
+      <Axis2SAAJSOAPMessageDataProvider class="it.greenvulcano.gvesb.gvdp.impl.Axis2SAAJSOAPMessageDataProvider"
+        name="customMIMEHeaderAddToAttachmentDataProvider" type="dataProvider">
+        <Field key="message" type="field" direction="OUT">
+          <Expression type="ognl">#soapPart = getSOAPPart(),
+#envelope = #soapPart.getEnvelope(),
+#body = #envelope.getBody(),
+#echo = #body.addBodyElement(#envelope.createName(&apos;echoWithAttachment&apos;, &apos;ns2&apos;, &apos;http://www.greenvulcano.com/gvesb/webservices&apos;)),
+#arg0 = #echo.addChildElement(#envelope.createName(&apos;arg0&apos;)),
+#arg0.setTextContent(&apos;test web services&apos;),
+#arg1 = #echo.addChildElement(#envelope.createName(&apos;arg1&apos;)),
+#arg1.setTextContent(#input.object),
+#dataHandler = new javax.activation.DataHandler(#input.object,'text/plain'),
+#attachmentPart = createAttachmentPart(#dataHandler),
+#attachmentPart.addMimeHeader(&apos;Content-ID&apos;, &apos;AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA&apos;),
+#attachmentPart.addMimeHeader(&apos;Content-Disposition&apos;, &apos;Test-Content-Disposition-Header&apos;),
+addAttachmentPart(#attachmentPart)</Expression>
+        </Field>
+      </Axis2SAAJSOAPMessageDataProvider>
+    </DataProviders>
+  </GVDataProviderManager>
+</GVAdapters>
