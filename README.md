@@ -1,6 +1,6 @@
 # Welcome to gv-engine repository
 
-The repo include all the essential modules to get [GreenVulcano ESB](http://www.greenvulcano.com) instance working on [Karaf](http://karaf.apache.org/), plus some legacy basic component.
+The repo include all the essential modules to get [GreenVulcano ESB](http://www.greenvulcano.com) instance working on [Karaf](http://karaf.apache.org/), plus some legacy basic components.
 
 These are the meven-projects included:
 
