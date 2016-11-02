@@ -2,8 +2,10 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" 
 			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"		
     		xmlns:jaxrs="http://cxf.apache.org/blueprint/jaxrs"
+    		xmlns:jaxws="http://cxf.apache.org/blueprint/jaxws"
     		xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
-    			http://cxf.apache.org/blueprint/jaxrs http://cxf.apache.org/schemas/blueprint/jaxrs.xsd"	  			
+    			http://cxf.apache.org/blueprint/jaxrs http://cxf.apache.org/schemas/blueprint/jaxrs.xsd
+    			http://cxf.apache.org/blueprint/jaxws http://cxf.apache.org/schemas/blueprint/jaxws.xsd"	  			
 	  			default-activation="eager">
 	
 	<reference-list id="securityManagerReferences" interface="it.greenvulcano.gvesb.iam.service.SecurityManager" 
@@ -48,6 +50,19 @@
 	       	<ref component-id="gvAuthenticationFilter"/>
 	       	<ref component-id="gviamAuthorizationFilter"/>	     
 	    </jaxrs:providers>       
-    </jaxrs:server>
-        
+    </jaxrs:server>    
+    
+    <bean id="gvWebService" class="it.greenvulcano.gvesb.api.ws.soap.GVWebServiceSoap"/>
+    
+    <jaxws:endpoint
+    	address="/ws/gvesb"
+        serviceName="gv:gvesb"
+        endpointName="gv:wsapi"
+    	implementor="#gvWebService"    	
+		implementorClass="it.greenvulcano.gvesb.api.ws.soap.GVWebServiceSoap"
+		xmlns:gv="http://www.greenvulcano.com/gvesb">
+		
+		
+	</jaxws:endpoint>
+	        
 </blueprint>

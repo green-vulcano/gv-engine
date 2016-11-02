@@ -20,20 +20,15 @@
 package it.greenvulcano.gvesb.api.security;
 
 import java.io.IOException;
-import java.security.Principal;
 import java.util.Base64;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-
 import javax.annotation.Priority;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Response;
 
-import org.apache.cxf.common.security.SimplePrincipal;
 import org.apache.cxf.jaxrs.utils.JAXRSUtils;
 import org.apache.cxf.security.SecurityContext;
 import org.osgi.framework.BundleContext;
@@ -41,7 +36,6 @@ import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import it.greenvulcano.gvesb.iam.domain.Role;
 import it.greenvulcano.gvesb.iam.domain.User;
 import it.greenvulcano.gvesb.iam.exception.UserExpiredException;
 import it.greenvulcano.gvesb.iam.service.SecurityManager;
@@ -91,28 +85,7 @@ public class GVSecurityFilter implements ContainerRequestFilter {
 		} else {
 			LOG.debug("SecurityManager not available");
 		}
-	}
+	}	
 	
-	private class GVSecurityContext implements SecurityContext {
-
-		private final Principal userPrincipal;
-		private final Set<Role> roles = new HashSet<>();
-		
-		GVSecurityContext(String username, Set<Role> roles) {
-			this.userPrincipal = new SimplePrincipal(username);
-			this.roles.addAll(roles);
-		}
-		
-		@Override
-		public Principal getUserPrincipal() {			
-			return userPrincipal;
-		}
-
-		@Override
-		public boolean isUserInRole(String role) {			
-			return roles.stream().anyMatch(r -> r.getName().equals(role));
-		}
-		
-	}
 
 }

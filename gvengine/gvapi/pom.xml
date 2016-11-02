@@ -63,6 +63,12 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-bindings-soap</artifactId>
+      <version>3.1.5</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
       <version>2.7.4</version>
@@ -104,9 +110,12 @@
               javax.ws.rs,
               javax.ws.rs.container,
               javax.ws.rs.core,
+              javax.jws,
+              javax.xml.parsers,
               javax.servlet.http,
               it.greenvulcano.gvesb.buffer,
               it.greenvulcano.gvesb.core.pool,
+              it.greenvulcano.gvesb.core.exc,
               it.greenvulcano.configuration,
               it.greenvulcano.gvesb.identity,
               it.greenvulcano.gvesb.identity.impl,
