@@ -54,6 +54,10 @@
     
     <bean id="gvWebService" class="it.greenvulcano.gvesb.api.ws.soap.GVWebServiceSoap"/>
     
+    <bean id="gvAuthenticationInterceptor" class="it.greenvulcano.gvesb.api.security.GVSecurityInterceptor">        
+        <property name="gvSecurityManagerReferences" ref="securityManagerReferences"/>    
+    </bean>
+    
     <jaxws:endpoint
     	address="/ws/gvesb"
         serviceName="gv:gvesb"
@@ -62,6 +66,9 @@
 		implementorClass="it.greenvulcano.gvesb.api.ws.soap.GVWebServiceSoap"
 		xmlns:gv="http://www.greenvulcano.com/gvesb">
 		
+		<jaxws:inInterceptors>
+			<ref component-id="gvAuthenticationInterceptor"/>
+		</jaxws:inInterceptors>
 		
 	</jaxws:endpoint>
 	        

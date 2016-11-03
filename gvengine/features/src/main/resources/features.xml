@@ -89,6 +89,7 @@
 		
 		<feature>war</feature>
 		<feature>cxf-jaxrs</feature>
+		<feature>cxf-jaxws</feature>
 				
 		<feature>gvcore</feature>
 		<feature>gvvcl-internal</feature>		

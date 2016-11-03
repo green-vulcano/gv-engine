@@ -25,6 +25,7 @@ import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.handler.MessageContext;
 
 import org.apache.commons.net.util.SubnetUtils.SubnetInfo;
+import org.apache.cxf.security.SecurityContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,21 +35,21 @@ public class JaxWsIdentityInfo extends BaseIdentityInfo {
 
 	private static final Logger logger = LoggerFactory.getLogger(JaxWsIdentityInfo.class);
 	
-	private final WebServiceContext weberviceContext;
+	private final SecurityContext securityContext;
 	private final String remoteAddress;	
 
 	public JaxWsIdentityInfo(WebServiceContext securityContext) {
 		super();
 		
 		HttpServletRequest request = (HttpServletRequest) securityContext.getMessageContext().get(MessageContext.SERVLET_REQUEST);
-		
-		this.weberviceContext = securityContext;
+						
+		this.securityContext = (SecurityContext)securityContext.getMessageContext().get(SecurityContext.class.getName());
 		this.remoteAddress =  request!=null?request.getRemoteAddr():null;
 	}
 
 	@Override
 	public String getName() {		
-		Principal p = weberviceContext.getUserPrincipal();
+		Principal p = securityContext.getUserPrincipal();
 		return (p != null ? p.getName() : "NONE");
 	}
 
@@ -57,7 +58,7 @@ public class JaxWsIdentityInfo extends BaseIdentityInfo {
 		if (role == null) {
 			return false;
 		}
-		boolean res = weberviceContext.isUserInRole(role);
+		boolean res = securityContext.isUserInRole(role);
 		if (debug) {
 			logger.debug("JaxWsIdentityInfo[" + getName() + "]: Role[" + role + "] -> " + res);
 		}

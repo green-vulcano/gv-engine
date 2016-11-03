@@ -3,7 +3,11 @@ package it.greenvulcano.gvesb.api.ws.soap;
 import java.util.Map.Entry;
 import java.util.Objects;
 
+import javax.annotation.Resource;
 import javax.xml.ws.WebServiceContext;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import it.greenvulcano.gvesb.api.security.JaxWsIdentityInfo;
 import it.greenvulcano.gvesb.api.ws.GVWebService;
@@ -16,13 +20,14 @@ import it.greenvulcano.gvesb.core.pool.GreenVulcanoPoolManager;
 import it.greenvulcano.gvesb.identity.GVIdentityHelper;
 
 public class GVWebServiceSoap implements GVWebService {
-	
-	WebServiceContext webServiceContext;
+	private final static Logger LOG = LoggerFactory.getLogger(GVWebServiceSoap.class);
+		
+	@Resource
+	private WebServiceContext webServiceContext;
 	
 	@Override
 	public GVWebServicePayload execute(GVWebServicePayload requestPayload) throws GVException {
 				
-		
 		GVIdentityHelper.push(new JaxWsIdentityInfo(webServiceContext));
 		
 		GVBuffer inputBuffer = new GVBuffer();
@@ -45,7 +50,11 @@ public class GVWebServiceSoap implements GVWebService {
 			responsePayload = new GVWebServicePayload();
 			outputBuffer.getPropertyNamesSet().stream().forEach(p -> requestPayload.getProperties().put(p, outputBuffer.getProperty(p)));
 			responsePayload.setData(outputBuffer.getObject()+"");
-		} catch (Exception e) {
+		} catch (GVException e) {
+			LOG.error("Exception caught executing flow ",e);
+			throw e;
+		} catch (Exception e) {			
+			LOG.error("Unhandled exception caught executing flow ",e);
 			throw new GVCoreException(null, e);
 		}
 		

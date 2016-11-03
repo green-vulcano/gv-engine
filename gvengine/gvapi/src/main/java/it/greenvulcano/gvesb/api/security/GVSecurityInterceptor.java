@@ -39,7 +39,7 @@ public class GVSecurityInterceptor extends SoapHeaderInterceptor {
 	
 		Optional<ServiceReference<SecurityManager>> securityManagerRef = securityManagerReferences==null ? Optional.empty() :
 		     securityManagerReferences.stream().findAny();
-
+		
 		AuthorizationPolicy policy = message.get(AuthorizationPolicy.class);
 		
 		if (securityManagerRef.isPresent()) {
@@ -93,7 +93,7 @@ public class GVSecurityInterceptor extends SoapHeaderInterceptor {
             getConduit(message).prepare(outMessage);
             close(outMessage);
         } catch (IOException e) {
-            LOG.warn(e.getMessage(), e);
+            LOG.error("Fail to send message", e);
         }
     }
     
