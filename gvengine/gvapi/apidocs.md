@@ -24,8 +24,11 @@
 
 **Produces**: Content-Type: application/json
 
->  [ {"name":"string","description":"string"}, ... ]
-
+```json
+  [ 
+    {"name":"string","description":"string"}, //... 
+  ]
+```
 ----
 ### <a name="users"></a>Get users list
 
@@ -33,19 +36,22 @@
 
 **Produces**: Content-Type: application/json
 
->  [ {
->      "username": "string",
->      "expired": boolean,
->      "enabled": boolean,
->      "userInfo": {
->                    "fullname":"string",
->                    "email":"string"
->                  },
->      "roles":  {
->                   "string<role.name>" : { "name":"string","description":"string"},
->                ...
->                }
->    }, ...]
+```json
+  [ {
+    "username": "string",
+      "expired": boolean,
+      "enabled": boolean,
+      "userInfo": {
+                    "fullname":"string",
+                    "email":"string"
+                  },
+      "roles":  {
+                   "string<role.name>" : { "name":"string","description":"string"},
+                //...
+                }
+    }, //...
+    ]
+```
 
 ----
 ### <a name="user"></a>Get user
@@ -54,19 +60,21 @@
 
 **Produces**: Content-Type: application/json
 
->  {
->      "username": "string",
->      "expired": boolean,
->      "enabled": boolean,
->      "userInfo": {
->                    "fullname":"string",
->                    "email":"string"
->                  },
->      "roles":  {
->                   "string<role.name>" : { "name":"string","description":"string"},
->                ...
->                }
->    }
+```json
+  {
+      "username": "string",
+      "expired": boolean,
+      "enabled": boolean,
+      "userInfo": {
+                    "fullname":"string",
+                    "email":"string"
+                  },
+      "roles":  {
+                   "string<role.name>" : { "name":"string","description":"string"},
+                //...
+                }
+    }
+```
 
 **Errors**:  
    - `404` User not found
@@ -87,10 +95,10 @@
                   },
      "roles":  {
                   "string<role.name>" : { "name":"string","description":"string"},
-                ...
+                //...
                 }
     }
-```json
+```
 
 **Response**: `201` Created
 
