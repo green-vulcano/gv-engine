@@ -78,19 +78,22 @@
 
 **Consume**: Content-Type: application/json
 
->  {
->      "username": "string",
->      "userInfo": {
->                    "fullname":"string",
->                    "email":"string"
->                  },
->      "roles":  {
->                   "string<role.name>" : { "name":"string","description":"string"},
->                ...
->                }
->    }
+```json
+  {
+      "username": "string",
+      "userInfo": {
+                    "fullname":"string",
+                    "email":"string"
+                  },
+     "roles":  {
+                  "string<role.name>" : { "name":"string","description":"string"},
+                ...
+                }
+    }
+```json
 
 **Response**: `201` Created
+
 **Errors**:  
    - `406` Not acceptable: invalid username
    - `409` Conflict: username already exist
