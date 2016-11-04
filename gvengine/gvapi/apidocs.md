@@ -11,8 +11,7 @@
   * [Reset user password](#reset_user)
 
 - Auhtentication API
-  * [Authenticate](#Authenticate)
-  * [Change password](#get_all_group)
+  * [Authenticate](#authenticate)
 ----
 
 ## Administration API
