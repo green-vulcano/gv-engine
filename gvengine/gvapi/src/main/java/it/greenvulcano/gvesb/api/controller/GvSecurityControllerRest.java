@@ -188,19 +188,21 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 		
 	}
 	
-	@Path("/admin/users")
+	@Path("/admin/users/{username}")
 	@PUT @Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed("gvadmin")
-	public Response editUser(String data) {
+	public Response editUser(@PathParam("username") String username, String data) {
 		Response response = null;
 		
 		try {
 			UserDTO user = parseJson(data, UserDTO.class);			
-			gvSecurityManager.updateUser(user.getUsername(), user.getUserInfo(), user.getGrantedRoles(), user.isEnabled());
+			gvSecurityManager.updateUser(username, user.getUserInfo(), user.getGrantedRoles(), user.isEnabled());
 			
 			response = Response.ok().build();
-			
+		
+		} catch (UserNotFoundException e) {
+			response = Response.status(Status.NOT_FOUND).entity(toJson(e)).build();	
 		} catch (InvalidUsernameException|InvalidPasswordException e) {
 			response = Response.status(Status.NOT_ACCEPTABLE).entity(toJson(e)).build();		
 		} catch (UserExistException e) {

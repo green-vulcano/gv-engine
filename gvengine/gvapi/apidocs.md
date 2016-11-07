@@ -12,7 +12,7 @@
 
 - Auhtentication API
   * [Authenticate](#authenticate)
-  
+
 ----
 
 ## Administration API
@@ -25,8 +25,8 @@
 **Produces**: Content-Type: application/json
 
 ```javascript
-  [ 
-    {"name":"string","description":"string"}, //... 
+  [
+    {"name":"string","description":"string"}, //...
   ]
 ```
 ----
@@ -100,12 +100,48 @@
     }
 ```
 
+**Response**: `201 Created`
+
+**Errors**:
+   - `406 Not acceptable` Invalid username
+   - `409 Conflict` Username already exist
+
 ----
-### <a name="update_user"></a>Delete user
+### <a name="update_user"></a>Update user
+
+   PUT /admin/users/{username}
+
+**Consume**: Content-Type: application/json
+
+```javascript
+  {
+     "username": "string",
+     "expired": boolean,
+     "enabled": boolean,
+     "userInfo": {
+                   "fullname":"string",
+                   "email":"string"
+                 },
+     "roles":  {
+                 "string<role.name>" : { "name":"string","description":"string"},
+                 //...
+               }
+  }
+```
+
+**Response**: `200 OK`
+
+**Errors**:
+  - `404 Not found` User not found
+  - `406 Not acceptable` Invalid username
+  - `409 Conflict` Username already exist
+
+----
+### <a name="delete_user"></a>Delete user
 
     DELETE /admin/users/{username}
 
-**Response**: `202 Accepted` 
+**Response**: `202 Accepted`
 
 **Errors**:  
    - `404 Not found` User not found
