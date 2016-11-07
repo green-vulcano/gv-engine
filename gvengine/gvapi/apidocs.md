@@ -109,7 +109,7 @@
 ----
 ### <a name="update_user"></a>Update user
 
-   PUT /admin/users/{username}
+    PUT /admin/users/{username}
 
 **Consume**: Content-Type: application/json
 
