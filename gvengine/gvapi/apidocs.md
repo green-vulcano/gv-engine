@@ -23,7 +23,7 @@
 
 **Produces**: Content-Type: application/json
 
-```json
+```javascript
   [ 
     {"name":"string","description":"string"}, //... 
   ]
@@ -59,7 +59,7 @@
 
 **Produces**: Content-Type: application/json
 
-```json
+```javascript
   {
       "username": "string",
       "expired": boolean,
@@ -85,7 +85,7 @@
 
 **Consume**: Content-Type: application/json
 
-```json
+```javascript
   {
       "username": "string",
       "userInfo": {
