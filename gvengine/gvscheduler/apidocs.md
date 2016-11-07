@@ -98,7 +98,7 @@
                     "<key>string":"<value>string",
                     //...
                     },
-      "[optional]object":  // accept any type
+      "[optional]object":  // accepts any type
     }
 ```
 
