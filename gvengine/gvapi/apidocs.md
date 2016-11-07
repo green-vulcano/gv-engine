@@ -12,6 +12,7 @@
 
 - Auhtentication API
   * [Authenticate](#authenticate)
+  
 ----
 
 ## Administration API
@@ -76,7 +77,7 @@
 ```
 
 **Errors**:  
-   - `404` User not found
+   - `404 Not found` User not found
 
 ----
 ### <a name="create_user"></a>Create user
@@ -99,8 +100,12 @@
     }
 ```
 
-**Response**: `201` Created
+----
+### <a name="update_user"></a>Delete user
+
+    DELETE /admin/users/{username}
+
+**Response**: `202 Accepted` 
 
 **Errors**:  
-   - `406` Not acceptable: invalid username
-   - `409` Conflict: username already exist
+   - `404 Not found` User not found
