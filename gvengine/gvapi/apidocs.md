@@ -35,7 +35,7 @@
 
 **Produces**: Content-Type: application/json
 
-```json
+```javascript
   [ {
     "username": "string",
       "expired": boolean,
