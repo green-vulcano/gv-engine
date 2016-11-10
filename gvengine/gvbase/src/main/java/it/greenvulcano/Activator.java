@@ -20,8 +20,15 @@
 package it.greenvulcano;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -35,6 +42,7 @@ import it.greenvulcano.configuration.XMLConfig;
 
 public class Activator implements BundleActivator {
 
+	
 	private final static Logger LOG = LoggerFactory.getLogger(Activator.class);
 		
 	@Override
@@ -43,33 +51,40 @@ public class Activator implements BundleActivator {
 		
 		ServiceReference<?> configurationAdminReference = context.getServiceReference(ConfigurationAdmin.class.getName());
         ConfigurationAdmin configurationAdmin = (ConfigurationAdmin) context.getService(configurationAdminReference);        
-        
-        Configuration gvcfg = configurationAdmin.getConfiguration("it.greenvulcano.gvesb.bus");
-        
-        String userConfiguration = XMLConfig.DEFAULT_FOLDER;
-        
-        if (Objects.nonNull(gvcfg.getProperties())){
-        
-        	userConfiguration = (String) Optional.ofNullable(gvcfg.getProperties().get("gvbus.apikey"))
-        											 .filter(Objects::nonNull)
-        											 .map(c->c.toString().trim())
-        											 .filter(c-> c.length()>0)
-        											 .filter(c-> !c.equalsIgnoreCase("undefined"))
-        											 .orElse(XMLConfig.DEFAULT_FOLDER);
-        }
-        
-		String configurationPath = System.getProperty("gv.app.home") + File.separator + userConfiguration;
+              
+        String home = getConfigPath(configurationAdmin, "gv.app.home").orElse("GreenV" + File.separator + XMLConfig.DEFAULT_FOLDER);
+                		
 		try {
 			
-			File configDir = new File(configurationPath);
+			Path configPath = Paths.get(home);
+						
+			if(Files.notExists(configPath)) {
+												
+				ZipInputStream defaultConfig = new ZipInputStream(getClass().getClassLoader().getResourceAsStream("config.zip"));
+				ZipEntry zipEntry = null;
+				
+				while ((zipEntry=defaultConfig.getNextEntry())!=null) {
+					
+					Path entryPath = Paths.get(home, zipEntry.getName());
+					
+					if (zipEntry.isDirectory()) {
+						Files.createDirectories(entryPath);
+					} else {
+						
+						Files.copy(defaultConfig, entryPath, StandardCopyOption.REPLACE_EXISTING);					
+					}
+				}
+				
+				
+			} 
+						
+			String config = configPath.toAbsolutePath().toString();						
+			XMLConfig.setBaseConfigPath(config);
 			
-			if(configDir.exists() && configDir.isDirectory()){
-				XMLConfig.setBaseConfigPath(configurationPath);
-				LOG.debug("Configuration path set to " + configurationPath);
-			}			
-		
+			LOG.debug(" Configuration path set to " + config);
+					
 		} catch (Exception exception) {
-			LOG.error("Fail to set configuration path " + configurationPath);
+			LOG.error("Fail to set configuration path ",exception);
 		}
 		
 	}
@@ -77,6 +92,19 @@ public class Activator implements BundleActivator {
 	@Override
 	public void stop(BundleContext context) throws Exception {	
 		LOG.debug("****** GVBase stopped");
+	}
+	
+	private Optional<String> getConfigPath(ConfigurationAdmin configurationAdmin, String configKey) throws IOException {
+				     
+		 Configuration gvcfg = configurationAdmin.getConfiguration("it.greenvulcano.gvesb");
+		 	        
+	     return  Objects.nonNull(gvcfg.getProperties()) ? Optional.ofNullable(gvcfg.getProperties().get(configKey))
+					        											 .filter(Objects::nonNull)
+					        											 .map(c->c.toString().trim())
+					        											 .filter(c-> c.length()>0)
+					        											 .filter(c-> !c.equalsIgnoreCase("undefined"))
+					        							 : Optional.empty();
+		 
 	}
 
 }

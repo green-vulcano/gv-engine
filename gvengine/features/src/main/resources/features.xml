@@ -37,24 +37,24 @@
 	
 	<feature name="gvdte" description="GreenVulcano Data Transformation Engine" version="${project.version}">
                 
-        <feature>gvbase</feature>      
+        <feature prerequisite="true">gvbase</feature>      
         <bundle start-level="87">mvn:it.greenvulcano.gvesb/gvdte/${project.version}</bundle>                
     </feature>
 	
 	<feature name="gvvcl" version="${project.version}"	description="GreenVulcano Virtual Communication Layer">		  
-		<feature>gvbase</feature>
+		<feature prerequisite="true">gvbase</feature>
 		<bundle start-level="89">mvn:it.greenvulcano.gvesb/gvvcl/${project.version}</bundle>
 	</feature>
 	
 	<feature name="gvvcl-internal" version="${project.version}"	description="GreenVulcano VCL Internal Plugin">		  
-		<feature>gvdte</feature>
-		<feature>gvvcl</feature>
+		<feature prerequisite="true">gvdte</feature>
+		<feature prerequisite="true">gvvcl</feature>
 		<bundle start-level="90">mvn:it.greenvulcano.gvesb/gvvcl-internal/${project.version}</bundle>
 	</feature>
 	
 	<feature name="gvcore" version="${project.version}"	description="GreenVulcano Core">		  
-		<feature>gvdte</feature>
-		<feature>gvvcl</feature>
+		<feature prerequisite="true">gvdte</feature>
+		<feature prerequisite="true">gvvcl</feature>
 		<bundle start-level="91">mvn:it.greenvulcano.gvesb/gvstatistics/${project.version}</bundle>
 		<bundle start-level="92">mvn:it.greenvulcano.gvesb/gvcore/${project.version}</bundle>
 	</feature>
@@ -64,6 +64,7 @@
             osgi.service;effective:=active;objectClass=org.hibernate.SessionFactory
         </capability>
         <feature>hibernate</feature>
+        <feature prerequisite="true">gvbase</feature>
 		<configfile finalname="${karaf.etc}/org.ops4j.datasource-gviam.cfg" override="true">mvn:it.greenvulcano.gvesb/${project.artifactId}/${pom.version}/ds/gviam</configfile>
 	</feature>
 	

@@ -71,5 +71,17 @@
 		</jaxws:inInterceptors>
 		
 	</jaxws:endpoint>
+	
+	<reference id="configManager" interface="it.greenvulcano.gvesb.GVConfigurationManager" />
+	
+	<bean id="configurationController" class="it.greenvulcano.gvesb.api.controller.GvConfigurationControllerRest">
+		<property name="configurationManager" ref="configManager" />
+	</bean>
+	
+	<jaxrs:server address="/gvconfig" id="gvconfigapi">
+        <jaxrs:serviceBeans>            
+           	<ref component-id="configurationController" />
+        </jaxrs:serviceBeans>          
+    </jaxrs:server>
 	        
 </blueprint>

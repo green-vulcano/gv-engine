@@ -92,7 +92,7 @@ public class GvServicesControllerRest extends BaseControllerRest {
 			response = toJson(services);
 		} catch (XMLConfigException | JsonProcessingException xmlConfigException){
 			LOG.error("Error reading services configuration", xmlConfigException);
-			new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(toJson(xmlConfigException)).build());
+			throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(toJson(xmlConfigException)).build());
 		}	
 		
 		return Response.ok(response).build();
@@ -113,9 +113,9 @@ public class GvServicesControllerRest extends BaseControllerRest {
 		    response = toJson(svc);		   
 			
 		} catch (NoSuchElementException noSuchElementException) {
-			new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity("Service not found").build());
+			throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity("Service not found").build());
 		} catch (XMLConfigException | JsonProcessingException xmlConfigException) {
-			new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(toJson(xmlConfigException)).build());
+			throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(toJson(xmlConfigException)).build());
 		}		
 		
 		return Response.ok(response).build();

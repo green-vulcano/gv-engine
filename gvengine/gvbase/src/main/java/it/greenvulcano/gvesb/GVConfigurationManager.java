@@ -19,11 +19,15 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb;
 
+import java.util.zip.ZipInputStream;
+
 import org.w3c.dom.Document;
 
 import it.greenvulcano.configuration.XMLConfigException;
 
 public interface GVConfigurationManager {
+	
+	void deployConfiguration(ZipInputStream configurationArchive) throws XMLConfigException;
 	
 	void updateConfiguration(Document xmlConfiguration) throws XMLConfigException;
 	

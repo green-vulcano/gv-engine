@@ -206,7 +206,7 @@ public final class XMLConfig {
 	
 	private final static Logger LOG = LoggerFactory.getLogger(XMLConfig.class);
 	
-	public static final String DEFAULT_FOLDER = "xmlconfig";
+	public static final String DEFAULT_FOLDER = "default";
 	
     /**
      * XMLConfig events source.
@@ -2268,8 +2268,11 @@ public final class XMLConfig {
      * @param baseConfigPath
      */
     public static void setBaseConfigPath(String baseConfigPath) {
-    	if (baseConfigPath!=null)
-        XMLConfig.baseConfigPath.set(baseConfigPath);
+    	if (baseConfigPath!=null) {    		
+    		XMLConfig.baseConfigPath.set(baseConfigPath);
+    		System.setProperty("gv.app.home", baseConfigPath);
+    	}
+        
     }
 
     /**

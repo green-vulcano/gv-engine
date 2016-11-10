@@ -219,6 +219,20 @@
 	</dependencies>
 
 	<build>
+		
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>			
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>false</filtering>
+				<includes>
+					<include>*.zip</include>					
+				</includes>				
+			</resource>
+		</resources>
 
 		<plugins>
 			<plugin>

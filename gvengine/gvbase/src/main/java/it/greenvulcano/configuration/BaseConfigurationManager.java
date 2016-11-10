@@ -22,7 +22,12 @@ package it.greenvulcano.configuration;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -82,6 +87,34 @@ public class BaseConfigurationManager implements GVConfigurationManager {
 	public void reload() throws XMLConfigException {
 		XMLConfig.reloadAll();
 		
+	}
+
+	@Override
+	public void deployConfiguration(ZipInputStream configurationArchive) throws XMLConfigException {
+				
+		try {												
+			
+			String configPath = XMLConfig.getBaseConfigPath();
+			LOG.debug("Deploy started on path "+configPath);
+			ZipEntry zipEntry = null;
+			
+			while ((zipEntry=configurationArchive.getNextEntry())!=null) {
+				
+				Path entryPath = Paths.get(configPath, zipEntry.getName());
+				
+				if (zipEntry.isDirectory()) {
+					Files.createDirectories(entryPath);
+				} else {
+					
+					Files.copy(configurationArchive, entryPath, StandardCopyOption.REPLACE_EXISTING);					
+				}
+				LOG.debug("Add resource: "+entryPath.toString());
+			}				
+			LOG.debug("Deploy complete");
+		} catch (Exception e) {
+			LOG.error("Deploy failed",e);
+			throw new XMLConfigException("Deploy failed", e);
+		}
 	}
 
 }
