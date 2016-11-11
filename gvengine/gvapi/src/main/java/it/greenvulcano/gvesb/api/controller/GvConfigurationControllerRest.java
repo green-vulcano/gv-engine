@@ -24,19 +24,24 @@ import java.util.Objects;
 import java.util.zip.ZipInputStream;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import it.greenvulcano.configuration.XMLConfig;
+import it.greenvulcano.configuration.XMLConfigException;
 import it.greenvulcano.gvesb.GVConfigurationManager;
 
 public class GvConfigurationControllerRest {
@@ -46,6 +51,49 @@ public class GvConfigurationControllerRest {
 	 
 	 public void setConfigurationManager(GVConfigurationManager gvConfigurationManager) {
 		this.gvConfigurationManager = gvConfigurationManager;
+	 }
+	 
+	
+	 @GET
+	 @Path("/deploy")
+	 public Response getConfigurationInfo(){
+		 File currentConfig = new File(XMLConfig.getBaseConfigPath());
+		 
+		 if (currentConfig.exists()) {
+		 
+			 JSONObject configInfo = new JSONObject();
+			 configInfo.put("id", currentConfig.getName());
+			 configInfo.put("path", currentConfig.getParent());
+			 configInfo.put("time", currentConfig.lastModified());
+			 
+			 return Response.ok(configInfo.toString()).build();
+		 } else {
+			 return Response.status(Status.NOT_FOUND).build();
+		 }
+		 
+	 }
+	 
+	 @GET
+	 @Path("/deploy/{configId}")
+	 @Produces(MediaType.APPLICATION_OCTET_STREAM)
+	 public Response exportConfiguration(@PathParam("configId") String id) {
+		 File currentConfig = new File(XMLConfig.getBaseConfigPath());
+		 
+		 if (currentConfig.exists() && currentConfig.getName().equals(id) ){
+			 try {
+				 
+				return Response.ok(gvConfigurationManager.exportConfiguration())
+							   .header("Content-Disposition", "attachment; filename="+id+".zip")
+							   .build();
+				 
+			 } catch (XMLConfigException e) {
+				 LOG.error("Export failed",e); 
+				 throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build());
+			 }				 
+		 } else {
+			 return Response.status(Status.NOT_FOUND).build();
+		 }		 
+		 
 	 }
 	 
 	 @POST

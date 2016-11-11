@@ -19,6 +19,7 @@
  *******************************************************************************/
 package it.greenvulcano.configuration;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -26,8 +27,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -101,20 +104,46 @@ public class BaseConfigurationManager implements GVConfigurationManager {
 			while ((zipEntry=configurationArchive.getNextEntry())!=null) {
 				
 				Path entryPath = Paths.get(configPath, zipEntry.getName());
-				
+				LOG.debug("Adding resource: "+entryPath);
 				if (zipEntry.isDirectory()) {
 					Files.createDirectories(entryPath);
 				} else {
 					
 					Files.copy(configurationArchive, entryPath, StandardCopyOption.REPLACE_EXISTING);					
 				}
-				LOG.debug("Add resource: "+entryPath.toString());
+				
 			}				
 			LOG.debug("Deploy complete");
 		} catch (Exception e) {
 			LOG.error("Deploy failed",e);
 			throw new XMLConfigException("Deploy failed", e);
 		}
+	}
+
+	@Override
+	public byte[] exportConfiguration() throws XMLConfigException{
+		
+		Path configPath = Paths.get(XMLConfig.getBaseConfigPath());
+		
+		final ByteArrayOutputStream output = new ByteArrayOutputStream();
+				
+		try (final ZipOutputStream zipExport = new ZipOutputStream(output)) {
+			
+			for (Path path : Files.walk(configPath).collect(Collectors.toList())) {
+				 
+				ZipEntry entry = new ZipEntry(configPath.relativize(path).toString());
+				zipExport.putNextEntry(entry);
+				
+				if (Files.isRegularFile(path)) {                     
+					 zipExport.write(Files.readAllBytes(path));	
+				}
+			}			
+			
+		} catch (IOException e) {
+			throw new XMLConfigException("Fail to export configuration",e);
+		}		
+		
+		return output.toByteArray();
 	}
 
 }
