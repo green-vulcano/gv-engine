@@ -29,7 +29,7 @@ public interface GVConfigurationManager {
 	
 	byte[] exportConfiguration() throws XMLConfigException;
 	
-	void deployConfiguration(ZipInputStream configurationArchive) throws XMLConfigException;
+	void deployConfiguration(ZipInputStream configurationArchive) throws XMLConfigException, IllegalStateException;
 	
 	void updateConfiguration(Document xmlConfiguration) throws XMLConfigException;
 	

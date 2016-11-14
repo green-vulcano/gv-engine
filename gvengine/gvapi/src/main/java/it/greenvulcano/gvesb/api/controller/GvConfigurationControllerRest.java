@@ -20,6 +20,10 @@
 package it.greenvulcano.gvesb.api.controller;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileVisitOption;
+import java.nio.file.Files;
+import java.util.Comparator;
 import java.util.Objects;
 import java.util.zip.ZipInputStream;
 
@@ -114,13 +118,27 @@ public class GvConfigurationControllerRest {
 			 ZipInputStream compressedConfig = new ZipInputStream(config.getDataHandler().getInputStream());
 			 gvConfigurationManager.deployConfiguration(compressedConfig);
 			 gvConfigurationManager.reload();			 
+			 
+		 } catch (IllegalStateException e) {
+			 LOG.error("Deploy failed, a deploy is already in progress",e);
+			 throw new WebApplicationException(Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(e.getMessage()).build());
+		 
 		 } catch (Exception e) {
 			LOG.error("Deploy failed, rollback to previous configuration",e); 
 			XMLConfig.setBaseConfigPath(currentConfig.toString());
 			
 			throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build());
 			
-		 }		 
+		 }
+		 
+		 try {
+			 Files.walk(currentConfig.toPath(), FileVisitOption.FOLLOW_LINKS)
+			 .sorted(Comparator.reverseOrder())
+			 .map(java.nio.file.Path::toFile)
+			 .forEach(File::delete);
+		 } catch (IOException e) {
+			 LOG.error("Failed to delete old configuration",e); 
+		 }
 		 
 	 }
 	

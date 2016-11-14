@@ -27,6 +27,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -48,6 +49,7 @@ import it.greenvulcano.gvesb.GVConfigurationManager;
 public class BaseConfigurationManager implements GVConfigurationManager {
 
 	private final Logger LOG = LoggerFactory.getLogger(getClass());	
+	private final ReentrantLock LOCK = new ReentrantLock();
 	
 	@Override
 	public void updateConfiguration(Document xmlConfiguration) throws XMLConfigException {
@@ -93,30 +95,35 @@ public class BaseConfigurationManager implements GVConfigurationManager {
 	}
 
 	@Override
-	public void deployConfiguration(ZipInputStream configurationArchive) throws XMLConfigException {
+	public void deployConfiguration(ZipInputStream configurationArchive) throws XMLConfigException, IllegalStateException {
+		if (LOCK.tryLock()) {		
+			try {												
 				
-		try {												
-			
-			String configPath = XMLConfig.getBaseConfigPath();
-			LOG.debug("Deploy started on path "+configPath);
-			ZipEntry zipEntry = null;
-			
-			while ((zipEntry=configurationArchive.getNextEntry())!=null) {
+				String configPath = XMLConfig.getBaseConfigPath();
+				LOG.debug("Deploy started on path "+configPath);
+				ZipEntry zipEntry = null;
 				
-				Path entryPath = Paths.get(configPath, zipEntry.getName());
-				LOG.debug("Adding resource: "+entryPath);
-				if (zipEntry.isDirectory()) {
-					Files.createDirectories(entryPath);
-				} else {
+				while ((zipEntry=configurationArchive.getNextEntry())!=null) {
 					
-					Files.copy(configurationArchive, entryPath, StandardCopyOption.REPLACE_EXISTING);					
-				}
-				
-			}				
-			LOG.debug("Deploy complete");
-		} catch (Exception e) {
-			LOG.error("Deploy failed",e);
-			throw new XMLConfigException("Deploy failed", e);
+					Path entryPath = Paths.get(configPath, zipEntry.getName());
+					LOG.debug("Adding resource: "+entryPath);
+					if (zipEntry.isDirectory()) {
+						Files.createDirectories(entryPath);
+					} else {
+						
+						Files.copy(configurationArchive, entryPath, StandardCopyOption.REPLACE_EXISTING);					
+					}
+					
+				}				
+				LOG.debug("Deploy complete");
+			} catch (Exception e) {
+				LOG.error("Deploy failed",e);
+				throw new XMLConfigException("Deploy failed", e);
+			} finally {
+				LOCK.unlock();
+			}
+		} else {
+			throw new IllegalStateException("A deploy is already in progress");
 		}
 	}
 
