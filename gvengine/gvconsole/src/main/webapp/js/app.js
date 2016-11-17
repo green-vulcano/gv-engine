@@ -1,13 +1,25 @@
-angular.module('gvconsole', ['RDash','gvconsole-auth','gvconsole-admin','ngCookies','ngRoute'])
+angular.module('gvconsole', ['RDash','gvconsole-auth','gvconsole-admin','gvconsole-scheduling','ngCookies','ngRoute'])
 .config(['$routeProvider',
          function($routeProvider) {
 	    $routeProvider.
 	      when('/login', {
 	        templateUrl: 'auth/login.html'
-	      }).	     
-	      when('/users', {
-		        templateUrl: 'admin/userList.html'
-		      }).
+	      }).
+		when('/flows', {
+			templateUrl: 'flows/flowList.html'
+		}).
+		when('/flows/:userId', {
+			templateUrl: 'flows/flowDetail.html'
+		}).
+		when('/scheduling', {
+			templateUrl: 'scheduling/schedulingList.html'
+		}).
+		when('/scheduling/:userId', {
+			templateUrl: 'scheduling/schedulingDetail.html'
+		}).
+		when('/users', {
+			templateUrl: 'admin/userList.html'
+		}).
 	      when('/users/:userId', {
 	        templateUrl: 'admin/userDetail.html'
 	      }).
@@ -29,9 +41,12 @@ angular.module('gvconsole', ['RDash','gvconsole-auth','gvconsole-admin','ngCooki
               $location.path('/login');
           }
       });
-      
+
       $rootScope.go = function(path) {
-			 
-		  $location.path(path);
-	  };
+		                    $location.path(path);
+	                    };
+
+      $rootScope.routeIsIn = function(route){
+                        return  $location.path().startsWith(route);
+                      };
 }]);

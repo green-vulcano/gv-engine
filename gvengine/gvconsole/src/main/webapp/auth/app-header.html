@@ -1,25 +1,23 @@
-
 <!-- Header Bar -->
-<div class="row header"
-	style="background-image: url('/gvconsole/img/logoHeader.png'); background-position: top left; background-repeat: no-repeat; background-color: #333">
-	<div class="col-xs-12">
-		<div class="user pull-right">
-			<div uib-dropdown class="item dropdown">
-				<a uib-dropdown-toggle >
-					<i style="cursor: pointer;" class="fa fa-user"></i>
-				</a>
-				<ul class="uib-dropdown-menu dropdown-menu-right">
-					<li><a data-ng-click="app.logout()" href="/gvconsole"><i
-							class="glyphicon glyphicon-log-out"></i> Log out</a></li>
-				</ul>
-			</div>
-
-		</div>
-
-
+<nav class="navbar navbar-default" role="navigation">
+	<div class="container">
+	<div class="navbar-header">
+		<button type="button" class="navbar-toggle" ng-click="isNavCollapsed = !isNavCollapsed">
+			<span class="sr-only">Toggle navigation</span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+		</button>
+		<a class="navbar-brand"><img src="img/header.png" class="img-responsive"> GV ESB 4</a>
 	</div>
-
-</div>
-
+	<div class="collapse navbar-collapse" uib-collapse="isNavCollapsed">
+		<ul class="nav navbar-nav navbar-right">
+			<li data-ng-class="{ active: routeIsIn('/users')}" ><a href="#/users">Users</a></li>
+			<li data-ng-class="{ active: routeIsIn('/scheduling')}"><a href="#/scheduling">Scheduling</a></li>
+			<li data-ng-class="{ active: routeIsIn('/flows')}"><a href="#/flows">Flows</a></li>
+			<li><a data-ng-click="app.logout()" href="/gvconsole"><i class="glyphicon glyphicon-log-out"></i> Log out</a></li>
+		</ul>
+	</div>
+	</div>
+</nav>
 <!-- End Header Bar -->
-

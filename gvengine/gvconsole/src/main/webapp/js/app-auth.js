@@ -96,7 +96,7 @@ angular.module('gvconsole-auth')
 	        service.createContext = function (username, password, callback) {
 
 	        	service.clearContext();
-	        	
+
 	        	var authdata = Base64.encode(username + ':' + password);
 
 	            $rootScope.globals = {
@@ -106,12 +106,12 @@ angular.module('gvconsole-auth')
 	                }
 	            };
 
-	           $http.defaults.headers.common['Authorization'] = 'Basic ' + authdata;        
-	           $http.post('/cxf/gviam/authenticate').then(function(response) {
+	           $http.defaults.headers.common['Authorization'] = 'Basic ' + authdata;
+	           $http.post('http://localhost:8181/cxf/gviam/authenticate').then(function(response) {
 	        	   			angular.merge($rootScope.globals.currentUser, response.data);
 	        	   			$cookieStore.put('globals', $rootScope.globals);
 	        	   			callback(response.status);
-	           			}, 
+	           			},
 	        		   function(response) {
 	           				delete $http.defaults.headers.common.Authorization;
 	           				$rootScope.globals = {};
@@ -119,22 +119,22 @@ angular.module('gvconsole-auth')
 	           		   });
 
 	        };
-	        
+
 	        service.changePassword = function (username, oldPassword, newPassword, callback) {
 
-	           var token = Base64.encode(username + ':' + oldPassword+ ':'+newPassword);    
+	           var token = Base64.encode(username + ':' + oldPassword+ ':'+newPassword);
 
 	           var request = {
 	        		   method: 'PATCH',
-	        		   url: '/cxf/gviam/authenticate',
+	        		   url: 'http://localhost:8181/cxf/gviam/authenticate',
 	        		   headers: {
 	        			   Authorization: 'GV_RENEW ' + token,
 	        			   Accept: 'application/json'
 	        		   }
 	           };
-	           	                   
+
 	           $http(request).then(function(response) {
-	        	   			
+
 	        	   			var authdata = Base64.encode(username + ':' + newPassword);
 
 				            $rootScope.globals = {
@@ -142,14 +142,14 @@ angular.module('gvconsole-auth')
 				                    username: username,
 				                    authdata: authdata
 				                }
-				            };	        	   			       	   
-				            
+				            };
+
 				            $http.defaults.headers.common['Authorization'] = 'Basic ' + authdata;
-				            
+
 	        	   			angular.merge($rootScope.globals.currentUser, response.data);
 	        	   			$cookieStore.put('globals', $rootScope.globals);
 	        	   			callback(response.status);
-	           			}, 
+	           			},
 	        		   function(response) {
 	           				$rootScope.globals = {};
 	           				callback(response.status);
@@ -182,11 +182,11 @@ angular.module('gvconsole-auth')
                 	case 200:
 	                    $location.path('/users');
 	                    break;
-                   
+
                 	case 403:
                 		$scope.expired=true;
                 		break;
-                		
+
                     default:
 	                	$scope.error = true;
 	                    $scope.errorMessage = 'Login failed';
@@ -194,7 +194,7 @@ angular.module('gvconsole-auth')
                 }
             });
         };
-        
+
         $scope.changePassword = function () {
             $scope.dataLoading = true;
             $scope.error = false;
@@ -204,10 +204,10 @@ angular.module('gvconsole-auth')
                 	case 200:
 	                    $location.path('/users');
 	                    break;
-                                   		
+
                     default:
-	                	$scope.error = true;
-	                    $scope.errorMessage = 'Password change failed';	                    
+	                		$scope.error = true;
+	                    $scope.errorMessage = 'Password change failed';
 	                    break;
                 }
             });
@@ -218,13 +218,13 @@ angular.module('gvconsole-auth')
 .directive('appHeader', function(){
 	return {
 		restrict: 'E',
-		templateUrl: '/gvconsole/auth/app-header.html',
+		templateUrl: 'auth/app-header.html',
 		controller: ['AuthenticationService', function(authenticationService){
-						
+
 			this.logout = function() {
 				authenticationService.clearContext();
-			}		
-			
+			}
+
 		}],
 		controllerAs: 'app'
 	}
