@@ -52,7 +52,7 @@ public class Activator implements BundleActivator {
 		ServiceReference<?> configurationAdminReference = context.getServiceReference(ConfigurationAdmin.class.getName());
         ConfigurationAdmin configurationAdmin = (ConfigurationAdmin) context.getService(configurationAdminReference);        
               
-        String home = getConfigPath(configurationAdmin, "gv.app.home").orElse("GreenV" + File.separator + XMLConfig.DEFAULT_FOLDER);
+        String home = getConfigPath(configurationAdmin, XMLConfig.CONFIG_KEY_HOME).orElse("GreenV" + File.separator + XMLConfig.DEFAULT_FOLDER);
                 		
 		try {
 			
@@ -96,7 +96,7 @@ public class Activator implements BundleActivator {
 	
 	private Optional<String> getConfigPath(ConfigurationAdmin configurationAdmin, String configKey) throws IOException {
 				     
-		 Configuration gvcfg = configurationAdmin.getConfiguration("it.greenvulcano.gvesb");
+		 Configuration gvcfg = configurationAdmin.getConfiguration(XMLConfig.CONFIG_PID);
 		 	        
 	     return  Objects.nonNull(gvcfg.getProperties()) ? Optional.ofNullable(gvcfg.getProperties().get(configKey))
 					        											 .filter(Objects::nonNull)

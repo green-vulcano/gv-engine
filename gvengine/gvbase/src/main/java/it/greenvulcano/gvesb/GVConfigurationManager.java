@@ -19,6 +19,7 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb;
 
+import java.nio.file.Path;
 import java.util.zip.ZipInputStream;
 
 import org.w3c.dom.Document;
@@ -29,7 +30,7 @@ public interface GVConfigurationManager {
 	
 	byte[] exportConfiguration() throws XMLConfigException;
 	
-	void deployConfiguration(ZipInputStream configurationArchive) throws XMLConfigException, IllegalStateException;
+	void deployConfiguration(ZipInputStream configurationArchive, Path destination) throws XMLConfigException, IllegalStateException;
 	
 	void updateConfiguration(Document xmlConfiguration) throws XMLConfigException;
 	

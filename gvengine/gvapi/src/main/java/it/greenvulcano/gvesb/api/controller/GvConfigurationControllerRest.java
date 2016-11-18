@@ -20,11 +20,7 @@
 package it.greenvulcano.gvesb.api.controller;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.FileVisitOption;
-import java.nio.file.Files;
-import java.util.Comparator;
-import java.util.Objects;
+import java.nio.file.Paths;
 import java.util.zip.ZipInputStream;
 
 import javax.ws.rs.Consumes;
@@ -112,11 +108,9 @@ public class GvConfigurationControllerRest {
 		 String baseDir = currentConfig.getParent();
 		 
 		 try {
-			 			 
-			 XMLConfig.setBaseConfigPath(baseDir + File.separator + Objects.requireNonNull(id, "cofiguration id required"));
-			 
+						 
 			 ZipInputStream compressedConfig = new ZipInputStream(config.getDataHandler().getInputStream());
-			 gvConfigurationManager.deployConfiguration(compressedConfig);
+			 gvConfigurationManager.deployConfiguration(compressedConfig, Paths.get(baseDir, id));
 			 gvConfigurationManager.reload();			 
 			 
 		 } catch (IllegalStateException e) {
@@ -124,21 +118,11 @@ public class GvConfigurationControllerRest {
 			 throw new WebApplicationException(Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(e.getMessage()).build());
 		 
 		 } catch (Exception e) {
-			LOG.error("Deploy failed, rollback to previous configuration",e); 
-			XMLConfig.setBaseConfigPath(currentConfig.toString());
-			
+			LOG.error("Deploy failed, something bad appened",e); 						
 			throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build());
 			
 		 }
 		 
-		 try {
-			 Files.walk(currentConfig.toPath(), FileVisitOption.FOLLOW_LINKS)
-			 .sorted(Comparator.reverseOrder())
-			 .map(java.nio.file.Path::toFile)
-			 .forEach(File::delete);
-		 } catch (IOException e) {
-			 LOG.error("Failed to delete old configuration",e); 
-		 }
 		 
 	 }
 	

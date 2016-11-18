@@ -22,11 +22,17 @@ package it.greenvulcano.configuration;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
+import java.util.Comparator;
+import java.util.Dictionary;
+import java.util.Hashtable;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
@@ -40,6 +46,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.karaf.config.core.ConfigRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -50,6 +57,12 @@ public class BaseConfigurationManager implements GVConfigurationManager {
 
 	private final Logger LOG = LoggerFactory.getLogger(getClass());	
 	private final ReentrantLock LOCK = new ReentrantLock();
+	
+	private ConfigRepository configRepository;
+	
+	public void setConfigRepository(ConfigRepository configRepository) {
+		this.configRepository = configRepository;
+	}
 	
 	@Override
 	public void updateConfiguration(Document xmlConfiguration) throws XMLConfigException {
@@ -95,11 +108,11 @@ public class BaseConfigurationManager implements GVConfigurationManager {
 	}
 
 	@Override
-	public void deployConfiguration(ZipInputStream configurationArchive) throws XMLConfigException, IllegalStateException {
+	public void deployConfiguration(ZipInputStream configurationArchive, Path destination) throws XMLConfigException, IllegalStateException {
 		if (LOCK.tryLock()) {		
 			try {												
 				
-				String configPath = XMLConfig.getBaseConfigPath();
+				String configPath = destination.toString();
 				LOG.debug("Deploy started on path "+configPath);
 				ZipEntry zipEntry = null;
 				
@@ -114,10 +127,47 @@ public class BaseConfigurationManager implements GVConfigurationManager {
 						Files.copy(configurationArchive, entryPath, StandardCopyOption.REPLACE_EXISTING);					
 					}
 					
-				}				
+				}
+				
+				@SuppressWarnings("unchecked")
+				Dictionary<String, Object> gvesbCfg = Optional.of(configRepository.getConfigProperties(XMLConfig.CONFIG_PID))
+															  .orElse(new Hashtable<>());
+				
+				gvesbCfg.put(XMLConfig.CONFIG_KEY_HOME, configPath);
+				configRepository.update(XMLConfig.CONFIG_PID, gvesbCfg);
+				
+				//**** Deleting old config dir
+				LOG.debug("Remove old config: "+XMLConfig.getBaseConfigPath());
+				try {
+					 File currentConfig = new File(XMLConfig.getBaseConfigPath());
+					 
+					 Files.walk(currentConfig.toPath(), FileVisitOption.FOLLOW_LINKS)
+						  .sorted(Comparator.reverseOrder())
+						  .map(java.nio.file.Path::toFile)
+						  .forEach(File::delete);
+				} catch (IOException e) {
+					 LOG.error("Failed to delete old configuration",e); 
+				}
+				 				
+				XMLConfig.setBaseConfigPath(configPath);
+				
 				LOG.debug("Deploy complete");
 			} catch (Exception e) {
-				LOG.error("Deploy failed",e);
+				
+				if (Objects.nonNull(destination) && Files.exists(destination)) {
+					LOG.error("Deploy failed, rollback to previous configuration",e);
+					try {												 
+						 Files.walk(destination, FileVisitOption.FOLLOW_LINKS)
+							  .sorted(Comparator.reverseOrder())
+							  .map(java.nio.file.Path::toFile)
+							  .forEach(File::delete);
+					} catch (IOException rollbackException) {
+						 LOG.error("Failed to delete old configuration",e); 
+					}
+				} else {
+					LOG.error("Deploy failed",e);
+				}
+				
 				throw new XMLConfigException("Deploy failed", e);
 			} finally {
 				LOCK.unlock();

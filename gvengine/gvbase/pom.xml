@@ -17,6 +17,12 @@
 
 	<dependencies>
 		<dependency>
+		    <groupId>org.apache.karaf.config</groupId>
+		    <artifactId>org.apache.karaf.config.core</artifactId>
+		    <version>4.0.4</version>
+		    <scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
 			<artifactId>geronimo-ejb_3.1_spec</artifactId>
 			<version>1.0.2</version>
@@ -279,6 +285,7 @@
 									org.apache.commons.net.time;version="[2.2,3)",
 									org.apache.commons.pool;version=" [1.5,2)",
 									org.apache.commons.pool.impl;version="[1.5,2)",
+									org.apache.karaf.config.core,
 									org.apache.log4j;version="[1.2.15,2)",
 									org.apache.xml.resolver,
 									org.apache.xml.resolver.tools,

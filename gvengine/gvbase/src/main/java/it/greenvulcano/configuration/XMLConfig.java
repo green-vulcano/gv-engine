@@ -207,6 +207,8 @@ public final class XMLConfig {
 	private final static Logger LOG = LoggerFactory.getLogger(XMLConfig.class);
 	
 	public static final String DEFAULT_FOLDER = "default";
+	public static final String CONFIG_PID = "it.greenvulcano.gvesb";
+	public static final String CONFIG_KEY_HOME = "gv.app.home";
 	
     /**
      * XMLConfig events source.
