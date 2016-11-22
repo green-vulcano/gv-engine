@@ -10,7 +10,7 @@
 	<packaging>bundle</packaging>
 
 	<name>GreenVulcano DB Channel</name>
-	
+
 	<properties>
 		<osgi.version>5.0.0</osgi.version>
 		<gvesb.version>4.0.0-SNAPSHOT</gvesb.version>
@@ -20,8 +20,22 @@
 		<cloud.nexus.content>http://mvn.greenvulcano.com/nexus/content</cloud.nexus.content>
 	</properties>
 
+	<repositories>
+		<repository>
+			<id>greenvulcano</id>
+			<name>GreenVulcano repo on Cloud Nexus instance - PUBLIC</name>
+			<url>http://mvn.greenvulcano.com/nexus/content/groups/public</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+
 	<dependencies>
-	
+
 		<dependency>
 			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.core</artifactId>
@@ -70,11 +84,11 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-		    <groupId>org.ops4j.pax.logging</groupId>
-		    <artifactId>pax-logging-api</artifactId>
-		    <version>1.8.5</version>
-		    <scope>provided</scope>
-		</dependency>		
+			<groupId>org.ops4j.pax.logging</groupId>
+			<artifactId>pax-logging-api</artifactId>
+			<version>1.8.5</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
@@ -87,15 +101,15 @@
 			<artifactId>xmlbeans</artifactId>
 			<version>2.6.0</version>
 		</dependency>
-		
+
 		<!-- *************** TEST *************** -->
-	    <dependency>
-	      <groupId>junit</groupId>
-	      <artifactId>junit</artifactId>
-	      <scope>test</scope>
-	      <version>${version.junit}</version>
-	    </dependency>
-	    <dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+			<version>${version.junit}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.openejb</groupId>
 			<artifactId>openejb-core</artifactId>
 			<version>4.7.4</version>
@@ -106,26 +120,26 @@
 					<groupId>org.slf4j</groupId>
 				</exclusion>
 			</exclusions>
-		</dependency>		
+		</dependency>
 		<dependency>
-            <groupId>org.neo4j</groupId>
-            <artifactId>neo4j-jdbc-gv</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.neo4j</groupId>
-            <artifactId>neo4j-jdbc</artifactId>
-            <version>2.2-SNAPSHOT</version>
-            <scope>test</scope>
-            <exclusions>
-            	<exclusion>
-            		<artifactId>commons-codec</artifactId>
-            		<groupId>commons-codec</groupId>
-            	</exclusion>
-            </exclusions>
-        </dependency>
-  		
+			<groupId>org.neo4j</groupId>
+			<artifactId>neo4j-jdbc-gv</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<scope>test</scope>
+		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.neo4j</groupId> -->
+<!-- 			<artifactId>neo4j-jdbc</artifactId> -->
+<!-- 			<version>2.2-SNAPSHOT</version> -->
+<!-- 			<scope>test</scope> -->
+<!-- 			<exclusions> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>commons-codec</artifactId> -->
+<!-- 					<groupId>commons-codec</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 			</exclusions> -->
+<!-- 		</dependency> -->
+
 	</dependencies>
 
 	<build>
@@ -175,12 +189,12 @@
 							javax.xml.transform,
 							javax.xml.transform.sax,
 							org.osgi.framework;version="[1.7,2)",
-							org.osgi.service.blueprint;version="[1.0.0,2.0.0)",							
+							org.osgi.service.blueprint;version="[1.0.0,2.0.0)",
 							org.w3c.dom,
 							org.xml.sax,
 							org.xml.sax.helpers
 						</Import-Package>
-						<Embed-Dependency>*;scope=compile;type=jar</Embed-Dependency>						
+						<Embed-Dependency>*;scope=compile;type=jar</Embed-Dependency>
 						<Bundle-Activator>it.greenvulcano.gvesb.datahandling.Activator</Bundle-Activator>
 					</instructions>
 				</configuration>
