@@ -129,28 +129,32 @@ public class BaseConfigurationManager implements GVConfigurationManager {
 					
 				}
 				
-				@SuppressWarnings("unchecked")
-				Dictionary<String, Object> gvesbCfg = Optional.of(configRepository.getConfigProperties(XMLConfig.CONFIG_PID))
-															  .orElse(new Hashtable<>());
+				if (configPath.equals(XMLConfig.getBaseConfigPath())) {
+					LOG.debug("Config merged in path: "+configPath);
+				} else {
 				
-				gvesbCfg.put(XMLConfig.CONFIG_KEY_HOME, configPath);
-				configRepository.update(XMLConfig.CONFIG_PID, gvesbCfg);
-				
-				//**** Deleting old config dir
-				LOG.debug("Remove old config: "+XMLConfig.getBaseConfigPath());
-				try {
-					 File currentConfig = new File(XMLConfig.getBaseConfigPath());
-					 
-					 Files.walk(currentConfig.toPath(), FileVisitOption.FOLLOW_LINKS)
-						  .sorted(Comparator.reverseOrder())
-						  .map(java.nio.file.Path::toFile)
-						  .forEach(File::delete);
-				} catch (IOException e) {
-					 LOG.error("Failed to delete old configuration",e); 
+					@SuppressWarnings("unchecked")
+					Dictionary<String, Object> gvesbCfg = Optional.of(configRepository.getConfigProperties(XMLConfig.CONFIG_PID))
+																  .orElse(new Hashtable<>());
+					
+					gvesbCfg.put(XMLConfig.CONFIG_KEY_HOME, configPath);
+					configRepository.update(XMLConfig.CONFIG_PID, gvesbCfg);
+					
+					//**** Deleting old config dir
+					LOG.debug("Removing old config: "+XMLConfig.getBaseConfigPath());
+					try {
+						 File currentConfig = new File(XMLConfig.getBaseConfigPath());
+						 
+						 Files.walk(currentConfig.toPath(), FileVisitOption.FOLLOW_LINKS)
+							  .sorted(Comparator.reverseOrder())
+							  .map(java.nio.file.Path::toFile)
+							  .forEach(File::delete);
+					} catch (IOException e) {
+						 LOG.error("Failed to delete old configuration",e); 
+					}
+					 				
+					XMLConfig.setBaseConfigPath(configPath);
 				}
-				 				
-				XMLConfig.setBaseConfigPath(configPath);
-				
 				LOG.debug("Deploy complete");
 			} catch (Exception e) {
 				
