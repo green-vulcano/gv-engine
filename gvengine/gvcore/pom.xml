@@ -153,7 +153,6 @@
 							it.greenvulcano.log,
 							it.greenvulcano.management.component,
 							it.greenvulcano.management,
-							it.greenvulcano.scheduler,
 							it.greenvulcano.script,
 							it.greenvulcano.script.util,
 							it.greenvulcano.util.bin,

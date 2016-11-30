@@ -25,10 +25,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
+import javax.management.MBeanServer;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -39,6 +43,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import it.greenvulcano.configuration.XMLConfig;
+import it.greenvulcano.configuration.jmx.XMLConfigProxy;
+import it.greenvulcano.jmx.JMXEntryPoint;
+import it.greenvulcano.jmx.impl.KarafJMXEntryPoint;
 
 public class Activator implements BundleActivator {
 
@@ -85,12 +92,23 @@ public class Activator implements BundleActivator {
 					
 		} catch (Exception exception) {
 			LOG.error("Fail to set configuration path ",exception);
+		}	
+		
+		if (System.getProperties().containsKey("com.sun.management.jmxremote")) {		
+			ServiceReference<?> mBeanServerReference = context.getServiceReference(MBeanServer.class.getName());
+			KarafJMXEntryPoint.setup((MBeanServer) context.getService(mBeanServerReference));
 		}
+		registerXMLConfigMBean();
 		
 	}
 
 	@Override
 	public void stop(BundleContext context) throws Exception {	
+		try {
+			JMXEntryPoint.getInstance().unregisterObject(XMLConfigProxy.JMX_KEY_VALUE);
+		} catch (Exception e) {
+			LOG.error("Failed to unregister XMLConfig MBean "+XMLConfigProxy.JMX_KEY_VALUE,e);
+		}
 		LOG.debug("****** GVBase stopped");
 	}
 	
@@ -106,5 +124,19 @@ public class Activator implements BundleActivator {
 					        							 : Optional.empty();
 		 
 	}
+	
+	private void registerXMLConfigMBean() {
+		try {
+			Map<String, String> properties = new HashMap<String, String>();
+			properties.put(XMLConfigProxy.JMX_KEY_NAME, XMLConfigProxy.JMX_KEY_VALUE);
+			XMLConfigProxy proxy = new XMLConfigProxy();
+		
+			JMXEntryPoint.getInstance().registerObject(proxy, XMLConfigProxy.JMX_KEY_VALUE, properties);
+		} catch (Exception e) {
+			LOG.error("Failed to register XMLConfig MBean",e);
+		}
+	}
+	
+	
 
 }

@@ -29,6 +29,8 @@ import it.greenvulcano.gvesb.core.debug.ExecutionInfo;
 import it.greenvulcano.gvesb.core.exc.GVCoreConfException;
 import it.greenvulcano.gvesb.core.exc.GVCoreException;
 import it.greenvulcano.gvesb.core.exc.GVCoreWrongInterfaceException;
+import it.greenvulcano.gvesb.core.jmx.OperationInfo;
+import it.greenvulcano.gvesb.core.jmx.ServiceOperationInfoManager;
 import it.greenvulcano.gvesb.log.GVFormatLog;
 import it.greenvulcano.gvesb.statistics.StatisticsData;
 import it.greenvulcano.gvesb.statistics.StatisticsDataManager;
@@ -89,7 +91,10 @@ public class GVFlowWF implements GVFlow
      * the operation activation flag
      */
     private boolean                 operationActivation   = true;
-    
+    /**
+     * the jmx operation info instance
+     */
+    private OperationInfo           operationInfo         = null;
     /**
      * the statistics data manager instance
      */
@@ -364,6 +369,8 @@ public class GVFlowWF implements GVFlow
         inService = gvBuffer.getService();
         inID = gvBuffer.getId().toString();
 
+        getGVOperationInfo();
+
         GVFlowNode flowNode = flowNodes.get(firstNode);
         if (flowNode == null) {
             logger.error("FlowNode " + firstNode + " not configured. Check configuration.");
@@ -382,7 +389,7 @@ public class GVFlowWF implements GVFlow
                 synchObj = DebugSynchObject.createNew(Thread.currentThread().getName(), inID, info);
             }
             while (!nextNode.equals("") && !isInterrupted()) {
-                
+                operationInfo.setFlowStatus(inID, nextNode);
                 flowNode = flowNodes.get(nextNode);
                 if (flowNode == null) {
                     logger.error("FlowNode " + nextNode + " not configured. Check configuration.");
@@ -396,7 +403,9 @@ public class GVFlowWF implements GVFlow
         }
         else {
             while (!nextNode.equals("") && !isInterrupted()) {
-              
+                if (operationInfo != null) {
+                    operationInfo.setFlowStatus(inID, nextNode);
+                }
                 flowNode = flowNodes.get(nextNode);
                 if (flowNode == null) {
                     logger.error("FlowNode " + nextNode + " not configured. Check configuration.");
@@ -451,6 +460,8 @@ public class GVFlowWF implements GVFlow
         inService = gvBuffer.getService();
         inID = gvBuffer.getId().toString();
 
+        getGVOperationInfo();
+
         GVFlowNode flowNode = flowNodes.get(recoveryNode);
         if (flowNode == null) {
             logger.error("FlowNode " + recoveryNode + " not configured. Check configuration.");
@@ -462,7 +473,9 @@ public class GVFlowWF implements GVFlow
         String nextNode = flowNode.getDefaultNextNodeId();
 
         while (!nextNode.equals("") && !isInterrupted()) {
-            
+            if (operationInfo != null) {
+                operationInfo.setFlowStatus(inID, nextNode);
+            }
             flowNode = flowNodes.get(nextNode);
             if (flowNode == null) {
                 logger.error("FlowNode " + nextNode + " not configured. Check configuration.");
@@ -521,7 +534,22 @@ public class GVFlowWF implements GVFlow
             }
         }
     }
-  
+
+    /**
+     * Initialize the associated OperationInfo instance
+     */
+    private void getGVOperationInfo() {
+        if (operationInfo == null) {
+            try {
+                operationInfo = ServiceOperationInfoManager.instance().getOperationInfo(serviceName, flowName, true);
+            }
+            catch (Exception exc) {
+                logger.warn("Error on MBean registration: " + exc);
+                operationInfo = null;
+            }
+        }
+    }
+
     /**
      * @return the statistics data manager
      */
@@ -573,7 +601,10 @@ public class GVFlowWF implements GVFlow
      * @return the flow activation flag value
      */
     public boolean getActivation() {
-       
+        getGVOperationInfo();
+        if (operationInfo != null) {
+            return operationInfo.getOperationActivation();
+        }
         return operationActivation;
     }
 
