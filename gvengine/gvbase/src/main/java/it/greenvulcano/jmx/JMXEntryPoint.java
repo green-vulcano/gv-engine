@@ -192,7 +192,7 @@ public abstract class JMXEntryPoint implements ConfigurationListener {
      *        matching the filter will be unregistered.
      * @throws Exception
      */
-    public abstract  void unregisterObject(ObjectName oname) throws Exception;
+    public abstract  void unregisterObject(ObjectName oname);
     
     /**
      * Unregisters an object from the MBeanServer. The object name is

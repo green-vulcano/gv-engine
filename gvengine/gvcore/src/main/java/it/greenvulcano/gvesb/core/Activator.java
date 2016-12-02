@@ -19,6 +19,12 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb.core;
 
+import java.util.LinkedHashSet;
+import java.util.Optional;
+import java.util.Set;
+
+import javax.management.ObjectName;
+
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
@@ -32,6 +38,7 @@ import it.greenvulcano.log.NMDC;
 public class Activator implements BundleActivator  {
 
 	private final Logger LOG = LoggerFactory.getLogger(getClass());
+	private final Set<Optional<ObjectName>> names = new LinkedHashSet<>();
 	
 	@Override
 	public void start(BundleContext context) throws Exception {
@@ -43,12 +50,12 @@ public class Activator implements BundleActivator  {
 			JMXEntryPoint jmx = JMXEntryPoint.getInstance();
 					
 			JMXServiceManager svcManager = JMXServiceManager.instance();
-			jmx.registerObject(svcManager, JMXServiceManager.DESCRIPTOR_NAME);
-	        jmx.registerObject(svcManager, JMXServiceManager.DESCRIPTOR_NAME + "_Internal");
+			names.add(Optional.ofNullable(jmx.registerObject(svcManager, JMXServiceManager.DESCRIPTOR_NAME)));
+			names.add(Optional.ofNullable(jmx.registerObject(svcManager, JMXServiceManager.DESCRIPTOR_NAME + "_Internal")));
 			        
 	        ServiceOperationInfoManager infoManager = ServiceOperationInfoManager.instance();
-	        jmx.registerObject(infoManager, ServiceOperationInfoManager.DESCRIPTOR_NAME);
-	        jmx.registerObject(infoManager, ServiceOperationInfoManager.DESCRIPTOR_NAME + "_Internal");
+	        names.add(Optional.ofNullable(jmx.registerObject(infoManager, ServiceOperationInfoManager.DESCRIPTOR_NAME)));
+	        names.add(Optional.ofNullable(jmx.registerObject(infoManager, ServiceOperationInfoManager.DESCRIPTOR_NAME + "_Internal")));
         
 	    } catch (Exception e) {
             LOG.error("Failed to register MBean", e);
@@ -66,11 +73,7 @@ public class Activator implements BundleActivator  {
 	        NMDC.setServer(JMXEntryPoint.getInstance().getServerName());
 			JMXEntryPoint jmx = JMXEntryPoint.getInstance();
 			
-			jmx.unregisterObject(ServiceOperationInfoManager.DESCRIPTOR_NAME);
-	        jmx.unregisterObject(ServiceOperationInfoManager.DESCRIPTOR_NAME + "_Internal");
-	        
-	        jmx.unregisterObject(JMXServiceManager.DESCRIPTOR_NAME);
-	        jmx.unregisterObject(JMXServiceManager.DESCRIPTOR_NAME + "_Internal");
+			names.stream().forEach(o->o.ifPresent(jmx::unregisterObject));
 	    } catch (Exception e) {
             LOG.error("Failed to register MBean", e);
         } finally {

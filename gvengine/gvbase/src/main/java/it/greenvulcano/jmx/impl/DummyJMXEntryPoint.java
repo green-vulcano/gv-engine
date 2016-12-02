@@ -9,6 +9,8 @@ import it.greenvulcano.jmx.JMXEntryPoint;
 
 public class DummyJMXEntryPoint extends JMXEntryPoint {
 
+	private final String DUMMY = "it.greenvulcano.gvesb:type=dummy,name=";
+	
 	@Override
 	public void configurationChanged(ConfigurationEvent evt) {
 		// do nothing
@@ -24,20 +26,20 @@ public class DummyJMXEntryPoint extends JMXEntryPoint {
 	@Override
 	public ObjectName registerObject(Object object, String descriptorName) throws Exception {
 		// do nothing
-		return new ObjectName("DUMMY_" + descriptorName);
+		return new ObjectName(DUMMY + descriptorName);
 	}
 
 	@Override
 	public ObjectName registerObject(Object object, String descriptorName, String key, String value) throws Exception {
 		// do nothing
-		return new ObjectName("DUMMY_" + descriptorName);
+		return new ObjectName(DUMMY + descriptorName);
 	}
 
 	@Override
 	public ObjectName registerObject(Object object, String descriptorName, Map<String, String> keyProperties)
 			throws Exception {
 		// do nothing
-		return new ObjectName("DUMMY_" + descriptorName);
+		return new ObjectName(DUMMY + descriptorName);
 	}
 
 	@Override
@@ -50,11 +52,11 @@ public class DummyJMXEntryPoint extends JMXEntryPoint {
 	public ObjectName registerMBean(Object mbean, String descriptorName, Map<String, String> keyProperties)
 			throws Exception {
 		// do nothing
-		return new ObjectName("DUMMY_" + descriptorName);
+		return new ObjectName(DUMMY + descriptorName);
 	}
 
 	@Override
-	public void unregisterObject(ObjectName oname) throws Exception {
+	public void unregisterObject(ObjectName oname) {
 		// do nothing
 
 	}
@@ -62,39 +64,39 @@ public class DummyJMXEntryPoint extends JMXEntryPoint {
 	@Override
 	public ObjectName unregisterObject(String descriptorName) throws Exception {
 		// do nothing
-		return new ObjectName("DUMMY_" + descriptorName);
+		return new ObjectName(DUMMY + descriptorName);
 	}
 
 	@Override
 	public ObjectName unregisterObject(String descriptorName, String key, String value) throws Exception {
 		// do nothing
-		return new ObjectName("DUMMY_" + descriptorName);
+		return new ObjectName(DUMMY + descriptorName);
 	}
 
 	@Override
 	public ObjectName unregisterObject(String descriptorName, Map<String, String> keyProperties) throws Exception {
 		// do nothing
-		return new ObjectName("DUMMY_" + descriptorName);
+		return new ObjectName(DUMMY + descriptorName);
 	}
 
 	@Override
 	public ObjectName unregisterObject(Object object, String descriptorName, Map<String, String> keyProperties)
 			throws Exception {
 		// do nothing
-		return new ObjectName("DUMMY_" + descriptorName);
+		return new ObjectName(DUMMY + descriptorName);
 	}
 
 	@Override
 	public ObjectName unregisterMBean(String descriptorName, Map<String, String> keyProperties) throws Exception {
 		// do nothing
-		return new ObjectName("DUMMY_" + descriptorName);
+		return new ObjectName(DUMMY + descriptorName);
 	}
 
 	@Override
 	public ObjectName unregisterMBean(Object mbean, String descriptorName, Map<String, String> keyProperties)
 			throws Exception {
 		
-		return new ObjectName("DUMMY_" + descriptorName);
+		return new ObjectName(DUMMY + descriptorName);
 	}
 
 

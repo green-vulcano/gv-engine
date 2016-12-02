@@ -33,6 +33,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import javax.management.MBeanServer;
+import javax.management.ObjectName;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -51,7 +52,10 @@ public class Activator implements BundleActivator {
 
 	
 	private final static Logger LOG = LoggerFactory.getLogger(Activator.class);
-		
+
+	
+	private static Optional<ObjectName> registeredObjectName = Optional.empty(); 
+	
 	@Override
 	public void start(BundleContext context) throws Exception {
 		LOG.debug("****** GVBase started");
@@ -98,17 +102,19 @@ public class Activator implements BundleActivator {
 			ServiceReference<?> mBeanServerReference = context.getServiceReference(MBeanServer.class.getName());
 			KarafJMXEntryPoint.setup((MBeanServer) context.getService(mBeanServerReference));
 		}
-		registerXMLConfigMBean();
+		registeredObjectName = registerXMLConfigMBean();
 		
 	}
 
 	@Override
 	public void stop(BundleContext context) throws Exception {	
 		try {
-			JMXEntryPoint.getInstance().unregisterObject(XMLConfigProxy.JMX_KEY_VALUE);
+			registeredObjectName.ifPresent(JMXEntryPoint.getInstance()::unregisterObject);
+			LOG.debug("Successfully unregistered MBean "+XMLConfigProxy.JMX_KEY_VALUE);
 		} catch (Exception e) {
-			LOG.error("Failed to unregister XMLConfig MBean "+XMLConfigProxy.JMX_KEY_VALUE,e);
+			LOG.error("Failed to unregister MBean "+XMLConfigProxy.JMX_KEY_VALUE,e);
 		}
+		registeredObjectName = null;
 		LOG.debug("****** GVBase stopped");
 	}
 	
@@ -125,16 +131,23 @@ public class Activator implements BundleActivator {
 		 
 	}
 	
-	private void registerXMLConfigMBean() {
+	private Optional<ObjectName> registerXMLConfigMBean() {
+		
+		Optional<ObjectName> o;
 		try {
 			Map<String, String> properties = new HashMap<String, String>();
 			properties.put(XMLConfigProxy.JMX_KEY_NAME, XMLConfigProxy.JMX_KEY_VALUE);
 			XMLConfigProxy proxy = new XMLConfigProxy();
 		
-			JMXEntryPoint.getInstance().registerObject(proxy, XMLConfigProxy.JMX_KEY_VALUE, properties);
+			ObjectName  objectName = JMXEntryPoint.getInstance().registerObject(proxy, XMLConfigProxy.JMX_KEY_VALUE, properties);
+			o = Optional.ofNullable(objectName);
 		} catch (Exception e) {
 			LOG.error("Failed to register XMLConfig MBean",e);
+			 o = Optional.empty();
 		}
+		
+		return o;
+		
 	}
 	
 	

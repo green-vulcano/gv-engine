@@ -301,32 +301,21 @@ public class KarafJMXEntryPoint extends JMXEntryPoint {
      *        matching the filter will be unregistered.
      * @throws Exception
      */
-    public synchronized void unregisterObject(ObjectName oname) throws Exception
-    {
-        
-
-        if (oname.isPattern()) {
-            Exception lastException = null;
-
-            Set<ObjectName> names = mBeanServer.queryNames(oname, null);
-            Iterator<ObjectName> i = names.iterator();
-            while (i.hasNext()) {
-                ObjectName name = i.next();
-                try {
-                    mBeanServer.unregisterMBean(name);
-                }
-                catch (Exception exc) {
-                    lastException = exc;
-                }
-            }
-
-            if (lastException != null) {
-                throw lastException;
-            }
-        }
-        else {
-            mBeanServer.unregisterMBean(oname);
-        }
+    public synchronized void unregisterObject(ObjectName oname) {
+        try {
+	        if (oname.isPattern()) {            
+	            Set<ObjectName> names = mBeanServer.queryNames(oname, null);
+	            Iterator<ObjectName> i = names.iterator();
+	            while (i.hasNext()) {
+	                ObjectName name = i.next();
+	                mBeanServer.unregisterMBean(name);
+	            }          
+	        }  else {
+	            mBeanServer.unregisterMBean(oname);
+	        }
+        } catch (Exception e) {
+        	LOG.error("Unable to unregister ObjectName "+oname,e);
+		}
     }
 
     /**
