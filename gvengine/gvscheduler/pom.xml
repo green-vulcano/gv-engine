@@ -101,6 +101,7 @@
                         <Export-Package/>
                         <Import-Package>
                         	 org.osgi.framework,
+                        	 org.osgi.service.cm,
                         	 org.json,
               				 org.slf4j;version="[1.6,2)";provider=paxlogging,
               				 org.apache.cxf.jaxrs.security,

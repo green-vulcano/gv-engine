@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with GreenVulcano ESB. If not, see <http://www.gnu.org/licenses/>.
  *******************************************************************************/
-package it.greenvulcano.gvesb.scheduler.job;
+package it.greenvulcano.gvesb.scheduler.quartz;
 
 import java.util.List;
 import java.util.Map;
