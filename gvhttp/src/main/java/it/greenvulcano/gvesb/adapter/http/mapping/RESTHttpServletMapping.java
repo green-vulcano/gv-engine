@@ -482,7 +482,9 @@ public class RESTHttpServletMapping implements HttpServletMapping
         NMDC.push();
         try {
             
-            GreenVulcanoPool greenVulcanoPool = GreenVulcanoPoolManager.instance().getGreenVulcanoPool(AdapterHttpConstants.SUBSYSTEM);
+            GreenVulcanoPool greenVulcanoPool = GreenVulcanoPoolManager.instance()
+            													.getGreenVulcanoPool(AdapterHttpConstants.SUBSYSTEM)
+                												.orElseGet(GreenVulcanoPoolManager::getDefaultGreenVulcanoPool);
             if (greenVulcanoPool == null) {
                 throw new InboundHttpResponseException("GVHTTP_GREENVULCANOPOOL_NOT_CONFIGURED");
             }
