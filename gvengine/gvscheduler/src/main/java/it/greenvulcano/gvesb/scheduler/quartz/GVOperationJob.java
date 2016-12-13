@@ -42,7 +42,9 @@ public class GVOperationJob implements Job {
 			GVBuffer input = (GVBuffer) Objects.requireNonNull(context.getJobDetail().getJobDataMap().get(GVBUFFER));
 			String operation = Objects.requireNonNull(context.getJobDetail().getJobDataMap().getString(OPERATION_NAME));
 			
-			GreenVulcanoPool gv = GreenVulcanoPoolManager.instance().getGreenVulcanoPool("gvscheduler");
+			GreenVulcanoPool gv = GreenVulcanoPoolManager.instance()
+														 .getGreenVulcanoPool("gvscheduler")
+														 .orElseGet(GreenVulcanoPoolManager::getDefaultGreenVulcanoPool);
 			gv.forward(input, operation);			
 			
 		} catch (Exception e) {

@@ -29,6 +29,7 @@ import it.greenvulcano.script.util.BaseContextManager;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.w3c.dom.NodeList;
@@ -116,12 +117,21 @@ public final class GreenVulcanoPoolManager implements ConfigurationListener
      * @throws Exception
      *         if error occurs
      */
-    public GreenVulcanoPool getGreenVulcanoPool(String subsystem) throws Exception
+    public Optional<GreenVulcanoPool> getGreenVulcanoPool(String subsystem)
     {
-        initGreenVulcanoPool();
+    	try {
+    		initGreenVulcanoPool();
+    	} catch (Exception e) {
+			logger.error("Failed to initialize GreenVulcanoPool", e);
+		}
 
         logger.debug("Requested GreenVulcanoPool(" + subsystem + ")");
-        return greenVulcanoPools.get(subsystem);
+        return Optional.ofNullable(greenVulcanoPools.get(subsystem));
+    }
+    
+    public static GreenVulcanoPool getDefaultGreenVulcanoPool(){
+    	
+    	return instance().getGreenVulcanoPool(GreenVulcanoPool.DEFAULT_SUBSYSTEM).get();
     }
 
     /**
@@ -156,14 +166,27 @@ public final class GreenVulcanoPoolManager implements ConfigurationListener
             logger.debug("Initializing GreenVulcanoPoolManager");
             // no already initialized pools...
             if (greenVulcanoPools.isEmpty()) {
-                NodeList nl = XMLConfig.getNodeList(CONF_FILE_NAME, "//GreenVulcanoPool");
-                // initialize all configured pools
-                for (int i = 0; i < nl.getLength(); i++) {
-                    GreenVulcanoPool pool = new GreenVulcanoPool(nl.item(i));
-                    logger.debug("Initialized GreenVulcanoPool(" + pool.getSubsystem() + ")");
-                    register(pool);
-                    greenVulcanoPools.put(pool.getSubsystem(), pool);
-                }
+            	GreenVulcanoPool defaultPool = new GreenVulcanoPool(GreenVulcanoPool.DEFAULT_INITIAL_SIZE, GreenVulcanoPool.DEFAULT_MAXIMUM_SIZE, GreenVulcanoPool.DEFAULT_MAXIMUM_CREATION, GreenVulcanoPool.DEFAULT_SUBSYSTEM);
+            	greenVulcanoPools.put(GreenVulcanoPool.DEFAULT_SUBSYSTEM, defaultPool);
+            	
+            	if (XMLConfig.exists(CONF_FILE_NAME, "//GreenVulcanoPool")) {
+            		try {
+            		
+	            		NodeList nl = XMLConfig.getNodeList(CONF_FILE_NAME, "//GreenVulcanoPool");
+		                // initialize all configured pools
+		                          
+		                for (int i = 0; i < nl.getLength(); i++) {
+		                    GreenVulcanoPool pool = new GreenVulcanoPool(nl.item(i));
+		                    logger.debug("Initialized GreenVulcanoPool(" + pool.getSubsystem() + ")");
+		                    register(pool);
+		                    greenVulcanoPools.put(pool.getSubsystem(), pool);
+		                }
+            		} catch (Exception e) {
+            			logger.error("Failed to parse GreenVulcanoPool configurations", e);
+					}  
+            	} else {
+            		logger.debug("No GreenVulcanoPool configurations found ");
+            	}
                 initialized = true;
                 return;
             }

@@ -184,7 +184,7 @@ public class GvServicesControllerRest extends BaseControllerRest {
 		
 		GreenVulcanoPool gvpoolInstance = null;
 		try {
-			gvpoolInstance = GreenVulcanoPoolManager.instance().getGreenVulcanoPool("gvapi");
+			gvpoolInstance = GreenVulcanoPoolManager.instance().getGreenVulcanoPool("gvapi").orElseGet(GreenVulcanoPoolManager::getDefaultGreenVulcanoPool);
 		} catch (Exception e) {
 			LOG.error("gvcoreapi - Error retriving a GreenVulcanoPool instance for subsystem gvapi", e);						
 			throw new WebApplicationException(Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("GreenVulcanoPool not available for subsystem gvapi").build());

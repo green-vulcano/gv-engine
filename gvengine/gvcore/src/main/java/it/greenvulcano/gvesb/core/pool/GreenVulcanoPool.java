@@ -48,7 +48,9 @@ import org.w3c.dom.Node;
  */
 public class GreenVulcanoPool implements ShutdownEventListener
 {
-
+    
+	public static final String       DEFAULT_SUBSYSTEM = "default-pool";
+	
     public static final long         DEFAULT_SHRINK_DELAY_TIME = 1000 * 60 * 15;
 
     public static final long         DEFAULT_TIMEOUT           = 1000 * 20;

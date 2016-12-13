@@ -44,7 +44,8 @@ public class GVWebServiceSoap implements GVWebService {
 		GVWebServicePayload responsePayload = null; 
 		try {
 		
-			GreenVulcanoPool gvpoolInstance = GreenVulcanoPoolManager.instance().getGreenVulcanoPool("gvapi");
+			GreenVulcanoPool gvpoolInstance = GreenVulcanoPoolManager.instance().getGreenVulcanoPool("gvapi")
+																				.orElseGet(GreenVulcanoPoolManager::getDefaultGreenVulcanoPool);
 			GVBuffer outputBuffer = gvpoolInstance.forward(inputBuffer, requestPayload.getOperation());
 			
 			responsePayload = new GVWebServicePayload();

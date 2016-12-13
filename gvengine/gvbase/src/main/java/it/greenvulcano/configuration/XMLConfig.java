@@ -651,7 +651,8 @@ public final class XMLConfig {
     public static String get(String file, String xpath) throws XMLConfigException
     {
         NodeList list = getNodeList(file, xpath);
-        if (list.getLength() == 0) {
+       
+        if (list==null || list.getLength() == 0) {
             return null;
         }
         return getNodeValue(list);
@@ -1669,6 +1670,11 @@ public final class XMLConfig {
         }
 
         Document doc = getDocument(file);
+        
+        if (doc==null) {        	        	
+        	return null;
+        }
+        
         try {
             synchronized (doc) {
                 return (NodeList) xpathAPI.selectNodeList(doc, new XPath(xpath));

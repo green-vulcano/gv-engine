@@ -74,7 +74,9 @@ class GVFlowRunner implements Runnable
         try {
             GVBuffer gvBuffer = new GVBuffer(flowSystem, flowService, new Id(id));
 
-            GreenVulcano gv = GreenVulcanoPoolManager.instance().getGreenVulcanoPool("J2EEGreenVulcano").getGreenVulcano(gvBuffer);
+            GreenVulcano gv = GreenVulcanoPoolManager.instance().getGreenVulcanoPool("J2EEGreenVulcano")
+            													.orElseGet(GreenVulcanoPoolManager::getDefaultGreenVulcanoPool)
+            													.getGreenVulcano(gvBuffer);
 
             GVBufferDump dump = new GVBufferDump(gvBuffer, false);
             if (logger.isInfoEnabled()) {
