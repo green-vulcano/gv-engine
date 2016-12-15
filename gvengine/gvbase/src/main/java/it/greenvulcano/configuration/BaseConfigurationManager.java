@@ -116,6 +116,10 @@ public class BaseConfigurationManager implements GVConfigurationManager {
 				LOG.debug("Deploy started on path "+configPath);
 				ZipEntry zipEntry = null;
 				
+				if (Files.notExists(destination)){
+					Files.createDirectories(destination);
+				}
+				
 				while ((zipEntry=configurationArchive.getNextEntry())!=null) {
 					
 					Path entryPath = Paths.get(configPath, zipEntry.getName());
