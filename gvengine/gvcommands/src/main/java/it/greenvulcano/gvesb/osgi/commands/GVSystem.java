@@ -31,11 +31,11 @@ import org.w3c.dom.NodeList;
 
 import it.greenvulcano.configuration.XMLConfig;
 
-@Command(scope = "gvesb", name = "service", description = "It provides the service specified")
+@Command(scope = "gvesb", name = "system", description = "It provides the system specified")
 @Service
-public class GVService implements Action {
+public class GVSystem implements Action {
 	
-	@Option(name = "-serv", aliases = "--service", description = "The option for choice the service",
+	@Option(name = "-sys", aliases = "--system", description = "The option for choice the system",
 			required = true, multiValued = false)
 	String opt = null;
 	
@@ -48,36 +48,36 @@ public class GVService implements Action {
 		try {		
 			Boolean check = false;
 			
-			NodeList serviceNodes = XMLConfig.getNodeList("GVServices.xml", "//Service");
+			NodeList systemNodes = XMLConfig.getNodeList("GVSystems.xml", "//System");
 			
-			for (int i=0; i < serviceNodes.getLength(); i++) {
+			for (int i=0; i < systemNodes.getLength(); i++) {
 				
-				Node node = (Node)serviceNodes.item(i);
+				Node node = (Node)systemNodes.item(i);
 				NamedNodeMap attributes = node.getAttributes();
 				
-				String idService = attributes.getNamedItem("id-service").getNodeValue(); 
+				String idSystem = attributes.getNamedItem("id-system").getNodeValue(); 
 				
-				if (opt.equals(idService)) {
+				if (opt.equals(idSystem)) {
 				
 					check = true;
-					System.out.println(idService);
+					System.out.println(idSystem);
 					
 				}
 			}
 			
 			if (check == true) {
-				LOG.debug("Service found");
-				message = "Service found";
+				LOG.debug("System found");
+				message = "System found";
 			} else {
-				LOG.debug("Services not found");
-				message = "Service not found";
+				LOG.debug("System not found");
+				message = "System not found";
 			}
 			
 			
 		} catch (Exception exception) {
 			System.err.println(exception.getMessage());
-			LOG.error("GVService - Service retrieve failed", exception);
-			message = "Fail to retrieve service";
+			LOG.error("GVSystem - System retrieve failed", exception);
+			message = "Fail to retrieve system";
 		}		
 		
 		return message;

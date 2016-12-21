@@ -31,11 +31,11 @@ import org.w3c.dom.NodeList;
 
 import it.greenvulcano.configuration.XMLConfig;
 
-@Command(scope = "gvesb", name = "service", description = "It provides the service specified")
+@Command(scope = "gvesb", name = "system-channel-list", description = "It provides the list of channel for a specified system")
 @Service
-public class GVService implements Action {
+public class GVSystemChannelList implements Action {
 	
-	@Option(name = "-serv", aliases = "--service", description = "The option for choice the service",
+	@Option(name = "-sys", aliases = "--system", description = "The option for choice the system",
 			required = true, multiValued = false)
 	String opt = null;
 	
@@ -48,36 +48,35 @@ public class GVService implements Action {
 		try {		
 			Boolean check = false;
 			
-			NodeList serviceNodes = XMLConfig.getNodeList("GVServices.xml", "//Service");
+			Node systemNode = XMLConfig.getNode("GVSystems.xml", "//System[@id-system='" + opt + "']");
 			
-			for (int i=0; i < serviceNodes.getLength(); i++) {
-				
-				Node node = (Node)serviceNodes.item(i);
+			NodeList channelNodes = XMLConfig.getNodeList(systemNode, "./Channel");
+			
+			if (channelNodes.getLength() != 0) {
+				check = true;
+			}
+			
+			for (int i=0; i < channelNodes.getLength(); i++) {
+				Node node = channelNodes.item(i);
 				NamedNodeMap attributes = node.getAttributes();
+				String idChannel = attributes.getNamedItem("id-channel").getNodeValue();
+				System.out.println("Channel: " + idChannel);
 				
-				String idService = attributes.getNamedItem("id-service").getNodeValue(); 
-				
-				if (opt.equals(idService)) {
-				
-					check = true;
-					System.out.println(idService);
-					
-				}
 			}
 			
 			if (check == true) {
-				LOG.debug("Service found");
-				message = "Service found";
+				LOG.debug("Channels found");
+				message = "Channels found";
 			} else {
-				LOG.debug("Services not found");
-				message = "Service not found";
+				LOG.debug("Channels not found");
+				message = "Channels not found";
 			}
 			
 			
 		} catch (Exception exception) {
 			System.err.println(exception.getMessage());
-			LOG.error("GVService - Service retrieve failed", exception);
-			message = "Fail to retrieve service";
+			LOG.error("GVSystemChannelList - Channels retrieve failed", exception);
+			message = "Fail to retrieve channels";
 		}		
 		
 		return message;
