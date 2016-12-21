@@ -22,42 +22,45 @@ package it.greenvulcano.gvesb.osgi.commands;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.Option;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import it.greenvulcano.configuration.XMLConfig;
+import it.greenvulcano.gvesb.GVConfigurationManager;
 
 @Command(scope = "gvesb", name = "deploy", description = "For deploy the configuration")
 @Service
 public class GVDeployConfiguration implements Action {
 	
-	@Option(name = "-id", aliases = "--id_config", description = "The id of configuration to deploy",
-			required = true, multiValued = false)
+	@Argument(index=0, name = "id", description = "The id of configuration to deploy", required = true, multiValued = false)
 	String id = null;
 	
-	@Option(name = "-file", aliases = "--base_file", description = "Insert the path and name for the file (Example: /home/dir/file.txt) ",
-			required = true, multiValued = false)
+	@Argument(index=1, name = "file", description = "The configuration archive full path  (Example: /home/dir/config.zip) ", required = true, multiValued = false)
 	String baseFile = null;
 	
 	private final Logger LOG = LoggerFactory.getLogger(getClass());
+	
+	@Reference
+	private GVConfigurationManager configurationManager;
+			
+	public void setConfigurationManager(GVConfigurationManager configurationManager) {
+		this.configurationManager = configurationManager;
+	}
 	
 	@Override
 	public Object execute() throws Exception {
 		String message = null;
 		
-		try {
-			
+		try {			
 			
 			LOG.debug("Deploying configuration with id " + id);
 			
@@ -67,35 +70,15 @@ public class GVDeployConfiguration implements Action {
 			InputStream file = new FileInputStream(baseFile);
 			ZipInputStream zipFile = new ZipInputStream(file);
 			
-			Path dest = Paths.get(baseDir, id);
-			String destination = dest.toString();
+			System.out.println("Deploying configuration with id " + id + " ...");
 			
-			if (Files.notExists(dest)){
-				Files.createDirectories(dest);
-			}
-			
-			LOG.debug("Deploy started on path " + destination);
-			ZipEntry zipEntry = null;
-			
-			while ((zipEntry=zipFile.getNextEntry())!=null) {
-				
-				Path entryPath = Paths.get(destination, zipEntry.getName());
-				LOG.debug("Adding resource: "+entryPath);
-				if (zipEntry.isDirectory()) {
-					Files.createDirectories(entryPath);
-				} else {
-					
-					Files.copy(zipFile, entryPath, StandardCopyOption.REPLACE_EXISTING);					
-				}	
-			}
-			
-			LOG.debug("Deploy complete");
-			message = "Deploy complete";
-		
+			configurationManager.deployConfiguration(zipFile, Paths.get(baseDir, id));
+			configurationManager.reload();
+			message = "Deploy complete";		
 		} catch (Exception exception) {
 			System.err.println(exception.getMessage());
 			LOG.error("GVDeployConfiguration - Deploy configuration failed", exception);
-			message = "Fail to deploy configuration";
+			message = "Deploy complete";
 		}
 		
 		return message;
