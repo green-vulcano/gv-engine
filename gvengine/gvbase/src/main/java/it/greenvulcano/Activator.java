@@ -92,15 +92,19 @@ public class Activator implements BundleActivator {
 			String config = configPath.toAbsolutePath().toString();						
 			XMLConfig.setBaseConfigPath(config);
 			
-			LOG.debug(" Configuration path set to " + config);
+			LOG.debug("Configuration path set to " + config);
 					
 		} catch (Exception exception) {
 			LOG.error("Fail to set configuration path ",exception);
 		}	
 		
-		if (System.getProperties().containsKey("com.sun.management.jmxremote")) {		
-			ServiceReference<?> mBeanServerReference = context.getServiceReference(MBeanServer.class.getName());
-			KarafJMXEntryPoint.setup((MBeanServer) context.getService(mBeanServerReference));
+		try {
+			if (System.getProperties().containsKey("com.sun.management.jmxremote")) {		
+				ServiceReference<?> mBeanServerReference = context.getServiceReference(MBeanServer.class.getName());
+				KarafJMXEntryPoint.setup((MBeanServer) context.getService(mBeanServerReference));
+			}
+		} catch (Exception exception) {
+			LOG.error("Fail to retrieve MBeanServer ",exception);
 		}
 		registeredObjectName = registerXMLConfigMBean();
 		
