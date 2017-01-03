@@ -6,6 +6,7 @@
 	<feature name="gvbase" description="GreenVulcano Base Library" version="${project.version}">		  
 		
 		<feature prerequisite="true">config</feature>
+		<feature prerequisite="true">shell</feature>
 		<feature prerequisite="true">wrap</feature>
 		<feature prerequisite="true">jms</feature>
 		<feature prerequisite="true">transaction</feature>
