@@ -84,6 +84,12 @@
 			<version>${osgi.version}</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+	      <groupId>org.apache.karaf.shell</groupId>
+	      <artifactId>org.apache.karaf.shell.core</artifactId>
+	      <version>4.0.8</version>
+	      <scope>provided</scope>
+	    </dependency>
 		
 	</dependencies>
 
@@ -98,6 +104,7 @@
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>                                                
+                        <Karaf-Commands>it.greenvulcano.gvesb.scheduler.shell*</Karaf-Commands>
                         <Export-Package/>
                         <Import-Package>
                         	 org.osgi.framework,
@@ -107,6 +114,8 @@
               				 org.apache.cxf.jaxrs.security,
 				             org.apache.cxf.security,
 				             org.apache.cxf.interceptor.security,
+				             org.apache.karaf.shell.api.action,
+				             org.apache.karaf.shell.support.table,				             
               				 javax.ws.rs.container,
                         	 javax.ws.rs,              
               				 javax.ws.rs.core,

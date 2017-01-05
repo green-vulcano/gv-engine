@@ -18,15 +18,22 @@ public class Enabler {
 
 		Properties quartzProperties = new Properties();
 		Configuration config = configAdmin.getConfiguration(QUARTZ_PID); 
+		final Dictionary<String, Object> props = config.getProperties();
 		
-		if (Objects.nonNull(config)) {
-			final Dictionary<String, Object> props = config.getProperties();
+		StdSchedulerFactory factory;
+		
+		if (Objects.nonNull(props)) {
+			
 			Collections.list(props.keys())
 					   .stream()
 					   .forEach(k -> quartzProperties.put(k, props.get(k)));
+			
+			 factory = new StdSchedulerFactory(quartzProperties);
+		} else {
+			factory = new StdSchedulerFactory("DEFAULT");
 		}
 		
-		StdSchedulerFactory factory = new StdSchedulerFactory(quartzProperties);
+		
 		return factory.getScheduler();
 	
 	}

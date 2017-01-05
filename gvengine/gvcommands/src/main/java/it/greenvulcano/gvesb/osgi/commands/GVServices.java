@@ -31,7 +31,7 @@ import org.w3c.dom.NodeList;
 
 import it.greenvulcano.configuration.XMLConfig;
 
-@Command(scope = "gvesb", name = "service-list", description = "It allows to retrieve services")
+@Command(scope = "gvesb", name = "services", description = "It allows to retrieve services")
 @Service
 public class GVServices implements Action {
 	
@@ -61,8 +61,8 @@ public class GVServices implements Action {
 					
 					System.out.println("--------------------------------------");
 					System.out.println("Service: ");
-					System.out.println("id-service: " + idService);
-					System.out.println("group-name: " + groupName);
+					System.out.println('\t'+"id-service: " + idService);
+					System.out.println('\t'+"group-name: " + groupName);
 					System.out.println(" ");
 					System.out.println("Operations: ");
 					
@@ -74,7 +74,7 @@ public class GVServices implements Action {
 						NamedNodeMap OperAttrs = oper.getAttributes();
 						String idOper = OperAttrs.getNamedItem("name").getNodeValue();
 						
-						System.out.println("name: " + idOper);
+						System.out.println('\t'+"name: " + idOper);
 						
 					}
 				}
@@ -95,21 +95,13 @@ public class GVServices implements Action {
 					
 					for (int j=0; j < operationNodes.getLength(); j++) {
 						Node oper = operationNodes.item(j);
-						NamedNodeMap OperAttrs = oper.getAttributes();
-						String name = OperAttrs.getNamedItem("name").getNodeValue();
-						String forwardName = OperAttrs.getNamedItem("forward-name").getNodeValue();
-						String type = OperAttrs.getNamedItem("type").getNodeValue();
-						String operationActivation = OperAttrs.getNamedItem("operation-activation").getNodeValue();
-						String outCheckType = OperAttrs.getNamedItem("out-check-type").getNodeValue();
-						String clas = OperAttrs.getNamedItem("class").getNodeValue();
+						NamedNodeMap operAttrs = oper.getAttributes();
 						
-						System.out.println("name: " + name);
-						System.out.println("forward-name: " + forwardName);
-						System.out.println("type: " + type);
-						System.out.println("operation-activation: " + operationActivation);
-						System.out.println("out-check-type: " + outCheckType);
-						System.out.println("class: " + clas);
-						System.out.println(" ");
+						for (int i = 0; i<operAttrs.getLength(); i++) {
+							Node attribute = operAttrs.item(i);
+							System.out.println('\t'+attribute.getNodeName()+": " + attribute.getNodeValue());
+						}
+		
 						
 					}
 			}

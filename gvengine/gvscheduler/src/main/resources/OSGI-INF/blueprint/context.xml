@@ -48,4 +48,6 @@
 	    </jaxrs:providers>               
     </jaxrs:server>
 
+	<service id="gvSchedulerService" ref="gvScheduleManager" interface="it.greenvulcano.gvesb.scheduler.ScheduleManager"/>
+	
 </blueprint>

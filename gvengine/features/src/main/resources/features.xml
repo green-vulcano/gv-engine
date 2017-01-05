@@ -5,8 +5,7 @@
 	
 	<feature name="gvbase" description="GreenVulcano Base Library" version="${project.version}">		  
 		
-		<feature prerequisite="true">config</feature>
-		<feature prerequisite="true">shell</feature>
+		<feature prerequisite="true">config</feature>		
 		<feature prerequisite="true">wrap</feature>
 		<feature prerequisite="true">jms</feature>
 		<feature prerequisite="true">transaction</feature>
@@ -90,13 +89,14 @@
 		<bundle start-level="81">mvn:com.fasterxml.jackson.core/jackson-annotations/2.7.4</bundle>
 		<bundle start-level="82">mvn:com.fasterxml.jackson.core/jackson-databind/2.7.4</bundle>		
 		
-		<feature>war</feature>
-		<feature>cxf-jaxrs</feature>
-		<feature>cxf-jaxws</feature>
+		<feature prerequisite="true">shell</feature>
+		<feature prerequisite="true">war</feature>
+		<feature prerequisite="true">cxf-jaxrs</feature>
+		<feature prerequisite="true">cxf-jaxws</feature>
 				
-		<feature>gvcore</feature>
-		<feature>gvvcl-internal</feature>		
-		<feature>gviam</feature>
+		<feature prerequisite="true">gvcore</feature>
+		<feature prerequisite="true">gvvcl-internal</feature>		
+		<feature prerequisite="true">gviam</feature>
 
 		<bundle start-level="96">mvn:it.greenvulcano.gvesb/gvapi/${project.version}</bundle>
 		<bundle start-level="99">mvn:it.greenvulcano.gvesb/gvcommands/${project.version}</bundle>

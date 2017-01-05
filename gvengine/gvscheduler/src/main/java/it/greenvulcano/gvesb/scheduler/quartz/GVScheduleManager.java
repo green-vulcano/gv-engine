@@ -19,6 +19,7 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb.scheduler.quartz;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -73,7 +74,7 @@ public class GVScheduleManager implements ScheduleManager {
 	}
 
 	@Override
-	public String scheduleOperation(String cronExpression, String serviceName, String operationName, Map<String, String> properties, Object object) throws SchedulerException {
+	public String scheduleOperation(String cronExpression, String serviceName, String operationName, Map<String, String> properties, Object object) throws ParseException, SchedulerException {
 		
 		try {
 			
@@ -107,7 +108,12 @@ public class GVScheduleManager implements ScheduleManager {
 		    gvScheduler.scheduleJob(job, trigger);
 		    
 		    return trigger.getKey().getName();
-		    
+		
+		} catch (RuntimeException cronException) {
+		    if (cronException.getCause() instanceof ParseException) {
+		    	throw (ParseException)cronException.getCause();
+		    }
+		    throw cronException;
 		} catch (GVException gvException) {
 			throw new SchedulerException(gvException);
 		}

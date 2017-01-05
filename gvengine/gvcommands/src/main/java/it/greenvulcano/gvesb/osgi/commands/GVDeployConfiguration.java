@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 import it.greenvulcano.configuration.XMLConfig;
 import it.greenvulcano.gvesb.GVConfigurationManager;
 
-@Command(scope = "gvesb", name = "deploy", description = "For deploy the configuration")
+@Command(scope = "gvesb", name = "deploy", description = "Deploy a configuration zip package")
 @Service
 public class GVDeployConfiguration implements Action {
 	

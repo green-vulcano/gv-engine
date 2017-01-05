@@ -30,7 +30,7 @@ import org.w3c.dom.NodeList;
 
 import it.greenvulcano.configuration.XMLConfig;
 
-@Command(scope = "gvesb", name = "system-list", description = "It provides the list of systems")
+@Command(scope = "gvesb", name = "systems", description = "It provides the list of systems")
 @Service
 public class GVSystems implements Action {
 	
@@ -59,7 +59,7 @@ public class GVSystems implements Action {
 					
 					System.out.println("--------------------------------------");
 					System.out.println("System: ");
-					System.out.println("id-system: " + idSystem);
+					System.out.println('\t'+"id-system: " + idSystem);
 					System.out.println(" ");
 					System.out.println("Channels: ");
 					
@@ -71,7 +71,7 @@ public class GVSystems implements Action {
 						NamedNodeMap channelAttrs = channelNode.getAttributes();
 						String idChannel = channelAttrs.getNamedItem("id-channel").getNodeValue();
 						
-						System.out.println("Channel: " + idChannel);			
+						System.out.println('\t'+"id-channel: " + idChannel);			
 					}
 				}
 				
@@ -97,9 +97,9 @@ public class GVSystems implements Action {
 					String endPoint = channelAttrs.getNamedItem("endpoint").getNodeValue();
 					
 					System.out.println(" ");
-					System.out.println("id-channel: " + idChannel);
-					System.out.println("type: " + type);
-					System.out.println("endpoint: " + endPoint);
+					System.out.println('\t'+"id-channel: " + idChannel);
+					System.out.println('\t'+"type: " + type);
+					System.out.println('\t'+"endpoint: " + endPoint);
 					System.out.println(" ");
 					System.out.println("Operations: ");
 					System.out.println(" ");
@@ -113,7 +113,7 @@ public class GVSystems implements Action {
 						for (j=0; j < attributes.getLength(); j++) {
 							String nameAttr = attributes.item(j).getNodeName();
 							String valueAttr = attributes.getNamedItem(nameAttr).getNodeValue();
-							System.out.println(nameAttr + ": " + valueAttr);
+							System.out.println('\t'+nameAttr + ": " + valueAttr);
 						}
 						
 						System.out.println(" ");

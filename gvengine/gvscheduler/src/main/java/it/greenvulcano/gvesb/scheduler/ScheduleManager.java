@@ -20,6 +20,7 @@
 package it.greenvulcano.gvesb.scheduler;
 
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -34,7 +35,7 @@ public interface ScheduleManager {
 	
 	public Optional<Trigger> getTrigger(final String triggerName) throws SchedulerException;	
 	
-	public String scheduleOperation(String cronExpression, String serviceName, String operationName, Map<String, String> properties, Object object) throws SchedulerException;
+	public String scheduleOperation(String cronExpression, String serviceName, String operationName, Map<String, String> properties, Object object) throws ParseException, SchedulerException;
 
 	public void deleteTrigger(final String triggerName) throws SchedulerException, NoSuchElementException;
 	

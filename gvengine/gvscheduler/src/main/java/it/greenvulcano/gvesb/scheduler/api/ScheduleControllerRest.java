@@ -20,6 +20,7 @@
 package it.greenvulcano.gvesb.scheduler.api;
 
 import java.net.URI;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -203,6 +204,8 @@ public class ScheduleControllerRest {
 		} catch (SchedulerException e) {
 			LOG.error("Fail to create trigger on quartz scheduler",e);
 			response = Response.status(Status.SERVICE_UNAVAILABLE).entity(e.getMessage()).build();
+		} catch (ParseException e) {
+			response = Response.status(Status.BAD_REQUEST).entity("Invalid cron expression").build();
 		}
 		
 		return response;
