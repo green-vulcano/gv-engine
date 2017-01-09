@@ -26,7 +26,7 @@ import org.quartz.SchedulerException;
 
 import it.greenvulcano.gvesb.scheduler.ScheduleManager;
 
-@Command(scope="gvesb", name="scheduler", description="Manage operations scheduling on GV ESB")
+@Command(scope="gvesb", name="schedule", description="Manage operations scheduling on GV ESB")
 @Service
 public class SchedulerCommand implements Action {
 
