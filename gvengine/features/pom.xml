@@ -54,6 +54,12 @@
 									<file>target/classes/gviam.ds</file>
 									<type>ds</type>
 									<classifier>gviam</classifier>
+								</artifact>
+								
+								<artifact>									
+									<file>target/classes/quartz.properties</file>
+									<type>properties</type>
+									<classifier>quartz</classifier>
 								</artifact>								
 							</artifacts>
 						</configuration>

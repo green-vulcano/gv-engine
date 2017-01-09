@@ -101,6 +101,18 @@
 		<bundle start-level="96">mvn:it.greenvulcano.gvesb/gvapi/${project.version}</bundle>
 		<bundle start-level="99">mvn:it.greenvulcano.gvesb/gvcommands/${project.version}</bundle>
 		<bundle start-level="99">mvn:it.greenvulcano.gvesb/gvconsole/${project.version}/war</bundle>
+	</feature>
+	
+	<feature name="gvscheduler-conf" version="${project.version}" description="GreenVulcano Scheduler configuration">				
+		<configfile finalname="${karaf.etc}/it.greenvulcano.gvesb.quartz.cfg" override="true">mvn:it.greenvulcano.gvesb/${project.artifactId}/${pom.version}/properties/quartz</configfile>		
+	</feature>
+	
+	<feature name="gvscheduler" version="${project.version}" description="GreenVulcano Scheduler">
+	
+		<feature prerequisite="true">gvengine</feature>
+		<feature prerequisite="true">gvscheduler-conf</feature>
+			
+		<bundle start-level="96">mvn:it.greenvulcano.gvesb/gvscheduler/${project.version}</bundle>
 	</feature>		
 	
 </features>

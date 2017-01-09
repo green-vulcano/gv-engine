@@ -30,7 +30,7 @@ public class Enabler {
 			
 			 factory = new StdSchedulerFactory(quartzProperties);
 		} else {
-			factory = new StdSchedulerFactory("DEFAULT");
+			factory = new StdSchedulerFactory();
 		}
 		
 		
