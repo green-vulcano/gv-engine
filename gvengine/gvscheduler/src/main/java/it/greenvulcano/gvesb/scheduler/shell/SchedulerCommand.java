@@ -12,11 +12,11 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.aries.blueprint.annotation.Reference;
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.Option;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.apache.karaf.shell.support.table.ShellTable;
 import org.json.JSONException;
@@ -82,6 +82,9 @@ public class SchedulerCommand implements Action {
 		
 
         ShellTable table = new ShellTable();
+        
+        table.emptyTableText("There are no scheduled execution");
+        
         //***** Table header
         table.column("ID");
         table.column("Operation");
@@ -108,7 +111,9 @@ public class SchedulerCommand implements Action {
 					        	
 					        	return new Object[]{ t.getKey().getName(), t.getDescription(), cronExpression.orElse("ND"),  status };
 	            	       })
-            	       .forEach(table.addRow()::addContent);
+            	       .forEach(row -> {
+            	    	   			table.addRow().addContent(row);
+            	       			});
         
         table.print(System.out, true);
         
@@ -170,18 +175,18 @@ public class SchedulerCommand implements Action {
 			
 			String[] serviceURI = service.split("/");
 			String service = serviceURI[0];
-			String operation = serviceURI[0];
+			String operation = serviceURI[1];
 			
 			byte[] descriptor = Files.readAllBytes(Paths.get(uri));			
 			
-			JSONObject scheduleInfo = new JSONObject(descriptor);						
+			JSONObject scheduleInfo = new JSONObject(new String(descriptor));						
 			
 			final Map<String, String> props = new HashMap<>();
 			
 			Optional.ofNullable(scheduleInfo.optJSONObject("properties"))
 					.ifPresent(p -> props.putAll(p.keySet().stream().collect(Collectors.toMap(Function.identity(), p::getString))));
 									
-			response = scheduleManager.scheduleOperation(scheduleInfo.getString("cronExpression"), service, operation, props, scheduleInfo.opt("object"));
+			response = scheduleManager.scheduleOperation(scheduleInfo.getString("cronExpression"), service, operation, props, scheduleInfo.opt("object")) + " - CREATED";
 			
 		} catch (NullPointerException|IndexOutOfBoundsException e) {	
 			throw new IllegalArgumentException("Required param operation identifier expressed as service/operation");
@@ -211,9 +216,9 @@ public class SchedulerCommand implements Action {
 			
 			String[] serviceURI = service.split("/");
 			String service = serviceURI[0];
-			String operation = serviceURI[0];
+			String operation = serviceURI[1];
 												
-			response = scheduleManager.scheduleOperation(cronExpression, service, operation, null, null);
+			response = scheduleManager.scheduleOperation(cronExpression, service, operation, null, null) + " - CREATED";
 			
 		} catch (NullPointerException|IndexOutOfBoundsException e) {	
 			throw new IllegalArgumentException("Required param operation identifier expressed as service/operation");

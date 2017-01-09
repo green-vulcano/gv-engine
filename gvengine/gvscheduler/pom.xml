@@ -115,6 +115,7 @@
 				             org.apache.cxf.security,
 				             org.apache.cxf.interceptor.security,
 				             org.apache.karaf.shell.api.action,
+				             org.apache.karaf.shell.api.action.lifecycle,
 				             org.apache.karaf.shell.support.table,				             
               				 javax.ws.rs.container,
                         	 javax.ws.rs,              
