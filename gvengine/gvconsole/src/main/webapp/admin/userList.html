@@ -1,44 +1,44 @@
 <app-header></app-header>
 <div class="container">
-
-	<div class="row page-header">
-		<h1>Users</h1>
+		
+	<div class="row page-header">		
+		<h1>GVESB Users</h1>
 	</div>
 
-	<div class="row" data-ng-controller="UsersListController as ctrl">
-
+<div class="row" data-ng-controller=" UserListController as ctrl">
+	
 	<div data-ng-repeat="alert in ctrl.alerts" class="alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
-
-	<div class="panel panel-default" >
+	
+	<div class="panel panel-default">
 		<div class="panel-heading clearfix">
 	    	<h3 class="panel-title pull-left" style="line-height: 34px; vertical-align: middle">
-	    		<i class="fa fa-users"></i> Found: {{ctrl.list.length}}
+	    		<i class="fa fa-users"></i> Found: {{ctrl.users.length}}
 	    	</h3>
 	    	<a href="#/users/new" class="btn btn-primary pull-right">
-	    		<i class="fa fa-user-plus"></i> Add New User
-	    	</a>
+	    		<i class="fa fa-user-plus"></i>
+	    	</a>	    	
 	  	</div>
-
 	<table id="users" class="table table-hover" >
         <thead >
             <tr>
                 <th >Username</th>
-                <th >Status</th>
-                <th >Full name</th>
-                <th >E-mail</th>
-                <th >Roles</th>
-				<th class="text-right">Action</th>
+                <th ></th>
+                <th >Full Name</th>
+                <th >E-Mail</th>
+                <th >Roles</th>                              
             </tr>
         </thead>
-        <tbody>
-
-        	<tr data-ng-repeat="user in ctrl.list">
+        <tbody >
+        
+        	<tr style="cursor: pointer" 
+        		data-ng-repeat="user in ctrl.users" 
+        		data-ng-click="go('/users/'+user.username)">
         		<td>{{user.username}}</td>
         		<td>
         			<ul class="list-inline">
         				<li class="text-danger" data-ng-hide="user.enabled"><i class="fa fa-ban"></i> </li>
         				<li class="text-success" data-ng-show="user.enabled"><i class="fa fa-check"></i> </li>
-        				<li class="text-warning" data-ng-show="user.expired"><i class="fa fa-key"></i> </li>
+        				<li class="text-warning" data-ng-show="user.expired"><i class="fa fa-key"></i> </li>        				
         			</ul>
         		</td>
         		<td>{{user.userInfo.fullname}}</td>
@@ -47,22 +47,21 @@
         			<ul class="list-inline">
         				<li	data-ng-repeat="(k,role) in user.roles">
         					<span class="label label-info">{{role.name}}</span>
-        				</li>
-        			</ul>
+        				</li>	
+        			</ul>	
         		</td>
-				<td class="text-right"><button data-ng-click="go('/users/'+user.username)" class="btn btn-sm btn-warning"><i class="fa fa-edit"></i> Edit </button> </td>
-
+        			
         	</tr>
-
-        </tbody>
-
-
+        
+        </tbody>    
+      
+        
     </table>
-
+    
     <div class="panel-footer" style="text-align: center">
-    	<pagination data-ng-show="ctrl.list.lenght>10" style="margin: 0" total-items="ctrl.list.lenght" ng-model="ctrl.currentPage" class="pagination-sm" boundary-links="true" rotate="false"></pagination>
+    	<pagination data-ng-show="ctrl.users.lenght>10" style="margin: 0" total-items="ctrl.users.lenght" ng-model="ctrl.currentPage" class="pagination-sm" boundary-links="true" rotate="false"></pagination>
     </div>
-
+    
    </div>
 </div>
 
