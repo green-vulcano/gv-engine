@@ -92,6 +92,7 @@
 		<feature prerequisite="true">shell</feature>
 		<feature prerequisite="true">war</feature>
 		<feature prerequisite="true">cxf-jaxrs</feature>
+		<feature prerequisite="true">cxf-rs-security-cors</feature>
 		<feature prerequisite="true">cxf-jaxws</feature>
 				
 		<feature prerequisite="true">gvcore</feature>

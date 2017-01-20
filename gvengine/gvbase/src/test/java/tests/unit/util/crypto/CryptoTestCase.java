@@ -39,7 +39,7 @@ public class CryptoTestCase extends BaseTestCase
     private static final String TEST_STRING_CLEAR                          = "Test string!";
     private static final String TEST_STRING_CYPHER_3DES                    = "{3DES}Gxr7ntesEtC7R76H5bfRAQ==";
     private static final String TEST_STRING_CYPHER_3DES_CFB8_NoPadding     = "{3DES/CFB8/NoPadding}1o/eK55bUUD7TTMW";
-    private static final String TEST_STRING_CYPHER_3DES_OFB32_PKCS5Padding = "{3DES/OFB32/PKCS5Padding}1lVdfSfjA5naQNUgoEm+5g==";
+    private static final String TEST_STRING_CYPHER_3DES_OFB32_PKCS5Padding = "{3DES/OFB32/PKCS5Padding}1lVdfaOYS2B36NPb47b1GA==";
     private static final String TEST_STRING_CYPHER_3DES_L                  = "Gxr7ntesEtC7R76H5bfRAQ==";
 
     /**

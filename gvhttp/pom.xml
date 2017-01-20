@@ -18,6 +18,21 @@
 		<gvesb.version>4.0.0-SNAPSHOT</gvesb.version>
 	</properties>
     
+    <repositories>
+		<repository>
+			<id>greenvulcano</id>
+			<name>GreenVulcano repo on Cloud Nexus instance - PUBLIC</name>
+			<url>http://mvn.greenvulcano.com/nexus/content/groups/public</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+    
+    
     <dependencies>
 		<dependency>
 			<groupId>org.osgi</groupId>

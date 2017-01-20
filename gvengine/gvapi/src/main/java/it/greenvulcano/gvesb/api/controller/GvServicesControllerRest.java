@@ -19,6 +19,7 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb.api.controller;
 
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -42,6 +43,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.cxf.jaxrs.ext.MessageContext;
+import org.apache.cxf.rs.security.cors.CrossOriginResourceSharing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
@@ -61,15 +63,10 @@ import it.greenvulcano.gvesb.core.pool.GreenVulcanoPoolException;
 import it.greenvulcano.gvesb.core.pool.GreenVulcanoPoolManager;
 import it.greenvulcano.gvesb.identity.GVIdentityHelper;
 
+@CrossOriginResourceSharing(allowAllOrigins=true, allowCredentials=true)
 public class GvServicesControllerRest extends BaseControllerRest {
 	private final static Logger LOG = LoggerFactory.getLogger(GvServicesControllerRest.class);
 		
-	@Path("/probe")
-	@GET
-	public String probe(){
-		return "It works";
-	}
-	
 	@Path("/")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -104,6 +101,18 @@ public class GvServicesControllerRest extends BaseControllerRest {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getOperations(@PathParam("service") String service) {
 	
+		if("probe".equals(service)) {
+			return Response.ok("It works").header("Content-Type", "text/plain; charset=utf-8").build();
+		}
+		
+		if("saymyname".equals(service)) {
+			String logo = "ICAgIC4tLS0tLS0tLgogICAgfCAgICAgICB8CiAtPV9fX19fX19fX19fPS0KICAgX19fXyAgIF9fX18KICB8X19fXyk9KF9fX198CgogICAgICAgIyMjCiAgICAgICMgPSAjCiAgICAgICMjIyMjCiAgICAgICAjIyMKCiAgICBHViBFU0IgdjQK";
+						
+			return Response.ok("\n" + new String(Base64.getDecoder().decode(logo)))
+						   .header("Content-Type", "text/plain; charset=utf-8")
+						   .build();
+		}
+		
 		String response = null;
 		try {
 			Node serviceNode = Optional.ofNullable(XMLConfig.getNode("GVServices.xml", "//Service[@id-service='"+service+"']"))

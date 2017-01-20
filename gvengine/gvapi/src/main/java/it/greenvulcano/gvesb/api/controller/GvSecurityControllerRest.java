@@ -23,6 +23,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 
 import org.apache.cxf.jaxrs.ext.PATCH;
+import org.apache.cxf.rs.security.cors.CrossOriginResourceSharing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +35,7 @@ import it.greenvulcano.gvesb.iam.exception.UserExistException;
 import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
 import it.greenvulcano.gvesb.iam.service.SecurityManager;
 
+@CrossOriginResourceSharing(allowAllOrigins=true, allowCredentials=true)
 public class GvSecurityControllerRest extends BaseControllerRest {
 			
 	private final static Logger LOG = LoggerFactory.getLogger(GvSecurityControllerRest.class);	

@@ -113,6 +113,7 @@
               				 org.slf4j;version="[1.6,2)";provider=paxlogging,
               				 org.apache.cxf.jaxrs.security,
 				             org.apache.cxf.security,
+				             org.apache.cxf.rs.security.cors,
 				             org.apache.cxf.interceptor.security,
 				             org.apache.karaf.shell.api.action,
 				             org.apache.karaf.shell.api.action.lifecycle,

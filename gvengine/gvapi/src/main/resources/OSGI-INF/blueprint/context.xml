@@ -14,15 +14,18 @@
 	<bean id="gvAuthenticationFilter" class="it.greenvulcano.gvesb.api.security.GVSecurityFilter">        
         <property name="gvSecurityManagerReferences" ref="securityManagerReferences"/>    
     </bean>
+	
+	<bean id="cors-filter" class="org.apache.cxf.rs.security.cors.CrossOriginResourceSharingFilter"/>
 
 	<bean id="servicesController" class="it.greenvulcano.gvesb.api.controller.GvServicesControllerRest"/>
 			
 	<jaxrs:server address="/gvesb" id="gvesbapi">
         <jaxrs:serviceBeans>            
-           <ref component-id="servicesController" />
+           <ref component-id="servicesController" />           
         </jaxrs:serviceBeans> 
         <jaxrs:providers>
 	       <ref component-id="gvAuthenticationFilter"/>
+	       <ref component-id="cors-filter" />
 	    </jaxrs:providers>       
     </jaxrs:server>
     
@@ -44,11 +47,12 @@
 			
 	<jaxrs:server address="/gviam" id="gviamapi">
         <jaxrs:serviceBeans>            
-           	<ref component-id="securityController" />
+           	<ref component-id="securityController" />           	
         </jaxrs:serviceBeans> 
         <jaxrs:providers>
 	       	<ref component-id="gvAuthenticationFilter"/>
-	       	<ref component-id="gviamAuthorizationFilter"/>	     
+	       	<ref component-id="gviamAuthorizationFilter"/>	
+	       	<ref component-id="cors-filter" />     
 	    </jaxrs:providers>       
     </jaxrs:server>    
     
@@ -80,8 +84,13 @@
 	
 	<jaxrs:server address="/gvconfig" id="gvconfigapi">
         <jaxrs:serviceBeans>            
-           	<ref component-id="configurationController" />
-        </jaxrs:serviceBeans>          
+           	<ref component-id="configurationController" />            
+        </jaxrs:serviceBeans> 
+        <jaxrs:providers>
+	       	<ref component-id="gvAuthenticationFilter"/>
+	       	<ref component-id="gviamAuthorizationFilter"/>	
+	       	<ref component-id="cors-filter" />     
+	    </jaxrs:providers>        
     </jaxrs:server>
 	        
 </blueprint>

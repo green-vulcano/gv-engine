@@ -64,6 +64,12 @@
     </dependency>
     <dependency>
       <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-rs-security-cors</artifactId>
+      <version>3.1.5</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-rt-bindings-soap</artifactId>
       <version>3.1.5</version>
       <scope>provided</scope>
@@ -101,6 +107,7 @@
               org.osgi.service.cm,
               org.apache.cxf.jaxrs.security,
               org.apache.cxf.security,
+              org.apache.cxf.rs.security.cors,                       
               org.apache.cxf.interceptor.security,
               org.apache.cxf.binding.soap.interceptor,
               org.apache.cxf.common.security,

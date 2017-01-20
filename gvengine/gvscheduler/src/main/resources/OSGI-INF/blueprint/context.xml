@@ -37,6 +37,8 @@
 	 <bean id="gvAuthorizationFilter" class="org.apache.cxf.jaxrs.security.SimpleAuthorizingFilter">	   
 	   <property name="interceptor" ref="gvAuthorizationInterceptor"/>
 	 </bean>
+	 	 
+	 <bean id="cors-filter" class="org.apache.cxf.rs.security.cors.CrossOriginResourceSharingFilter"/>
 	 	
      <jaxrs:server address="/gvscheduler" id="gvschedulerapi">
         <jaxrs:serviceBeans>
@@ -44,7 +46,8 @@
         </jaxrs:serviceBeans>
         <jaxrs:providers>
         	<ref component-id="gvAuthenticationFilter"/>
-        	<ref component-id="gvAuthorizationFilter"/>       		        	     
+        	<ref component-id="gvAuthorizationFilter"/>
+        	<ref component-id="cors-filter" />       		        	     
 	    </jaxrs:providers>               
     </jaxrs:server>
 

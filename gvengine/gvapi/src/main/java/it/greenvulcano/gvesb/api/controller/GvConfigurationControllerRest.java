@@ -23,6 +23,7 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.util.zip.ZipInputStream;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -36,6 +37,7 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
+import org.apache.cxf.rs.security.cors.CrossOriginResourceSharing;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +46,8 @@ import it.greenvulcano.configuration.XMLConfig;
 import it.greenvulcano.configuration.XMLConfigException;
 import it.greenvulcano.gvesb.GVConfigurationManager;
 
+
+@CrossOriginResourceSharing(allowAllOrigins=true, allowCredentials=true)
 public class GvConfigurationControllerRest {
 	 private final static Logger LOG = LoggerFactory.getLogger(GvConfigurationControllerRest.class);	
 	
@@ -56,6 +60,7 @@ public class GvConfigurationControllerRest {
 	
 	 @GET
 	 @Path("/deploy")
+	 @RolesAllowed({"gvadmin","gvmanager"})
 	 public Response getConfigurationInfo(){
 		 File currentConfig = new File(XMLConfig.getBaseConfigPath());
 		 
@@ -76,6 +81,7 @@ public class GvConfigurationControllerRest {
 	 @GET
 	 @Path("/deploy/{configId}")
 	 @Produces(MediaType.APPLICATION_OCTET_STREAM)
+	 @RolesAllowed({"gvadmin","gvmanager"})
 	 public Response exportConfiguration(@PathParam("configId") String id) {
 		 File currentConfig = new File(XMLConfig.getBaseConfigPath());
 		 
@@ -99,6 +105,7 @@ public class GvConfigurationControllerRest {
 	 @POST
 	 @Path("/deploy/{configId}")
 	 @Consumes(MediaType.MULTIPART_FORM_DATA)
+	 @RolesAllowed({"gvadmin","gvmanager"})
 	 public void deploy(@PathParam("configId") String id,
 			            @Multipart(value="gvconfiguration", type="application/zip") Attachment config) {
 		 
