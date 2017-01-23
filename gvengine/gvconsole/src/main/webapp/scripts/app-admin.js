@@ -1,124 +1,155 @@
-angular.module('gvconsole-admin', []);
-	
-angular.module('gvconsole-admin')
-.controller('UserListController',['$http', '$location', function($http, $location){
-		var instance = this;
-		this.alerts = [];
-		
-		this.users = [];		
-		this.currentPage = 1;	
-		this.loadUsers = function() {
-			$http.get('/cxf/gviam/admin/users').then(function(response){
-				instance.alerts = [];
-				instance.users = response.data;
-				},function(response){
-		 			switch (response.status) {
-	 				case 404:
-	 					instance.alerts.push({type: 'danger', msg: 'Users not found'});
-	 					break;
-	 					
-	 				case 401: case 403:
-	 					$location.path('login');
-	 					break;
-	 				
-	 				default:
-	 					instance.alerts.push({type: 'danger', msg: 'Data not available'});
-	 					break;
-	 			}
-	 			
-	 			$scope.userDataStatus = "error";
-	 		});
-		}			
-		
-		instance.loadUsers();	
-		
+angular.module('gvconsole')
+ .service('AdminService', ['$http', function($http){
+
+	 	var endpoint = 'http://localhost:8181/cxf/gviam';
+
+		this.getAllUsers = function(){
+			 return $http.get(endpoint + '/admin/users');
+		}
+
+		this.getUser = function(id){
+			 return $http.get(endpoint + '/admin/users/' + id);
+		}
+
+		this.createUser = function(user) {
+			return $http.post(endpoint + '/admin/users', user, {headers: {'Content-Type':'application/json'} });
+		}
+
+		this.updateUser = function(id, user) {
+			return $http.put(endpoint + '/admin/users/' + id, user, {headers: {'Content-Type':'application/json'} });
+		}
+
+		this.switchUserEnablement = function(id) {
+			return $http.patch(endpoint + '/admin/users/' + id + '/enabled');
+		}
+
+		this.resetUserPassword = function(id) {
+			return $http.patch(endpoint + '/admin/users/' + id + '/password');
+		}
+
+		this.deleteUser = function(id){
+			 return $http.delete(endpoint + '/admin/users/' + id);
+		}
+
+		this.getRoles = function() {
+			 return $http.get(endpoint + '/admin/roles')
+	  }
+
+ }]);
+
+angular.module('gvconsole')
+.controller('UsersListController',['AdminService' ,'$scope', '$location', function(AdminService, $scope, $location){
+
+	var instance = this;
+
+	this.alerts = [];
+
+	this.list = [];
+	this.currentPage = 1;
+
+	AdminService.getAllUsers().then(
+				function(response){
+					instance.alerts = [];
+					instance.list = response.data;
+				},
+				function(response){
+					switch (response.status) {
+
+							case 401: case 403:
+								$location.path('login');
+								break;
+
+							default:
+								instance.alerts.push({type: 'danger', msg: 'Data not available'});
+								break;
+					}
+			$scope.loadStatus = "error";
+		});
+
 }]);
 
-angular.module('gvconsole-admin')
-.controller('UserDetailController',['$scope','$http', '$routeParams', '$location', function($scope, $http, $routeParams, $location){
-				
-		$scope.userDataStatus = "loading";		
+angular.module('gvconsole')
+.controller('UserFormController',['AdminService' , '$scope', '$routeParams', '$location', function(AdminService, $scope, $routeParams, $location){
+
+		$scope.userDataStatus = "loading";
 		this.alerts = [];
-		
-		this.user = {roles : {}};			
-		this.roles = [{name: "admin", description:'Created by GVConsole'},{name: "system", description:'Created by GVConsole'},{name: "gvadmin", description:'Created by GVConsole'}];	
-					
+
+		this.user = {roles : {}};
+		this.roles = [{name: "admin", description:'Created by GVConsole'},{name: "system", description:'Created by GVConsole'},{name: "gvadmin", description:'Created by GVConsole'}];
+
 		var instance = this;
-		var saveRequest = { url: '/cxf/gviam/admin/users', headers: {'Content-Type': 'application/json'} };
-		
-		$http.get('/cxf/gviam/admin/roles').success(function(data){
+
+		AdminService.getRoles().then(function(data){
 			instance.roles = data;
 		});
-		
+
 		if ($routeParams.userId == 'new') {
-			saveRequest.method='POST';
+
 			this.user.enabled = true;
 			$scope.newUser = true;
-			$scope.userDataStatus = "ready";					
+			$scope.userDataStatus = "ready";
 		} else {
-			saveRequest.method='PUT';
-			
-			$http.get('/cxf/gviam/admin/users/'+$routeParams.userId).then(function(response) {
+
+			AdminService.getUser($routeParams.userId)
+			.then(function(response) {
 				 		instance.user = response.data;
-				 		
 				 		$scope.userDataStatus = "ready";
 			 		},function(response){
 			 			switch (response.status) {
 			 				case 404:
 			 					instance.alerts.push({type: 'danger', msg: 'User not found'});
 			 					break;
-			 					
+
 			 				case 401: case 403:
 			 					$location.path('login');
 			 					break;
-			 				
+
 			 				default:
 			 					instance.alerts.push({type: 'danger', msg: 'Data not available'});
 			 					break;
 			 			}
-			 			
+
 			 			$scope.userDataStatus = "error";
 			 		});
 		}
-		
+
 		this.addRole = function(){
-			
+
 			if (instance.newrole) {
 				var newrole = {name: instance.newrole, description:'Created by GVConsole'};
-				
+
 				instance.user.roles[instance.newrole] = {name: instance.newrole, description:'Created by GVConsole'};
-				
+
 				delete instance.newrole;
 			}
 		}
-		
+
 		this.removeRole = function(key){
 			delete instance.user.roles[key];
 		}
-		
+
 		this.saveUser =  function(){
 			$scope.userDataStatus = "saving";
-			
-			saveRequest.data = instance.user;
-			
-			$http(saveRequest)
-			.then(function(response) {
-				  
+
+			var save = ($scope.newUser) ? AdminService.createUser(instance.user) : AdminService.updateUser(instance.user.username, instance.user);
+
+			save.then(function(response) {
+
 				  instance.alerts.push({type: 'success', msg: 'User data saved'});
 				  $scope.userDataStatus = "ready";
 				  if($scope.newUser) {
 					  $location.path('/users');
 				  }
-			  	},function(response){					  
+			  	},function(response){
 				  instance.alerts.push({type: 'danger', msg: response.data.message || 'Operation failed'});
 				  $scope.userDataStatus = "ready";
-			     
-			  });		
+
+			  });
 		}
-		
+
 		this.switchUserStatus =  function(){
 			$scope.userDataStatus = "saving";
-			$http.patch('/cxf/gviam/admin/users/'+instance.user.username+'/enabled')
+			AdminService.switchUserStatus(instance.user.username)
 					.then(function(response) {
 				 		instance.user = response.data;
 				 		instance.alerts.push({type: 'success', msg: 'User status switched'});
@@ -129,23 +160,23 @@ angular.module('gvconsole-admin')
 			 				case 404:
 			 					instance.alerts.push({type: 'danger', msg: 'User not found'});
 			 					break;
-			 					
+
 			 				case 401: case 403:
 			 					$location.path('login');
 			 					break;
-			 				
+
 			 				default:
 			 					instance.alerts.push({type: 'danger', msg: response.data.message || 'Operation failed'});
 			 					break;
 			 			}
-			 			
+
 			 			$scope.userDataStatus = "error";
 			 		});
 		}
-		
+
 		this.resetUserPassword =  function() {
 			$scope.userDataStatus = "saving";
-			$http.patch('/cxf/gviam/admin/users/'+instance.user.username+'/password')
+			AdminService.resetUserPassword(instance.user.username)
 					.then(function(response) {
 				 		instance.user = response.data;
 				 		instance.alerts.push({type: 'success', msg: 'User password has been resetted'});
@@ -156,23 +187,23 @@ angular.module('gvconsole-admin')
 			 				case 404:
 			 					instance.alerts.push({type: 'danger', msg: 'User not found'});
 			 					break;
-			 					
+
 			 				case 401: case 403:
 			 					$location.path('login');
 			 					break;
-			 				
+
 			 				default:
 			 					instance.alerts.push({type: 'danger', msg: response.data.message || 'Operation failed'});
 			 					break;
 			 			}
-			 			
+
 			 			$scope.userDataStatus = "error";
 			 		});
 		}
-		
+
 		this.deleteUser =  function() {
 			$scope.userDataStatus = "saving";
-			$http.delete('/cxf/gviam/admin/users/'+instance.user.username)
+			AdminService.deleteUser(instance.user.username)
 					.then(function(response) {
 				 		instance.user = response.data;
 				 		instance.alerts.push({type: 'success', msg: 'User deleted'});
@@ -183,20 +214,19 @@ angular.module('gvconsole-admin')
 			 				case 404:
 			 					instance.alerts.push({type: 'danger', msg: 'User not found'});
 			 					break;
-			 					
+
 			 				case 401: case 403:
 			 					$location.path('login');
 			 					break;
-			 				
+
 			 				default:
 			 					instance.alerts.push({type: 'danger', msg: response.data.message || 'Operation failed'});
 			 					break;
 			 			}
-			 			
+
 			 			$scope.userDataStatus = "error";
 			 		});
-			
+
 		}
-		
-		
+
 }]);
