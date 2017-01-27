@@ -31,19 +31,19 @@
 				</thead>
 				<tbody>
 
-					<tr data-ng-repeat="entry in ctrl.list">
+					<tr data-ng-repeat="(id,entry) in ctrl.schedules">
 						<td>{{entry.id}}</td>
 						<td>{{entry.description}}</td>
 						<td>{{entry.cronExpression}}</td>
 						<td>{{entry.status}}</td>
 						<td class="text-right">
-							<a class="btn btn-warning btn-sm" href="#">
+							<a class="btn btn-warning btn-sm" data-ng-show="entry.status == 'NORMAL'" data-ng-click="ctrl.pause(id)">
 								<i class="fa fa-pause" aria-hidden="true"></i> Pause
 							</a>
-							<a class="btn btn-success btn-sm" href="#">
+							<a class="btn btn-success btn-sm" data-ng-show="entry.status == 'PAUSED'" data-ng-click="ctrl.resume(id)">
 								<i class="fa fa-play" aria-hidden="true"></i> Resume
 							</a>
-							<a class="btn btn-danger btn-sm" href="#">
+							<a class="btn btn-danger btn-sm" data-ng-click="ctrl.delete(id)">
 								<i class="fa fa-trash-o" aria-hidden="true"></i> Delete
 							</a>
 						</td>
@@ -56,6 +56,7 @@
 
 			</table>
 
+			
 			<div class="panel-footer" style="text-align: center">
 				<pagination data-ng-show="ctrl.users.lenght>10" style="margin: 0" total-items="ctrl.users.lenght" ng-model="ctrl.currentPage" class="pagination-sm" boundary-links="true" rotate="false"></pagination>
 			</div>

@@ -79,8 +79,8 @@ angular.module('gvconsole')
 
 		var instance = this;
 
-		AdminService.getRoles().then(function(data){
-			instance.roles = data;
+		AdminService.getRoles().then(function(response){
+			instance.roles = response.data;
 		});
 
 		if ($routeParams.userId == 'new') {

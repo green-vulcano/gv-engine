@@ -1,4 +1,4 @@
-angular.module('gvconsole', ['ngCookies','ngRoute','angular-quartz-cron'])
+angular.module('gvconsole', ['ngCookies','ngRoute','angular-quartz-cron', 'ui.bootstrap'])
 .config(['$routeProvider', function($routeProvider) {
 	    $routeProvider.
 	      when('/login', {

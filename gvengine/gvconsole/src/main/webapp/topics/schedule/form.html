@@ -2,7 +2,7 @@
 <div class="container" data-ng-controller="ScheduleFormController as ctrl">
 
 	<div class="row page-header text-center">
-		<h1>New scheduled executionsss</h1>
+		<h1>New scheduled execution</h1>
 	</div>
 	
 	<div class="row" >
@@ -13,8 +13,14 @@
 
 				<div class="col-md-offset-4 col-md-4 col-sm-6">
 					<div class="form-group clearfix">
-						<input type="text" class="form-control text-center" ng-model="schedule.cronExpression">
+						<input type="text" id="cronExpression" name="cronExpression" class="form-control text-center" ng-model="schedule.cronExpression" required>
 					</div>
+					<p style="margin: 0"> 
+			       		<span data-ng-show="taskForm.submitted && taskForm.cronExpression.$error.required" class="text-warning">
+			       			<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+			       			A cron-expression is required
+			       		</span>
+			       	</p>
 				</div>
 	
 				<div class="col-xs-12 text-center">
@@ -30,9 +36,10 @@
 						<label class="control-label col-sm-4">Operation</label>
 						<div class="col-sm-8">
 							<select id="flow" name="flow"
-								class="form-control" ng-model="flow"
+								class="form-control" ng-model="flow" ng-e
 								ng-options="entry.operation group by entry.service for entry in operations"
 								required>
+								<option value="">------</option>
 							</select>
 							<p style="margin: 0"> 
 					       		<span data-ng-show="taskForm.submitted && taskForm.flow.$error.required" class="text-warning">

@@ -36,17 +36,15 @@ angular.module('gvconsole')
 
   this.alerts = [];
 
-  this.list = [];
+  this.schedules = {};
   this.currentPage = 1;
   this.loadList = function() {
 	  SchedulerService.getAll().then(
 
       function(response){
         instance.alerts = [];
-        instance.list = [];
-        angular.forEach(response.data, function(entry, key) {
-          instance.list.push(entry);
-        });
+        instance.schedules = response.data;
+        
       },
       function(response){
         switch (response.status) {
@@ -66,9 +64,44 @@ angular.module('gvconsole')
 
       $scope.loadStatus = "error";
     });
-  }
+  } 
+  
+  this.delete = function(id) {
+		SchedulerService.delete(id).then(function(response){
+			instance.loadList();
+		},function(response){
+			instance.alerts.push({type: 'danger', msg: 'Error processing delete command'});
+		});	
 
-  instance.loadList();
+  }
+  
+  this.pause = function(id) {
+		SchedulerService.pause(id).then(function(response){
+			instance.update(id);
+		},function(response){
+			instance.alerts.push({type: 'danger', msg: 'Error processing pause command'});
+		});	
+
+  }
+  
+  this.resume = function(id) {
+		SchedulerService.resume(id).then(function(response){
+			instance.update(id);
+		},function(response){
+			instance.alerts.push({type: 'danger', msg: 'Error processing resume command'});
+		});	
+
+  }
+  
+  this.update = function(id) {
+	  SchedulerService.get(id).then(function(response){
+			instance.schedules[id] = response.data;
+		},function(response){
+			instance.loadList();
+		}); 
+  }
+   
+  instance.loadList();  
 
 }]);
 
@@ -105,7 +138,6 @@ angular.module('gvconsole')
           }
     	});
     
-    $scope.flow = {service: null, operation: null, key: null};
     $scope.schedule = {};
 
 	$scope.addParameter = function(){
@@ -123,6 +155,14 @@ angular.module('gvconsole')
 	
 	$scope.save = function(){
 		SchedulerService.create($scope.flow.service, $scope.flow.operation, $scope.schedule)
+						.then(
+								function(response){
+									$location.path('schedule');							
+								},
+								
+								function(response){
+									instance.alerts.push({type: 'danger', msg: 'Failed to schedule operation'});
+								});
 	}
 	
 	$scope.removeParameter=function(key){

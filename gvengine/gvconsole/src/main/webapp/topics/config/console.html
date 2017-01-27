@@ -2,71 +2,71 @@
 <div class="container">
 		
 	<div class="row page-header">		
-		<h1>Flows</h1>
+		<h1>Configuration</h1>
 	</div>
 
-	<div class="row" data-ng-controller=" UserListController as ctrl">
+	<div class="row" data-ng-controller=" ConfigController as ctrl" data-ng-init="ctrl.loadConfigInfo()">
 	
 	<div data-ng-repeat="alert in ctrl.alerts" class="alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
 	
 	<div class="panel panel-default">
 		<div class="panel-heading clearfix">
-	    	<h3 class="panel-title pull-left" style="line-height: 34px; vertical-align: middle">
-	    		<i class="fa fa-sitemap fa-rotate-270"></i> Found: {{ctrl.users.length}}
-	    	</h3>
-			<div id="div_file" class="pull-right">
-				<p id="texto"><i class="fa fa-upload"></i> Upload</p>
-				<input type="file" id="btn_enviar">
-			</div>
+	    	<h4 class="panel-title pull-left" style="line-height: 34px; vertical-align: middle">
+	    		<i class="fa fa-sitemap fa-rotate-270"></i> Current
+	    	</h4>    	
 	  	</div>
-	<table id="flows" class="table table-hover" >
-        <thead >
-            <tr>
-                <th>Name</th>
-                <th>Status</th>
-				<th class="text-right">Action</th>
-            </tr>
-        </thead>
-        <tbody>
-        
-        	<tr> <!--data-ng-repeat="user in ctrl.users"-->
-				<td>Flow name 1</td>
-        		<td>
-					<div class="onoffswitch">
-						<input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="flow_1" checked>
-						<label class="onoffswitch-label" for="flow_1">
-							<span class="onoffswitch-inner"></span>
-							<span class="onoffswitch-switch"></span>
-						</label>
-					</div>
-				</td>
-				<td class="text-right"><a href="#/flows/new" class="btn btn-sm btn-warning"><i class="fa fa-play"></i> Run </a> </td>
-        			
-        	</tr>
-			<tr> <!--data-ng-repeat="user in ctrl.users"-->
-				<td>Flow name 2</td>
-				<td>
-					<div class="onoffswitch">
-						<input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="flow_2">
-						<label class="onoffswitch-label" for="flow_2">
-							<span class="onoffswitch-inner"></span>
-							<span class="onoffswitch-switch"></span>
-						</label>
-					</div>
-				</td>
-				<td class="text-right"><a href="#/flows/new" class="btn btn-sm btn-warning"><i class="fa fa-play"></i> Run </a> </td>
-			</tr>
-        
-        </tbody>    
-      
-        
-    </table>
-    
-    <div class="panel-footer" style="text-align: center">
-    	<pagination data-ng-show="ctrl.users.lenght>10" style="margin: 0" total-items="ctrl.users.lenght" ng-model="ctrl.currentPage" class="pagination-sm" boundary-links="true" rotate="false"></pagination>
-    </div>
-    
+	  
+		<div class="panel-body">
+			<div class="col-sm-8 col-sm-offset-2">		  
+		    	<h2>{{ctrl.configInfo.id}}<p><small>{{ctrl.configInfo.time | date : 'd MMMM yyyy H:mm:ss'}}</small></p></h2>
+		    </div>		    
+		</div>
+	    
+	    <div class="panel-footer clearfix" style="text-align: center">
+	    	<div class="pull-right">
+				<a id="export" class="btn btn-primary"><i class="fa fa-download"></i> Export</a>			
+			</div>
+	    </div>    
    </div>
+   
+   <form id="deployForm" name="deployForm" class="form-horizontal"
+		 data-ng-submit="ctrl.deployConfiguration()">
+	   
+	   <div class="panel panel-default">
+			<div class="panel-heading clearfix">
+		    	<h4 class="panel-title pull-left" style="line-height: 34px; vertical-align: middle">
+		    		<i class="fa fa-sitemap fa-rotate-270"></i> New configuration
+		    	</h4>    	
+		  	</div>
+		  
+			<div class="panel-body">
+						    
+		    	<div class="form-group">					    					   
+				    <div class="col-sm-8 col-sm-offset-2">
+				      <input id="configid" name="configid" type="text" class="form-control" 
+				      		placeholder="Configuration ID" pattern="(?=^.{1,64}$)^[a-zA-Z0-9._-]+$" 
+				      		data-ng-maxlength="64" data-ng-model="ctrl.deploy.id" required>					      
+				    </div>
+				 </div>
+					  
+			 	 <div class="form-group">		                
+		             <div class="col-sm-8 col-sm-offset-2">
+		                <input id="configfile" name="configfile" type="file" 
+		                	   accept="application/zip" file-model="ctrl.deploy.configfile" required>		                			              
+		             </div>
+			     </div>
+			     			        
+			</div>
+		    
+		    <div class="panel-footer clearfix" style="text-align: center">
+		    	<div class="pull-right">
+					<button type="submit" class="btn btn-success" 
+							data-ng-disabled="deployForm.$invalid || !(ctrl.deploy.configfile)">
+						<i class="fa fa-bolt"></i> Deploy</button>			
+				</div>
+		    </div>    
+	   </div>
+   </form>
 </div>
 
 </div>
