@@ -1,0 +1,72 @@
+<app-header></app-header>
+<div class="container">
+		
+	<div class="row page-header">		
+		<h1>Configuration</h1>
+	</div>
+
+	<div class="row" data-ng-controller=" ConfigController as ctrl" data-ng-init="ctrl.loadConfigInfo()">
+	
+	<div data-ng-repeat="alert in ctrl.alerts" class="alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
+	
+	<div class="panel panel-default">
+		<div class="panel-heading clearfix">
+	    	<h4 class="panel-title pull-left" style="line-height: 34px; vertical-align: middle">
+	    		<i class="fa fa-sitemap fa-rotate-270"></i> Current
+	    	</h4>    	
+	  	</div>
+	  
+		<div class="panel-body">
+			<div class="col-sm-8 col-sm-offset-2">		  
+		    	<h2>{{ctrl.configInfo.id}}<p><small>{{ctrl.configInfo.time | date : 'd MMMM yyyy H:mm:ss'}}</small></p></h2>
+		    </div>		    
+		</div>
+	    
+	    <div class="panel-footer clearfix" style="text-align: center">
+	    	<div class="pull-right">
+				<a id="export" ng-click="ctrl.exportConfig()" class="btn btn-primary"><i class="fa fa-download"></i> Export</a>			
+			</div>
+	    </div>    
+   </div>
+   
+   <form id="deployForm" name="deployForm" class="form-horizontal"
+		 data-ng-submit="ctrl.deployConfiguration()">
+	   
+	   <div class="panel panel-default">
+			<div class="panel-heading clearfix">
+		    	<h4 class="panel-title pull-left" style="line-height: 34px; vertical-align: middle">
+		    		<i class="fa fa-sitemap fa-rotate-270"></i> New configuration
+		    	</h4>    	
+		  	</div>
+		  
+			<div class="panel-body">
+						    
+		    	<div class="form-group">					    					   
+				    <div class="col-sm-8 col-sm-offset-2">
+				      <input id="configid" name="configid" type="text" class="form-control" 
+				      		placeholder="Configuration ID" pattern="(?=^.{1,64}$)^[a-zA-Z0-9._-]+$" 
+				      		data-ng-maxlength="64" data-ng-model="ctrl.deploy.id" required>					      
+				    </div>
+				 </div>
+					  
+			 	 <div class="form-group">		                
+		             <div class="col-sm-8 col-sm-offset-2">
+		                <input id="configfile" name="configfile" type="file" 
+		                	   accept="application/zip" file-model="ctrl.deploy.configfile" required>		                			              
+		             </div>
+			     </div>
+			     			        
+			</div>
+		    
+		    <div class="panel-footer clearfix" style="text-align: center">
+		    	<div class="pull-right">
+					<button type="submit" class="btn btn-success" 
+							data-ng-disabled="deployForm.$invalid || !(ctrl.deploy.configfile)">
+						<i class="fa fa-bolt"></i> Deploy</button>			
+				</div>
+		    </div>    
+	   </div>
+   </form>
+</div>
+
+</div>

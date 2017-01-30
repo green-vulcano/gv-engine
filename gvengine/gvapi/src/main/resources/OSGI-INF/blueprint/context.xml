@@ -55,6 +55,33 @@
 	       	<ref component-id="cors-filter" />     
 	    </jaxrs:providers>       
     </jaxrs:server>    
+    	
+	<reference id="configManager" interface="it.greenvulcano.gvesb.GVConfigurationManager" />
+	
+	<bean id="configurationController" class="it.greenvulcano.gvesb.api.controller.GvConfigurationControllerRest">
+		<property name="configurationManager" ref="configManager" />
+	</bean>
+	
+	<bean id="gvconfigAuthorizationInterceptor" class="org.apache.cxf.interceptor.security.SecureAnnotationsInterceptor">
+   		<property name="allowAnonymousUsers" value="true" />
+   		<property name="checkConfiguredRolesOnly" value="false" />
+   		<property name="securedObject" ref="configurationController"/>
+	</bean>
+	
+	<bean id="gvconfigAuthorizationFilter" class="org.apache.cxf.jaxrs.security.SimpleAuthorizingFilter">	   
+	   <property name="interceptor" ref="gvconfigAuthorizationInterceptor"/>
+	</bean>	
+	
+	<jaxrs:server address="/gvconfig" id="gvconfigapi">
+        <jaxrs:serviceBeans>            
+           	<ref component-id="configurationController" />            
+        </jaxrs:serviceBeans> 
+        <jaxrs:providers>
+	       	<ref component-id="gvAuthenticationFilter"/>
+	       	<ref component-id="gvconfigAuthorizationFilter"/>	
+	       	<ref component-id="cors-filter" />     
+	    </jaxrs:providers>        
+    </jaxrs:server>
     
     <bean id="gvWebService" class="it.greenvulcano.gvesb.api.ws.soap.GVWebServiceSoap"/>
     
@@ -75,22 +102,5 @@
 		</jaxws:inInterceptors>
 		
 	</jaxws:endpoint>
-	
-	<reference id="configManager" interface="it.greenvulcano.gvesb.GVConfigurationManager" />
-	
-	<bean id="configurationController" class="it.greenvulcano.gvesb.api.controller.GvConfigurationControllerRest">
-		<property name="configurationManager" ref="configManager" />
-	</bean>
-	
-	<jaxrs:server address="/gvconfig" id="gvconfigapi">
-        <jaxrs:serviceBeans>            
-           	<ref component-id="configurationController" />            
-        </jaxrs:serviceBeans> 
-        <jaxrs:providers>
-	       	<ref component-id="gvAuthenticationFilter"/>
-	       	<ref component-id="gviamAuthorizationFilter"/>	
-	       	<ref component-id="cors-filter" />     
-	    </jaxrs:providers>        
-    </jaxrs:server>
 	        
 </blueprint>
