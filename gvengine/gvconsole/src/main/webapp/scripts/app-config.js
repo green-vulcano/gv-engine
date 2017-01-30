@@ -37,6 +37,14 @@ angular.module('gvconsole')
 	            headers: {'Content-Type': 'multipart/form-data'}
 	        });
 	    }
+		
+		this.getConfig = function(id) {
+			return $http({
+				method: 'GET',
+			    url: endpoint + '/gvconfig/deploy/' + id,		        
+		        responseType: 'arraybuffer'
+			});
+		}
 
  }]);
 
@@ -98,6 +106,39 @@ angular.module('gvconsole')
 					}
 		});
 	
+	}
+	
+	this.exportConfig = function (name) {
+
+		ConfigService.getConfig(instance.configInfo.id)
+			.then( function(response) {
+				
+				var linkElement = document.createElement('a');
+
+				try {
+
+					var blob = new Blob([response.data], { type: 'application/zip' });
+					var url = window.URL.createObjectURL(blob);
+					linkElement.setAttribute('href', url);
+	                linkElement.setAttribute("download", instance.configInfo.id+'.zip');
+	                
+	                var clickEvent = new MouseEvent("click", {
+	                	"view": window,
+	                	"bubbles": true,
+	                	"cancelable": false
+	                });
+	                linkElement.dispatchEvent(clickEvent);
+
+				} catch (ex) {
+					instance.alerts.push({type: 'danger', msg: 'Export fail'});
+					console.log(ex);
+
+				}
+
+			}, function (responses) {
+				instance.alerts.push({type: 'danger', msg: 'Export fail'});
+			});
+
 	}
 
 }]);
