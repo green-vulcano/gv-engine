@@ -109,7 +109,7 @@ angular.module('gvconsole')
 	}
 	
 	this.exportConfig = function (name) {
-
+		$scope.exportInProgress = true;
 		ConfigService.getConfig(instance.configInfo.id)
 			.then( function(response) {
 				
@@ -130,13 +130,15 @@ angular.module('gvconsole')
 	                linkElement.dispatchEvent(clickEvent);
 
 				} catch (ex) {
-					instance.alerts.push({type: 'danger', msg: 'Export fail'});
+					instance.alerts.push({type: 'danger', msg: 'Configuration export failed'});
 					console.log(ex);
 
 				}
+				$scope.exportInProgress = false;
 
 			}, function (responses) {
-				instance.alerts.push({type: 'danger', msg: 'Export fail'});
+				$scope.exportInProgress = false;
+				instance.alerts.push({type: 'danger', msg: 'Configuration export failed'});
 			});
 
 	}

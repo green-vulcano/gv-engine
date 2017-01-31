@@ -34,6 +34,7 @@ import java.util.Hashtable;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -123,10 +124,16 @@ public class BaseConfigurationManager implements GVConfigurationManager {
 				while ((zipEntry=configurationArchive.getNextEntry())!=null) {
 					
 					Path entryPath = Paths.get(configPath, zipEntry.getName());
+									
 					LOG.debug("Adding resource: "+entryPath);
 					if (zipEntry.isDirectory()) {
-						Files.createDirectories(entryPath);
+						entryPath.toFile().mkdirs();
 					} else {
+						
+						Path parent  = entryPath.getParent();
+						if(!Files.exists(parent)){
+							Files.createDirectories(parent);
+						}
 						
 						Files.copy(configurationArchive, entryPath, StandardCopyOption.REPLACE_EXISTING);					
 					}
@@ -194,13 +201,17 @@ public class BaseConfigurationManager implements GVConfigurationManager {
 				
 		try (final ZipOutputStream zipExport = new ZipOutputStream(output)) {
 			
-			for (Path path : Files.walk(configPath).collect(Collectors.toList())) {
-				 
+			Predicate<Path> isSamePath = p-> p.getFileName().equals(configPath.getFileName());
+			
+			for (Path path : Files.walk(configPath)
+								  .filter(isSamePath.negate())
+								  .collect(Collectors.toList())) {
+			
 				ZipEntry entry = new ZipEntry(configPath.relativize(path).toString());
-				zipExport.putNextEntry(entry);
-				
-				if (Files.isRegularFile(path)) {                     
-					 zipExport.write(Files.readAllBytes(path));	
+							
+				if (Files.isRegularFile(path)) {
+					zipExport.putNextEntry(entry);
+					zipExport.write(Files.readAllBytes(path));	
 				}
 			}			
 			
