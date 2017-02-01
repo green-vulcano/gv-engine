@@ -1,7 +1,7 @@
 angular.module('gvconsole')
  .service('AdminService', ['$http', function($http){
 
-	 	var endpoint = 'http://localhost:8181/cxf/gviam';
+	 	var endpoint = '/cxf/gviam';
 
 		this.getAllUsers = function(){
 			 return $http.get(endpoint + '/admin/users');

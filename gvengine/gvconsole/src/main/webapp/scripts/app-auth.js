@@ -105,7 +105,7 @@ angular.module('gvconsole')
 	            };
 
 	           $http.defaults.headers.common['Authorization'] = 'Basic ' + authdata;
-	           $http.post('http://localhost:8181/cxf/gviam/authenticate').then(function(response) {
+	           $http.post('/cxf/gviam/authenticate').then(function(response) {
 	        	   			angular.merge($rootScope.globals.currentUser, response.data);
 	        	   			$cookieStore.put('globals', $rootScope.globals);
 	        	   			callback(response.status);
@@ -124,7 +124,7 @@ angular.module('gvconsole')
 
 	           var request = {
 	        		   method: 'PATCH',
-	        		   url: 'http://localhost:8181/cxf/gviam/authenticate',
+	        		   url: '/cxf/gviam/authenticate',
 	        		   headers: {
 	        			   Authorization: 'GV_RENEW ' + token,
 	        			   Accept: 'application/json'

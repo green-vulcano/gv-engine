@@ -1,7 +1,7 @@
 angular.module('gvconsole')
 .service('SchedulerService', ['$http', function($http){
 
- 	var endpoint = 'http://localhost:8181/cxf/gvscheduler';
+ 	var endpoint = '/cxf/gvscheduler';
  	
  	this.getAll = function() {
  		return $http.get(endpoint + '/schedules');

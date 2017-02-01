@@ -18,7 +18,7 @@ angular.module('gvconsole')
 angular.module('gvconsole')
  .service('ConfigService', ['$http', function($http){
 
-	 	var endpoint = 'http://localhost:8181/cxf';
+	 	var endpoint = '/cxf';
 
 		this.getServices = function(){
 			 return $http.get(endpoint+'/gvesb');
