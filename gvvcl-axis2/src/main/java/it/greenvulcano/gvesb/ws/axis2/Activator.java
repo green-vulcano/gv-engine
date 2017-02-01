@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import it.greenvulcano.gvesb.gvdp.DataProviderManager;
 import it.greenvulcano.gvesb.gvdp.impl.Axis2MessageContextDataProvider;
+import it.greenvulcano.gvesb.gvhttp.impl.HttpMethodDataProvider;
 import it.greenvulcano.gvesb.virtual.OperationFactory;
 import it.greenvulcano.gvesb.virtual.http.HTTPCallOperation;
 import it.greenvulcano.gvesb.virtual.ws.WSCallOperation;
@@ -36,6 +37,8 @@ public class Activator implements BundleActivator {
 		LoggerFactory.getLogger(getClass()).debug("*********** VCL Axis2 Up&Running ");
 		
 		DataProviderManager.registerSupplier("Axis2MessageContextDataProvider", Axis2MessageContextDataProvider::new);
+		DataProviderManager.registerSupplier("HttpMethodDataProvider", HttpMethodDataProvider::new);
+		
 		
 		OperationFactory.registerSupplier("ws-call", WSCallOperation::new);
 		OperationFactory.registerSupplier("http-call", HTTPCallOperation::new);
@@ -48,6 +51,7 @@ public class Activator implements BundleActivator {
 		LoggerFactory.getLogger(getClass()).debug("*********** VCL Axis2 stopped ");
 		
 		DataProviderManager.unregisterSupplier("Axis2MessageContextDataProvider");
+		DataProviderManager.unregisterSupplier("HttpMethodDataProvider");
 		
 		OperationFactory.unregisterSupplier("ws-call");
 		OperationFactory.unregisterSupplier("http-call");

@@ -231,7 +231,7 @@ public class GvServicesControllerRest extends BaseControllerRest {
 			throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(toJson(e)).build());
 		
 		} catch (GreenVulcanoPoolException e) {
-			LOG.error("gvcoreapi - Error performing forward on GreenVulcanoPool instance for subsystem HttpInboundGateway", e);
+			LOG.error("gvcoreapi - Error performing forward on GreenVulcanoPool instance "+  gvpoolInstance.getSubsystem(), e);
 			throw new WebApplicationException(Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(toJson(e)).build());			
 		
 		} catch (JsonProcessingException e) {

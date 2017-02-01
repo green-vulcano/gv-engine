@@ -262,7 +262,7 @@
 							it.greenvulcano.util.crypto,
 							it.greenvulcano.util.txt,
 							it.greenvulcano.util.xml,
-							it.greenvulcano.util.xpath.jmx,
+							it.greenvulcano.util.xpath,
 							it.greenvulcano.gvesb.virtual,
 							it.greenvulcano.gvesb.gvdp
 						</Import-Package>
