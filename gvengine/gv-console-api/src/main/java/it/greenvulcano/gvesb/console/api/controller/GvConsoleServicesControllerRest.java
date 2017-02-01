@@ -3,6 +3,7 @@ package it.greenvulcano.gvesb.console.api.controller;
 import it.greenvulcano.gvesb.console.api.GvConsoleServicesController;
 import it.greenvulcano.gvesb.console.api.dto.ServiceStatsThroughput;
 import it.greenvulcano.gvesb.console.api.dto.ServiceStatsTimeDTO;
+import it.greenvulcano.gvesb.console.api.dto.ServiceStatsVolumeDTO;
 import it.greenvulcano.gvesb.console.api.dto.TraceLevelServiceDTO;
 import it.greenvulcano.gvesb.console.api.model.ServiceInstance;
 import it.greenvulcano.gvesb.console.api.repository.dao.ServiceInstanceDao;
@@ -119,6 +120,30 @@ public class GvConsoleServicesControllerRest implements GvConsoleServicesControl
 			new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Configuration error").build());
 		}
 		LOG.debug("getThroughputByServiceName - END - "+servicename);
+		
+		return Response.ok(response).build();
+	}
+	
+	@Path("/stats/volume/{servicename}/{startdate}/{enddate}")
+	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)	
+	@Override
+	public Response getStatsVolumeByServiceName(@PathParam("servicename") String servicename, @PathParam("startdate") DateParam startdate, @PathParam("enddate") DateParam enddate)
+	{
+		LOG.debug("getStatsVolumeByServiceName - START - " + servicename + " - startdate: " + startdate + " - enddate: " + enddate);
+		String response = null;
+		try
+		{
+			ServiceStatsVolumeDTO serviceStatsVolume = getServiceInstanceRepo().getStatsVolumeRequestsByServiceName(servicename, startdate.getDate(), enddate.getDate());
+			response = new ObjectMapper().writeValueAsString(serviceStatsVolume);
+
+		} catch (NoSuchElementException noSuchElementException) {
+			new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity("Service not found").build());
+		} catch (JsonProcessingException xmlConfigException) {
+			new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Configuration error").build());
+		}
+		LOG.debug("getStatsVolumeByServiceName - END - " + servicename);
 		
 		return Response.ok(response).build();
 	}

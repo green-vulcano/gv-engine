@@ -41,6 +41,8 @@ public class ServiceInstance {
 	//@Serialized
 	//private Object inputObject;
 	private String inputObject;
+	
+	private Long inputObjectSize;
 		
 	private List<String> properties;
 	
@@ -130,6 +132,13 @@ public class ServiceInstance {
 	public void setInputObject(String inputObject) {
 		this.inputObject = inputObject;
 	}
+		
+	public Long getInputObjectSize() {
+		return inputObjectSize;
+	}
+	public void setInputObjectSize(Long inputObjectSize) {
+		this.inputObjectSize = inputObjectSize;
+	}
 	public List<String> getProperties() {
 		return properties;
 	}
@@ -181,6 +190,8 @@ public class ServiceInstance {
 		builder.append(endDate);
 		builder.append(", inputObjectType=");
 		builder.append(inputObjectType);
+		builder.append(", inputObjectSize=");
+		builder.append(inputObjectSize);
 //		builder.append(", inputObject=");
 //		builder.append(inputObject);
 		builder.append(", properties=");

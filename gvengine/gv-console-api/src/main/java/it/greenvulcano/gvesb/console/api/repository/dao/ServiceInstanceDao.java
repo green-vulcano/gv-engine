@@ -3,6 +3,7 @@ package it.greenvulcano.gvesb.console.api.repository.dao;
 import it.greenvulcano.gvesb.console.api.dto.ServiceInstanceDTO;
 import it.greenvulcano.gvesb.console.api.dto.ServiceStatsThroughput;
 import it.greenvulcano.gvesb.console.api.dto.ServiceStatsTimeDTO;
+import it.greenvulcano.gvesb.console.api.dto.ServiceStatsVolumeDTO;
 import it.greenvulcano.gvesb.console.api.model.ServiceInstance;
 
 import java.util.Date;
@@ -14,8 +15,10 @@ public interface ServiceInstanceDao {
 
 	public ServiceStatsTimeDTO getStatsByServiceName(String serviceName, Date inStartDate, Date inEndDate);
 	
+	public ServiceStatsVolumeDTO getStatsVolumeRequestsByServiceName(String serviceName, Date inStartDate, Date inEndDate);
+		
 	public ServiceStatsThroughput getThroughputRequestsByServiceName(String serviceName, Date inStartDate, Date inEndDate);
-
+	
 	public void delete(ServiceInstanceDTO serviceInstanceDTO);
 
 }

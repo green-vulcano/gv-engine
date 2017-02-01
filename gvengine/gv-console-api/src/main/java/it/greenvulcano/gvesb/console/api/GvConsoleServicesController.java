@@ -18,6 +18,8 @@ public interface GvConsoleServicesController<T> {
 //	
 //	T drop(String service, String operation, String data);
 	
+	T getStatsVolumeByServiceName(String servicename, DateParam startdate, DateParam enddate);
+		
 	T getThroughputByServiceName(String servicename, DateParam startdate, DateParam enddate);
 	
 	T getStatsByServiceName(String servicename, DateParam startdate, DateParam enddate);

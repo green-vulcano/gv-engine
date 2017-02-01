@@ -3,6 +3,7 @@ package it.greenvulcano.gvesb.console.api.repository.dao;
 import it.greenvulcano.gvesb.console.api.dto.ServiceInstanceDTO;
 import it.greenvulcano.gvesb.console.api.dto.ServiceStatsThroughput;
 import it.greenvulcano.gvesb.console.api.dto.ServiceStatsTimeDTO;
+import it.greenvulcano.gvesb.console.api.dto.ServiceStatsVolumeDTO;
 import it.greenvulcano.gvesb.console.api.model.ServiceInstance;
 
 import java.util.Date;
@@ -94,7 +95,52 @@ implements ServiceInstanceDao {
 
 		return dto;
 	}
+	
+	public ServiceStatsVolumeDTO getStatsVolumeRequestsByServiceName(String serviceName, Date inStartDate, Date inEndDate)
+	{
+		LOG.debug("getStatsVolumeRequestsByServiceName - START - serviceName: " + serviceName + " - inStartDate: + " + inStartDate + " - inEndDate: " + inEndDate);
+		
+		ServiceStatsVolumeDTO dto = new ServiceStatsVolumeDTO();
 
+		Query<ServiceInstance> query = datastore.createQuery(ServiceInstance.class)
+				.field("serviceName").equal(serviceName)
+				.field("startDate").greaterThanOrEq(inStartDate)
+			    .field("endDate").lessThanOrEq(inEndDate);
+
+		Long volumeMin = 0L;
+		Long volumeMax = 0L;
+		Long volumeAvg = 0L;
+		int i = 0;
+		for(ServiceInstance instance : query.asList()){
+			LOG.debug("serviceInstance i: " + i + " - serviceInstance: " + instance);
+			if(instance.getInputObjectSize() != null) {
+				
+				Long inputObjectSize = instance.getInputObjectSize();
+				
+				LOG.debug("inputObjectSize: " + inputObjectSize);
+				
+				if(i == 0) {
+					volumeMin = inputObjectSize ;
+					volumeMax = inputObjectSize;
+				} else {
+					if(inputObjectSize < volumeMin) volumeMin = inputObjectSize;
+					if(inputObjectSize > volumeMax) volumeMax = inputObjectSize;
+				}
+				i++;
+			}
+		}
+
+		if(i > 0) volumeAvg = (volumeMax - volumeMin) / i;
+
+		dto.setServiceName(serviceName);
+		dto.setVolumeMin(volumeMin);
+		dto.setVolumeMax(volumeMax);
+		dto.setVolumeAvg(volumeAvg);
+						
+		LOG.debug("getStatsVolumeRequestsByServiceName - END - serviceName: " + serviceName + " - inStartDate: + " + inStartDate + " - inEndDate: " + inEndDate + " - dto: " + dto);
+		
+		return dto;
+	}
 	
 	public ServiceStatsThroughput getThroughputRequestsByServiceName(String serviceName, Date inStartDate, Date inEndDate) {
 		LOG.debug("getThroughputRequestsByServiceName - START - serviceName: " + serviceName + " - inStartDate: + " + inStartDate + " - inEndDate: " + inEndDate);
@@ -147,6 +193,7 @@ implements ServiceInstanceDao {
 		
 		return dto;
 	}
+	
 	
 	public void delete(ServiceInstanceDTO serviceInstanceDTO){
 		LOG.debug("delete - START - serviceInstanceDTO: " + serviceInstanceDTO);
