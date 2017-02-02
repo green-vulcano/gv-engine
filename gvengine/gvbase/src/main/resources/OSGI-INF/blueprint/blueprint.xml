@@ -13,4 +13,10 @@
 
     <service id="configurationManager" interface="it.greenvulcano.gvesb.GVConfigurationManager" ref="gvConfigManager"/>
 	
+	<reference-list id="propertiesHandler" availability="optional" interface="it.greenvulcano.util.metadata.PropertyHandler">
+		<reference-listener bind-method="onBind" unbind-method="onUnbind">
+			<bean class="it.greenvulcano.util.metadata.PropertyHandlerServiceListener"/>
+		</reference-listener>	
+	</reference-list>
+	
 </blueprint>

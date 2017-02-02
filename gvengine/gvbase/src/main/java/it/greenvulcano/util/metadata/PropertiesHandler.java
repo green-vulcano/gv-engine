@@ -19,11 +19,8 @@
  *******************************************************************************/
 package it.greenvulcano.util.metadata;
 
+import it.greenvulcano.gvesb.utils.GVESBPropertyHandler;
 import it.greenvulcano.util.thread.ThreadMap;
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -122,43 +119,8 @@ public final class PropertiesHandler {
     private static Set<String> propSet = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
     
     static {
-    	Path cfgFilePath = null;
-        try {
-        	String configurationDir = System.getProperty("gv.app.home") + File.separator + "xmlconfig" + File.separator;
-        	File cfgFile = new File(configurationDir+"PropertiesHandler.properties");
-        	
-        	if (cfgFile.exists()) {
-        		cfgFilePath = cfgFile.toPath();
-        	} else {        		
-        		cfgFilePath = Paths.get(ClassLoader.getSystemResource("PropertiesHandler.properties").toURI());
-        	}        	
-        	
-        	
-        	 if (cfgFilePath!=null) {
-             	
-             	Files.lines(cfgFilePath).map(clazz-> {
-             		Optional<PropertyHandler> propertyHandler = Optional.empty();
-             		try {
-             			PropertyHandler p = (PropertyHandler)Class.forName(clazz).newInstance();
-             			propertyHandler = Optional.of(p);
-             		} catch (Exception exception) {
-             			LOG.error("PropertiesHandler: unable to load "+clazz, exception);
-             		}
-             		return propertyHandler;
-             	})
-             	.filter(Optional::isPresent)
-             	.map(Optional::get)
-             	.forEach(PropertiesHandler::registerHandler);              
-             
-             }        	
-        	
-    	} catch (Exception exc) {
-    		LOG.error("PropertiesHandler: unable to load file PropertiesHandler.properties", exc);
-    		
-    		registerHandler(new BasicPropertyHandler());
-        } 
-       
-       
+    	registerHandler(new BasicPropertyHandler());
+    	registerHandler(new GVESBPropertyHandler());       
     }
 
     /**
@@ -188,12 +150,10 @@ public final class PropertiesHandler {
     public static void unregisterHandler(PropertyHandler handler) {
         handler.getManagedTypes().forEach(type->{
             propSet.remove(type);
-            propHandlers.remove(type, handler);
+            propHandlers.remove(type);
             LOG.debug("PropertiesHandler.unregisterHandler: unregistered "+type+" -> "+handler.getClass().getName());
         });
     }
-
-
 
     /**
      * This method insert the correct values for the dynamic parameter found in
