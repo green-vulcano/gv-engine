@@ -61,9 +61,18 @@ public class Activator implements BundleActivator {
 		LOG.debug("****** GVBase started");
 		
 		ServiceReference<?> configurationAdminReference = context.getServiceReference(ConfigurationAdmin.class.getName());
-        ConfigurationAdmin configurationAdmin = (ConfigurationAdmin) context.getService(configurationAdminReference);        
+        ConfigurationAdmin configurationAdmin = (ConfigurationAdmin) context.getService(configurationAdminReference);
+		
+		System.setProperty("javax.xml.parsers.DocumentBuilderFactory", 
+									getConfigEntry(configurationAdmin, "javax.xml.parsers.DocumentBuilderFactory")
+													.orElse("org.apache.xerces.jaxp.DocumentBuilderFactoryImpl"));
+		
+		System.setProperty("javax.xml.transform.TransformerFactory",
+									getConfigEntry(configurationAdmin, "javax.xml.transform.TransformerFactory")
+													.orElse("org.apache.xalan.processor.TransformerFactoryImpl"));							
+		        
               
-        String home = getConfigPath(configurationAdmin, XMLConfig.CONFIG_KEY_HOME).orElse("GreenV" + File.separator + XMLConfig.DEFAULT_FOLDER);
+        String home = getConfigEntry(configurationAdmin, XMLConfig.CONFIG_KEY_HOME).orElse("GreenV" + File.separator + XMLConfig.DEFAULT_FOLDER);
                 		
 		try {
 			
@@ -122,7 +131,7 @@ public class Activator implements BundleActivator {
 		LOG.debug("****** GVBase stopped");
 	}
 	
-	private Optional<String> getConfigPath(ConfigurationAdmin configurationAdmin, String configKey) throws IOException {
+	private Optional<String> getConfigEntry(ConfigurationAdmin configurationAdmin, String configKey) throws IOException {
 				     
 		 Configuration gvcfg = configurationAdmin.getConfiguration(XMLConfig.CONFIG_PID);
 		 	        

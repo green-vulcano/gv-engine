@@ -147,6 +147,7 @@
               com.fasterxml.jackson.databind,
               com.fasterxml.jackson.annotation
             </Import-Package>
+            <DynamicImport-Package>it.greenvulcano.*</DynamicImport-Package>
           </instructions>
         </configuration>
       </plugin>
