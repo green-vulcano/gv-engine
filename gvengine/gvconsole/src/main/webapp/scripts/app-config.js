@@ -16,23 +16,22 @@ angular.module('gvconsole')
 }]);
 
 angular.module('gvconsole')
- .service('ConfigService', ['$http', function($http){
+ .service('ConfigService', ['ENDPOINTS', '$http', function(Endpoints, $http){
 
-	 	var endpoint = '/cxf';
-
+	 	
 		this.getServices = function(){
-			 return $http.get(endpoint+'/gvesb');
+			 return $http.get(Endpoints.gvesb);
 		}
 		
 		this.getConfigInfo = function() {
-			return $http.get(endpoint+'/gvconfig/deploy')
+			return $http.get(Endpoints.gvconfig+'/deploy')
 		}
 		
 		this.deploy = function(config, id){
 	        var fd = new FormData();
 	        fd.append('gvconfiguration', config);
 	       
-	        return $http.post(endpoint+'/gvconfig/deploy/'+id, fd, {
+	        return $http.post(Endpoints.gvconfig+'/deploy/'+id, fd, {
 	            transformRequest: angular.identity,
 	            headers: {'Content-Type': 'multipart/form-data'}
 	        });
@@ -41,7 +40,7 @@ angular.module('gvconsole')
 		this.getConfig = function(id) {
 			return $http({
 				method: 'GET',
-			    url: endpoint + '/gvconfig/deploy/' + id,		        
+			    url: Endpoints.gvconfig + '/deploy/' + id,		        
 		        responseType: 'arraybuffer'
 			});
 		}

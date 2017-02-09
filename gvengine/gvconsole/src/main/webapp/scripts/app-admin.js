@@ -1,38 +1,36 @@
 angular.module('gvconsole')
- .service('AdminService', ['$http', function($http){
-
-	 	var endpoint = '/cxf/gviam';
-
+ .service('AdminService', ['ENDPOINTS', '$http', function(Endpoints, $http){
+	 	
 		this.getAllUsers = function(){
-			 return $http.get(endpoint + '/admin/users');
+			 return $http.get(Endpoints.gviam + '/admin/users');
 		}
 
 		this.getUser = function(id){
-			 return $http.get(endpoint + '/admin/users/' + id);
+			 return $http.get(Endpoints.gviam + '/admin/users/' + id);
 		}
 
 		this.createUser = function(user) {
-			return $http.post(endpoint + '/admin/users', user, {headers: {'Content-Type':'application/json'} });
+			return $http.post(Endpoints.gviam + '/admin/users', user, {headers: {'Content-Type':'application/json'} });
 		}
 
 		this.updateUser = function(id, user) {
-			return $http.put(endpoint + '/admin/users/' + id, user, {headers: {'Content-Type':'application/json'} });
+			return $http.put(Endpoints.gviam + '/admin/users/' + id, user, {headers: {'Content-Type':'application/json'} });
 		}
 
 		this.switchUserEnablement = function(id) {
-			return $http.patch(endpoint + '/admin/users/' + id + '/enabled');
+			return $http.patch(Endpoints.gviam + '/admin/users/' + id + '/enabled');
 		}
 
 		this.resetUserPassword = function(id) {
-			return $http.patch(endpoint + '/admin/users/' + id + '/password');
+			return $http.patch(Endpoints.gviam + '/admin/users/' + id + '/password');
 		}
 
 		this.deleteUser = function(id){
-			 return $http.delete(endpoint + '/admin/users/' + id);
+			 return $http.delete(Endpoints.gviam + '/admin/users/' + id);
 		}
 
 		this.getRoles = function() {
-			 return $http.get(endpoint + '/admin/roles')
+			 return $http.get(Endpoints.gviam + '/admin/roles')
 	  }
 
  }]);

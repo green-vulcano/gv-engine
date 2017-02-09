@@ -1,30 +1,28 @@
 angular.module('gvconsole')
-.service('SchedulerService', ['$http', function($http){
-
- 	var endpoint = '/cxf/gvscheduler';
+.service('SchedulerService', [ 'ENDPOINTS', '$http', function(Endpoints, $http){
  	
  	this.getAll = function() {
- 		return $http.get(endpoint + '/schedules');
+ 		return $http.get(Endpoints.gvscheduler + '/schedules');
  	}
  	
  	this.get = function(id) {
- 		return $http.get(endpoint + '/schedules/' +id);
+ 		return $http.get(Endpoints.gvscheduler + '/schedules/' +id);
  	}
  	
  	this.pause = function(id) {
- 		return $http.put(endpoint + '/schedules/' +id +'/pause')
+ 		return $http.put(Endpoints.gvscheduler + '/schedules/' +id +'/pause')
  	}
  	
  	this.resume = function(id) {
- 		return $http.put(endpoint + '/schedules/' +id +'/resume')
+ 		return $http.put(Endpoints.gvscheduler + '/schedules/' +id +'/resume')
  	}
  	
  	this.delete = function(id) {
- 		return $http.delete(endpoint + '/schedules/' +id);
+ 		return $http.delete(Endpoints.gvscheduler + '/schedules/' +id);
  	}
  	
  	this.create = function(service, operation, schedule) {
- 		return $http.post(endpoint + '/schedule/'+ service + '/' + operation, schedule, {headers: {'Content-Type':'application/json'} });
+ 		return $http.post(Endpoints.gvscheduler + '/schedule/'+ service + '/' + operation, schedule, {headers: {'Content-Type':'application/json'} });
  	}
 }]);
 

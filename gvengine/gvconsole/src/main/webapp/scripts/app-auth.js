@@ -87,8 +87,8 @@ angular.module('gvconsole')
 
 angular.module('gvconsole')
 .factory('AuthenticationService',
-	    ['Base64', '$http', '$cookieStore', '$rootScope', '$timeout',
-	    function (Base64, $http, $cookieStore, $rootScope, $timeout) {
+	    ['ENDPOINTS', 'Base64', '$http', '$cookieStore', '$rootScope', '$timeout',
+	    function (Endpoints, Base64, $http, $cookieStore, $rootScope, $timeout) {
 	        var service = {};
 
 	        service.createContext = function (username, password, callback) {
@@ -105,7 +105,7 @@ angular.module('gvconsole')
 	            };
 
 	           $http.defaults.headers.common['Authorization'] = 'Basic ' + authdata;
-	           $http.post('/cxf/gviam/authenticate').then(function(response) {
+	           $http.post(Endpoints.gviam +'/authenticate').then(function(response) {
 	        	   			angular.merge($rootScope.globals.currentUser, response.data);
 	        	   			$cookieStore.put('globals', $rootScope.globals);
 	        	   			callback(response.status);
@@ -124,7 +124,7 @@ angular.module('gvconsole')
 
 	           var request = {
 	        		   method: 'PATCH',
-	        		   url: '/cxf/gviam/authenticate',
+	        		   url: Endpoints.gviam + '/authenticate',
 	        		   headers: {
 	        			   Authorization: 'GV_RENEW ' + token,
 	        			   Accept: 'application/json'
