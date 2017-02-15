@@ -1,0 +1,18 @@
+package it.greenvulcano.gvesb.console.api.repository;
+
+import it.greenvulcano.gvesb.console.api.model.ServiceInstance;
+
+import java.util.List;
+
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+
+@Repository
+public interface ServiceInstanceRepository_OLD extends MongoRepository<ServiceInstance, String>, ServiceInstanceCustomRepository
+{	
+    List<ServiceInstance> findByServiceInstanceId(@Param("serviceInstanceId") String serviceInstanceId);
+    
+    List<ServiceInstance> findByServiceName(@Param("serviceName") String serviceName);
+}

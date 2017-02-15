@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>it.greenvulcano.gvesb</groupId>
+		<artifactId>gvengine</artifactId>
+		<version>4.0.1-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>gv-console-api</artifactId>
+	<packaging>bundle</packaging>
+
+	<name>GreenVulcano console manager api general RESTful API</name>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven-compiler-plugin.version>2.5.1</maven-compiler-plugin.version>
+		<maven-bundle-plugin.version>3.0.1</maven-bundle-plugin.version>
+		<osgi.version>5.0.0</osgi.version>
+		
+	</properties>
+
+
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-frontend-jaxrs</artifactId>
+			<version>3.1.5</version>
+			<scope>provided</scope>
+		</dependency>
+ 		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.7.4</version>
+			<scope>provided</scope>
+		</dependency>
+		<!--
+		<dependency>
+    		<groupId>org.codehaus.jackson</groupId>
+    		<artifactId>jackson-mapper-asl</artifactId>
+    		<version>1.9.13</version>
+    		<scope>provided</scope>
+		</dependency> 
+		<dependency>
+    		<groupId>org.codehaus.jackson</groupId>
+    		<artifactId>jackson-jaxrs</artifactId>
+    		<version>1.9.13</version>
+    		<scope>provided</scope>
+		</dependency>
+		-->
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20151123</version>
+			<scope>provided</scope>
+		</dependency>
+		
+
+		<!-- As referenced here http://mongodb.github.io/mongo-java-driver/3.0/driver/getting-started/installation-guide/ 
+			This artifact is not an OSGi bundle so use mongo-java-driver -->
+		<!-- <dependency> <groupId>org.mongodb</groupId> <artifactId>mongodb-driver</artifactId> 
+			<version>3.0.4</version> </dependency> -->
+		<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>mongo-java-driver</artifactId>
+			<version>2.12.2</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mongodb.morphia</groupId>
+			<artifactId>morphia</artifactId>
+			<version>0.108</version>
+			<scope>provided</scope>
+		</dependency>
+
+
+		<!-- OSGI - START -->
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.core</artifactId>
+			<version>${osgi.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.compendium</artifactId>
+			<version>${osgi.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<!-- OSGI - END -->
+
+
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.3</version>
+			<scope>provided</scope>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<inherited>true</inherited>
+				<version>${maven-compiler-plugin.version}</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>${maven-bundle-plugin.version}</version>
+				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+						<Bundle-Version>${project.version}</Bundle-Version>
+						<Export-Package />
+						<DynamicImport-Package>
+							com.thoughtworks.proxy.ProxyFactory,
+							com.thoughtworks.proxy.factory.StandardProxyFactory,
+							com.thoughtworks.proxy.kit.SimpleInvoker,
+						</DynamicImport-Package>
+						<Import-Package>
+							org.osgi.framework,
+							javax.ws.rs,
+							javax.ws.rs.core,
+							org.json,
+							org.slf4j;version="[1.6,2)";provider=paxlogging,
+							org.w3c.dom,
+							com.fasterxml.jackson.core,
+							com.fasterxml.jackson.databind,
+							com.google.gson;version="[2.3,3)",
+							com.mongodb,
+							*
+						</Import-Package>
+						<Embed-Dependency>*;scope=compile;type=jar</Embed-Dependency>
+						<Bundle-Activator>it.greenvulcano.gvesb.console.api.Activator</Bundle-Activator>
+					</instructions>
+				</configuration>
+			</plugin>
+
+<!-- 
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-artifacts</id>
+						<phase>package</phase>
+						<goals>
+							<goal>attach-artifact</goal>
+						</goals>
+						<configuration>
+							<artifacts>
+								<artifact>
+									<file>target/classes/features.xml</file>
+									<type>xml</type>
+									<classifier>features</classifier>
+								</artifact>
+							</artifacts>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+ -->
+		</plugins>
+	</build>
+
+</project>

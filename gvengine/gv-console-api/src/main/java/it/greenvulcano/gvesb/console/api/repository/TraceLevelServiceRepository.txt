@@ -1,0 +1,13 @@
+package it.greenvulcano.gvesb.console.api.repository;
+
+import it.greenvulcano.gvesb.console.api.model.TraceLevelService;
+
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
+
+
+
+@Repository
+public interface TraceLevelServiceRepository_OLD extends MongoRepository<TraceLevelService, String> {
+
+}
