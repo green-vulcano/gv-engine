@@ -53,7 +53,12 @@
 									<file>target/classes/bus.cfg</file>
 									<type>cfg</type>
 									<classifier>bus</classifier>
-								</artifact>							
+								</artifact>
+								<artifact>									
+									<file>target/classes/console.cfg</file>
+									<type>cfg</type>
+									<classifier>console</classifier>
+								</artifact>
 							</artifacts>
 						</configuration>
 					</execution>

@@ -124,6 +124,7 @@
     <module>gvvcl</module>
     <module>gvvcl-internal</module>
     <module>gv-console-interceptor</module>
+    <module>gv-console-api</module>
     <module>features</module>	
   </modules>
 

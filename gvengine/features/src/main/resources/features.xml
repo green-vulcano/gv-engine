@@ -3,6 +3,30 @@
 	<repository>mvn:org.apache.activemq/activemq-karaf/5.12.3/xml/features-core</repository>	
 	<repository>mvn:org.apache.cxf.karaf/apache-cxf/3.1.5/xml/features</repository>
 	
+	<feature name="gv-console-api" version="4.0.1-SNAPSHOT">
+		<feature>morphia</feature>
+		<bundle start-level="80">mvn:org.codehaus.jackson/jackson-core-asl/1.9.13</bundle>
+		<bundle start-level="81">mvn:org.codehaus.jackson/jackson-mapper-asl/1.9.13</bundle>
+		<bundle start-level="82">mvn:org.codehaus.jackson/jackson-jaxrs/1.9.13</bundle>
+		
+		<configfile finalname="${karaf.etc}/it.greenvulcano.gvesb.console.cfg" override="true">mvn:it.greenvulcano.gvesb/${project.artifactId}/${pom.version}/cfg/console</configfile>		
+		<bundle start-level="94">mvn:com.google.code.gson/gson/2.3</bundle>
+		<bundle start-level="95">mvn:it.greenvulcano.gvesb/gv-console-api/4.0.1-SNAPSHOT</bundle>
+	</feature>
+	
+	<!-- resolver="(obr)" -->
+	<feature name="morphia" version="0.108">
+	     <!-- version="[1.9.13,2)" -->
+		<!-- <feature>jackson</feature> -->
+		<bundle start-level="80">mvn:org.codehaus.jackson/jackson-core-asl/1.9.13</bundle>
+		<bundle start-level="81">mvn:org.codehaus.jackson/jackson-jaxrs/1.9.13</bundle>
+		<bundle start-level="82">mvn:org.codehaus.jackson/jackson-mapper-asl/1.9.13</bundle>	
+		
+		<bundle dependency="true">mvn:org.mongodb/mongo-java-driver/2.12.2</bundle>
+		<bundle>wrap:mvn:com.thoughtworks.proxytoys/proxytoys/1.0</bundle>
+		<bundle>mvn:org.mongodb.morphia/morphia/0.108</bundle> <!-- feature -->
+	</feature>
+    
 	<feature name="gvbase" description="GreenVulcano Base Library" version="${project.version}">		  
 				
 		<feature>jms</feature>
