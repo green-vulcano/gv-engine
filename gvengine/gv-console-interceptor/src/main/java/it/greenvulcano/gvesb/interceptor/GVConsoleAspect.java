@@ -24,6 +24,7 @@ import it.greenvulcano.gvesb.core.flow.hub.Event;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
@@ -33,6 +34,8 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
+
 
 
 //import org.aspectj.lang.JoinPoint;
@@ -81,6 +84,7 @@ public class GVConsoleAspect {
 				List<Document> propertiesDoc = null;
 				String inputType 	= null;
 				String inputObject 	= null;
+				Integer inputObjectSize 	= null;
 
 				if(enabled > 0) {
 					if(GVConsoleConstants.GVC_TRACE_LEVEL_DEBUG.equals(traceLevelUsed)) {
@@ -104,15 +108,33 @@ public class GVConsoleAspect {
 
 								//PRINT XML STRING INPUT.
 								inputObject = XML2String((org.w3c.dom.Document)buffer.getObject());
-
+								inputObjectSize = inputObject.getBytes().length;
 								inputType	= "application/xml";
-							} else if(buffer.getObject() instanceof java.lang.String) { 
+							} else if(buffer.getObject() instanceof java.lang.String) {
 								inputObject = (String)buffer.getObject();
+								inputObjectSize = inputObject.getBytes().length;
 								inputType	= "application/json";
+							} else if( buffer.getObject() instanceof byte[] ) {
+								inputObject = Base64.getEncoder().encodeToString((byte[])buffer.getObject());
+								inputObjectSize = inputObject.getBytes().length;
+								inputType	= "binary";
 							} else {
 								logger.debug("CONTENT NOT AVAILABLE");
 								inputType	= "application/octet-stream";
 							}
+							/*
+							 *  if (toCopy.object instanceof byte[]) {
+                    object = new byte[((byte[]) toCopy.object).length];
+                    System.arraycopy(toCopy.object, 0, object, 0, ((byte[]) toCopy.object).length);
+                }
+                else if (toCopy.object instanceof String) {
+                    object = toCopy.object;
+                }
+                else {
+                    object = toCopy.object;
+                }
+							 * 
+							 */
 
 							logger.debug("buffer: " + buffer);
 						}
@@ -138,7 +160,8 @@ public class GVConsoleAspect {
 					if(GVConsoleConstants.GVC_TRACE_LEVEL_DEBUG.equals(traceLevelUsed)) {
 
 						doc.append(GVC_INPUT_OBJECT_TYPE, inputType)
-						.append(GVC_GV_BUFFER_OBJECT, inputObject);
+						.append(GVC_GV_BUFFER_OBJECT, inputObject)
+						.append("inputObjectSize", inputObjectSize);
 
 						if(propertiesDoc != null) {
 							doc.append(GVC_GV_BUFFER_PROPS, propertiesDoc);
