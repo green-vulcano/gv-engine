@@ -27,6 +27,8 @@ import java.security.AlgorithmParameters;
 import java.security.KeyStore;
 import java.util.HashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -38,8 +40,10 @@ import org.w3c.dom.NodeList;
  * 
  * 
  **/
-public final class CryptoHelper implements ConfigurationListener
-{
+public final class CryptoHelper implements ConfigurationListener {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(CryptoHelper.class);
+	
     /**
      * CryptoHelper configuration file
      */
@@ -414,12 +418,12 @@ public final class CryptoHelper implements ConfigurationListener
                                 Node node = nodeList.item(i);
                                 KeyStoreID keySid = new KeyStoreID(node);
                                 KeyStoreUtils.getKeyStore(keySid);
-                                System.out.println("CryptoHelper - Adding keyStoreID '" + keySid.getKeyStoreID()
+                                LOGGER.debug("CryptoHelper - Adding keyStoreID '" + keySid.getKeyStoreID()
                                     + "' to cache.");
                                 keyStoreIDMap.put(keySid.getKeyStoreID(), keySid);
                             }
                             catch (Exception exc) {
-                                System.out.println("CryptoHelper - Error reading keyStore.\n" + exc.getMessage());
+                            	LOGGER.error("CryptoHelper - Error reading keyStore.\n" + exc.getMessage());
                                 exc.printStackTrace();
                             }
                         }
@@ -431,24 +435,24 @@ public final class CryptoHelper implements ConfigurationListener
                                 Node node = nodeList.item(i);
                                 KeyID keyid = new KeyID(node);
                                 KeyStoreUtils.readKey(keyid);
-                                System.out.println("CryptoHelper - Adding keyID '" + keyid.getKeyID() + "' to cache.");
+                                LOGGER.debug("CryptoHelper - Adding keyID '" + keyid.getKeyID() + "' to cache.");
                                 keyIDMap.put(keyid.getKeyID(), keyid);
                             }
                             catch (Exception exc) {
-                                System.out.println("CryptoHelper - Error reading key.\n" + exc.getMessage());
+                            	LOGGER.error("CryptoHelper - Error reading key.\n" + exc.getMessage());
                                 exc.printStackTrace();
                             }
                         }
                     }
                 }
                 catch (Exception exc) {
-                    System.out.println("CryptoHelper - Error reading file '" + CRYPTO_HELPER_FILE
+                	LOGGER.error("CryptoHelper - Error reading file '" + CRYPTO_HELPER_FILE
                             + "' - using only default keyID.\n" + exc.getMessage());
                     exc.printStackTrace();
                 }
             }
             catch (KeyStoreUtilsException exc) {
-                System.out.println("CryptoHelper Error.\n" + exc.getMessage());
+            	LOGGER.error("CryptoHelper Error.\n" + exc.getMessage());
                 exc.printStackTrace();
            }
         }
@@ -465,12 +469,12 @@ public final class CryptoHelper implements ConfigurationListener
         }
         KeyStoreID keySid = new KeyStoreID(DEFAULT_KEYSTORE_ID, KeyStoreUtils.DEFAULT_KEYSTORE_TYPE,
                 DEFAULT_KEY_STORE_NAME, SECRET_KEY_STORE_PWD, KeyStoreUtils.DEFAULT_KEYSTORE_PROVIDER);
-        System.out.println("CryptoHelper - Adding keyStoreID '" + keySid.getKeyStoreID() + "' to cache.");
+        LOGGER.debug("CryptoHelper - Adding keyStoreID '" + keySid.getKeyStoreID() + "' to cache.");
         keyStoreIDMap.put(DEFAULT_KEYSTORE_ID, keySid);
 
         KeyID keyid = new KeyID(DEFAULT_KEY_ID, CryptoUtils.TRIPLE_DES_TYPE, keySid, SECRET_KEY_NAME, SECRET_KEY_PWD);
         keyid.setKey(KeyStoreUtils.readKey(keyid));
-        System.out.println("CryptoHelper - Adding keyID '" + keyid.getKeyID() + "' to cache.");
+        LOGGER.debug("CryptoHelper - Adding keyID '" + keyid.getKeyID() + "' to cache.");
         keyIDMap.put(DEFAULT_KEY_ID, keyid);
     }
 

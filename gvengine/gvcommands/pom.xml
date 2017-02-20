@@ -65,6 +65,7 @@
               org.slf4j;version="[1.6,2)";provider=paxlogging,                    
               it.greenvulcano.gvesb,
               it.greenvulcano.configuration,
+              it.greenvulcano.util.crypto,
               org.w3c.dom
             </Import-Package>
           </instructions>

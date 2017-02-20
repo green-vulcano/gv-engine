@@ -77,7 +77,7 @@ public class GVDeployConfiguration implements Action {
 		} catch (Exception exception) {
 			System.err.println(exception.getMessage());
 			LOG.error("GVDeployConfiguration - Deploy configuration failed", exception);
-			message = "Deploy complete";
+			message = "Deploy failed";
 		}
 		
 		return message;
