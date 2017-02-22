@@ -19,9 +19,8 @@
  *******************************************************************************/
 package it.greenvulcano.util.metadata;
 
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
+import java.util.List;
 
 /**
  * Helper interface for metadata substitution in strings.
@@ -65,11 +64,9 @@ public interface PropertyHandler
      *         if error occurs and the flag THROWS_EXCEPTION is set for the
      *         current thread
      */
-    public String expand(String type, String str, Map<String, Object> inProperties, Object object, 
+    String expand(String type, String str, Map<String, Object> inProperties, Object object, 
             Object extra) throws PropertiesHandlerException;
     
-    default Set<String> getManagedTypes() {
-    	return new HashSet<>();
-    }
+    List<String> getManagedTypes();
 
 }

@@ -19,7 +19,17 @@
  *******************************************************************************/
 package it.greenvulcano.util.metadata;
 
+import it.greenvulcano.gvesb.buffer.GVBuffer;
+import it.greenvulcano.gvesb.internal.data.GVBufferPropertiesHelper;
 import it.greenvulcano.gvesb.utils.GVESBPropertyHandler;
+import it.greenvulcano.util.metadata.properties.BeanPropertiesHandler;
+import it.greenvulcano.util.metadata.properties.ClassPropertiesHandler;
+import it.greenvulcano.util.metadata.properties.CodedPropertiesHandler;
+import it.greenvulcano.util.metadata.properties.InternalPropertiesHandler;
+import it.greenvulcano.util.metadata.properties.JSONPropertiesHandler;
+import it.greenvulcano.util.metadata.properties.ScriptPropertiesHandler;
+import it.greenvulcano.util.metadata.properties.SystemPropertiesHandler;
+import it.greenvulcano.util.metadata.properties.XPathPropertiesHandler;
 import it.greenvulcano.util.thread.ThreadMap;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,94 +42,19 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  **/
 public final class PropertiesHandler {
-	private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(PropertiesHandler.class);
-	
-	/**
-     * @version 3.0.0 Feb 27, 2010
-     * @author nunzio
-     *
-     */
-    public final class MetaDataTokenizer
-    {
-        private Vector<String> tokens  = new Vector<String>();
-        private int            lastPos = 0;
-
-        /**
-         * @param string
-         */
-        public MetaDataTokenizer(String string)
-        {
-            parse(string, 0);
-        }
-
-        /**
-         * @return it there is another token
-         */
-        public boolean hasNext()
-        {
-            return (lastPos < tokens.size());
-        }
-
-        /**
-         * @return the next token
-         */
-        public String next()
-        {
-            return tokens.get(lastPos++);
-        }
-
-        /**
-         *
-         */
-        public void pushBack()
-        {
-            lastPos--;
-            if (lastPos < -1) {
-                lastPos = -1;
-            }
-        }
-
-        private void parse(String string, int index)
-        {
-            if (string == null) {
-                return;
-            }
-            if (index == string.length()) {
-                return;
-            }
-            int begin = string.indexOf(PropertyHandler.PROP_START, index);
-            int end = string.indexOf(PropertyHandler.PROP_END, index);
-            String terminator = "";
-            int pos = -1;
-            if (begin == -1) {
-                if (end == -1) {
-                    tokens.add(string.substring(index));
-                    return;
-                }
-                terminator = PropertyHandler.PROP_END;
-                pos = end;
-            }
-            else {
-                if (end == -1) {
-                    terminator = PropertyHandler.PROP_START;
-                    pos = begin;
-                }
-                else {
-                    pos = (begin < end) ? begin : end;
-                    terminator = (begin < end) ? PropertyHandler.PROP_START : PropertyHandler.PROP_END;
-                }
-            }
-            tokens.add(string.substring(index, pos));
-            tokens.add(terminator);
-            parse(string, pos + PropertyHandler.PROP_START.length());
-        }
-    }
-
-    private static Map<String, PropertyHandler> propHandlers = new ConcurrentHashMap<String, PropertyHandler>();
-    private static Set<String> propSet = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
-    
+	private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(PropertiesHandler.class);	
+    private final static Map<String, PropertyHandler> propHandlers = new ConcurrentHashMap<String, PropertyHandler>();
+        
     static {
     	registerHandler(new BasicPropertyHandler());
+    	registerHandler(new BeanPropertiesHandler());
+    	registerHandler(new ClassPropertiesHandler());
+    	registerHandler(new CodedPropertiesHandler());
+    	registerHandler(new InternalPropertiesHandler());
+    	registerHandler(new JSONPropertiesHandler());
+    	registerHandler(new ScriptPropertiesHandler());
+    	registerHandler(new SystemPropertiesHandler());
+    	registerHandler(new XPathPropertiesHandler());
     	registerHandler(new GVESBPropertyHandler());       
     }
 
@@ -138,8 +73,7 @@ public final class PropertiesHandler {
     public static void registerHandler(PropertyHandler handler){
     	handler.getManagedTypes().forEach(type->{        	
     		LOG.debug("PropertiesHandler.registerHandler: registering "+type+" -> "+handler.getClass().getName());
-        	propHandlers.put(type, handler);
-	        propSet.add(type);
+        	propHandlers.put(type, handler);	      
         });
     }
 
@@ -148,8 +82,7 @@ public final class PropertiesHandler {
      * @param handler the property handler to unregister
      */
     public static void unregisterHandler(PropertyHandler handler) {
-        handler.getManagedTypes().forEach(type->{
-            propSet.remove(type);
+        handler.getManagedTypes().forEach(type->{          
             propHandlers.remove(type);
             LOG.debug("PropertiesHandler.unregisterHandler: unregistered "+type+" -> "+handler.getClass().getName());
         });
@@ -276,6 +209,10 @@ public final class PropertiesHandler {
         }
         return null;
     }
+    
+    public static String expand(String str, GVBuffer gvbuffer) throws PropertiesHandlerException{
+    	return PropertiesHandler.expand(str, GVBufferPropertiesHelper.getPropertiesMapSO(gvbuffer, true), gvbuffer.getObject());
+    }
 
     /**
      * @param type
@@ -315,7 +252,7 @@ public final class PropertiesHandler {
         while (mdt.hasNext()) {
             String sToken = mdt.next();
             if (sToken.equals(PropertyHandler.PROP_START)) {
-                String type = extractType(pToken);
+                String type = extractType(pToken).orElse("");
                 String staticToken = pToken.substring(0, pToken.lastIndexOf(type));
                 PropertyToken subToken = null;
                 if (staticToken.length() > 0) {
@@ -403,18 +340,9 @@ public final class PropertiesHandler {
      * @param str
      * @return
      */
-    private static String extractType(String str)
-    {
-        String type = "";
-        Iterator<String> i = propSet.iterator();
-        while (i.hasNext()) {
-            String currType = (String) i.next();
-            if (endsWith(str, currType)) {
-                type = currType;
-                break;
-            }
-        }
-        return type;
+    private static Optional<String> extractType(String str) {
+    	
+    	return propHandlers.keySet().stream().filter(t->endsWith(str, t)).findFirst();    	
     }
 
     private static boolean endsWith(String str, String value)
@@ -445,17 +373,93 @@ public final class PropertiesHandler {
      *        the string to check
      * @return true if the string is processed
      */
-    public static boolean isExpanded(String str)
+    public static boolean isExpanded(String str) {
+                
+        return  Objects.isNull(str) || 
+        		str.isEmpty() ||
+        		propHandlers.keySet().stream()
+        							 .map(t->t.concat(PropertyHandler.PROP_START))
+        							 .noneMatch(p->str.contains(p));      
+    }
+    
+    /**
+     * @version 3.0.0 Feb 27, 2010
+     * @author nunzio
+     *
+     */
+    public final class MetaDataTokenizer
     {
-        if ((str == null) || (str.length() == 0)) {
-            return true;
+        private Vector<String> tokens  = new Vector<String>();
+        private int            lastPos = 0;
+
+        /**
+         * @param string
+         */
+        public MetaDataTokenizer(String string)
+        {
+            parse(string, 0);
         }
-        Iterator<String> i = propSet.iterator();
-        while (i.hasNext()) {
-            if (str.indexOf(((String) i.next() + PropertyHandler.PROP_START)) != -1) {
-                return false;
+
+        /**
+         * @return it there is another token
+         */
+        public boolean hasNext()
+        {
+            return (lastPos < tokens.size());
+        }
+
+        /**
+         * @return the next token
+         */
+        public String next()
+        {
+            return tokens.get(lastPos++);
+        }
+
+        /**
+         *
+         */
+        public void pushBack()
+        {
+            lastPos--;
+            if (lastPos < -1) {
+                lastPos = -1;
             }
         }
-        return true;
+
+        private void parse(String string, int index)
+        {
+            if (string == null) {
+                return;
+            }
+            if (index == string.length()) {
+                return;
+            }
+            int begin = string.indexOf(PropertyHandler.PROP_START, index);
+            int end = string.indexOf(PropertyHandler.PROP_END, index);
+            String terminator = "";
+            int pos = -1;
+            if (begin == -1) {
+                if (end == -1) {
+                    tokens.add(string.substring(index));
+                    return;
+                }
+                terminator = PropertyHandler.PROP_END;
+                pos = end;
+            }
+            else {
+                if (end == -1) {
+                    terminator = PropertyHandler.PROP_START;
+                    pos = begin;
+                }
+                else {
+                    pos = (begin < end) ? begin : end;
+                    terminator = (begin < end) ? PropertyHandler.PROP_START : PropertyHandler.PROP_END;
+                }
+            }
+            tokens.add(string.substring(index, pos));
+            tokens.add(terminator);
+            parse(string, pos + PropertyHandler.PROP_START.length());
+        }
     }
 }

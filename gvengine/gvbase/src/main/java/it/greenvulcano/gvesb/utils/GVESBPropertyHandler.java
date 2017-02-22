@@ -33,10 +33,9 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Types;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.io.IOUtils;
 
 /**
@@ -45,18 +44,18 @@ import org.apache.commons.io.IOUtils;
  */
 public class GVESBPropertyHandler implements PropertyHandler {
     private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GVESBPropertyHandler.class);
-    private final static Set<String> managedTypes = new HashSet<>();
+    private final static List<String> managedTypes = new LinkedList<>();
 	
     static {   
        managedTypes.add("sql");
        managedTypes.add("sqllist");
        managedTypes.add("sqltable");
      
-       Collections.unmodifiableSet(managedTypes);
+       Collections.unmodifiableList(managedTypes);
     } 
     
     @Override
-	public Set<String> getManagedTypes() {		
+	public List<String> getManagedTypes() {		
 		return managedTypes;
 	}   
 
