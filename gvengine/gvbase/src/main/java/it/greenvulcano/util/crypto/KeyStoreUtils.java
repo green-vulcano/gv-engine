@@ -32,6 +32,9 @@ import java.security.KeyStore;
 import java.security.cert.Certificate;
 import java.util.HashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  *
  * KeyStoreUtils class
@@ -43,6 +46,8 @@ import java.util.HashMap;
  */
 public final class KeyStoreUtils
 {
+	private static final Logger LOG = LoggerFactory.getLogger(KeyStoreUtils.class);
+		
     /**
      * default keystore type.
      */
@@ -102,7 +107,7 @@ public final class KeyStoreUtils
                 if (url != null) {
                     fn = url.getFile();
                 }
-                System.out.println("getKeyStore: keyStoreName[" + keyStoreName + "] keyStorePwd[HIDDEN" // +
+                LOG.debug("getKeyStore: keyStoreName[" + keyStoreName + "] keyStorePwd[HIDDEN" // +
                         // keyStorePwd
                         + "] keyStoreType[" + keyStoreType + "] keyStorePrv[" + keyStorePrv + "] + fileName[" + fn + "]");
 
