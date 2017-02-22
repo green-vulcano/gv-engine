@@ -32,6 +32,7 @@ import it.greenvulcano.util.metadata.PropertiesHandler;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 
 import org.json.JSONObject;
@@ -211,7 +212,7 @@ public class JSONValidationCallOperation implements CallOperation {
         URL url = JSONValidationCallOperation.class.getClassLoader().getResource(jsdResource);
 
         if (url == null) {
-            jsdResource =  PropertiesHandler.expand(jsdFile, null);
+            jsdResource =  PropertiesHandler.expand(jsdFile, new HashMap<>());
             logger.debug("looking in filesystem for " + jsdResource);
 
             File jsd = new File(jsdResource);

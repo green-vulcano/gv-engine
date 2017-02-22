@@ -1021,14 +1021,13 @@ public final class XMLConfig {
      *         if some error occurs.
      * 
      */
-    public static String getDecrypted(String value) throws XMLConfigException
-    {
+    public static String getDecrypted(String value)  {
         String out = value;
         try {
             out = CryptoHelper.decrypt(DEFAULT_KEY_ID, value, true);
         }
         catch (Exception exc) {
-            throw new XMLConfigException("Error occurred decrypting value [" + value + "]", exc);
+            LOG.error("Error occurred decrypting value [" + value + "]", exc);
         }
         return out;
     }
@@ -1044,14 +1043,13 @@ public final class XMLConfig {
      *         if some error occurs.
      * 
      */
-    public static String getEncrypted(String value) throws XMLConfigException
-    {
+    public static String getEncrypted(String value) {
         String out = value;
         try {
             out = CryptoHelper.encrypt(DEFAULT_KEY_ID, value, true);
         }
         catch (Exception exc) {
-            throw new XMLConfigException("Error occurred encrypting value [" + value + "]", exc);
+        	LOG.error("Error occurred encrypting value [" + value + "]", exc);
         }
         return out;
     }
