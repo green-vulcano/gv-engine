@@ -121,6 +121,7 @@
               org.apache.cxf.binding,
               org.apache.cxf.transport,
               org.apache.commons.net.util,
+              javax.annotation,
               javax.activation,
               javax.ws.rs,
               javax.ws.rs.container,
