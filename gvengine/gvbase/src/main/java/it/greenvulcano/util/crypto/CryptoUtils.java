@@ -1084,7 +1084,7 @@ public final class CryptoUtils
                 else {
                     outfile = argsM.get("O");
                 }
-                key = KeyStoreUtils.readKey(keyid);
+                key = KeyStoreUtils.readKey(CryptoHelper.getKeystorePath(), keyid);
             }
 
             System.out.println("In file : " + infile);
@@ -1308,7 +1308,7 @@ public final class CryptoUtils
                 System.out.println("Registering SecretKey: " + key.getAlgorithm() + " " + key.getFormat() + " "
                         + key.toString());
                 System.out.println("In: " + keyid);
-                KeyStoreUtils.writeKey(keyid, key, null);
+                KeyStoreUtils.writeKey(CryptoHelper.getKeystorePath(), keyid, key, null);
                 System.out.println("***************************************");
                 break;
             case 3 :
@@ -1324,13 +1324,13 @@ public final class CryptoUtils
                 System.out.println("Registering PrivateKey: " + kPair.getPrivate());
                 System.out.println("With Certificate: " + cert[0]);
                 System.out.println("In: " + keyid);
-                KeyStoreUtils.writeKey(keyid, kPair.getPrivate(), cert);
+                KeyStoreUtils.writeKey(CryptoHelper.getKeystorePath(), keyid, kPair.getPrivate(), cert);
                 System.out.println("***************************************");
                 keyid.setKeyAlias(puAlias);
                 keyid.setKeyPwd(puPwd);
                 System.out.println("Registering PublicKey: " + kPair.getPublic());
                 System.out.println("In: " + keyid);
-                KeyStoreUtils.writeKey(keyid, kPair.getPublic(), null);
+                KeyStoreUtils.writeKey(CryptoHelper.getKeystorePath(), keyid, kPair.getPublic(), null);
                 System.out.println("***************************************");
                 break;
         }

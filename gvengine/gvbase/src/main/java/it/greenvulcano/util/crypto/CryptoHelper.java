@@ -19,10 +19,7 @@
  *******************************************************************************/
 package it.greenvulcano.util.crypto;
 
-import it.greenvulcano.configuration.ConfigurationEvent;
-import it.greenvulcano.configuration.ConfigurationListener;
-import it.greenvulcano.configuration.XMLConfig;
-
+import java.io.File;
 import java.security.AlgorithmParameters;
 import java.security.KeyStore;
 import java.util.HashMap;
@@ -31,6 +28,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import it.greenvulcano.configuration.ConfigurationEvent;
+import it.greenvulcano.configuration.ConfigurationListener;
+import it.greenvulcano.configuration.XMLConfig;
 
 /**
  * CryptoHelper class
@@ -47,47 +48,63 @@ public final class CryptoHelper implements ConfigurationListener {
     /**
      * CryptoHelper configuration file
      */
-    private static final String                CRYPTO_HELPER_FILE     = "GVCryptoHelper.xml";
+    private static final String                CRYPTO_HELPER_FILE   	= "GVCryptoHelper.xml";
+    /**
+     * CryptoHelper Key Store XPath
+     */
+    private static final String				   DEFAULT_KEY_STORE_XPATH	= "/GVCryptoHelper/@key-store-path";
+    /**
+     * Keystore id xpath
+     */
+    private static final String 			   KEY_STORE_ID_XPATH 		= "/GVCryptoHelper/KeyStoreID";    
+    /**
+     * key id xpath
+     */
+    private static final String				   KET_ID_XPATH 			= "/GVCryptoHelper/KeyID";
     /**
      * default keyId for configuration cypher key
      */
-    public static final String                 DEFAULT_KEY_ID         = "XMLConfig";
+    public static final String                 DEFAULT_KEY_ID         	= "XMLConfig";
     /**
      * default keyStoreId for configuration cypher key
      */
-    public static final String                 DEFAULT_KEYSTORE_ID    = "GVEsb";
+    public static final String                 DEFAULT_KEYSTORE_ID    	= "GVEsb";
     /**
      * default file name for configuration keystore
      */
-    public static final String                 DEFAULT_KEY_STORE_NAME = "GVEsb.jks";
+    public static final String                 DEFAULT_KEY_STORE_NAME 	= "GVEsb.jks";
     /**
      * default password for configuration keystore
      */
-    private static final String                SECRET_KEY_STORE_PWD   = "__GreenVulcanoPassword__";
+    private static final String                SECRET_KEY_STORE_PWD   	= "__GreenVulcanoPassword__";
     /**
      * default name for configuration cypher key
      */
-    private static final String                SECRET_KEY_NAME        = "XMLConfigKey";
+    private static final String                SECRET_KEY_NAME        	= "XMLConfigKey";
     /**
      * default password for configuration cypher key
      */
-    private static final String                SECRET_KEY_PWD         = "XMLConfigPassword";
+    private static final String                SECRET_KEY_PWD         	= "XMLConfigPassword";
     /**
      * cache for used keys
      */
-    private static HashMap<String, KeyID>      keyIDMap               = null;
+    private static HashMap<String, KeyID>      keyIDMap               	= null;
     /**
      * cache for used keyStores
      */
-    private static HashMap<String, KeyStoreID> keyStoreIDMap          = null;
+    private static HashMap<String, KeyStoreID> keyStoreIDMap          	= null;
+    /**
+     * 
+     */
+    private static String keystorePath 						  		  	= null;    
     /**
      * if true the configuration has changed
      */
-    private static boolean                     confChangedFlag        = true;
+    private static boolean                     confChangedFlag        	= true;
     /**
      * singleton reference
      */
-    private static CryptoHelper                instance               = null;
+    private static CryptoHelper                instance               	= null;
 
     static {
         init();
@@ -136,7 +153,7 @@ public final class CryptoHelper implements ConfigurationListener {
      *         if error occurs
      */
     public static String encrypt(String keyID, String data, boolean encode) throws CryptoHelperException,
-            CryptoUtilsException
+          CryptoUtilsException
     {
         return encrypt(keyID, data, CryptoUtils.DEFAULT_STRING_ENCODING, encode, null);
     }
@@ -322,7 +339,8 @@ public final class CryptoHelper implements ConfigurationListener {
     public static KeyStore getKeyStore(String keyStoreID) throws CryptoHelperException, KeyStoreUtilsException
     {
         KeyStoreID keySid = getKeyStoreID(keyStoreID);
-        return KeyStoreUtils.getKeyStore(keySid);
+        
+        return KeyStoreUtils.getKeyStore(keystorePath, keySid);
     }
 
     /**
@@ -386,12 +404,13 @@ public final class CryptoHelper implements ConfigurationListener {
     /**
      * Initialise the instance.
      */
-    private static void init()
+    public static void init()
     {
         if (instance == null) {
             instance = new CryptoHelper();
             keyIDMap = new HashMap<String, KeyID>();
             keyStoreIDMap = new HashMap<String, KeyStoreID>();
+                 
             loadConfiguration();
             XMLConfig.addConfigurationListener(instance, CRYPTO_HELPER_FILE);
         }
@@ -407,34 +426,39 @@ public final class CryptoHelper implements ConfigurationListener {
             confChangedFlag = false;
             keyIDMap.clear();
             keyStoreIDMap.clear();
+            
             try {
-                // must be set first because is used by KeyID(Node)
+                
+            	// it loads default keystore path
+				loadKeystorePath();
+            	
+            	// must be set first because is used by KeyID(Node)
                 setDefaultKeyID();
+                
                 try {
-                    NodeList nodeList = XMLConfig.getNodeList(CRYPTO_HELPER_FILE, "/GVCryptoHelper/KeyStoreID");
+                    NodeList nodeList = XMLConfig.getNodeList(CRYPTO_HELPER_FILE, KEY_STORE_ID_XPATH);
                     if ((nodeList != null) && (nodeList.getLength() > 0)) {
                         for (int i = 0; i < nodeList.getLength(); i++) {
                             try {
                                 Node node = nodeList.item(i);
                                 KeyStoreID keySid = new KeyStoreID(node);
-                                KeyStoreUtils.getKeyStore(keySid);
-                                LOG.debug("CryptoHelper - Adding keyStoreID '" + keySid.getKeyStoreID()
-                                    + "' to cache.");
+                                KeyStoreUtils.getKeyStore(keystorePath, keySid);
+                                LOG.debug("CryptoHelper - Adding keyStoreID '" + keySid.getKeyStoreID() + "' to cache.");
                                 keyStoreIDMap.put(keySid.getKeyStoreID(), keySid);
                             }
                             catch (Exception exc) {
                             	LOG.error("CryptoHelper - Error reading keyStore", exc);
-                                
                             }
                         }
                     }
-                    nodeList = XMLConfig.getNodeList(CRYPTO_HELPER_FILE, "/GVCryptoHelper/KeyID");
+                    
+                    nodeList = XMLConfig.getNodeList(CRYPTO_HELPER_FILE, KEY_STORE_ID_XPATH);
                     if ((nodeList != null) && (nodeList.getLength() > 0)) {
                         for (int i = 0; i < nodeList.getLength(); i++) {
                             try {
                                 Node node = nodeList.item(i);
                                 KeyID keyid = new KeyID(node);
-                                KeyStoreUtils.readKey(keyid);
+                                KeyStoreUtils.readKey(keystorePath, keyid);
                                 LOG.debug("CryptoHelper - Adding keyID '" + keyid.getKeyID() + "' to cache.");
                                 keyIDMap.put(keyid.getKeyID(), keyid);
                             }
@@ -445,36 +469,56 @@ public final class CryptoHelper implements ConfigurationListener {
                     }
                 }
                 catch (Exception exc) {
-                	LOG.error("CryptoHelper - Error reading file '" + CRYPTO_HELPER_FILE
-                            + "' - using only default keyID", exc);
-                    
+                	LOG.error("CryptoHelper - Error reading file '" + CRYPTO_HELPER_FILE + "' - using only default keyID", exc);                    
                 }
             }
             catch (KeyStoreUtilsException exc) {
-            	LOG.error("CryptoHelper Error", exc);
-                
-           }
+            	LOG.error("CryptoHelper Error", exc);                
+            }
         }
+    }
+    
+	/**
+	 *     
+	 * @return
+	 */
+    private static void loadKeystorePath() {    	
+    	if(keystorePath == null) {
+    		keystorePath = XMLConfig.get(CRYPTO_HELPER_FILE, DEFAULT_KEY_STORE_XPATH, null);
+	    	
+	    	// TODO: if keystorePath is null or empty, throws exception 
+	    	
+	    	if(!keystorePath.endsWith(File.separator)) {
+	    		keystorePath += File.separator;
+	    	}
+    	}
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public static String getKeystorePath() {
+    	return keystorePath;
     }
 
     /**
      * @throws KeyStoreUtilsException
      *         if error occurs
      */
-    private static void setDefaultKeyID() throws KeyStoreUtilsException
-    {
+    private static void setDefaultKeyID() throws KeyStoreUtilsException {    	
         if (keyIDMap.containsKey(DEFAULT_KEY_ID)) {
             return;
         }
-        KeyStoreID keySid = new KeyStoreID(DEFAULT_KEYSTORE_ID, KeyStoreUtils.DEFAULT_KEYSTORE_TYPE,
-                DEFAULT_KEY_STORE_NAME, SECRET_KEY_STORE_PWD, KeyStoreUtils.DEFAULT_KEYSTORE_PROVIDER);
+                
+        KeyStoreID keySid = new KeyStoreID(DEFAULT_KEYSTORE_ID, KeyStoreUtils.DEFAULT_KEYSTORE_TYPE, DEFAULT_KEY_STORE_NAME, SECRET_KEY_STORE_PWD, KeyStoreUtils.DEFAULT_KEYSTORE_PROVIDER);
         LOG.debug("CryptoHelper - Adding keyStoreID '" + keySid.getKeyStoreID() + "' to cache.");
         keyStoreIDMap.put(DEFAULT_KEYSTORE_ID, keySid);
 
         KeyID keyid = new KeyID(DEFAULT_KEY_ID, CryptoUtils.TRIPLE_DES_TYPE, keySid, SECRET_KEY_NAME, SECRET_KEY_PWD);
-        keyid.setKey(KeyStoreUtils.readKey(keyid));
+        keyid.setKey(KeyStoreUtils.readKey(keystorePath, keyid));
         LOG.debug("CryptoHelper - Adding keyID '" + keyid.getKeyID() + "' to cache.");
-        keyIDMap.put(DEFAULT_KEY_ID, keyid);
+        keyIDMap.put(DEFAULT_KEY_ID, keyid);       
     }
 
     /**

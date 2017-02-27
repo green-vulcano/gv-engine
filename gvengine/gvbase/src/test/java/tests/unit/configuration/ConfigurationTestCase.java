@@ -91,7 +91,7 @@ public class ConfigurationTestCase extends BaseTestCase {
             
            
             
-            KeyStoreUtils.writeKey(keyid, secretKey, null);
+            KeyStoreUtils.writeKey(CryptoHelper.getKeystorePath(), keyid, secretKey, null);
 
             CryptoHelper.resetCache();
         }

@@ -74,9 +74,9 @@ public final class KeyStoreUtils
     /**
      * @param keySid
      */
-    public static KeyStore getKeyStore(KeyStoreID keySid) throws KeyStoreUtilsException
+    public static KeyStore getKeyStore(String keyStorePath, KeyStoreID keySid) throws KeyStoreUtilsException
     {
-        return KeyStoreUtils.getKeyStore(keySid.getKeyStoreName(), keySid.getKeyStorePwd(), keySid.getKeyStoreType(),
+        return KeyStoreUtils.getKeyStore(keyStorePath, keySid.getKeyStoreName(), keySid.getKeyStorePwd(), keySid.getKeyStoreType(),
                 keySid.getKeyStorePrv());
     }
 
@@ -93,30 +93,27 @@ public final class KeyStoreUtils
      * @throws KeyStoreUtilsException
      *         if error occurs
      */
-    public static KeyStore getKeyStore(String keyStoreName, String keyStorePwd, String keyStoreType, String keyStorePrv)
+    public static KeyStore getKeyStore(String keyStorePath, String keyStoreName, String keyStorePwd, String keyStoreType, String keyStorePrv)
             throws KeyStoreUtilsException
     {
         KeyStore keyStore = keyStoreMap.get(keyStoreName);
         if (keyStore == null) {
             InputStream is = null;
             try {
-                String fn = PropertiesHandler.expand("sp{{gv.app.home}}" + File.separatorChar + "keystores"
-                        + File.separatorChar + keyStoreName);
-
-                URL url = KeyStoreUtils.class.getClassLoader().getResource(keyStoreName);
-                if (url != null) {
-                    fn = url.getFile();
-                }
+            	
+            	String filename = keyStorePath + keyStoreName;
+            	
                 LOG.debug("getKeyStore: keyStoreName[" + keyStoreName + "] keyStorePwd[HIDDEN" // +
                         // keyStorePwd
-                        + "] keyStoreType[" + keyStoreType + "] keyStorePrv[" + keyStorePrv + "] + fileName[" + fn + "]");
+                        + "] keyStoreType[" + keyStoreType + "] keyStorePrv[" + keyStorePrv + "] + fileName[" + filename + "]");
 
-                File fks = new File(fn);
+                File fks = new File(filename);
                 if (fks.canRead()) {
                     is = new FileInputStream(fks);
                 }
+                
                 if (is == null) {
-                    throw new IOException("File " + keyStoreName + " not found in ClassPath or in Path [" + fn + "]");
+                    throw new IOException("File " + keyStoreName + " not found in ClassPath or in Path [" + keyStorePath + "]");
                 }
 
                 keyStore = KeyStore.getInstance(keyStoreType, keyStorePrv);
@@ -124,7 +121,7 @@ public final class KeyStoreUtils
                 keyStoreMap.put(keyStoreName, keyStore);
             }
             catch (Exception exc) {
-                throw new KeyStoreUtilsException("Error occurred initializing keystore '" + keyStoreName + "'", exc);
+                throw new KeyStoreUtilsException("Error occurred initializing keystore '" + keyStorePath+keyStoreName + "'", exc);
             }
             finally {
                 if (is != null) {
@@ -152,12 +149,12 @@ public final class KeyStoreUtils
      * @throws KeyStoreUtilsException
      *         if errors occurs
      */
-    public static void writeKey(KeyID keyid, Key key, Certificate[] certs) throws KeyStoreUtilsException
+    public static void writeKey(String keyStorePath, KeyID keyid, Key key, Certificate[] certs) throws KeyStoreUtilsException
     {
         KeyStoreID ksID = keyid.getKeyStoreID();
         KeyStore keyStore = null;
         try {
-            keyStore = getKeyStore(ksID);
+            keyStore = getKeyStore(keyStorePath, ksID);
         }
         catch (Exception exc) {
             keyStore = null;
@@ -211,11 +208,11 @@ public final class KeyStoreUtils
      * @throws KeyStoreUtilsException
      *         if errors occurs
      */
-    public static Key readKey(KeyID keyid) throws KeyStoreUtilsException
+    public static Key readKey(String keyStorePath, KeyID keyid) throws KeyStoreUtilsException
     {
         KeyStoreID ksID = keyid.getKeyStoreID();
         Key key = null;
-        KeyStore keyStore = getKeyStore(ksID);
+        KeyStore keyStore = getKeyStore(keyStorePath, ksID);
         try {
             key = keyStore.getKey(keyid.getKeyAlias(), keyid.getKeyPwd().toCharArray());
             if (key == null) {

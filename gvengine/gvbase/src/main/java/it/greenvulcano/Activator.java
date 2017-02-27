@@ -47,6 +47,7 @@ import it.greenvulcano.configuration.XMLConfig;
 import it.greenvulcano.configuration.jmx.XMLConfigProxy;
 import it.greenvulcano.jmx.JMXEntryPoint;
 import it.greenvulcano.jmx.impl.KarafJMXEntryPoint;
+import it.greenvulcano.util.crypto.CryptoHelper;
 
 public class Activator implements BundleActivator {
 
@@ -117,6 +118,11 @@ public class Activator implements BundleActivator {
 		}
 		registeredObjectName = registerXMLConfigMBean();
 		
+		try {
+			CryptoHelper.init();
+		} catch(Exception exception) {
+			LOG.error("Failed to initalize CryptoHelper configuration ", exception);
+		}	
 	}
 
 	@Override
