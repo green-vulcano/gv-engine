@@ -52,7 +52,7 @@ public final class CryptoHelper implements ConfigurationListener {
     /**
      * CryptoHelper Key Store XPath
      */
-    private static final String				   DEFAULT_KEY_STORE_XPATH	= "/GVCryptoHelper/@key-store-path";
+    private static final String				   DEFAULT_KEY_STORE_FOLDER	= "/GVCryptoHelper/@key-store-folder";
     /**
      * Keystore id xpath
      */
@@ -484,7 +484,7 @@ public final class CryptoHelper implements ConfigurationListener {
 	 */
     private static void loadKeystorePath() {    	
     	if(keystorePath == null) {
-    		keystorePath = XMLConfig.get(CRYPTO_HELPER_FILE, DEFAULT_KEY_STORE_XPATH, null);
+    		keystorePath = XMLConfig.get(CRYPTO_HELPER_FILE, DEFAULT_KEY_STORE_FOLDER, null);
 	    	
 	    	// TODO: if keystorePath is null or empty, throws exception 
 	    	
