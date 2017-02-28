@@ -452,7 +452,7 @@ public final class CryptoHelper implements ConfigurationListener {
                         }
                     }
                     
-                    nodeList = XMLConfig.getNodeList(CRYPTO_HELPER_FILE, KEY_STORE_ID_XPATH);
+                    nodeList = XMLConfig.getNodeList(CRYPTO_HELPER_FILE, KET_ID_XPATH);
                     if ((nodeList != null) && (nodeList.getLength() > 0)) {
                         for (int i = 0; i < nodeList.getLength(); i++) {
                             try {
