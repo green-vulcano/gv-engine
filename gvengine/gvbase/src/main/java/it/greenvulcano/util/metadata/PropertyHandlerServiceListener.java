@@ -1,13 +1,16 @@
 package it.greenvulcano.util.metadata;
 
+import java.util.Optional;
+
 public final class PropertyHandlerServiceListener {
 	
-	 public void onBind(PropertyHandler propertyHandler) {
-	   PropertiesHandler.registerHandler(propertyHandler);    
+	 public void onBind(PropertyHandler propertyHandler) {	 
+		 Optional.ofNullable(propertyHandler).ifPresent(PropertiesHandler::registerHandler);	 
+	       
 	 }
 	    
      public void onUnbind(PropertyHandler propertyHandler) {
-       PropertiesHandler.unregisterHandler(propertyHandler);
+    	 Optional.ofNullable(propertyHandler).ifPresent(PropertiesHandler::unregisterHandler);
      }
 
 }
