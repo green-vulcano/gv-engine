@@ -3,7 +3,7 @@
 <!DOCTYPE GVCore SYSTEM "http://www.greenvulcano.com/gvesb/dtds/GVCore.dtd">
 
 <GVCore version="1.0">
-  <GVCryptoHelper name="CRYPTO_HELPER" type="module">
+  <GVCryptoHelper name="CRYPTO_HELPER" type="module" key-store-folder="${{gv.app.home}}">
         <KeyStoreID id="testKS" key-store-name="teststore.jks" key-store-pwd="testpwd"/>
         <KeyID id="test" key-alias="testalias" key-pwd="keypwd" key-store-id="testKS" key-type="3DES"/>
         <!-- KeyID id="test1" key-alias="testalias" key-pwd="keypwd" key-store-id="testKS" key-type="3DES" key-type-mode="CBC" key-type-padding="NoPadding"/>

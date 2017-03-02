@@ -19,7 +19,6 @@
  *******************************************************************************/
 package it.greenvulcano.util.crypto;
 
-import java.io.File;
 import java.security.AlgorithmParameters;
 import java.security.KeyStore;
 import java.util.HashMap;
@@ -32,6 +31,8 @@ import org.w3c.dom.NodeList;
 import it.greenvulcano.configuration.ConfigurationEvent;
 import it.greenvulcano.configuration.ConfigurationListener;
 import it.greenvulcano.configuration.XMLConfig;
+import it.greenvulcano.util.metadata.PropertiesHandler;
+import it.greenvulcano.util.metadata.PropertiesHandlerException;
 
 /**
  * CryptoHelper class
@@ -429,8 +430,8 @@ public final class CryptoHelper implements ConfigurationListener {
             
             try {
                 
-            	// it loads default keystore path
-				loadKeystorePath();
+            	String path =  XMLConfig.get(CRYPTO_HELPER_FILE, DEFAULT_KEY_STORE_FOLDER, "");
+            	keystorePath = PropertiesHandler.expand(path);
             	
             	// must be set first because is used by KeyID(Node)
                 setDefaultKeyID();
@@ -474,26 +475,12 @@ public final class CryptoHelper implements ConfigurationListener {
             }
             catch (KeyStoreUtilsException exc) {
             	LOG.error("CryptoHelper Error", exc);                
-            }
+            } catch (PropertiesHandlerException e) {
+            	LOG.error("PropertiHaenler fails to expand value of "+DEFAULT_KEY_STORE_FOLDER , e);
+			}
         }
     }
-    
-	/**
-	 *     
-	 * @return
-	 */
-    private static void loadKeystorePath() {    	
-    	if(keystorePath == null) {
-    		keystorePath = XMLConfig.get(CRYPTO_HELPER_FILE, DEFAULT_KEY_STORE_FOLDER, null);
-	    	
-	    	// TODO: if keystorePath is null or empty, throws exception 
-	    	
-	    	if(!keystorePath.endsWith(File.separator)) {
-	    		keystorePath += File.separator;
-	    	}
-    	}
-    }
-    
+    	    
     /**
      * 
      * @return

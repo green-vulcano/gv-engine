@@ -20,13 +20,15 @@
 package it.greenvulcano.util.crypto;
 
 import it.greenvulcano.util.metadata.PropertiesHandler;
-
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.security.Key;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
@@ -97,31 +99,29 @@ public final class KeyStoreUtils
             throws KeyStoreUtilsException
     {
         KeyStore keyStore = keyStoreMap.get(keyStoreName);
+                       
         if (keyStore == null) {
+        	        	
             InputStream is = null;
-            try {
-            	
-            	String filename = keyStorePath + keyStoreName;
-            	
+            try {            	           	
+                               
+                Path keystore = Paths.get(keyStorePath, keyStoreName);                
+             
                 LOG.debug("getKeyStore: keyStoreName[" + keyStoreName + "] keyStorePwd[HIDDEN" // +
                         // keyStorePwd
-                        + "] keyStoreType[" + keyStoreType + "] keyStorePrv[" + keyStorePrv + "] + fileName[" + filename + "]");
-
-                File fks = new File(filename);
-                if (fks.canRead()) {
-                    is = new FileInputStream(fks);
-                }
+                        + "] keyStoreType[" + keyStoreType + "] keyStorePrv[" + keyStorePrv + "] + fileName[" + keystore.getFileName() + "]");
                 
-                if (is == null) {
-                    throw new IOException("File " + keyStoreName + " not found in ClassPath or in Path [" + keyStorePath + "]");
+                if (Files.exists(keystore) && Files.isReadable(keystore)) {
+                	is = Files.newInputStream(keystore, StandardOpenOption.READ);
+                } else {
+                    throw new IOException("Can not access to file "+keystore.toRealPath());
                 }
 
                 keyStore = KeyStore.getInstance(keyStoreType, keyStorePrv);
                 keyStore.load(is, keyStorePwd.toCharArray());
-                keyStoreMap.put(keyStoreName, keyStore);
-            }
-            catch (Exception exc) {
-                throw new KeyStoreUtilsException("Error occurred initializing keystore '" + keyStorePath+keyStoreName + "'", exc);
+                keyStoreMap.put(keyStoreName, keyStore);            
+			}  catch (Exception exc) {
+                throw new KeyStoreUtilsException("Error occurred initializing keystore '" +keyStoreName + "' in path "+keyStorePath, exc);
             }
             finally {
                 if (is != null) {
