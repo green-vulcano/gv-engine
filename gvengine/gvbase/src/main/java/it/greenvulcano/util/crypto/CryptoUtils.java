@@ -201,10 +201,12 @@ public final class CryptoUtils
                 SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(kType, "SunJCE");
                 KeySpec spec = null;
                 if (kType.equals(DES_TYPE)) {
-                    spec = new DESKeySpec(keyBytes, 0);
+                    spec = new DESKeySpec(keyBytes);
                 }
                 else if (kType.equals(TRIPLE_DES_TYPE_P)) {
-                    spec = new DESedeKeySpec(keyBytes, 0);
+
+                	spec = new DESedeKeySpec(keyBytes);
+                    
                 }
                 else if (kType.equals(AES_TYPE)) {
                     spec = new SecretKeySpec(keyBytes, "AES");
