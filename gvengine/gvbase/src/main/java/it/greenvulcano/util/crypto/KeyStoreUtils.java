@@ -19,14 +19,13 @@
  *******************************************************************************/
 package it.greenvulcano.util.crypto;
 
-import it.greenvulcano.util.metadata.PropertiesHandler;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.security.Key;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
@@ -97,31 +96,29 @@ public final class KeyStoreUtils
             throws KeyStoreUtilsException
     {
         KeyStore keyStore = keyStoreMap.get(keyStoreName);
+                       
         if (keyStore == null) {
+        	        	
             InputStream is = null;
-            try {
-            	
-            	String filename = keyStorePath + keyStoreName;
-            	
+            try {            	           	
+                               
+                Path keystore = Paths.get(keyStorePath, keyStoreName);                
+             
                 LOG.debug("getKeyStore: keyStoreName[" + keyStoreName + "] keyStorePwd[HIDDEN" // +
                         // keyStorePwd
-                        + "] keyStoreType[" + keyStoreType + "] keyStorePrv[" + keyStorePrv + "] + fileName[" + filename + "]");
-
-                File fks = new File(filename);
-                if (fks.canRead()) {
-                    is = new FileInputStream(fks);
-                }
+                        + "] keyStoreType[" + keyStoreType + "] keyStorePrv[" + keyStorePrv + "] + fileName[" + keystore.getFileName() + "]");
                 
-                if (is == null) {
-                    throw new IOException("File " + keyStoreName + " not found in ClassPath or in Path [" + keyStorePath + "]");
+                if (Files.exists(keystore) && Files.isReadable(keystore)) {
+                	is = Files.newInputStream(keystore, StandardOpenOption.READ);
+                } else {
+                    throw new IOException("Can not access to file "+keystore.toRealPath());
                 }
 
                 keyStore = KeyStore.getInstance(keyStoreType, keyStorePrv);
                 keyStore.load(is, keyStorePwd.toCharArray());
-                keyStoreMap.put(keyStoreName, keyStore);
-            }
-            catch (Exception exc) {
-                throw new KeyStoreUtilsException("Error occurred initializing keystore '" + keyStorePath+keyStoreName + "'", exc);
+                keyStoreMap.put(keyStoreName, keyStore);            
+			}  catch (Exception exc) {
+                throw new KeyStoreUtilsException("Error occurred initializing keystore '" +keyStoreName + "' in path "+keyStorePath, exc);
             }
             finally {
                 if (is != null) {
@@ -166,32 +163,12 @@ public final class KeyStoreUtils
                 keyStore.load(null, null);
             }
             keyStore.setKeyEntry(keyid.getKeyAlias(), key, keyid.getKeyPwd().toCharArray(), certs);
+            
+            Path keystore = Paths.get(keyStorePath, ksID.getKeyStoreName());            
+            OutputStream keystoreOutputStream = Files.newOutputStream(keystore, StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
 
-            String fn = PropertiesHandler.expand("sp{{gv.app.home}}" + File.separatorChar + "keystores"
-                    + File.separatorChar + ksID.getKeyStoreName());
-
-            // System.out.println("------writeKey: keyStoreName[" +
-            // keyid.getKeyStoreName() + "] keyStorePwd[" +
-            // keyid.getKeyStorePwd() + "] keyStoreType[" +
-            // keyid.getKeyStoreType() + "] keyStorePrv[" +
-            // keyid.getKeyStorePrv() + "] + fn[" + fn + "]");
-
-            FileOutputStream fos = null;
-            URL url = KeyStoreUtils.class.getClassLoader().getResource(ksID.getKeyStoreName());
-            if (url != null) {
-                fn = url.getFile();
-            }
-            File fks = new File(fn);
-            fks.getParentFile().mkdirs();
-            if (!fks.exists() || fks.canWrite()) {
-                fos = new FileOutputStream(fks);
-            }
-            if (fos == null) {
-                throw new IOException("File " + ksID.getKeyStoreName() + " not writable on Path [" + fn + "]");
-            }
-
-            keyStore.store(fos, ksID.getKeyStorePwd().toCharArray());
-            fos.close();
+            keyStore.store(keystoreOutputStream, ksID.getKeyStorePwd().toCharArray());
+            keystoreOutputStream.close();
         }
         catch (Exception exc) {
             throw new KeyStoreUtilsException("Error occurred inserting key '" + keyid.getKeyAlias()

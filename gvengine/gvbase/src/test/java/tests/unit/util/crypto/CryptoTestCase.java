@@ -67,7 +67,7 @@ public class CryptoTestCase extends BaseTestCase
     @Test
     public void testEncrypt1() throws Exception
     {
-        String result = CryptoHelper.encrypt(CryptoHelper.DEFAULT_KEY_ID, TEST_STRING_CLEAR, true);
+        String result = CryptoHelper.encrypt(null, TEST_STRING_CLEAR, true);
         System.out.println("Encrypt: " + result);
         assertEquals("Encrypt Failed", TEST_STRING_CYPHER_3DES, result);
     }

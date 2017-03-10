@@ -19,7 +19,9 @@
  *******************************************************************************/
 package it.greenvulcano.util.crypto;
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.AlgorithmParameters;
 import java.security.KeyStore;
 import java.util.HashMap;
@@ -32,6 +34,8 @@ import org.w3c.dom.NodeList;
 import it.greenvulcano.configuration.ConfigurationEvent;
 import it.greenvulcano.configuration.ConfigurationListener;
 import it.greenvulcano.configuration.XMLConfig;
+import it.greenvulcano.util.metadata.PropertiesHandler;
+import it.greenvulcano.util.metadata.PropertiesHandlerException;
 
 /**
  * CryptoHelper class
@@ -76,15 +80,15 @@ public final class CryptoHelper implements ConfigurationListener {
     /**
      * default password for configuration keystore
      */
-    private static final String                SECRET_KEY_STORE_PWD   	= "__GreenVulcanoPassword__";
+    public static final String                SECRET_KEY_STORE_PWD   	= "__GreenVulcanoPassword__";
     /**
      * default name for configuration cypher key
      */
-    private static final String                SECRET_KEY_NAME        	= "XMLConfigKey";
+    public static final String                SECRET_KEY_NAME        	= "XMLConfigKey";
     /**
      * default password for configuration cypher key
      */
-    private static final String                SECRET_KEY_PWD         	= "XMLConfigPassword";
+    public static final String                SECRET_KEY_PWD         	= "5767Z98e78fs9e46f8x9E3646tHeXcniw4329hnn92nc9";
     /**
      * cache for used keys
      */
@@ -429,9 +433,10 @@ public final class CryptoHelper implements ConfigurationListener {
             
             try {
                 
-            	// it loads default keystore path
-				loadKeystorePath();
-            	
+            	String path =  XMLConfig.get(CRYPTO_HELPER_FILE, DEFAULT_KEY_STORE_FOLDER, "");            	
+            	Path keystoreFolder= Paths.get(PropertiesHandler.expand(path));
+            	keystorePath =  Files.isDirectory(keystoreFolder) ? keystoreFolder.toString() : keystoreFolder.getParent().toString();
+            			
             	// must be set first because is used by KeyID(Node)
                 setDefaultKeyID();
                 
@@ -474,26 +479,12 @@ public final class CryptoHelper implements ConfigurationListener {
             }
             catch (KeyStoreUtilsException exc) {
             	LOG.error("CryptoHelper Error", exc);                
-            }
+            } catch (PropertiesHandlerException e) {
+            	LOG.error("PropertiHaenler fails to expand value of "+DEFAULT_KEY_STORE_FOLDER , e);
+			}
         }
     }
-    
-	/**
-	 *     
-	 * @return
-	 */
-    private static void loadKeystorePath() {    	
-    	if(keystorePath == null) {
-    		keystorePath = XMLConfig.get(CRYPTO_HELPER_FILE, DEFAULT_KEY_STORE_FOLDER, null);
-	    	
-	    	// TODO: if keystorePath is null or empty, throws exception 
-	    	
-	    	if(!keystorePath.endsWith(File.separator)) {
-	    		keystorePath += File.separator;
-	    	}
-    	}
-    }
-    
+    	    
     /**
      * 
      * @return

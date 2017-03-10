@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import it.greenvulcano.util.crypto.CryptoHelper;
 
-@Command(scope = "gvesb", name = "encrypt", description = "Encrypt a string using default keystore")
+@Command(scope = "gvesb", name = "encrypt", description = "Encrypt a string")
 @Service
 public class GVEncrypt implements Action {
 	

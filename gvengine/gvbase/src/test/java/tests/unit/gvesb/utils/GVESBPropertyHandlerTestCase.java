@@ -24,6 +24,7 @@ import java.util.Map;
 
 import it.greenvulcano.gvesb.buffer.GVBuffer;
 import it.greenvulcano.util.metadata.PropertiesHandler;
+import it.greenvulcano.util.metadata.PropertiesHandlerException;
 import tests.unit.BaseTestCase;
 import tests.unit.gvrules.bean.figure.Circle;
 
@@ -42,6 +43,12 @@ public class GVESBPropertyHandlerTestCase extends BaseTestCase
     @Override
     protected void setUp() throws Exception {    	
     	super.setUp();
+    }
+    
+    public void testBasicHandler() throws PropertiesHandlerException{
+    	String base = PropertiesHandler.expand("${{gv.app.home}}");
+    	
+    	assertNotSame("${{gv.app.home}}", base);
     }
     
     /**

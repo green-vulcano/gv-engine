@@ -68,13 +68,14 @@ public class ConfigurationTestCase extends BaseTestCase {
         super.setUp();
             
         try {
-            FileUtils.moveFile(new File(BASE_DIR + File.separator+ KEYSTORE_NAME), 
-            				   new File(BASE_DIR + File.separator+ KEYSTORE_NAME + ".orig"));
+            FileUtils.moveFile(new File(CryptoHelper.getKeystorePath() + File.separator+ KEYSTORE_NAME), 
+            				   new File(CryptoHelper.getKeystorePath() + File.separator+ KEYSTORE_NAME + ".orig"));
         }
         catch (Exception exc) {
         	exc.printStackTrace();
             fail();
         }
+        
         try {
             KeyStoreID keySid = new KeyStoreID("TEMP", KeyStoreUtils.DEFAULT_KEYSTORE_TYPE, "", "",
                     KeyStoreUtils.DEFAULT_KEYSTORE_PROVIDER);
@@ -93,6 +94,15 @@ public class ConfigurationTestCase extends BaseTestCase {
             
             KeyStoreUtils.writeKey(CryptoHelper.getKeystorePath(), keyid, secretKey, null);
 
+            try {
+                FileUtils.copyFile(new File(CryptoHelper.getKeystorePath() + File.separator+ "keystores" +File.separator+ KEYSTORE_NAME), 
+                				   new File(CryptoHelper.getKeystorePath() + File.separator+ KEYSTORE_NAME));
+            }
+            catch (Exception exc) {
+            	exc.printStackTrace();
+                fail();
+            }
+            
             CryptoHelper.resetCache();
         }
         catch (Exception exc) {
@@ -103,15 +113,15 @@ public class ConfigurationTestCase extends BaseTestCase {
 
     /**
      * @see junit.framework.TestCase#tearDown()
-     */
+    */
     @Override
     protected void tearDown() throws Exception
     {
-        new File(BASE_DIR + File.separator + KEYSTORE_NAME).delete();
-        new File("target/keystores/" + KEYSTORE_NAME).delete();
+        new File(CryptoHelper.getKeystorePath() + File.separator + KEYSTORE_NAME).delete();
+      
         try {
-            FileUtils.moveFile(new File(BASE_DIR  + File.separator+ KEYSTORE_NAME + ".orig"), 
-            				   new File(BASE_DIR  + File.separator+ KEYSTORE_NAME));
+            FileUtils.moveFile(new File(CryptoHelper.getKeystorePath()  + File.separator+ KEYSTORE_NAME + ".orig"), 
+            				   new File(CryptoHelper.getKeystorePath()  + File.separator+ KEYSTORE_NAME));
         }
         catch (Exception exc) {
         	exc.printStackTrace();
@@ -125,6 +135,8 @@ public class ConfigurationTestCase extends BaseTestCase {
     public void testConfiguration()
     {
         try {
+        	CryptoHelper.encrypt(null, "test", true);
+        	
             URL configURL = XMLConfig.load(CONFIGURATION_FILE);
             assertNotNull("Cannot load " + CONFIGURATION_FILE + " configuration.", configURL);
             URL retrievedURL = XMLConfig.getURL(CONFIGURATION_FILE);
@@ -140,6 +152,7 @@ public class ConfigurationTestCase extends BaseTestCase {
             Node originalAliasAttr = XMLConfig.getNode(testNode_K, "@key-pwd");
             String originalKeystorePwd = originalKeystoreAttr.getNodeValue();
             String originalAliasPwd = originalAliasAttr.getNodeValue();
+            
             String encryptedData = CryptoHelper.encrypt(null, originalKeystorePwd, true);
             originalKeystoreAttr.setNodeValue(encryptedData);
             encryptedData = CryptoHelper.encrypt(null, originalAliasPwd, true);
