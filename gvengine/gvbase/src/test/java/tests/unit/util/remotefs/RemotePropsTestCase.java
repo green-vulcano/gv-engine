@@ -21,6 +21,7 @@ package tests.unit.util.remotefs;
 
 import it.greenvulcano.configuration.XMLConfig;
 import it.greenvulcano.util.bin.BinaryUtils;
+import it.greenvulcano.util.crypto.CryptoHelper;
 import it.greenvulcano.util.file.FileProperties;
 import it.greenvulcano.util.file.RegExFileFilter;
 import it.greenvulcano.util.remotefs.RemoteManager;
@@ -68,8 +69,8 @@ public class RemotePropsTestCase extends BaseTestCase
         props = new HashMap<String, String>();
         props.put("HOST", "localhost");
         props.put("USER", "test_user");
-        props.put("PASSWORD", "{3DES}pl1YKFjWlqMfdTIbxY17Mg==");
-
+        props.put("PASSWORD", CryptoHelper.encrypt(null, "test_user", true) );
+        
         Node node = XMLConfig.getNode("GVCore.xml",
                 "//remotemanager-call[@name='testConnectOnlyProps']/*[@type='remote-manager']");
         ra = (RemoteManager) Class.forName(XMLConfig.get(node, "@class")).newInstance();

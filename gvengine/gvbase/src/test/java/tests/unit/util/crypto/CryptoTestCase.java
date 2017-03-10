@@ -37,10 +37,10 @@ import org.junit.Test;
 public class CryptoTestCase extends BaseTestCase
 {
     private static final String TEST_STRING_CLEAR                          = "Test string!";
-    private static final String TEST_STRING_CYPHER_3DES                    = "{3DES}Gxr7ntesEtC7R76H5bfRAQ==";
-    private static final String TEST_STRING_CYPHER_3DES_CFB8_NoPadding     = "{3DES/CFB8/NoPadding}1o/eK55bUUD7TTMW";
-    private static final String TEST_STRING_CYPHER_3DES_OFB32_PKCS5Padding = "{3DES/OFB32/PKCS5Padding}1lVdfaOYS2B36NPb47b1GA==";
-    private static final String TEST_STRING_CYPHER_3DES_L                  = "Gxr7ntesEtC7R76H5bfRAQ==";
+    private static final String TEST_STRING_CYPHER_3DES                    = "{3DES}Fc+EI2Cvv5waR2bG6QqxyA==";
+    private static final String TEST_STRING_CYPHER_3DES_CFB8_NoPadding     = "{3DES/CFB8/NoPadding}46casmey0/YPBFME";
+    private static final String TEST_STRING_CYPHER_3DES_OFB32_PKCS5Padding = "{3DES/OFB32/PKCS5Padding}4/BOUXueq3v6uIehcfEc8g==";
+    private static final String TEST_STRING_CYPHER_3DES_L                  = "Fc+EI2Cvv5waR2bG6QqxyA==";
 
     /**
      * @throws java.lang.Exception
@@ -108,6 +108,7 @@ public class CryptoTestCase extends BaseTestCase
     {
         byte[] result = CryptoHelper.encrypt(CryptoHelper.DEFAULT_KEY_ID, TEST_STRING_CLEAR.getBytes("ISO-8859-1"),
                 false);
+       
         assertArrayEquals("Encrypt Failed", Base64.getDecoder().decode(TEST_STRING_CYPHER_3DES_L), result);
     }
 

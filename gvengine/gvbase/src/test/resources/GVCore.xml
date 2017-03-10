@@ -4,15 +4,17 @@
 
 <GVCore version="1.0">
   <GVCryptoHelper name="CRYPTO_HELPER" type="module" key-store-folder="${{gv.app.home}}">
+        
         <KeyStoreID id="testKS" key-store-name="teststore.jks" key-store-pwd="testpwd"/>
+        
         <KeyID id="test" key-alias="testalias" key-pwd="keypwd" key-store-id="testKS" key-type="3DES"/>
         <!-- KeyID id="test1" key-alias="testalias" key-pwd="keypwd" key-store-id="testKS" key-type="3DES" key-type-mode="CBC" key-type-padding="NoPadding"/>
         <KeyID id="test2" key-alias="testalias" key-pwd="keypwd" key-store-id="testKS" key-type="3DES" key-type-mode="OFB32" key-type-padding="PKCS5Padding"/-->
-        <KeyID id="test1" key-alias="XMLConfigKey" key-pwd="XMLConfigPassword" key-store-id="GVEsb" key-type="3DES" key-type-mode="CFB8" key-type-padding="NoPadding"/>
-        <KeyID id="test2" key-alias="XMLConfigKey" key-pwd="XMLConfigPassword" key-store-id="GVEsb" key-type="3DES" key-type-mode="CFB8" key-type-padding="NoPadding">
+        <KeyID id="test1" key-alias="XMLConfigKey" key-pwd="5767Z98e78fs9e46f8x9E3646tHeXcniw4329hnn92nc9" key-store-id="GVEsb" key-type="3DES" key-type-mode="CFB8" key-type-padding="NoPadding"/>
+        <KeyID id="test2" key-alias="XMLConfigKey" key-pwd="5767Z98e78fs9e46f8x9E3646tHeXcniw4329hnn92nc9" key-store-id="GVEsb" key-type="3DES" key-type-mode="CFB8" key-type-padding="NoPadding">
             <AlgorithmParameters>BAjK0G7M3ZZjIQ==</AlgorithmParameters>
         </KeyID>
-        <KeyID id="test3" key-alias="XMLConfigKey" key-pwd="XMLConfigPassword" key-store-id="GVEsb" key-type="3DES" key-type-mode="OFB32" key-type-padding="PKCS5Padding">
+        <KeyID id="test3" key-alias="XMLConfigKey" key-pwd="5767Z98e78fs9e46f8x9E3646tHeXcniw4329hnn92nc9" key-store-id="GVEsb" key-type="3DES" key-type-mode="OFB32" key-type-padding="PKCS5Padding">
             <AlgorithmParameters>BAjK0G7M3ZZjIQ==</AlgorithmParameters>
         </KeyID>
   </GVCryptoHelper>
@@ -348,7 +350,7 @@ RESULT = "1" == services.get("@{{SVC}}","0")]]></Script>
 
           <remotemanager-call name="testConnectOnly" class="it.greenvulcano.gvesb.virtual.file.remote.RemoteManagerCall"
                               type="call">
-            <FTPManager hostname="localhost" port="13021" password="{3DES}pl1YKFjWlqMfdTIbxY17Mg==" username="test_user" hostType="UNIX"
+            <FTPManager hostname="localhost" port="13021" password="{3DES}pjCattNI86HhCSpwUDwc7g==" username="test_user" hostType="UNIX"
                         autoConnect="false" type="remote-manager" class="it.greenvulcano.util.remotefs.ftp.FTPManager"/>
           </remotemanager-call>
           <remotemanager-call name="testConnectOnlyProps" class="it.greenvulcano.gvesb.virtual.file.remote.RemoteManagerCall"

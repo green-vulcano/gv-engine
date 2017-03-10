@@ -53,7 +53,7 @@ public class ConfigurationTestCase extends BaseTestCase {
     private static final String KEYSTORE_NAME            = "GVEsb.jks";   
     private static final String KEY_STORE_PWD            = "__GreenVulcanoPassword__";
     private static final String ALIAS_KEY_NAME           = "XMLConfigKey";
-    private static final String ALIAS_KEY_PWD            = "XMLConfigPassword";
+    private static final String ALIAS_KEY_PWD            = "5767Z98e78fs9e46f8x9E3646tHeXcniw4329hnn92nc9";
 
     private static final String TEST_KS_XPATH            = "/GVCore/GVCryptoHelper/KeyStoreID[@id='testKS']";
     private static final String TEST_K_XPATH             = "/GVCore/GVCryptoHelper/KeyID[@id='test']";
@@ -94,14 +94,6 @@ public class ConfigurationTestCase extends BaseTestCase {
             
             KeyStoreUtils.writeKey(CryptoHelper.getKeystorePath(), keyid, secretKey, null);
 
-            try {
-                FileUtils.copyFile(new File(CryptoHelper.getKeystorePath() + File.separator+ "keystores" +File.separator+ KEYSTORE_NAME), 
-                				   new File(CryptoHelper.getKeystorePath() + File.separator+ KEYSTORE_NAME));
-            }
-            catch (Exception exc) {
-            	exc.printStackTrace();
-                fail();
-            }
             
             CryptoHelper.resetCache();
         }
