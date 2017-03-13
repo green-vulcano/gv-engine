@@ -10,7 +10,7 @@ Then restart karaf.
 
 Install feature repository and install gvegine
 ```sh
-gvadmin@root()> feature:repo-add mvn:it.greenvulcano.gvesb/gvengine-features/4.0.0-SNAPSHOT/xml/features
+gvadmin@root()> feature:repo-add mvn:it.greenvulcano.gvesb/features/4.0.0-SNAPSHOT/xml/features
 gvadmin@root()> feature:install gvengine
 ```
 The list of karaf features, now also include those of GreenVulcano:
@@ -30,24 +30,24 @@ At the end of this process a folder it will be created at **<karaf_home>/Greenv*
 
 It is necessary to restart karaf to properly load a new configuration.
 
-### adapter
-To use an adapter, like a **data handler** or a  **rest-call**, it is mandatory to install following component:
- ```sh
-gvadmin@root()> feature:repo-add mvn:it.greenvulcano.gvesb.adapter/gvrestx/4.0.0-SNAPSHOT/xml/features
-gvadmin@root()> feature:install gvrestx
+### Plugins and adapters
+You can install specific plugins and adapters to extends GreenVulcano ESB v4 
+````sh
+
+gvadmin@root()> feature:install gvvcl-rest
  ```
 
 For **data handler** just install following bundle, with start level 96:
  ```sh
-gvadmin@root()> bundle:install -s -l 96 mvn:it.greenvulcano.gvesb.adapter/gvdatahandler/4.0.0-SNAPSHOT
+gvadmin@root()> feature:install gvdatahandler
  ```
 
 To url mapping (httpInboundGateway) install also gvhttp: it is a war file and not a jar file, so don't forget to add /war suffix:
  ```sh
-gvadmin@root()> bundle:install -s -l 96 mvn:it.greenvulcano.gvesb.adapter/gvhttp/4.0.0-SNAPSHOT/war
+gvadmin@root()> feature:install gvhttp
  ```
 
-For database connections (JNDI, JDBC):
+For database connections (JNDI, JDBC), refer to [OPS4J Pax JDBC] framework i.e. :
  ```sh
 gvadmin@root()> feature:install pax-jdbc-oracle
  ```   
@@ -69,3 +69,4 @@ Export a configuration from Developer studio. Then choose whether to use "Develo
 
 [GreenVulcano]: https://github.com/green-vulcano/gv-engine
 [apache karaf]: <http://karaf.apache.org>
+[OPS4J Pax JDBC]: https://ops4j1.jira.com/wiki/display/PAXJDBC/Documentation
