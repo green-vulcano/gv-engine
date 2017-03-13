@@ -7,7 +7,7 @@
 		<version>4.0.0-SNAPSHOT</version>
 	</parent>
 	
-	<artifactId>gvengine-features</artifactId>
+	<artifactId>features</artifactId>
 	<name>GreenVulcano features for Apache Karaf</name>
 	<packaging>pom</packaging>
 	

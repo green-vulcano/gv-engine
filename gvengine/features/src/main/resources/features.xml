@@ -114,6 +114,37 @@
 		<feature prerequisite="true">gvscheduler-conf</feature>
 			
 		<bundle start-level="96">mvn:it.greenvulcano.gvesb/gvscheduler/${project.version}</bundle>
-	</feature>		
+	</feature>
+	
+	<feature name="gvdatahandler" description="GreenVulcano Data Handler" version="${project.version}">		  
+				
+		<feature prerequisite="true">gvengine</feature>
+		<bundle start-level="96">mvn:it.greenvulcano.gvesb.adapter/gvdatahandler/${project.version}</bundle>		
+	</feature>
+	
+	<feature name="gvhttp" description="GreenVulcano advanced HTTP inbound adapter" version="${project.version}">		  
+				
+		<feature prerequisite="true">gvengine</feature>
+		<bundle start-level="96">mvn:it.greenvulcano.gvesb.adapter/gvhttp/${project.version}/war</bundle>		
+	</feature>
+	
+	<feature name="gvvcl-rest" description="GreenVulcano rest-call extension" version="${project.version}">		  
+				
+		<feature prerequisite="true">gvengine</feature>
+		<bundle start-level="96">mvn:it.greenvulcano.gvesb.adapter/gvrestx/${project.version}</bundle>		
+	</feature>
+	
+	<feature name="gvvcl-db" description="GreenVulcano exec-db-call query-db-call extensions" version="${project.version}">		  
+				
+		<feature prerequisite="true">gvengine</feature>
+		<bundle start-level="96">mvn:it.greenvulcano.gvesb.adapter/gvdbx/${project.version}</bundle>		
+	</feature>
+	
+	<feature name="gvvcl-mqtt" description="GreenVulcano mqtt-publish-call mqtt-subscribe-listener extensions" version="${project.version}">		  
+				
+		<feature prerequisite="true">gvengine</feature>
+		<bundle start-level="96">mvn:it.greenvulcano.gvesb.adapter/gvmqttx/${project.version}</bundle>		
+	</feature>	
+			
 	
 </features>
