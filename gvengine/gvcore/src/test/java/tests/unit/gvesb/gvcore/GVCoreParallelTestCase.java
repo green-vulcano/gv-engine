@@ -367,7 +367,7 @@ public class GVCoreParallelTestCase extends XMLTestCase
         System.out.println("TEST 1----SPL");
         System.out.println(gvBufferout);
         System.out.println("TEST 1----SPL");
-        assertEquals("[NUNZIO]", gvBufferout.getObject().toString());
+        assertEquals("[CIRO, NUNZIO]", gvBufferout.getObject().toString());
         assertEquals("TIMEOUT", gvBufferout.getProperty("END"));
         
         id = new Id();
