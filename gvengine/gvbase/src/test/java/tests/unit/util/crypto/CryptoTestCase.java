@@ -20,8 +20,6 @@
 package tests.unit.util.crypto;
 
 import static org.junit.Assert.assertArrayEquals;
-import java.util.Base64;
-
 import it.greenvulcano.util.crypto.CryptoHelper;
 import tests.unit.BaseTestCase;
 
@@ -36,12 +34,10 @@ import org.junit.Test;
  */
 public class CryptoTestCase extends BaseTestCase
 {
-    private static final String TEST_STRING_CLEAR                          = "Test string!";
-    private static final String TEST_STRING_CYPHER_3DES                    = "{3DES}Fc+EI2Cvv5waR2bG6QqxyA==";
-    private static final String TEST_STRING_CYPHER_3DES_CFB8_NoPadding     = "{3DES/CFB8/NoPadding}46casmey0/YPBFME";
-    private static final String TEST_STRING_CYPHER_3DES_OFB32_PKCS5Padding = "{3DES/OFB32/PKCS5Padding}4/BOUXueq3v6uIehcfEc8g==";
-    private static final String TEST_STRING_CYPHER_3DES_L                  = "Fc+EI2Cvv5waR2bG6QqxyA==";
-
+    private static final String TEST_STRING_CLEAR = "Test string!";
+    private static final String PREFIX_3DES = "{3DES}";
+    private static final String PREFIX_3DES_CFB8_NoPadding = "{3DES/CFB8/NoPadding}";
+    private static final String PREFIX_3DES_OFB32_PKCS5Padding = "{3DES/OFB32/PKCS5Padding}";
     /**
      * @throws java.lang.Exception
      */
@@ -65,11 +61,14 @@ public class CryptoTestCase extends BaseTestCase
      * .
      */
     @Test
-    public void testEncrypt1() throws Exception
+    public void testDefaultSettings() throws Exception
     {
         String result = CryptoHelper.encrypt(null, TEST_STRING_CLEAR, true);
         System.out.println("Encrypt: " + result);
-        assertEquals("Encrypt Failed", TEST_STRING_CYPHER_3DES, result);
+        assertFalse("Encrypt Failed", result.equals(TEST_STRING_CLEAR));
+        assertTrue("Encrypt Failed", result.startsWith(PREFIX_3DES));
+        
+        assertEquals(TEST_STRING_CLEAR, CryptoHelper.decrypt(null, result, true));
     }
 
     /**
@@ -78,11 +77,15 @@ public class CryptoTestCase extends BaseTestCase
      * .
      */
     @Test
-    public void testEncrypt2() throws Exception
+    public void test3DES_CFB8_NoPadding() throws Exception
     {
         String result = CryptoHelper.encrypt("test2", TEST_STRING_CLEAR, true);
         System.out.println("Encrypt(test2): " + result);
-        assertEquals("Encrypt Failed", TEST_STRING_CYPHER_3DES_CFB8_NoPadding, result);
+        assertFalse("Encrypt Failed", result.equals(TEST_STRING_CLEAR));
+        assertTrue("Encrypt Failed", result.startsWith(PREFIX_3DES_CFB8_NoPadding));
+        
+        assertEquals(TEST_STRING_CLEAR, CryptoHelper.decrypt("test2", result, true));
+        
     }
 
     /**
@@ -91,11 +94,15 @@ public class CryptoTestCase extends BaseTestCase
      * .
      */
     @Test
-    public void testEncrypt3() throws Exception
+    public void test3DES_OFB32_PKCS5Padding() throws Exception
     {
         String result = CryptoHelper.encrypt("test3", TEST_STRING_CLEAR, true);
         System.out.println("Encrypt(test3): " + result);
-        assertEquals("Encrypt Failed", TEST_STRING_CYPHER_3DES_OFB32_PKCS5Padding, result);
+        assertFalse("Encrypt Failed", result.equals(TEST_STRING_CLEAR));
+        assertTrue("Encrypt Failed", result.startsWith(PREFIX_3DES_OFB32_PKCS5Padding));
+        
+        assertEquals(TEST_STRING_CLEAR, CryptoHelper.decrypt("test3", result, true));
+        
     }
 
     /**
@@ -104,86 +111,12 @@ public class CryptoTestCase extends BaseTestCase
      * .
      */
     @Test
-    public void testEncrypt4() throws Exception
+    public void testByteArray() throws Exception
     {
-        byte[] result = CryptoHelper.encrypt(CryptoHelper.DEFAULT_KEY_ID, TEST_STRING_CLEAR.getBytes("ISO-8859-1"),
-                false);
+        byte[] result = CryptoHelper.encrypt(CryptoHelper.DEFAULT_KEY_ID, TEST_STRING_CLEAR.getBytes("ISO-8859-1"), false);
        
-        assertArrayEquals("Encrypt Failed", Base64.getDecoder().decode(TEST_STRING_CYPHER_3DES_L), result);
+        assertArrayEquals("Encrypt Failed", TEST_STRING_CLEAR.getBytes("ISO-8859-1"), CryptoHelper.decrypt(CryptoHelper.DEFAULT_KEY_ID, result, false));
     }
-
-    /**
-     * Test method for
-     * {@link it.greenvulcano.util.crypto.CryptoHelper#decrypt(java.lang.String, java.lang.String, boolean)}
-     * .
-     */
-    @Test
-    public void testDecrypt1() throws Exception
-    {
-        String result = CryptoHelper.decrypt(CryptoHelper.DEFAULT_KEY_ID, TEST_STRING_CYPHER_3DES, true);
-        System.out.println("Decrypt: " + result);
-        assertEquals("Decrypt Failed", TEST_STRING_CLEAR, result);
-    }
-
-    /**
-     * Test method for
-     * {@link it.greenvulcano.util.crypto.CryptoHelper#decrypt(java.lang.String, java.lang.String, boolean)}
-     * .
-     */
-    @Test
-    public void testDecrypt2() throws Exception
-    {
-        String result = CryptoHelper.decrypt("test2", TEST_STRING_CYPHER_3DES_CFB8_NoPadding, true);
-        System.out.println("Decrypt(test2): " + result);
-        assertEquals("Decrypt Failed", TEST_STRING_CLEAR, result);
-    }
-
-    /**
-     * Test method for
-     * {@link it.greenvulcano.util.crypto.CryptoHelper#decrypt(java.lang.String, java.lang.String, boolean)}
-     * .
-     */
-    @Test
-    public void testDecrypt3() throws Exception
-    {
-        String result = CryptoHelper.decrypt("test3", TEST_STRING_CYPHER_3DES_OFB32_PKCS5Padding, true);
-        System.out.println("Decrypt(test3): " + result);
-        assertEquals("Decrypt Failed", TEST_STRING_CLEAR, result);
-    }
-
-    /**
-     * Test method for
-     * {@link it.greenvulcano.util.crypto.CryptoHelper#decrypt(java.lang.String, byte[], boolean)}
-     * .
-     */
-    @Test
-    public void testDecrypt4() throws Exception
-    {
-        byte[] result = CryptoHelper.decrypt(CryptoHelper.DEFAULT_KEY_ID,
-                Base64.getDecoder().decode(TEST_STRING_CYPHER_3DES_L), true);
-        assertArrayEquals("Decrypt Failed", TEST_STRING_CLEAR.getBytes("ISO-8859-1"), result);
-    }
-    
-    /**
-     * Test method for
-     * {@link it.greenvulcano.util.crypto.CryptoHelper#decrypt(java.lang.String, byte[], boolean)}
-     * .
-     */
-    @Test
-    public void testDecrypt5() throws Exception
-    {
-        String result = CryptoHelper.decrypt(CryptoHelper.DEFAULT_KEY_ID, "Y", true);
-        assertEquals("Decrypt Failed", "Y", result);
-    }
-
-    /**
-     * Test method for encrypt/decrypt.
-     */
-    @Test
-    public void testDecrypt6() throws Exception
-    {
-    	String resultE = CryptoHelper.encrypt(CryptoHelper.DEFAULT_KEY_ID, "", true);
-        String resultD = CryptoHelper.decrypt(CryptoHelper.DEFAULT_KEY_ID, resultE, true);
-        assertEquals("Decrypt Failed", "", resultD);
-    }
+       
+  
 }
