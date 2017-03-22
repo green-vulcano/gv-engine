@@ -43,7 +43,7 @@ public class DriverPoolConnectionBuilder implements ConnectionBuilder
     private static Logger     logger          = org.slf4j.LoggerFactory.getLogger(DriverPoolConnectionBuilder.class);
 
     private String            url             = null;
-    private String            className       = null;
+   
     private String            user            = null;
     private String            password        = null;
     private String            name            = null;
@@ -57,7 +57,7 @@ public class DriverPoolConnectionBuilder implements ConnectionBuilder
     {
         try {
             name = XMLConfig.get(node, "@name");
-            className = XMLConfig.get(node, "@driver-class");
+          
             user = XMLConfig.get(node, "@user", null);
             password = XMLConfig.getDecrypted(node, "@password", null);
             url = XMLConfig.get(node, "@url");
@@ -67,7 +67,7 @@ public class DriverPoolConnectionBuilder implements ConnectionBuilder
             catch (Exception exc) {
                 debugJDBCConn = false;
             }
-            Class.forName(className);
+           
 
             Node poolNode = XMLConfig.getNode(node, "PoolParameters");
             connectionPool = new GenericObjectPool(null);
@@ -95,7 +95,7 @@ public class DriverPoolConnectionBuilder implements ConnectionBuilder
         
         dataSource = new PoolingDataSource(connectionPool);
 
-        logger.debug("Crated DriverPoolConnectionBuilder(" + name + "). className: " + className + " - user: " + user
+        logger.debug("Crated DriverPoolConnectionBuilder(" + name + "). - user: " + user
                 + " - password: ********* - url: " + url + " - Pool: [" + connectionPool.getMinIdle() + "/"
                 + connectionPool.getMaxIdle() + "/" + connectionPool.getMaxActive() + "]");
     }

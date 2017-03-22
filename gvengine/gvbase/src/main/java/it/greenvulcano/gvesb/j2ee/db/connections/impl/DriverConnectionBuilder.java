@@ -39,7 +39,7 @@ public class DriverConnectionBuilder implements ConnectionBuilder
     private static Logger logger        = org.slf4j.LoggerFactory.getLogger(DriverConnectionBuilder.class);
 
     private String        url           = null;
-    private String        className     = null;
+   
     private String        user          = null;
     private String        password      = null;
     private String        name          = null;
@@ -50,12 +50,12 @@ public class DriverConnectionBuilder implements ConnectionBuilder
     {
         try {
             name = XMLConfig.get(node, "@name");
-            className = XMLConfig.get(node, "@driver-class");
+           
             user = XMLConfig.get(node, "@user", "");
             password = XMLConfig.getDecrypted(node, "@password", "");
             url = XMLConfig.get(node, "@url");
 
-            Class.forName(className);
+           
         }
         catch (Exception exc) {
             throw new GVDBException("DriverConnectionBuilder - Initialization error", exc);
@@ -66,7 +66,7 @@ public class DriverConnectionBuilder implements ConnectionBuilder
         catch (Exception exc) {
             debugJDBCConn = false;
         }
-        logger.debug("Crated DriverConnectionBuilder(" + name + "). className: " + className + " - user: " + user
+        logger.debug("Crated DriverConnectionBuilder(" + name + "). - user: " + user
                 + " - password: ********* - url: " + url);
     }
 
