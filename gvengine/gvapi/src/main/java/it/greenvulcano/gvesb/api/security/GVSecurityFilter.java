@@ -20,7 +20,7 @@
 package it.greenvulcano.gvesb.api.security;
 
 import java.io.IOException;
-import java.util.Base64;
+
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Priority;
@@ -31,60 +31,61 @@ import javax.ws.rs.core.Response;
 
 import org.apache.cxf.jaxrs.utils.JAXRSUtils;
 import org.apache.cxf.security.SecurityContext;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import it.greenvulcano.gvesb.iam.domain.User;
+import it.greenvulcano.gvesb.iam.exception.PasswordMissmatchException;
 import it.greenvulcano.gvesb.iam.exception.UserExpiredException;
-import it.greenvulcano.gvesb.iam.service.SecurityManager;
+import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
+import it.greenvulcano.gvesb.iam.modules.SecurityModule;
 
 @Priority(Priorities.AUTHENTICATION)
 public class GVSecurityFilter implements ContainerRequestFilter {
 	
 	private final static Logger LOG = LoggerFactory.getLogger(GVSecurityFilter.class);
 
-	private List<ServiceReference<SecurityManager>> securityManagerReferences;
+	private List<ServiceReference<SecurityModule>> securityModulesReferences;
 	
-	public void setGvSecurityManagerReferences(List<ServiceReference<SecurityManager>> securityManagerReferences) {
-		this.securityManagerReferences = securityManagerReferences;		
+	public void setGvSecurityModulesReferences(List<ServiceReference<SecurityModule>> securityModulesReferences) {
+		this.securityModulesReferences = securityModulesReferences;		
 	}
 	
 	@Override
 	public void filter(ContainerRequestContext requestContext) throws IOException {
 		
-		Optional<ServiceReference<SecurityManager>> securityManagerRef = securityManagerReferences==null ? Optional.empty() :
-																	     securityManagerReferences.stream().findAny();
-			
-		if (securityManagerRef.isPresent()) {
-			BundleContext context = securityManagerRef.get().getBundle().getBundleContext();
-			SecurityManager securityManager = (SecurityManager) context.getService(securityManagerRef.get());
+		String authorization = Optional.ofNullable(requestContext.getHeaderString("Authorization")).orElse("");
+		if (securityModulesReferences!=null) {				
 			LOG.debug("SecurityManager found, handling authentication");
 			
-			String authorization = Optional.ofNullable(requestContext.getHeaderString("Authorization")).orElse("");
-	        String[] parts = authorization.split(" ");
-	        if (parts.length == 2 && "Basic".equals(parts[0])) {
-	        	try {
-	        		String[] credentials = new String(Base64.getDecoder().decode(parts[1])).split(":");
-	        
-	        		User user = securityManager.validateUser(credentials[0], credentials[1]);        		       		
-	        		SecurityContext securityContext = new GVSecurityContext(user.getUsername(), user.getRoles());
-	        		        		
-	        		JAXRSUtils.getCurrentMessage().put(SecurityContext.class, securityContext);
-	        		LOG.debug("User authenticated: "+securityContext.getUserPrincipal().getName());
-	        	} catch (UserExpiredException userExpiredException) {	        		
-	        		requestContext.abortWith(Response.status(Response.Status.FORBIDDEN).entity("User expired, password change needed").build());					        	
-	        	} catch (Exception e) {
-	        		LOG.warn("Authentication process failed", e);
-	        		requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
+			try {
+				
+				for (ServiceReference<SecurityModule> securityModuleRef :  securityModulesReferences) {
+					
+					SecurityModule securityModule = securityModuleRef.getBundle().getBundleContext().getService(securityModuleRef);
+					Optional<SecurityContext> securityContext = securityModule.resolve(authorization).map(GVSecurityContext::new);
+					
+					if (securityContext.isPresent()) {
+						
+		        		JAXRSUtils.getCurrentMessage().put(SecurityContext.class, securityContext.get());
+		        		LOG.debug("User authenticated: "+securityContext.get().getUserPrincipal().getName());
+		        		
+		        		break;
+					}
+					
+					
 				}
-	        }  else {
-	        	LOG.debug("Basic authentication token not found");
-	        }
-		} else {
-			LOG.debug("SecurityManager not available");
+			} catch (UserExpiredException userExpiredException) {	        		
+        		requestContext.abortWith(Response.status(Response.Status.FORBIDDEN).entity("User expired, password change needed").build());
+			} catch (PasswordMissmatchException|UserNotFoundException unauthorizedException){
+				LOG.warn("Failed to authenticate user", unauthorizedException);
+				requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
+        	} catch (Exception e) {
+        		LOG.warn("Authentication process failed", e);
+        		requestContext.abortWith(Response.status(Response.Status.INTERNAL_SERVER_ERROR).build());
+			}
 		}
+		
 	}	
 	
 

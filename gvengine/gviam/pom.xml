@@ -49,11 +49,13 @@
                         <Export-Package>
                         		it.greenvulcano.gvesb.iam.domain,
                         		it.greenvulcano.gvesb.iam.jaas,
-                        		it.greenvulcano.gvesb.iam.service,	
+                        		it.greenvulcano.gvesb.iam.service,
+                        		it.greenvulcano.gvesb.iam.modules,	
                         		it.greenvulcano.gvesb.iam.exception
                         </Export-Package>
                         <Private-Package>
                         		it.greenvulcano.gvesb.iam.service.internal,
+                        		it.greenvulcano.gvesb.iam.modules.internal,
                         		it.greenvulcano.gvesb.iam.repository,
                         		it.greenvulcano.gvesb.iam.repository.hibernate,
                         </Private-Package>                        

@@ -47,4 +47,14 @@
 	
 	<service id="securityManager" ref="gvSecurityManager" interface="it.greenvulcano.gvesb.iam.service.SecurityManager"/>
 	
+	<bean id="gvBasicAuthenticationSecurityModule" class="it.greenvulcano.gvesb.iam.modules.internal.GVBasicAuthenticationSecurityModule">
+		<property name="securityManager" ref="gvSecurityManager"/>
+	</bean>
+	
+	<service id="basicAuthenticationSecurityModule" ref="gvBasicAuthenticationSecurityModule" interface="it.greenvulcano.gvesb.iam.modules.SecurityModule">
+		<service-properties>
+			<entry key="authentication-schema" value="basic"/>
+		</service-properties>
+	</service>
+	
 </blueprint>

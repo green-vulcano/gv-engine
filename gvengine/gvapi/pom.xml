@@ -141,6 +141,7 @@
               it.greenvulcano.gvesb.iam.service,
               it.greenvulcano.gvesb.iam.exception,
               it.greenvulcano.gvesb.iam.domain,
+              it.greenvulcano.gvesb.iam.modules,
               org.json,
               org.slf4j;version="[1.6,2)";provider=paxlogging,
               org.w3c.dom,

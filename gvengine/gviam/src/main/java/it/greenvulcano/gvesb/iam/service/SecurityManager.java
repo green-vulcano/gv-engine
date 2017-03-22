@@ -29,6 +29,7 @@ import it.greenvulcano.gvesb.iam.exception.InvalidRoleException;
 import it.greenvulcano.gvesb.iam.exception.InvalidUsernameException;
 import it.greenvulcano.gvesb.iam.exception.PasswordMissmatchException;
 import it.greenvulcano.gvesb.iam.exception.UserExistException;
+import it.greenvulcano.gvesb.iam.exception.UserExpiredException;
 import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
 
 public interface SecurityManager {
@@ -42,7 +43,7 @@ public interface SecurityManager {
 		
 		User getUser(String username) throws UserNotFoundException;
 		
-		User validateUser(String username, String password) throws UserNotFoundException, PasswordMissmatchException;
+		User validateUser(String username, String password) throws UserNotFoundException, UserExpiredException, PasswordMissmatchException;
 		
 		Set<User> getUsers();
 		
