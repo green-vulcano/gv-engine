@@ -32,25 +32,25 @@ It is necessary to restart karaf to properly load a new configuration.
 
 ### Plugins and adapters
 You can install specific plugins and adapters to extends GreenVulcano ESB v4 
-````sh
+```sh
 
 gvadmin@root()> feature:install gvvcl-rest
- ```
+```
 
 For **data handler** just install following bundle, with start level 96:
- ```sh
+```sh
 gvadmin@root()> feature:install gvdatahandler
- ```
+```
 
 To url mapping (httpInboundGateway) install also gvhttp: it is a war file and not a jar file, so don't forget to add /war suffix:
- ```sh
+```sh
 gvadmin@root()> feature:install gvhttp
- ```
+```
 
 For database connections (JNDI, JDBC), refer to [OPS4J Pax JDBC] framework i.e. :
- ```sh
+```sh
 gvadmin@root()> feature:install pax-jdbc-oracle
- ```   
+```   
 
 ## Deploy
 
