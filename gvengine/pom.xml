@@ -24,6 +24,7 @@
     <version.osgi>5.0.0</version.osgi>
     <version.slf4j>1.6.1</version.slf4j>
     <version.junit>4.11</version.junit>
+	<version.karaf>4.0.8</version.karaf>
 
     <cloud.nexus.content>http://mvn.greenvulcano.com/nexus/content</cloud.nexus.content>
   </properties>
@@ -198,7 +199,8 @@
     <module>gvstatistics</module>
     <module>gvvcl</module>
     <module>gvvcl-internal</module>  
-    <module>features</module>    
+    <module>features</module>
+    <module>gviam-oauth2</module>
   </modules>
 
 </project>

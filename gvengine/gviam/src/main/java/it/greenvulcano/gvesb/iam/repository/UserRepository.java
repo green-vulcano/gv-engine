@@ -19,21 +19,12 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb.iam.repository;
 
-import java.util.Optional;
 import java.util.Set;
 
 import it.greenvulcano.gvesb.iam.domain.User;
 
-public interface UserRepository {	
-	
-	Optional<User> get(String username);
-		
-	void add(User user);
-	
-	Set<User> getAll();
-	
-	void remove(User user);
-	
+public interface UserRepository extends Repository<User, String> {	
+			
 	Set<User> find(String fullname, Boolean expired, Boolean enabled, Set<String> roles);
 
 }

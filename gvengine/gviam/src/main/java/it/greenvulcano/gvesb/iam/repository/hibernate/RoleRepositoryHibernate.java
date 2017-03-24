@@ -19,51 +19,21 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb.iam.repository.hibernate;
 
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
 import it.greenvulcano.gvesb.iam.domain.Role;
 import it.greenvulcano.gvesb.iam.repository.RoleRepository;
 
-public class RoleRepositoryHibernate implements RoleRepository {
+public class RoleRepositoryHibernate extends RepositoryHibernate<Role, String> implements RoleRepository {
 
-	private SessionFactory sessionFactory;
-	
-	public void setSessionFactory(SessionFactory sessionFactory) {
-		this.sessionFactory = sessionFactory;
-	}
-
-	private Session getSession() {
-		return sessionFactory.getCurrentSession();
+	public RoleRepositoryHibernate() {
+		super(Role.class);
+		
 	}
 	
 	@Override
-	public Optional<Role> get(String rolename) {		
-		return Optional.ofNullable((Role)getSession().get(Role.class, rolename));
-	}
-
-	@Override
-	public void add(Role role) {
-		getSession().saveOrUpdate(role);
-		getSession().flush();
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public Set<Role> getAll() {		
-		List<Role> roles = getSession().createQuery("from Role").list();
-		return new LinkedHashSet<>(roles);
-	}
-
-	@Override
-	public void remove(Role role) {
-		getSession().delete(role);
-		getSession().flush();
+	public void setSessionFactory(SessionFactory sessionFactory) {	
+		super.setSessionFactory(sessionFactory);
 	}
 
 }

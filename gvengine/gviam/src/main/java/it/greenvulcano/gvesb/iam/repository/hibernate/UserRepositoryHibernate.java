@@ -20,57 +20,34 @@
 package it.greenvulcano.gvesb.iam.repository.hibernate;
 
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import org.hibernate.Criteria;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 
 import it.greenvulcano.gvesb.iam.domain.User;
 import it.greenvulcano.gvesb.iam.repository.UserRepository;
 
-public class UserRepositoryHibernate implements UserRepository {
+public class UserRepositoryHibernate extends RepositoryHibernate<User, String> implements UserRepository {
 	
-	private SessionFactory sessionFactory;
+	public UserRepositoryHibernate() {
+		super(User.class);
+	}
 	
-	public void setSessionFactory(SessionFactory sessionFactory) {
-		this.sessionFactory = sessionFactory;
-	}
-
-	private Session getSession() {
-		return sessionFactory.getCurrentSession();
-	}
-
+	@Override
+	public void setSessionFactory(SessionFactory sessionFactory) {	
+		super.setSessionFactory(sessionFactory);
+	}	
+	
 	@Override
 	public Optional<User> get(String username) {		
 		return Optional.ofNullable((User)getSession().createQuery("from User where userName = :uname")
 								  .setString("uname", username)
 								  .uniqueResult());
 	}
-
-	@Override
-	public void add(User user) {
-		getSession().saveOrUpdate(user);
-		getSession().flush();
-
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public Set<User> getAll() {		
-		List<User> users = getSession().createQuery("from User").list();
-		return new LinkedHashSet<>(users);
-	}
-
-	@Override
-	public void remove(User user) {
-		getSession().delete(user);
-		getSession().flush();
-	}
-
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public Set<User> find(String fullname, Boolean expired, Boolean enabled, Set<String> roles) {

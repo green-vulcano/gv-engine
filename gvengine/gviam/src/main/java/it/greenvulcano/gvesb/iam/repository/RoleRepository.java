@@ -19,19 +19,9 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb.iam.repository;
 
-import java.util.Optional;
-import java.util.Set;
-
 import it.greenvulcano.gvesb.iam.domain.Role;
 
-public interface RoleRepository {
+public interface RoleRepository extends Repository<Role, String> {
 			
-	Optional<Role> get(String rolename);
-		
-	void add(Role role);
-	
-	Set<Role> getAll();
-	
-	void remove(Role role);
 
 }
