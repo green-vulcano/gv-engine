@@ -26,6 +26,13 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+/**
+ * 
+ * Entity representing an authorative role in a security context
+ * 
+ * @author GreenVulcano Technologies
+ *
+ */
 @Entity
 @Table(name="roles")
 public class Role implements Serializable {

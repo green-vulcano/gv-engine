@@ -30,6 +30,12 @@ import org.osgi.framework.FrameworkUtil;
 import it.greenvulcano.gvesb.iam.repository.RoleRepository;
 import it.greenvulcano.gvesb.iam.repository.UserRepository;
 
+/**
+ * GreenVulcano implementation of Karaf JAAS facility
+ * 
+ * @see {@link BackingEngineFactory}
+ * 
+ */
 public class GVBackingEngineFactory implements BackingEngineFactory {
 
 	private UserRepository userRepository;

@@ -17,27 +17,28 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with GreenVulcano ESB. If not, see <http://www.gnu.org/licenses/>.
  *******************************************************************************/
-package it.greenvulcano.gvesb.iam.modules;
+package it.greenvulcano.gvesb.iam.service;
 
-import java.util.Map;
-import java.util.Optional;
-
+import it.greenvulcano.gvesb.iam.domain.Credentials;
+import it.greenvulcano.gvesb.iam.exception.CredentialsExpiredException;
+import it.greenvulcano.gvesb.iam.exception.InvalidCredentialsException;
 import it.greenvulcano.gvesb.iam.exception.PasswordMissmatchException;
 import it.greenvulcano.gvesb.iam.exception.UserExpiredException;
 import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
 
 /**
  * 
- * Business interface to handle security context in a modular way
+ * Manage sucurity-related business operations involving a third party  actor called "client"
+ * 
+ *   (Yes, it is for OAuth2)
  * 
  */
-public interface SecurityModule {
+public interface CredentialsManager {
 	
+	Credentials create(String username, String password, String clientUsername, String clientPassword) throws UserNotFoundException, UserExpiredException, PasswordMissmatchException;
 	
-	Optional<Identity> resolve(String authorization) throws UserNotFoundException, UserExpiredException, PasswordMissmatchException;
+	Credentials check(String accessToken) throws InvalidCredentialsException, CredentialsExpiredException;
 	
-	Optional<Identity> resolve(String type, Map<String,Object> authorization) throws UserNotFoundException, UserExpiredException, PasswordMissmatchException;
-	
-	Optional<Identity> resolve(String type, String ... authorization) throws UserNotFoundException, UserExpiredException, PasswordMissmatchException;
+	Credentials refresh(String refreshToken, String accessToken) throws InvalidCredentialsException, CredentialsExpiredException;
 
 }

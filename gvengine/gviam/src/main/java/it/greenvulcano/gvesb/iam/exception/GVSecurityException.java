@@ -19,7 +19,9 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb.iam.exception;
 
-public abstract class GVSecurityException extends SecurityException {
+import java.security.GeneralSecurityException;
+
+public abstract class GVSecurityException extends GeneralSecurityException {
 	
 	private static final long serialVersionUID = 1L;
 	

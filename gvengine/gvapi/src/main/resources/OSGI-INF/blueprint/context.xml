@@ -29,7 +29,7 @@
 	    </jaxrs:providers>       
     </jaxrs:server>
     
-    <reference id="gvSecurityManager" interface="it.greenvulcano.gvesb.iam.service.SecurityManager" activation="eager" availability="optional" timeout="500"/>
+    <reference id="gvSecurityManager" interface="it.greenvulcano.gvesb.iam.service.UsersManager" activation="eager" availability="optional" timeout="500"/>
     
     <bean id="securityController" class="it.greenvulcano.gvesb.api.controller.GvSecurityControllerRest" init-method="init">
     	<property name="securityManager" ref="gvSecurityManager"/>

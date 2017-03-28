@@ -42,9 +42,9 @@ import it.greenvulcano.gvesb.iam.jaas.GVBackingEngine;
 import it.greenvulcano.gvesb.iam.jaas.GVBackingEngineFactory;
 import it.greenvulcano.gvesb.iam.repository.RoleRepository;
 import it.greenvulcano.gvesb.iam.repository.UserRepository;
-import it.greenvulcano.gvesb.iam.service.SecurityManager;
+import it.greenvulcano.gvesb.iam.service.UsersManager;
 
-public class GVSecurityManager implements SecurityManager {
+public class GVUsersManager implements UsersManager {
 
 	private GVBackingEngine jaasEngine;
 	private UserRepository userRepository;
@@ -125,7 +125,7 @@ public class GVSecurityManager implements SecurityManager {
 
 	@Override
 	public User changeUserPassword(String username, String oldPassword, String newPassword)
-			throws UserNotFoundException, PasswordMissmatchException {
+			throws UserNotFoundException, PasswordMissmatchException, InvalidPasswordException {
 		
 		User user = userRepository.get(username).orElseThrow(()->new UserNotFoundException(username));
 		if (!newPassword.matches(User.PASSWORD_PATTERN)) throw new InvalidPasswordException(newPassword);
@@ -142,7 +142,7 @@ public class GVSecurityManager implements SecurityManager {
 
 	@Override
 	public User validateUser(String username, String password)
-			throws UserNotFoundException, PasswordMissmatchException {
+			throws UserNotFoundException, PasswordMissmatchException, UserExpiredException {
 		
 		User user = userRepository.get(username).orElseThrow(()->new UserNotFoundException(username));
 		if(user.getPassword().equals(jaasEngine.getEncryptedPassword(password))) {
@@ -219,13 +219,19 @@ public class GVSecurityManager implements SecurityManager {
 			logger.info("Creating a default 'gvadmin'");
 			User admin;
 			try {
-				jaasEngine.addUser("gvadmin", "gvadmin");
-				admin = userRepository.get("gvadmin").get();
-			} catch (UserExistException e) {
-				admin = resetUserPassword("gvadmin");
+				jaasEngine.addUser("gvadmin", "gvadmin");				
+			} catch (SecurityException e) {
 				logger.info("A user named 'gvadmin' exist: restoring his default settings");
-			}	
+				
+				admin = userRepository.get("gvadmin").get();
+				admin.setPassword(jaasEngine.getEncryptedPassword("gvadmin"));
+				admin.setPasswordTime(new Date());
+				admin.setExpired(true);
+				userRepository.add(admin);
+				
+			}
 			
+			admin = userRepository.get("gvadmin").get();
 			admin.setEnabled(true);
 			admin.getRoles().clear();
 			admin.getRoles().add(new Role("gvadmin", "Created by GV"));

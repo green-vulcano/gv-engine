@@ -32,7 +32,14 @@ import it.greenvulcano.gvesb.iam.exception.UserExistException;
 import it.greenvulcano.gvesb.iam.exception.UserExpiredException;
 import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
 
-public interface SecurityManager {
+/**
+ * 
+ * Manage sucurity-related business operations supporting subject direct interaction
+ * 
+ *   (Yes, it is for login and user management)
+ * 
+ */
+public interface UsersManager {
 	
 		
 		void checkManagementRequirements();
@@ -57,7 +64,7 @@ public interface SecurityManager {
 		
 		User resetUserPassword(String username) throws UserNotFoundException;
 		
-		User changeUserPassword(String username, String oldPassword, String newPassword) throws UserNotFoundException, PasswordMissmatchException;
+		User changeUserPassword(String username, String oldPassword, String newPassword) throws UserNotFoundException, PasswordMissmatchException, InvalidPasswordException;
 		
 		void addRole(String username, Role role) throws UserNotFoundException, InvalidRoleException;
 		

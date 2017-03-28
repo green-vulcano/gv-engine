@@ -42,6 +42,13 @@ import javax.persistence.Version;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
+/**
+ * 
+ * Entity representing an identified subject in a security context
+ * 
+ * @author GreenVulcano Technologies
+ *
+ */
 @Entity
 @Table(name="users")
 public class User implements Serializable {

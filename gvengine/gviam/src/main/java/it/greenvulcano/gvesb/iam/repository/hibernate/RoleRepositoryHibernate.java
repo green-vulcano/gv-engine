@@ -24,6 +24,12 @@ import org.hibernate.SessionFactory;
 import it.greenvulcano.gvesb.iam.domain.Role;
 import it.greenvulcano.gvesb.iam.repository.RoleRepository;
 
+/**
+ * 
+ * {@link RoleRepository} implementation using Hibernate ORM framework,
+ * expects injection of a {@link SessionFactory}  
+ * 
+ */
 public class RoleRepositoryHibernate extends RepositoryHibernate<Role, String> implements RoleRepository {
 
 	public RoleRepositoryHibernate() {

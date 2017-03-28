@@ -21,6 +21,10 @@ package it.greenvulcano.gvesb.iam.repository;
 
 import it.greenvulcano.gvesb.iam.domain.Role;
 
+/**
+ * Business interface to deal with {@link Role} entity
+ * 
+ */
 public interface RoleRepository extends Repository<Role, String> {
 			
 

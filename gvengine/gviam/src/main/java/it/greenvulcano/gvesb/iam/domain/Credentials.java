@@ -1,3 +1,22 @@
+/*******************************************************************************
+ * Copyright (c) 2009, 2016 GreenVulcano ESB Open Source Project.
+ * All rights reserved.
+ *
+ * This file is part of GreenVulcano ESB.
+ *
+ * GreenVulcano ESB is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * GreenVulcano ESB is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *  
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with GreenVulcano ESB. If not, see <http://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package it.greenvulcano.gvesb.iam.domain;
 
 import java.util.Date;
@@ -13,14 +32,20 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.ForeignKey;
 
+/**
+ * Entity representing  a credentials to be validated in a security context 
+ *
+ * @author GreenVulcano Technologies
+ *
+ */
 @Entity
-@Table(name="oauth2_identities")
-public class OAuth2Identity {
+@Table(name="credentials")
+public class Credentials {
 	
-	@Id @Column(name="access_token", nullable=false, length=36, unique=true, updatable=false)
+	@Id @Column(name="access_token", nullable=false, length=64, unique=true, updatable=false)
 	private String accessToken;
 	
-	@Column(name="refresh_token", nullable=false, length=36, updatable=false)
+	@Column(name="refresh_token", nullable=false, length=64, updatable=false)
 	private String refreshToken;
 	
 	@Temporal(TemporalType.TIMESTAMP)
@@ -107,7 +132,7 @@ public class OAuth2Identity {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		OAuth2Identity other = (OAuth2Identity) obj;
+		Credentials other = (Credentials) obj;
 		if (accessToken == null) {
 			if (other.accessToken != null)
 				return false;

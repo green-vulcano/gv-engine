@@ -15,7 +15,7 @@
         
         <mapping class="it.greenvulcano.gvesb.iam.domain.User"/>
         <mapping class="it.greenvulcano.gvesb.iam.domain.Role"/>
-        <mapping class="it.greenvulcano.gvesb.iam.domain.OAuth2Identity"/>
+        <mapping class="it.greenvulcano.gvesb.iam.domain.Credentials"/>
         				  
     </session-factory>
  

@@ -51,6 +51,11 @@ import it.greenvulcano.gvesb.iam.domain.Role;
 import it.greenvulcano.gvesb.iam.domain.User;
 import it.greenvulcano.gvesb.iam.repository.UserRepository;
 
+/**
+ * GreenVulcano implementation of Karaf JAAS facility
+ * 
+ * @see {@link AbstractKarafLoginModule}
+ */
 public class GVLoginModule extends AbstractKarafLoginModule{
 
 	private final static Logger LOG = LoggerFactory.getLogger(GVLoginModule.class);

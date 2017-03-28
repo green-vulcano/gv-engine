@@ -23,6 +23,10 @@ import java.util.Set;
 
 import it.greenvulcano.gvesb.iam.domain.User;
 
+/**
+ * Business interface to deal with {@link User} entity
+ * 
+ */
 public interface UserRepository extends Repository<User, String> {	
 			
 	Set<User> find(String fullname, Boolean expired, Boolean enabled, Set<String> roles);

@@ -33,16 +33,16 @@ import it.greenvulcano.gvesb.iam.exception.InvalidPasswordException;
 import it.greenvulcano.gvesb.iam.exception.InvalidUsernameException;
 import it.greenvulcano.gvesb.iam.exception.UserExistException;
 import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
-import it.greenvulcano.gvesb.iam.service.SecurityManager;
+import it.greenvulcano.gvesb.iam.service.UsersManager;
 
 @CrossOriginResourceSharing(allowAllOrigins=true, allowCredentials=true)
 public class GvSecurityControllerRest extends BaseControllerRest {
 			
 	private final static Logger LOG = LoggerFactory.getLogger(GvSecurityControllerRest.class);	
 			
-	private SecurityManager gvSecurityManager;
+	private UsersManager gvSecurityManager;
 		
-	public void setSecurityManager(SecurityManager gvSecurityManager) {
+	public void setSecurityManager(UsersManager gvSecurityManager) {
 		this.gvSecurityManager = gvSecurityManager;
 	}
 	
@@ -205,10 +205,7 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 		
 		} catch (UserNotFoundException e) {
 			response = Response.status(Status.NOT_FOUND).entity(toJson(e)).build();	
-		} catch (InvalidUsernameException|InvalidPasswordException e) {
-			response = Response.status(Status.NOT_ACCEPTABLE).entity(toJson(e)).build();		
-		} catch (UserExistException e) {
-			response = Response.status(Status.CONFLICT).entity(toJson(e)).build();
+
 		} catch (Exception e) {
 			LOG.error("API_CALL_ERROR",e);
 			response = Response.status(Status.SERVICE_UNAVAILABLE).entity(toJson(e)).build();
@@ -277,9 +274,7 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 			gvSecurityManager.deleteUser(username);			
 					
 			response = Response.accepted().build();
-			
-		} catch (UserNotFoundException e) {
-			response = Response.status(Status.NOT_FOUND).entity(toJson(e)).build();
+		
 		} catch (Exception e) {
 			LOG.error("API_CALL_ERROR",e);
 			response = Response.status(Status.SERVICE_UNAVAILABLE).entity(toJson(e)).build();

@@ -39,12 +39,19 @@ import it.greenvulcano.gvesb.iam.repository.RoleRepository;
 import it.greenvulcano.gvesb.iam.repository.UserRepository;
 import it.greenvulcano.gvesb.iam.domain.Role;
 import it.greenvulcano.gvesb.iam.domain.User;
+import it.greenvulcano.gvesb.iam.exception.GVSecurityException;
 import it.greenvulcano.gvesb.iam.exception.InvalidPasswordException;
 import it.greenvulcano.gvesb.iam.exception.InvalidRoleException;
 import it.greenvulcano.gvesb.iam.exception.InvalidUsernameException;
 import it.greenvulcano.gvesb.iam.exception.UserExistException;
 import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
 
+/**
+ * GreenVulcano implementation of Karaf JAAS facility
+ * 
+ * @see {@link BackingEngine}
+ * 
+ */
 public class GVBackingEngine implements BackingEngine {
 
 	private UserRepository userRepository;
@@ -56,12 +63,16 @@ public class GVBackingEngine implements BackingEngine {
 		this.roleRepository = roleRepository;
 		this.encryptionSupport = encryptionSupport;
 	}
+	
+	private void throwException(GVSecurityException cause){
+		throw new SecurityException(cause);
+	}
 		
 	@Override
 	public void addUser(String username, String password) {
 		
-		if (!username.matches(User.USERNAME_PATTERN)) throw new InvalidUsernameException(username);
-		if (!password.matches(User.PASSWORD_PATTERN)) throw new InvalidPasswordException(password);
+		if (!username.matches(User.USERNAME_PATTERN)) throwException(new InvalidUsernameException(username));
+		if (!password.matches(User.PASSWORD_PATTERN)) throwException(new InvalidPasswordException(password));
 					
 		User user = new User();
 		user.setUsername(username);
@@ -73,21 +84,21 @@ public class GVBackingEngine implements BackingEngine {
 		try {
 			userRepository.add(user);
 		} catch (org.hibernate.StaleObjectStateException|ConstraintViolationException constraintViolationException) {
-			throw new UserExistException(username);
+			throwException(new UserExistException(username));
 		}
 	}
 
 	@Override
 	public void deleteUser(String username) {
-		User user = userRepository.get(username).orElseThrow(()->new UserNotFoundException(username));
+		User user = userRepository.get(username).orElseThrow(()->new SecurityException(new UserNotFoundException(username)));
 		userRepository.remove(user);
 	}	
 
 	@Override
 	public void addRole(String username, String rolename) {
-		if (!rolename.matches(Role.ROLE_PATTERN)) throw new InvalidRoleException(rolename);
+		if (!rolename.matches(Role.ROLE_PATTERN)) throwException(new InvalidRoleException(rolename));
 		
-		User user = userRepository.get(username).orElseThrow(()->new UserNotFoundException(username));
+		User user = userRepository.get(username).orElseThrow(()->new SecurityException(new UserNotFoundException(username)));
 		
 		Role role = roleRepository.get(username).orElse(new Role(rolename, "Created by JAAS"));
 		user.getRoles().add(role);
@@ -98,7 +109,7 @@ public class GVBackingEngine implements BackingEngine {
 
 	@Override
 	public void deleteRole(String username, String rolename) {
-		User user = userRepository.get(username).orElseThrow(()->new UserNotFoundException(username));
+		User user = userRepository.get(username).orElseThrow(()->new SecurityException(new UserNotFoundException(username)));
 		roleRepository.get(rolename).ifPresent(user.getRoles()::remove);
 				
 		userRepository.add(user);
@@ -116,7 +127,7 @@ public class GVBackingEngine implements BackingEngine {
 
 	@Override
 	public List<RolePrincipal> listRoles(Principal principal) {		
-		return userRepository.get(principal.getName()).orElseThrow(()->new UserNotFoundException(principal.getName()))
+		return userRepository.get(principal.getName()).orElseThrow(()->new SecurityException(new UserNotFoundException(principal.getName())))
 							 .getRoles().stream()
 							 			.map(Role::getName)
 							 			.map(RolePrincipal::new)

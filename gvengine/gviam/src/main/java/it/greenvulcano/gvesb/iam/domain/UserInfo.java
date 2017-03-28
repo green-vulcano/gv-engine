@@ -24,6 +24,13 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
+/**
+ * 
+ * Extended information about our {@link User}}
+ * 
+ * @author GreenVulcano Technologies
+ *
+ */
 @Embeddable
 public class UserInfo implements Serializable {
 	

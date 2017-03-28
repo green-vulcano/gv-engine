@@ -30,6 +30,12 @@ import org.hibernate.criterion.Restrictions;
 import it.greenvulcano.gvesb.iam.domain.User;
 import it.greenvulcano.gvesb.iam.repository.UserRepository;
 
+/**
+ * 
+ * {@link UserRepository} implementation using Hibernate ORM framework,
+ * expects injection of a {@link SessionFactory}  
+ * 
+ */
 public class UserRepositoryHibernate extends RepositoryHibernate<User, String> implements UserRepository {
 	
 	public UserRepositoryHibernate() {
@@ -43,7 +49,7 @@ public class UserRepositoryHibernate extends RepositoryHibernate<User, String> i
 	
 	@Override
 	public Optional<User> get(String username) {		
-		return Optional.ofNullable((User)getSession().createQuery("from User where userName = :uname")
+		return Optional.ofNullable((User)getSession().createQuery("from User where username = :uname")
 								  .setString("uname", username)
 								  .uniqueResult());
 	}

@@ -17,27 +17,18 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with GreenVulcano ESB. If not, see <http://www.gnu.org/licenses/>.
  *******************************************************************************/
-package it.greenvulcano.gvesb.iam.modules;
+package it.greenvulcano.gvesb.iam.repository;
 
-import java.util.Map;
 import java.util.Optional;
 
-import it.greenvulcano.gvesb.iam.exception.PasswordMissmatchException;
-import it.greenvulcano.gvesb.iam.exception.UserExpiredException;
-import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
+import it.greenvulcano.gvesb.iam.domain.Credentials;
 
 /**
- * 
- * Business interface to handle security context in a modular way
+ * Business interface to deal with {@link Credentials} entity
  * 
  */
-public interface SecurityModule {
+public interface CredentialsRepository  extends Repository<Credentials, String>{
 	
-	
-	Optional<Identity> resolve(String authorization) throws UserNotFoundException, UserExpiredException, PasswordMissmatchException;
-	
-	Optional<Identity> resolve(String type, Map<String,Object> authorization) throws UserNotFoundException, UserExpiredException, PasswordMissmatchException;
-	
-	Optional<Identity> resolve(String type, String ... authorization) throws UserNotFoundException, UserExpiredException, PasswordMissmatchException;
+	Optional<Credentials> find(String username);
 
 }

@@ -14,7 +14,7 @@
 
     <name>GreenVulcano IAM</name>
     
-	<dependencies>		
+	<dependencies>
 		<dependency>
 			<groupId>org.apache.karaf.jaas</groupId>
 			<artifactId>org.apache.karaf.jaas.modules</artifactId>

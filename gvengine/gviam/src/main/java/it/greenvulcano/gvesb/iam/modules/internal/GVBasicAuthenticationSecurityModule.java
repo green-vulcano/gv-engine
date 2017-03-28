@@ -34,16 +34,22 @@ import it.greenvulcano.gvesb.iam.exception.UserExpiredException;
 import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
 import it.greenvulcano.gvesb.iam.modules.Identity;
 import it.greenvulcano.gvesb.iam.modules.SecurityModule;
-import it.greenvulcano.gvesb.iam.service.SecurityManager;
+import it.greenvulcano.gvesb.iam.service.UsersManager;
 
+/**
+ * 
+ * {@link SecurityModule} implementation to handle HTTP Basic authentication
+ * 
+ * 
+ */
 public class GVBasicAuthenticationSecurityModule implements SecurityModule {
 
 	private final static Logger LOG = LoggerFactory.getLogger(GVBasicAuthenticationSecurityModule.class);
 	
-	private SecurityManager securityManager;
+	private UsersManager usersManager;
 	
-	public void setSecurityManager(SecurityManager securityManager) {
-		this.securityManager = securityManager;
+	public void setUsersManager(UsersManager usersManager) {
+		this.usersManager = usersManager;
 	}
 	
 	
@@ -78,8 +84,8 @@ public class GVBasicAuthenticationSecurityModule implements SecurityModule {
 		return Optional.empty();
 	}
 	
-	private Identity getIdentity(String username, String password) {
-		User user = securityManager.validateUser(username, password);
+	private Identity getIdentity(String username, String password) throws UserNotFoundException, UserExpiredException, PasswordMissmatchException {
+		User user = usersManager.validateUser(username, password);
 		return new Identity(user.getUsername(), user.getRoles().stream().map(Role::getName).collect(Collectors.toSet()));
 		
 	}

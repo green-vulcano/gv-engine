@@ -27,6 +27,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ *  A granted subject identified by a {@link SecurityModule}
+ * 
+ * 
+ */
 public class Identity implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
