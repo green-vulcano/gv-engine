@@ -22,9 +22,7 @@ package it.greenvulcano.gvesb.iam.modules;
 import java.util.Map;
 import java.util.Optional;
 
-import it.greenvulcano.gvesb.iam.exception.PasswordMissmatchException;
-import it.greenvulcano.gvesb.iam.exception.UserExpiredException;
-import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
+import it.greenvulcano.gvesb.iam.exception.GVSecurityException;
 
 /**
  * 
@@ -34,10 +32,10 @@ import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
 public interface SecurityModule {
 	
 	
-	Optional<Identity> resolve(String authorization) throws UserNotFoundException, UserExpiredException, PasswordMissmatchException;
+	Optional<Identity> resolve(String authorization) throws GVSecurityException;
 	
-	Optional<Identity> resolve(String type, Map<String,Object> authorization) throws UserNotFoundException, UserExpiredException, PasswordMissmatchException;
+	Optional<Identity> resolve(String type, Map<String,Object> authorization) throws GVSecurityException;
 	
-	Optional<Identity> resolve(String type, String ... authorization) throws UserNotFoundException, UserExpiredException, PasswordMissmatchException;
+	Optional<Identity> resolve(String type, String ... authorization) throws GVSecurityException;
 
 }

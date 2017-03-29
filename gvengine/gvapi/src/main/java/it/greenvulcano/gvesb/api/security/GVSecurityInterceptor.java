@@ -19,6 +19,8 @@ import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import it.greenvulcano.gvesb.iam.exception.CredentialsExpiredException;
+import it.greenvulcano.gvesb.iam.exception.InvalidCredentialsException;
 import it.greenvulcano.gvesb.iam.exception.PasswordMissmatchException;
 import it.greenvulcano.gvesb.iam.exception.UserExpiredException;
 import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
@@ -49,10 +51,10 @@ public class GVSecurityInterceptor extends SoapHeaderInterceptor {
 					
 					message.put(SecurityContext.class, securityContext.get());
 					LOG.debug("User authenticated: "+securityContext.get().getUserPrincipal().getName());
-				} catch (UserExpiredException userExpiredException) {	        		
+				} catch (UserExpiredException|CredentialsExpiredException userExpiredException) {	        		
 					sendErrorResponse(message, 403);
 					
-				} catch (PasswordMissmatchException|UserNotFoundException unauthorizedException){
+				} catch (PasswordMissmatchException|UserNotFoundException|InvalidCredentialsException unauthorizedException){
 					LOG.warn("Failed to authenticate user", unauthorizedException);
 					sendErrorResponse(message, 401);
 					

@@ -35,6 +35,8 @@ import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import it.greenvulcano.gvesb.iam.exception.CredentialsExpiredException;
+import it.greenvulcano.gvesb.iam.exception.InvalidCredentialsException;
 import it.greenvulcano.gvesb.iam.exception.PasswordMissmatchException;
 import it.greenvulcano.gvesb.iam.exception.UserExpiredException;
 import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
@@ -71,13 +73,12 @@ public class GVSecurityFilter implements ContainerRequestFilter {
 		        		LOG.debug("User authenticated: "+securityContext.get().getUserPrincipal().getName());
 		        		
 		        		break;
-					}
-					
+					}					
 					
 				}
-			} catch (UserExpiredException userExpiredException) {	        		
-        		requestContext.abortWith(Response.status(Response.Status.FORBIDDEN).entity("User expired, password change needed").build());
-			} catch (PasswordMissmatchException|UserNotFoundException unauthorizedException){
+			} catch (UserExpiredException|CredentialsExpiredException userExpiredException) {	        		
+        		requestContext.abortWith(Response.status(Response.Status.FORBIDDEN).entity("Credentials expired").build());
+			} catch (PasswordMissmatchException|UserNotFoundException|InvalidCredentialsException unauthorizedException){
 				LOG.warn("Failed to authenticate user", unauthorizedException);
 				requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
         	} catch (Exception e) {

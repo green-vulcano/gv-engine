@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -27,12 +28,18 @@ import org.apache.cxf.rs.security.cors.CrossOriginResourceSharing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import it.greenvulcano.gvesb.api.dto.CredentialsDTO;
 import it.greenvulcano.gvesb.api.dto.UserDTO;
 import it.greenvulcano.gvesb.iam.domain.Role;
+import it.greenvulcano.gvesb.iam.exception.CredentialsExpiredException;
+import it.greenvulcano.gvesb.iam.exception.InvalidCredentialsException;
 import it.greenvulcano.gvesb.iam.exception.InvalidPasswordException;
 import it.greenvulcano.gvesb.iam.exception.InvalidUsernameException;
+import it.greenvulcano.gvesb.iam.exception.PasswordMissmatchException;
 import it.greenvulcano.gvesb.iam.exception.UserExistException;
+import it.greenvulcano.gvesb.iam.exception.UserExpiredException;
 import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
+import it.greenvulcano.gvesb.iam.service.CredentialsManager;
 import it.greenvulcano.gvesb.iam.service.UsersManager;
 
 @CrossOriginResourceSharing(allowAllOrigins=true, allowCredentials=true)
@@ -40,15 +47,20 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 			
 	private final static Logger LOG = LoggerFactory.getLogger(GvSecurityControllerRest.class);	
 			
-	private UsersManager gvSecurityManager;
-		
-	public void setSecurityManager(UsersManager gvSecurityManager) {
-		this.gvSecurityManager = gvSecurityManager;
+	private UsersManager gvUsersManager;
+	private CredentialsManager gvCredentialsManager;
+	
+	public void setUsersManager(UsersManager gvSecurityManager) {
+		this.gvUsersManager = gvSecurityManager;
+	}
+	
+	public void setCredentialsManager(CredentialsManager gvCredentialsManager) {
+		this.gvCredentialsManager = gvCredentialsManager;
 	}
 	
 	public void init(){
 		try {
-			gvSecurityManager.checkManagementRequirements();
+			gvUsersManager.checkManagementRequirements();
 		} catch (Exception e) {
 			LOG.error("Error creating default user",e);
 		}
@@ -63,10 +75,11 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 		try {
 		
 			String username = securityContext.getUserPrincipal().getName();
-			UserDTO currentUser = new UserDTO(gvSecurityManager.getUser(username));
+			UserDTO currentUser = new UserDTO(gvUsersManager.getUser(username));
 			
 			response = Response.ok(toJson(currentUser)).build();	
 		} catch (Exception e) {
+			LOG.error("GVAPI_Excepiton - Authentication",e);
 			response = Response.status(Status.UNAUTHORIZED).header("WWW-Authenticate", "Basic").build();
 		}
 			
@@ -88,15 +101,84 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 	        	
 	        	String[] credentials = new String(Base64.getDecoder().decode(parts[1])).split(":");
 
-				UserDTO currentUser = new UserDTO(gvSecurityManager.changeUserPassword(credentials[0], credentials[1], credentials[2]));
+				UserDTO currentUser = new UserDTO(gvUsersManager.changeUserPassword(credentials[0], credentials[1], credentials[2]));
 				
 				response = Response.ok(toJson(currentUser)).build();
+	        } else {
+	        	throw new SecurityException();
 	        }
 		} catch (Exception e) {
-			LOG.error("API_CALL_ERROR",e);
+			LOG.error("GVAPI_Exception - Change password",e);
 			response = Response.status(Status.UNAUTHORIZED).header("WWW-Authenticate", "GV_RENEW").build();
 		}
 			
+		return response;
+	}
+	
+	@Path("/oauth2/access_token")
+	@POST	
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response createAccessToken(@Context HttpHeaders headers, @FormParam("grant_type")String grantType, @FormParam("username")String username, @FormParam("password")String password ){
+		
+		Response response = null;
+		try {
+			if (Optional.ofNullable(grantType).orElse("").equals("password")) {
+				String authorization = Optional.ofNullable(headers.getHeaderString(HttpHeaders.AUTHORIZATION)).orElse("");
+				String[] parts = authorization.split(" ");
+		        if (parts.length == 2 && "basic".equalsIgnoreCase(parts[0])) {
+		        	String[] clientCredentials = new String(Base64.getDecoder().decode(parts[1])).split(":");
+		        	
+		        	CredentialsDTO credentials = new CredentialsDTO(gvCredentialsManager.create(username, password, clientCredentials[0], clientCredentials[1]));
+		        	response = Response.ok(toJson(credentials)).build();
+		        } else {
+		        	throw new SecurityException();
+		        }
+			} else {
+				throw new IllegalArgumentException("unsupported grant_type");
+			}
+		} catch (IllegalArgumentException e) {
+			response = Response.status(Status.BAD_REQUEST).entity(toJson(e)).build();			
+		} catch (UserNotFoundException e) {
+			response = Response.status(Status.NOT_FOUND).entity(toJson(e)).build();
+		} catch (UserExpiredException e) {
+			response = Response.status(Status.FORBIDDEN).entity(toJson(e)).build();
+		} catch (PasswordMissmatchException e) {
+			response = Response.status(Status.UNAUTHORIZED).entity(toJson(e)).build();		
+		} catch (Exception e) {
+			LOG.error("GVAPI_Exception - OAuth2 token creation",e);
+			response = Response.status(Status.SERVICE_UNAVAILABLE).entity(toJson(e)).build();
+		}
+		
+		return response;
+	}
+	
+	@Path("/oauth2/refresh_token")
+	@POST	
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response refreshAccessToken(@Context HttpHeaders headers, @FormParam("grant_type")String grantType, @FormParam("access_token")String accessToken, @FormParam("refresh_token")String refreshToken ){
+		
+		Response response = null;
+		try {
+			if (Optional.ofNullable(grantType).orElse("").equals("refresh")) {	        
+		        	
+	        	CredentialsDTO credentials = new CredentialsDTO(gvCredentialsManager.refresh(refreshToken, accessToken));
+	        	response = Response.ok(toJson(credentials)).build();
+		      
+			} else {
+				throw new IllegalArgumentException("unsupported grant_type");
+			}
+		} catch (IllegalArgumentException e) {
+			response = Response.status(Status.BAD_REQUEST).entity(toJson(e)).build();		
+
+		} catch (CredentialsExpiredException|InvalidCredentialsException e) {
+			response = Response.status(Status.FORBIDDEN).entity(toJson(e)).build();		
+		} catch (Exception e) {
+			LOG.error("GVAPI_Exception - OAuth2 token refresh",e);
+			response = Response.status(Status.SERVICE_UNAVAILABLE).entity(toJson(e)).build();
+		}
+		
 		return response;
 	}
 	
@@ -109,10 +191,10 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 		
 		try {			
 			
-			Set<UserDTO> users = gvSecurityManager.getUsers().stream().map(UserDTO::new).collect(Collectors.toSet());			
+			Set<UserDTO> users = gvUsersManager.getUsers().stream().map(UserDTO::new).collect(Collectors.toSet());			
 			response = Response.ok(toJson(users)).build();
 		} catch (Exception e) {
-			LOG.error("API_CALL_ERROR",e);
+			LOG.error("GVAPI_Exception - Retrieving users",e);
 			response = Response.status(Status.SERVICE_UNAVAILABLE).entity(toJson(e)).build();
 		}		
 		
@@ -128,11 +210,11 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 		
 		try {			
 			
-			Set<Role> roles = gvSecurityManager.getRoles();
+			Set<Role> roles = gvUsersManager.getRoles();
 			
 			response = Response.ok(toJson(roles)).build();	
 		} catch (Exception e) {
-			LOG.error("API_CALL_ERROR",e);
+			LOG.error("GVAPI_Exception - Retrieving roles",e);
 			response = Response.status(Status.SERVICE_UNAVAILABLE).entity(toJson(e)).build();
 		}		
 		
@@ -148,7 +230,7 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 		
 		try {			
 			
-			UserDTO user = new UserDTO(gvSecurityManager.getUser(username));
+			UserDTO user = new UserDTO(gvUsersManager.getUser(username));
 			
 			response = Response.ok(toJson(user)).build();	
 		} catch (UserNotFoundException userNotFoundException) {			
@@ -172,8 +254,8 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 			UserDTO user = parseJson(data, UserDTO.class);
 			
 			String defaultPassword = user.getUsername();			
-			gvSecurityManager.createUser(user.getUsername(), defaultPassword);
-			gvSecurityManager.updateUser(user.getUsername(), user.getUserInfo(), user.getGrantedRoles(), user.isEnabled());
+			gvUsersManager.createUser(user.getUsername(), defaultPassword);
+			gvUsersManager.updateUser(user.getUsername(), user.getUserInfo(), user.getGrantedRoles(), user.isEnabled());
 					
 			response = Response.created(URI.create("/admin/users/"+user.getUsername())).build();
 			
@@ -182,7 +264,7 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 		} catch (UserExistException e) {
 			response = Response.status(Status.CONFLICT).entity(toJson(e)).build();
 		} catch (Exception e) {
-			LOG.error("API_CALL_ERROR",e);
+			LOG.error("GVAPI_Exception - Create user",e);
 			response = Response.status(Status.SERVICE_UNAVAILABLE).entity(toJson(e)).build();
 		}		
 		
@@ -199,7 +281,7 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 		
 		try {
 			UserDTO user = parseJson(data, UserDTO.class);			
-			gvSecurityManager.updateUser(username, user.getUserInfo(), user.getGrantedRoles(), user.isEnabled());
+			gvUsersManager.updateUser(username, user.getUserInfo(), user.getGrantedRoles(), user.isEnabled());
 			
 			response = Response.ok().build();
 		
@@ -207,7 +289,7 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 			response = Response.status(Status.NOT_FOUND).entity(toJson(e)).build();	
 
 		} catch (Exception e) {
-			LOG.error("API_CALL_ERROR",e);
+			LOG.error("GVAPI_Exception - Edit user",e);
 			response = Response.status(Status.SERVICE_UNAVAILABLE).entity(toJson(e)).build();
 		}		
 		
@@ -224,14 +306,14 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 		
 		try {
 	
-			UserDTO user = new UserDTO(gvSecurityManager.switchUserStatus(username));
+			UserDTO user = new UserDTO(gvUsersManager.switchUserStatus(username));
 								
 			response = Response.ok(toJson(user)).build();
 	
 		} catch (UserNotFoundException e) {
 			response = Response.status(Status.NOT_FOUND).entity(toJson(e)).build();
 		} catch (Exception e) {
-			LOG.error("API_CALL_ERROR",e);
+			LOG.error("GVAPI_Exception - Edit user status",e);
 			response = Response.status(Status.SERVICE_UNAVAILABLE).entity(toJson(e)).build();
 		}		
 		
@@ -247,14 +329,14 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 		Response response = null;
 		
 		try {
-			UserDTO user = new UserDTO(gvSecurityManager.resetUserPassword(username));
+			UserDTO user = new UserDTO(gvUsersManager.resetUserPassword(username));
 			
 			response = Response.ok(toJson(user)).build();
 			
 		} catch (UserNotFoundException e) {
 			response = Response.status(Status.NOT_FOUND).entity(toJson(e)).build();
 		} catch (Exception e) {
-			LOG.error("API_CALL_ERROR",e);
+			LOG.error("GVAPI_Exception - Reset user password",e);
 			response = Response.status(Status.SERVICE_UNAVAILABLE).entity(toJson(e)).build();
 		}		
 		
@@ -271,12 +353,12 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 		
 		try {
 		
-			gvSecurityManager.deleteUser(username);			
+			gvUsersManager.deleteUser(username);			
 					
 			response = Response.accepted().build();
 		
 		} catch (Exception e) {
-			LOG.error("API_CALL_ERROR",e);
+			LOG.error("GVAPI_Exception - Delete user",e);
 			response = Response.status(Status.SERVICE_UNAVAILABLE).entity(toJson(e)).build();
 		}		
 		

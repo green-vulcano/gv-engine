@@ -78,4 +78,14 @@
 		</service-properties>
 	</service>
 	
+	
+	<bean id="gvOAuth2SecurityModule" class="it.greenvulcano.gvesb.iam.modules.internal.GVOAuth2SecurityModule">
+		<property name="credentialsManager" ref="gvCredentialsManager"/>
+	</bean>
+	
+	<service id="oauth2SecurityModule" ref="gvOAuth2SecurityModule" interface="it.greenvulcano.gvesb.iam.modules.SecurityModule">
+		<service-properties>
+			<entry key="authentication-schema" value="oauth2"/>
+		</service-properties>
+	</service>
 </blueprint>
