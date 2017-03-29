@@ -119,6 +119,7 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 	@POST	
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed("gvoauth2_client")
 	public Response createAccessToken(@Context HttpHeaders headers, @FormParam("grant_type")String grantType, @FormParam("username")String username, @FormParam("password")String password ){
 		
 		Response response = null;
@@ -157,6 +158,7 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 	@POST	
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed("gvoauth2_client")
 	public Response refreshAccessToken(@Context HttpHeaders headers, @FormParam("grant_type")String grantType, @FormParam("access_token")String accessToken, @FormParam("refresh_token")String refreshToken ){
 		
 		Response response = null;
