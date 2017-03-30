@@ -200,7 +200,6 @@
     <module>gvvcl</module>
     <module>gvvcl-internal</module>  
     <module>features</module>
-    <module>gviam-oauth2</module>
   </modules>
 
 </project>
