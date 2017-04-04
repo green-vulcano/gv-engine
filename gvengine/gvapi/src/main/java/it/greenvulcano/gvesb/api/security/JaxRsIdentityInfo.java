@@ -20,12 +20,15 @@
 package it.greenvulcano.gvesb.api.security;
 
 import java.security.Principal;
+import java.util.stream.Collectors;
+
 import javax.ws.rs.core.SecurityContext;
 
 import org.apache.commons.net.util.SubnetUtils.SubnetInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import it.greenvulcano.gvesb.iam.modules.Identity;
 import it.greenvulcano.gvesb.identity.impl.BaseIdentityInfo;
 
 public class JaxRsIdentityInfo extends BaseIdentityInfo {
@@ -35,10 +38,13 @@ public class JaxRsIdentityInfo extends BaseIdentityInfo {
 	private final SecurityContext securityContext;
 	private final String remoteAddress;	
 
-	public JaxRsIdentityInfo(SecurityContext securityContext, String remoteAddress) {
+	public JaxRsIdentityInfo(SecurityContext securityContext, Identity identity, String remoteAddress) {
 		super();
 		this.securityContext = securityContext;
 		this.remoteAddress = remoteAddress;
+		
+		getAttributes().put("id", identity.getId().toString());
+		getAttributes().put("roles", identity.getRoles().stream().collect(Collectors.joining(",")));
 	}
 
 	@Override

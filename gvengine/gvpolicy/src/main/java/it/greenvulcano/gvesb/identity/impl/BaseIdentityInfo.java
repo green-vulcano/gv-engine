@@ -21,7 +21,9 @@ package it.greenvulcano.gvesb.identity.impl;
 
 import it.greenvulcano.gvesb.identity.IdentityInfo;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.net.util.SubnetUtils.SubnetInfo;
@@ -34,10 +36,13 @@ public abstract class BaseIdentityInfo implements IdentityInfo
 {
     protected boolean    debug  = false;
     private IdentityInfo parent = null;
+    
+    private final Map<String, String> attributes;
 
     public BaseIdentityInfo()
     {
         debug = Boolean.getBoolean("it.greenvulcano.gvesb.identity.IdentityInfo.debug");
+        this.attributes = new HashMap<>();
     }
 
     @Override
@@ -46,6 +51,11 @@ public abstract class BaseIdentityInfo implements IdentityInfo
         System.out.println(this + " - setParent[" + parent + "]");
         this.parent = parent;
     }
+    
+    @Override
+    public Map<String, String> getAttributes() {
+		return attributes;
+	}
 
     @Override
     public boolean isInRole(String[] roles)

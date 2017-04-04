@@ -71,6 +71,10 @@ public class GVIdentityHelper
         }
         return identity;
     }
+    
+    public static IdentityInfo getIdentity() {
+    	return peek();
+    }
 
     public static String getName()
     {

@@ -25,5 +25,9 @@ public class GVSecurityContext implements SecurityContext {
 	public boolean isUserInRole(String role) {			
 		return identity.getRoles().contains(role);
 	}
+			
+	public Identity getIdentity(){
+		return identity;
+	}
 	
 }

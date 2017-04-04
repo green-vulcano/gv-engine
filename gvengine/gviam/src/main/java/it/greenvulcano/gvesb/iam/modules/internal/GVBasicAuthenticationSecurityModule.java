@@ -86,7 +86,7 @@ public class GVBasicAuthenticationSecurityModule implements SecurityModule {
 	
 	private Identity getIdentity(String username, String password) throws UserNotFoundException, UserExpiredException, PasswordMissmatchException {
 		User user = usersManager.validateUser(username, password);
-		return new Identity(user.getUsername(), user.getRoles().stream().map(Role::getName).collect(Collectors.toSet()));
+		return new Identity(user.getId(), user.getUsername(), user.getRoles().stream().map(Role::getName).collect(Collectors.toSet()));
 		
 	}
 

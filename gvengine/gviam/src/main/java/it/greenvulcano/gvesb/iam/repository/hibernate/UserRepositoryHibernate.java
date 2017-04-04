@@ -36,7 +36,7 @@ import it.greenvulcano.gvesb.iam.repository.UserRepository;
  * expects injection of a {@link SessionFactory}  
  * 
  */
-public class UserRepositoryHibernate extends RepositoryHibernate<User, String> implements UserRepository {
+public class UserRepositoryHibernate extends RepositoryHibernate<User, Integer> implements UserRepository {
 	
 	public UserRepositoryHibernate() {
 		super(User.class);

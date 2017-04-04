@@ -30,6 +30,8 @@ import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -56,8 +58,11 @@ public class User implements Serializable {
 	
 	public static final String USERNAME_PATTERN = "(?=^.{4,28}$)^[a-zA-Z][a-zA-Z0-9._@-]*[a-zA-Z0-9]+$";
 	public static final String PASSWORD_PATTERN = "(?=^.{4,28}$)^[a-zA-Z0-9._@&$#!?-]+$";
-	
-    @Id @Column(nullable=false,length=32, unique=true, updatable=false)
+		
+	@Id @GeneratedValue(strategy=GenerationType.AUTO)
+	private Long id;
+    
+	@Column(nullable=false,length=32, unique=true, updatable=false)
     private String username;
     
     @Column(nullable=false)
@@ -83,11 +88,19 @@ public class User implements Serializable {
     @Cascade({CascadeType.SAVE_UPDATE})
     @JoinTable(
             name="user_roles",  
-            joinColumns = { @JoinColumn( name="username",referencedColumnName="username", nullable=false, updatable=false)},
-            inverseJoinColumns = @JoinColumn( name="role",referencedColumnName="name", nullable=false, updatable=true)            
+            joinColumns = { @JoinColumn( name="user_id", referencedColumnName="id", nullable=false, updatable=false)},
+            inverseJoinColumns = @JoinColumn( name="role_id", referencedColumnName="id", nullable=false, updatable=true)            
     ) 
     private final Set<Role> roles = new HashSet<>();
-      	
+        
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
 	public String getUsername() {
 		return username;
 	}
@@ -146,6 +159,7 @@ public class User implements Serializable {
 		int result = 1;
 		result = prime * result + (enabled ? 1231 : 1237);
 		result = prime * result + (expired ? 1231 : 1237);
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((password == null) ? 0 : password.hashCode());
 		result = prime * result + ((passwordTime == null) ? 0 : passwordTime.hashCode());
 		result = prime * result + ((roles == null) ? 0 : roles.hashCode());
@@ -167,6 +181,11 @@ public class User implements Serializable {
 		if (enabled != other.enabled)
 			return false;
 		if (expired != other.expired)
+			return false;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
 			return false;
 		if (password == null) {
 			if (other.password != null)
@@ -200,7 +219,9 @@ public class User implements Serializable {
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
+		StringBuilder builder = new StringBuilder("{");
+		builder.append("\"id\":\"");
+		builder.append(id);
 		builder.append("\",\"username\":\"");
 		builder.append(username);
 		builder.append("\",\"password\":\"");
@@ -215,7 +236,7 @@ public class User implements Serializable {
 		builder.append(enabled);
 		builder.append(",\"version\":");
 		builder.append(version);
-		builder.append("\",\"roles\":{");		
+		builder.append(",\"roles\":{");		
 		builder.append(roles.stream()
 							.map(r->"{\""+r.getName()+"\":"+r)
 							.collect(Collectors.joining(",")));

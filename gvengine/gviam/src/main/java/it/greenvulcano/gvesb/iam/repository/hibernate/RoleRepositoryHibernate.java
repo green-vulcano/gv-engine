@@ -19,6 +19,8 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb.iam.repository.hibernate;
 
+import java.util.Optional;
+
 import org.hibernate.SessionFactory;
 
 import it.greenvulcano.gvesb.iam.domain.Role;
@@ -30,7 +32,7 @@ import it.greenvulcano.gvesb.iam.repository.RoleRepository;
  * expects injection of a {@link SessionFactory}  
  * 
  */
-public class RoleRepositoryHibernate extends RepositoryHibernate<Role, String> implements RoleRepository {
+public class RoleRepositoryHibernate extends RepositoryHibernate<Role, Integer> implements RoleRepository {
 
 	public RoleRepositoryHibernate() {
 		super(Role.class);
@@ -40,6 +42,13 @@ public class RoleRepositoryHibernate extends RepositoryHibernate<Role, String> i
 	@Override
 	public void setSessionFactory(SessionFactory sessionFactory) {	
 		super.setSessionFactory(sessionFactory);
+	}
+	
+	@Override
+	public Optional<Role> get(String rolename) {		
+		return Optional.ofNullable((Role)getSession().createQuery("from Role where name = :name")
+								  .setString("name", rolename)
+								  .uniqueResult());
 	}
 
 }

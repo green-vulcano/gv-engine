@@ -43,7 +43,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.cxf.jaxrs.ext.MessageContext;
+import org.apache.cxf.jaxrs.utils.JAXRSUtils;
 import org.apache.cxf.rs.security.cors.CrossOriginResourceSharing;
+import org.apache.cxf.security.SecurityContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
@@ -54,6 +56,7 @@ import it.greenvulcano.configuration.XMLConfig;
 import it.greenvulcano.configuration.XMLConfigException;
 import it.greenvulcano.gvesb.api.dto.OperationDTO;
 import it.greenvulcano.gvesb.api.dto.ServiceDTO;
+import it.greenvulcano.gvesb.api.security.GVSecurityContext;
 import it.greenvulcano.gvesb.api.security.JaxRsIdentityInfo;
 import it.greenvulcano.gvesb.buffer.GVBuffer;
 import it.greenvulcano.gvesb.buffer.GVException;
@@ -172,7 +175,8 @@ public class GvServicesControllerRest extends BaseControllerRest {
 			
 	private Response runOperation(MessageContext jaxrsContext, String service, String operation, String data ) {
 
-		GVIdentityHelper.push(new JaxRsIdentityInfo(jaxrsContext.getSecurityContext(), jaxrsContext.getHttpServletRequest().getRemoteAddr()));
+		GVSecurityContext securityContext = (GVSecurityContext) JAXRSUtils.getCurrentMessage().get(SecurityContext.class);
+		GVIdentityHelper.push(new JaxRsIdentityInfo(jaxrsContext.getSecurityContext(), securityContext.getIdentity(), jaxrsContext.getHttpServletRequest().getRemoteAddr()));
 		
 		String response = null;		
 		GVBuffer input = null;

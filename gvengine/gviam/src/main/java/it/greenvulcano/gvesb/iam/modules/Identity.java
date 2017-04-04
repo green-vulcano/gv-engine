@@ -35,16 +35,20 @@ import java.util.stream.Stream;
 public class Identity implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
+	private final Long id;
 	private final String name;
 	private final Set<String> roles;
 	
 	protected Identity(){
 		this.name = "";
 		this.roles = new LinkedHashSet<>();
-	};
+		this.id = -1l;
+	}
 	
-	public Identity(String name, Set<String> roles) {
+	public Identity(Long id, String name, Set<String> roles) {
+		this.id = id;
 		this.name = name;
+		
 		if (Objects.nonNull(roles)) {
 			this.roles = Collections.unmodifiableSet(roles);
 		} else {
@@ -52,7 +56,8 @@ public class Identity implements Serializable {
 		}
 	}
 	
-	public Identity(String name, String ... roles){
+	public Identity(Long id, String name, String ... roles){
+		this.id = id;
 		this.name = name;
 		
 		Set<String> r;
@@ -66,6 +71,9 @@ public class Identity implements Serializable {
 		
 	}
 	
+	public Long getId() {
+		return id;
+	}
 	
 	public String getName(){
 		return name;

@@ -101,6 +101,12 @@ public class GVUsersManager implements UsersManager {
 	}
 
 	@Override
+	public User getUser(Integer id) throws UserNotFoundException {
+		User user = userRepository.get(id).orElseThrow(()->new UserNotFoundException(id.toString()));
+		return user;
+	}
+	
+	@Override
 	public User getUser(String username) throws UserNotFoundException {
 		User user = userRepository.get(username).orElseThrow(()->new UserNotFoundException(username));
 		return user;
@@ -220,8 +226,8 @@ public class GVUsersManager implements UsersManager {
 			User admin;
 			try {
 				jaasEngine.addUser("gvadmin", "gvadmin");				
-			} catch (SecurityException e) {
-				logger.info("A user named 'gvadmin' exist: restoring his default settings");
+			} catch (SecurityException e) {				
+				logger.info("A user named 'gvadmin' exist: restoring his default settings", e);
 				
 				admin = userRepository.get("gvadmin").get();
 				admin.setPassword(jaasEngine.getEncryptedPassword("gvadmin"));

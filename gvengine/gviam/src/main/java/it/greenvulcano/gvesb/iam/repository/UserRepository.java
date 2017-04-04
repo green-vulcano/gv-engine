@@ -19,6 +19,7 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb.iam.repository;
 
+import java.util.Optional;
 import java.util.Set;
 
 import it.greenvulcano.gvesb.iam.domain.User;
@@ -27,7 +28,9 @@ import it.greenvulcano.gvesb.iam.domain.User;
  * Business interface to deal with {@link User} entity
  * 
  */
-public interface UserRepository extends Repository<User, String> {	
+public interface UserRepository extends Repository<User, Integer> {
+	
+	Optional<User> get(String username);
 			
 	Set<User> find(String fullname, Boolean expired, Boolean enabled, Set<String> roles);
 

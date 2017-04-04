@@ -19,7 +19,9 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb.identity;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.net.util.SubnetUtils;
@@ -33,6 +35,10 @@ public interface IdentityInfo
     public void setParent(IdentityInfo parent);
 
     public String getName();
+    
+    public default Map<String, String> getAttributes(){
+    	return new HashMap<>();
+    }
 
     public boolean isInRole(String role);
 

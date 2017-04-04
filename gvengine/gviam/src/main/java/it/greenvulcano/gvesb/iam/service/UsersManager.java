@@ -48,6 +48,8 @@ public interface UsersManager {
 		
 		Role createRole(String name, String description) throws InvalidRoleException;
 		
+		User getUser(Integer id) throws UserNotFoundException;
+		
 		User getUser(String username) throws UserNotFoundException;
 		
 		User validateUser(String username, String password) throws UserNotFoundException, UserExpiredException, PasswordMissmatchException;

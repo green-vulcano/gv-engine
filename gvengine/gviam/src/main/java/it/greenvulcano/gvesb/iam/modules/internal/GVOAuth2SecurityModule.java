@@ -31,7 +31,7 @@ public class GVOAuth2SecurityModule implements SecurityModule {
 		
 		if (authData.length>1 && authData[0].equalsIgnoreCase("Bearer")) {
 			Credentials credentidals = credentialsManager.check(authData[1]);
-			Identity identity = new Identity(credentidals.getResourceOwner().getUsername(), 
+			Identity identity = new Identity(credentidals.getResourceOwner().getId(), credentidals.getResourceOwner().getUsername(), 
 											 credentidals.getResourceOwner().getRoles().stream().map(Role::getName).collect(Collectors.toSet()));
 			
 			return Optional.of(identity);
@@ -46,7 +46,7 @@ public class GVOAuth2SecurityModule implements SecurityModule {
 		
 		if (Optional.ofNullable(type).orElse("").equalsIgnoreCase("Bearer") && Optional.ofNullable(authorization).orElse(new HashMap<>()).containsKey("access_token") ) {
 			Credentials credentidals = credentialsManager.check(authorization.get("access_token").toString());
-			Identity identity = new Identity(credentidals.getResourceOwner().getUsername(), 
+			Identity identity = new Identity(credentidals.getResourceOwner().getId(), credentidals.getResourceOwner().getUsername(), 
 											 credentidals.getResourceOwner().getRoles().stream().map(Role::getName).collect(Collectors.toSet()));
 			
 			return Optional.of(identity);
@@ -61,7 +61,7 @@ public class GVOAuth2SecurityModule implements SecurityModule {
 		
 		if (Optional.ofNullable(type).orElse("").equalsIgnoreCase("Bearer") && Optional.ofNullable(authorization).orElse(new String[]{}).length>0 ) {
 			Credentials credentidals = credentialsManager.check(authorization[0]);
-			Identity identity = new Identity(credentidals.getResourceOwner().getUsername(), 
+			Identity identity = new Identity(credentidals.getResourceOwner().getId(), credentidals.getResourceOwner().getUsername(), 
 											 credentidals.getResourceOwner().getRoles().stream().map(Role::getName).collect(Collectors.toSet()));
 			
 			return Optional.of(identity);

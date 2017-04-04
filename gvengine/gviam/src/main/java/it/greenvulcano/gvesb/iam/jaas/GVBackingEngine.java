@@ -74,7 +74,7 @@ public class GVBackingEngine implements BackingEngine {
 		if (!username.matches(User.USERNAME_PATTERN)) throwException(new InvalidUsernameException(username));
 		if (!password.matches(User.PASSWORD_PATTERN)) throwException(new InvalidPasswordException(password));
 					
-		User user = new User();
+		User user = new User();		
 		user.setUsername(username);
 		user.setPassword(getEncryptedPassword(password));
 		user.setPasswordTime(new Date());
@@ -83,7 +83,7 @@ public class GVBackingEngine implements BackingEngine {
 		
 		try {
 			userRepository.add(user);
-		} catch (org.hibernate.StaleObjectStateException|ConstraintViolationException constraintViolationException) {
+		} catch (org.hibernate.StaleObjectStateException|ConstraintViolationException constraintViolationException) {			
 			throwException(new UserExistException(username));
 		}
 	}
