@@ -20,6 +20,7 @@
 package tests.unit.util.txt;
 
 import it.greenvulcano.configuration.XMLConfig;
+import it.greenvulcano.gvesb.buffer.GVBuffer;
 import it.greenvulcano.util.metadata.PropertiesHandler;
 import it.greenvulcano.util.txt.DateUtils;
 
@@ -218,6 +219,16 @@ public class PropertiesHandlerTestCase extends TestCase
         String dest = PropertiesHandler.expand(src, props);
         assertEquals(match, dest);
     }
+    
+    public void testXPath() throws Exception{
+    	String source = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><RowSet><data id=\"0\"><row id=\"sp_result\"><col id=\"UPDATE_TIME\" type=\"string\">2017-04-03 12:46:31.637 </col></row></data></RowSet>";
+    	GVBuffer gvBuffer = new GVBuffer();
+    	gvBuffer.setObject(source);
+    	
+    	String dest = PropertiesHandler.expand("xpath{{/RowSet/data[1]/row[1]/col[@id=\"UPDATE_TIME\"]/text()}}",gvBuffer);
+    	assertEquals("2017-04-03 12:46:31.637", dest);
+    }
+    
 
     /**
      *

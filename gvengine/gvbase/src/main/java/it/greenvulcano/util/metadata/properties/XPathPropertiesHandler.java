@@ -57,21 +57,28 @@ public class XPathPropertiesHandler implements PropertyHandler {
 			if (!PropertiesHandler.isExpanded(str)) {
 				str = PropertiesHandler.expand(str, inProperties, object, extra);
 			}
+			parser = XMLUtils.getParserInstance();
+			DocumentBuilder db = parser.getDocumentBuilder(false, true, true);
+			
 			int pIdx = str.indexOf("::");
-			paramName = str.substring(0, pIdx);
+			if (pIdx>0) {
+				paramName = str.substring(0, pIdx);
 
-			String xpath = str.substring(pIdx + 2);
-			if (paramName.startsWith("file://")) {
-				paramValue = XMLConfig.get(paramName.substring(7), xpath);
-			} else {
-				parser = XMLUtils.getParserInstance();
-				DocumentBuilder db = parser.getDocumentBuilder(false, true, true);
-				String xmlDoc = (String) inProperties.get(paramName);
-				if ((xmlDoc == null) || ("".equals(xmlDoc))) {
-					xmlDoc = "<dummy/>";
+				String xpath = str.substring(pIdx + 2);
+				if (paramName.startsWith("file://")) {
+					paramValue = XMLConfig.get(paramName.substring(7), xpath);
+				} else {
+					
+					String xmlDoc = (String) inProperties.get(paramName);
+					if ((xmlDoc == null) || ("".equals(xmlDoc))) {
+						xmlDoc = "<dummy/>";
+					}
+					Document doc = db.parse(new InputSource(new StringReader(xmlDoc)));
+					paramValue = parser.get(doc, xpath);
 				}
-				Document doc = db.parse(new InputSource(new StringReader(xmlDoc)));
-				paramValue = parser.get(doc, xpath);
+			} else {
+				Document doc = db.parse(new InputSource(new StringReader(object.toString())));
+				paramValue = parser.get(doc, str).trim();
 			}
 
 			return paramValue;
