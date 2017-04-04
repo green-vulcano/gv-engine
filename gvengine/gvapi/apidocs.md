@@ -7,11 +7,11 @@
   * [Create user](#create_user)
   * [Update user](#update_user)
   * [Delete user](#delete_user)
-  * [Change user enablement](#enable_user)
-  * [Reset user password](#reset_user)
 
-- Auhtentication API
-  * [Authenticate](#authenticate)
+- OAuth2 API
+  * [Get Access Token](#accessToken)
+  * [Refresh Token](#refreshToken)
+  
 
 ----
 
@@ -145,3 +145,52 @@
 
 **Errors**:  
    - `404 Not found` User not found
+
+## OAuth2 API
+
+----
+### <a name="accessToken"></a>Get access token
+
+    POST /oauth2/access_token
+
+**Authentication** : Client identified by Basic Authentication
+
+**Consume** : application/x-www-form-urlencoded
+  - token_type = Bearer
+  - grant_type = password
+  - user = _[Resource owner username]_
+  - password = _[Resource owner password]_
+  
+**Produces**: Content-Type: application/json
+
+```javascript
+  { "token_type":"Bearer",
+    "access_token": "xxxx",
+    "refresh_token":"xxxx",
+    "expires_in": nnnn, //milliseconds
+    "issue_date":"2017-01-30T12:00:35.0+02:00" //ISO-8601 
+   }  
+```
+
+----
+### <a name="refreshToken"></a>Refresh token
+
+    POST /oauth2/access_token
+
+**Authentication** : Client identified by Basic Authentication
+
+**Consume** : application/x-www-form-urlencoded
+  - grant_type = refresh
+  - access_token = _[Expired access token]_
+  - password = _[Valid refresh token]_
+  
+**Produces**: Content-Type: application/json
+
+```javascript
+  { "token_type":"Bearer",
+    "access_token": "xxxx",
+    "refresh_token":"xxxx",
+    "expires_in": nnnn, //milliseconds
+    "issue_date":"2017-01-30T12:00:35.0+02:00" //ISO-8601 
+   }  
+```
