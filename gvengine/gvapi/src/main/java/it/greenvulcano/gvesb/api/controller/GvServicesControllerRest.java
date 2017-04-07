@@ -19,6 +19,7 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb.api.controller;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
@@ -175,9 +176,10 @@ public class GvServicesControllerRest extends BaseControllerRest {
 			
 	private Response runOperation(MessageContext jaxrsContext, String service, String operation, String data ) {
 
-		GVSecurityContext securityContext = (GVSecurityContext) JAXRSUtils.getCurrentMessage().get(SecurityContext.class);
-		GVIdentityHelper.push(new JaxRsIdentityInfo(jaxrsContext.getSecurityContext(), securityContext.getIdentity(), jaxrsContext.getHttpServletRequest().getRemoteAddr()));
-		
+		SecurityContext securityContext = JAXRSUtils.getCurrentMessage().get(SecurityContext.class);
+		if (securityContext instanceof GVSecurityContext) {
+			GVIdentityHelper.push(new JaxRsIdentityInfo(jaxrsContext.getSecurityContext(), GVSecurityContext.class.cast(securityContext).getIdentity(), jaxrsContext.getHttpServletRequest().getRemoteAddr()));
+	    }
 		String response = null;		
 		GVBuffer input = null;
 		try {
@@ -212,6 +214,19 @@ public class GvServicesControllerRest extends BaseControllerRest {
 				response = org.json.JSONObject.class.cast(output.getObject()).toString();
 			}  else if (output.getObject() instanceof org.json.JSONArray) {
 				response = org.json.JSONArray.class.cast(output.getObject()).toString();
+			} else if (output.getObject() instanceof byte[]) {
+				String encoding = output.getProperty("OBJECT_ENCODING");
+				
+				try {
+					if (encoding!=null) {
+						response = new String((byte[]) output.getObject(), encoding);
+					} else {
+						throw new UnsupportedEncodingException();
+					}
+				} catch (UnsupportedEncodingException e) {
+					response = "{ \"base64\": \"" + Base64.getEncoder().encodeToString((byte[]) output.getObject()) +"\"}";
+				}
+				
 			} else if (Objects.nonNull(output.getObject())) {
 				
 				response = toJson(output.getObject());

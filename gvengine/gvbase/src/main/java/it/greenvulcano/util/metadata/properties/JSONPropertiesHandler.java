@@ -59,7 +59,7 @@ public class JSONPropertiesHandler implements PropertyHandler {
      	        if (o instanceof String) {
      	        	if (o.toString().startsWith("{")) {
      	        		jsonObject = new JSONObject(o.toString());	
-     	        	} else if (o.toString().startsWith("[")){
+     	        	} else if (o.toString().startsWith("[")){     	        		
      	        		jsonObject = new JSONObject("{ \"array\":"+o.toString()+"}");
      	        	} else {
      	        		jsonObject = new JSONObject("{ \"value\":\""+o.toString()+"\"}");
@@ -83,7 +83,7 @@ public class JSONPropertiesHandler implements PropertyHandler {
         	JSONObject jsonObject; 
         	
         	if (object instanceof GVBuffer) {
-        		jsonObject = objProvider.apply(GVBuffer.class.cast(object).getObject()).orElseThrow(IllegalArgumentException::new);
+        		return expand(type, str, inProperties, GVBuffer.class.cast(object).getObject(), extra);        		
         	} else if (object instanceof byte[])  {
         		String rawdata = new String((byte[])object, "UTF-8");
         		jsonObject = objProvider.apply(rawdata).orElseThrow(IllegalArgumentException::new);					
@@ -120,7 +120,7 @@ public class JSONPropertiesHandler implements PropertyHandler {
         		}
 	        }
 	        
-        } catch (Exception e) {
+        } catch (Exception e) {        	
         	value = "json" + PROP_START + str + PROP_END;
         }        
         

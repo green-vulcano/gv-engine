@@ -22,6 +22,7 @@ package it.greenvulcano.gvesb.internal.data;
 import it.greenvulcano.configuration.XMLConfig;
 import it.greenvulcano.configuration.XMLConfigException;
 import it.greenvulcano.gvesb.buffer.GVBuffer;
+import it.greenvulcano.gvesb.buffer.GVException;
 import it.greenvulcano.util.metadata.PropertiesHandler;
 import it.greenvulcano.util.xpath.XPathFinder;
 
@@ -62,6 +63,8 @@ public class SimpleGVBufferBodyMaker implements GVBufferBodyMaker
      * If true the file content can contains metadata to be resolved.
      */
     private boolean       processMetadata = true;
+    
+    private String encoding  = null;
 
     /**
      * Initialize the instance.
@@ -77,7 +80,7 @@ public class SimpleGVBufferBodyMaker implements GVBufferBodyMaker
         fileName = XMLConfig.get(node, "@file-name");
         if (fileName == null) {
             String sBody = XMLConfig.get(node, ".");
-            String encoding = XMLConfig.get(node, "@encoding", "ISO-8859-1");
+            encoding = XMLConfig.get(node, "@encoding", "UTF-8");
 
             if (sBody != null) {
                 try {
@@ -97,7 +100,7 @@ public class SimpleGVBufferBodyMaker implements GVBufferBodyMaker
             logger.debug("Initialized SimpleGVBufferBodyMaker from file: " + fileName);
         }
 
-        processMetadata = XMLConfig.getBoolean(node, "@process-metadata", false);
+        processMetadata = XMLConfig.getBoolean(node, "@process-metadata", true);
     }
 
     /**
@@ -108,6 +111,13 @@ public class SimpleGVBufferBodyMaker implements GVBufferBodyMaker
     @Override
     public final byte[] getBuffer(GVBuffer currBuffer)
     {
+    	
+    	try {
+			currBuffer.setProperty("OBJECT_ENCODING", encoding);
+		} catch (GVException e) { 
+			logger.error("SimpleGVDataBodyMaker - Cannot set property OBJECT_ENCODING", e);
+		}
+    	
         if ((fileName != null) && !readOnce) {
             setBody();
         }
