@@ -21,12 +21,14 @@ public class UserDTO {
 	private final User user;
 	
 	@JsonCreator
-	public UserDTO(@JsonProperty("username") String username, 
+	public UserDTO( @JsonProperty("id") Long id,
+					@JsonProperty("username") String username, 
 					@JsonProperty("expired") boolean expired, 
 					@JsonProperty("enabled") boolean enabled,
 					@JsonProperty("userInfo") UserInfo userInfo,
 					@JsonProperty("roles") Map<String, Role> roles) {
 		user = new User();
+		user.setId(id);
 		user.setUsername(username);;
 		user.setExpired(expired);
 		user.setEnabled(enabled);
@@ -37,6 +39,10 @@ public class UserDTO {
 	@JsonIgnore
 	public UserDTO(User user) {		
 		this.user = Objects.requireNonNull(user);
+	}
+	
+	public Long getId() {
+		return this.user.getId();
 	}
 	
 	public String getUsername() {
