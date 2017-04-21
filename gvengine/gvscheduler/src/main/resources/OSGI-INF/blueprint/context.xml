@@ -21,12 +21,12 @@
      	 <property name="gvScheduleManager" ref="gvScheduleManager"/>
      </bean>
     
-     <reference-list id="securityManagerReferences" interface="it.greenvulcano.gvesb.iam.service.UsersManager" 
+    <reference-list id="securityModulesReferences" interface="it.greenvulcano.gvesb.iam.modules.SecurityModule" 
 			   		member-type="service-reference" availability="optional"/>
 		
-	 <bean id="gvAuthenticationFilter" class="it.greenvulcano.gvesb.api.security.GVSecurityFilter">        
-        <property name="gvSecurityManagerReferences" ref="securityManagerReferences"/>    
-     </bean>
+	<bean id="gvAuthenticationFilter" class="it.greenvulcano.gvesb.api.security.GVSecurityFilter">        
+        <property name="gvSecurityModulesReferences" ref="securityModulesReferences"/>    
+    </bean>
          
      <bean id="gvAuthorizationInterceptor" class="org.apache.cxf.interceptor.security.SecureAnnotationsInterceptor">
    		<property name="allowAnonymousUsers" value="false" />
