@@ -33,6 +33,7 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
 import it.greenvulcano.configuration.XMLConfig;
+import it.greenvulcano.gvesb.buffer.GVBuffer;
 import it.greenvulcano.util.metadata.PropertiesHandler;
 import it.greenvulcano.util.metadata.PropertiesHandlerException;
 import it.greenvulcano.util.metadata.PropertyHandler;
@@ -77,7 +78,14 @@ public class XPathPropertiesHandler implements PropertyHandler {
 					paramValue = parser.get(doc, xpath);
 				}
 			} else {
-				Document doc = db.parse(new InputSource(new StringReader(object.toString())));
+				 
+				if (object instanceof GVBuffer) { 
+					object = GVBuffer.class.cast(object).getObject();
+				} 
+												
+				String xmlsource = (object instanceof byte[]) ? new String((byte[])object, "UTF-8") :  object.toString();
+							
+				Document doc = db.parse(new InputSource(new StringReader(xmlsource)));
 				paramValue = parser.get(doc, str).trim();
 			}
 
