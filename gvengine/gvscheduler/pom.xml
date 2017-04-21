@@ -126,6 +126,7 @@
               				 it.greenvulcano.gvesb.buffer,
               				 it.greenvulcano.gvesb.core.pool
                         </Import-Package>
+                        <DynamicImport-Package>it.greenvulcano.*</DynamicImport-Package>
                         <Embed-Dependency>*;scope=compile;type=jar</Embed-Dependency>
 						<Embed-Transitive>false</Embed-Transitive>
                     </instructions>
