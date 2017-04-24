@@ -57,7 +57,8 @@ public class GVSecurityFilter implements ContainerRequestFilter {
 	public void filter(ContainerRequestContext requestContext) throws IOException {
 		
 		String authorization = Optional.ofNullable(requestContext.getHeaderString("Authorization")).orElse("");
-		if (securityModulesReferences!=null) {				
+		
+		if (securityModulesReferences!=null && !securityModulesReferences.isEmpty()) {				
 			LOG.debug("SecurityManager found, handling authentication");
 			
 			try {

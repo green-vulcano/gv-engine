@@ -123,10 +123,10 @@
               				 javax.ws.rs.core,
               				 it.greenvulcano.gvesb.iam.service,
               				 it.greenvulcano.gvesb.api.security,
-              				 it.greenvulcano.gvesb.buffer,
-              				 it.greenvulcano.gvesb.core.pool
-                        </Import-Package>
-                        <DynamicImport-Package>it.greenvulcano.*</DynamicImport-Package>
+              				 it.greenvulcano.gvesb.buffer,              				
+              				 it.greenvulcano.gvesb.core.pool,
+              				 it.greenvulcano.gvesb.iam.modules
+                        </Import-Package>                       
                         <Embed-Dependency>*;scope=compile;type=jar</Embed-Dependency>
 						<Embed-Transitive>false</Embed-Transitive>
                     </instructions>

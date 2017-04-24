@@ -22,7 +22,7 @@
      </bean>
     
     <reference-list id="securityModulesReferences" interface="it.greenvulcano.gvesb.iam.modules.SecurityModule" 
-			   		member-type="service-reference" availability="optional"/>
+			   		member-type="service-reference" availability="mandatory"/>
 		
 	<bean id="gvAuthenticationFilter" class="it.greenvulcano.gvesb.api.security.GVSecurityFilter">        
         <property name="gvSecurityModulesReferences" ref="securityModulesReferences"/>    
