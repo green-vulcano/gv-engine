@@ -1,12 +1,13 @@
 [![N|Solid](http://www.greenvulcanotechnologies.com/wp-content/uploads/2015/11/logo-green-vulcano-technologies-colour.png)](http://www.greenvulcanotechnologies.com)
 # GreenVulcano ESB 4: Quickstart guide
-Latest [GreenVulcano] instances work on [apache karaf] 4.0.8.
+Latest [GreenVulcano] instances work on [apache karaf] 4.1.1.
  
 ## Installation
-Update <karaf_home>/etc/**org.ops4j.pax.url.mvn.cfg** file and add to key **org.ops4j.pax.url.mvn.cfg** following row:
+Before to run karaf, you have to configure GreenVulcano Maven repository:
+update <karaf_home>/etc/**org.ops4j.pax.url.mvn.cfg** file and add to key **org.ops4j.pax.url.mvn.cfg** following row:
    > http://mvn.greenvulcano.com/nexus/content/groups/public@id=gv@snaphots, \
 
-Then restart karaf.
+Then start karaf.
 
 Install feature repository and install gvegine
 ```sh
@@ -66,7 +67,42 @@ Export a configuration from Developer studio. Then choose whether to use "Develo
     gvadmin@root()> gvesb:deploy Configuration-Id /path/to/vulcon/export.zip
      ```
  A folder named <Configuration-Id> will be created into <karaf_home>/GreenV, which contains GreenVulcano configuration.
+ 
+## Logging
 
+You can setup a fine-grained logging service configuring proprerly **log4j** in karaf.
+This is a sample configuration in *etc/org.ops4j.pax.logging.cfg* to logging each service in a single file:
+```
+# GVESB Appender to produce multiple log files - One per value of MASTER_SERVICE key in thread context map
+log4j2.appender.gv.type = Routing
+log4j2.appender.gv.name = RoutingGVCore
+log4j2.appender.gv.routes.type = Routes
+log4j2.appender.gv.routes.pattern = \$\$\\\{ctx:MASTER_SERVICE\}
+log4j2.appender.gv.routes.service.type = Route
+log4j2.appender.gv.routes.service.appender.type = RollingRandomAccessFile
+log4j2.appender.gv.routes.service.appender.name = Rolling-\$\\\{ctx:MASTER_SERVICE\}
+log4j2.appender.gv.routes.service.appender.fileName = ${karaf.data}/log/GVCore.\$\\\{ctx:MASTER_SERVICE\}.log
+log4j2.appender.gv.routes.service.appender.filePattern = ${karaf.data}/log/${date:yyyy-MM}/GVCore.\$\\\{ctx:MASTER_SERVICE\}.%d{MM-dd-yyyy}.%i
+log4j2.appender.gv.routes.service.appender.append = true
+log4j2.appender.gv.routes.service.appender.layout.type = PatternLayout
+log4j2.appender.gv.routes.service.appender.layout.pattern = [%d{ISO8601}][%-5.5p][%X{SERVICE}/%X{OPERATION}][%X{bundle.id} - %X{bundle.name}][%t] - %m%n
+log4j2.appender.gv.routes.service.appender.policies.type = Policies
+log4j2.appender.gv.routes.service.appender.policies.size.type =SizeBasedTriggeringPolicy
+log4j2.appender.gv.routes.service.appender.policies.size.size = 32MB
+
+# GVESB Logger mapping service name
+log4j2.logger.greenvulcano.name = it.greenvulcano
+log4j2.logger.greenvulcano.level = DEBUG
+log4j2.logger.greenvulcano.appenderRef.gv.ref = RoutingGVCore
+log4j2.logger.greenvulcano.appenderRef.gv.filter.mdc.type = ThreadContextMapFilter
+log4j2.logger.greenvulcano.appenderRef.gv.filter.mdc.operator = or
+log4j2.logger.greenvulcano.appenderRef.gv.filter.mdc.fleet.type = KeyValuePair
+log4j2.logger.greenvulcano.appenderRef.gv.filter.mdc.fleet.key = MASTER_SERVICE
+log4j2.logger.greenvulcano.appenderRef.gv.filter.mdc.fleet.value = (service name)
+log4j2.logger.greenvulcano.appenderRef.gv.filter.mdc.vehicle.type = KeyValuePair
+log4j2.logger.greenvulcano.appenderRef.gv.filter.mdc.vehicle.key = MASTER_SERVICE
+log4j2.logger.greenvulcano.appenderRef.gv.filter.mdc.vehicle.value = (service name)
+```
 [GreenVulcano]: https://github.com/green-vulcano/gv-engine
 [apache karaf]: <http://karaf.apache.org>
 [OPS4J Pax JDBC]: https://ops4j1.jira.com/wiki/display/PAXJDBC/Documentation
