@@ -1,6 +1,6 @@
 [![N|Solid](http://www.greenvulcanotechnologies.com/wp-content/uploads/2015/11/logo-green-vulcano-technologies-colour.png)](http://www.greenvulcanotechnologies.com)
 # GreenVulcano ESB 4: Quickstart guide
-Latest [GreenVulcano] instances work on [apache karaf] 4.1.1.
+Latest [GreenVulcano] instances work on [Apache Karaf] 4.1.1.
  
 ## Installation
 Before to run karaf, you have to configure GreenVulcano Maven repository:
@@ -104,5 +104,5 @@ log4j2.logger.greenvulcano.appenderRef.gv.filter.mdc.vehicle.key = MASTER_SERVIC
 log4j2.logger.greenvulcano.appenderRef.gv.filter.mdc.vehicle.value = (service name)
 ```
 [GreenVulcano]: https://github.com/green-vulcano/gv-engine
-[apache karaf]: <http://karaf.apache.org>
+[Apache Karaf]: <http://karaf.apache.org>
 [OPS4J Pax JDBC]: https://ops4j1.jira.com/wiki/display/PAXJDBC/Documentation
