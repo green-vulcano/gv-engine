@@ -4,7 +4,7 @@ Latest [GreenVulcano] instances work on [Apache Karaf] 4.1.1.
  
 ## Installation
 Before to run karaf, you have to configure GreenVulcano Maven repository:
-update <karaf_home>/etc/**org.ops4j.pax.url.mvn.cfg** file and add to key **org.ops4j.pax.url.mvn.cfg** following row:
+update <karaf_home>/etc/**org.ops4j.pax.url.mvn.cfg** file and add to key **org.ops4j.pax.url.mvn.repositories** following row:
    > http://mvn.greenvulcano.com/nexus/content/groups/public@id=gv@snaphots, \
 
 Then start karaf.
