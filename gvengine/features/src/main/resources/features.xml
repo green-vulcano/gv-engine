@@ -2,6 +2,7 @@
 <features xmlns="http://karaf.apache.org/xmlns/features/v1.3.0"	name="${project.artifactId}-${project.version}">
 	
 	<repository>mvn:org.apache.cxf.karaf/apache-cxf/3.1.5/xml/features</repository>
+	<repository>mvn:org.ops4j.pax.jdbc/pax-jdbc-features/1.0.1/xml/features</repository>
 	
 	<feature name="gvbase" description="GreenVulcano Base Library" version="${project.version}">		  
 		
@@ -65,7 +66,7 @@
             osgi.service;effective:=active;objectClass=org.hibernate.SessionFactory
         </capability>
         <feature>hibernate</feature>
-        <feature prerequisite="true">gvbase</feature>
+       
 		<configfile finalname="${karaf.etc}/org.ops4j.datasource-gviam.cfg" override="true">mvn:it.greenvulcano.gvesb/${project.artifactId}/${pom.version}/ds/gviam</configfile>
 	</feature>
 	
