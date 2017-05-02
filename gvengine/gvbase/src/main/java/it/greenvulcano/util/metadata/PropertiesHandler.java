@@ -183,31 +183,24 @@ public final class PropertiesHandler {
      * @throws PropertiesHandlerException
      *         if error occurs and the flag THROWS_EXCEPTION is set
      */
-    public static String expand(String str, Map<String, Object> inProperties, Object obj, Object extra)
-            throws PropertiesHandlerException
-    {
-        if (str == null) {
-            return null;
+    public static String expand(String str, Map<String, Object> inProperties, Object obj, Object extra) throws PropertiesHandlerException {
+    	
+        if (!isExpanded(str)) {        
+	        PropertyToken token = null;
+	        try {
+	            token = PropertiesHandler.parse(str);
+	            return token.getValue(Optional.ofNullable(inProperties).orElseGet(LinkedHashMap<String, Object>::new), obj, extra);
+	        } catch (PropertiesHandlerException exc) {
+	            if (isExceptionOnErrors()) {
+	                throw exc;
+	            }
+	        } catch (Exception exc) {
+	            if (isExceptionOnErrors()) {
+	                throw new PropertiesHandlerException(exc);
+	            }
+	        }
         }
-        if (inProperties == null) {
-            inProperties = new HashMap<String, Object>();
-        }
-        PropertyToken token = null;
-        try {
-            token = PropertiesHandler.parse(str);
-            return token.getValue(inProperties, obj, extra);
-        }
-        catch (PropertiesHandlerException exc) {
-            if (isExceptionOnErrors()) {
-                throw exc;
-            }
-        }
-        catch (Exception exc) {
-            if (isExceptionOnErrors()) {
-                throw new PropertiesHandlerException(exc);
-            }
-        }
-        return null;
+        return str;
     }
     
     public static String expand(String str, GVBuffer gvbuffer) throws PropertiesHandlerException{

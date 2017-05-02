@@ -49,6 +49,8 @@ public class GVESBPropertyHandlerTestCase extends BaseTestCase
     	String base = PropertiesHandler.expand("${{gv.app.home}}");
     	
     	assertNotSame("${{gv.app.home}}", base);
+    	
+    	assertEquals(PropertiesHandler.expand("{test:{id:1}}"), "{test:{id:1}}");
     }
     
     /**
