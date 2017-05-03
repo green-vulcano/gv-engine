@@ -2,10 +2,12 @@ package it.greenvulcano.gvesb.api.controller;
 
 import java.net.URI;
 import java.util.Base64;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -23,6 +25,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 
+import org.apache.cxf.jaxrs.ext.MessageContext;
 import org.apache.cxf.jaxrs.ext.PATCH;
 import org.apache.cxf.rs.security.cors.CrossOriginResourceSharing;
 import org.slf4j.Logger;
@@ -31,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import it.greenvulcano.gvesb.api.dto.CredentialsDTO;
 import it.greenvulcano.gvesb.api.dto.UserDTO;
 import it.greenvulcano.gvesb.iam.domain.Role;
+import it.greenvulcano.gvesb.iam.domain.User;
 import it.greenvulcano.gvesb.iam.exception.CredentialsExpiredException;
 import it.greenvulcano.gvesb.iam.exception.InvalidCredentialsException;
 import it.greenvulcano.gvesb.iam.exception.InvalidPasswordException;
@@ -112,6 +116,45 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 			response = Response.status(Status.UNAUTHORIZED).header("WWW-Authenticate", "GV_RENEW").build();
 		}
 			
+		return response;
+	}
+	
+	@Path("/password")
+	@POST
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@PermitAll
+	public Response changePassword(@Context MessageContext messageContext, @FormParam("new_password") String newPassword){
+		Response response = null;
+		try {
+			
+			Optional<SecurityContext> securityContext = Optional.ofNullable(messageContext.getSecurityContext()); 
+						
+			if (securityContext.isPresent() && Objects.nonNull(securityContext.get().getUserPrincipal())) {
+				
+				if (newPassword.matches(User.PASSWORD_PATTERN)){
+					String username = securityContext.get().getUserPrincipal().getName();
+					gvUsersManager.resetUserPassword(username);
+					gvUsersManager.changeUserPassword(username, username, newPassword);
+					
+					response = Response.status(Status.NO_CONTENT).build();
+				} else {
+					throw new InvalidPasswordException(newPassword);
+				}				
+				
+			} else {
+				throw new InvalidCredentialsException();
+			}
+		} catch (UserNotFoundException e) {
+			LOG.error("GVAPI_Exception - Change password",e);
+			response = Response.status(Status.NOT_FOUND).build();
+		} catch (InvalidCredentialsException|PasswordMissmatchException e) {
+			LOG.error("GVAPI_Exception - Change password",e);
+			response = Response.status(Status.FORBIDDEN).build();
+		} catch (InvalidPasswordException e) {
+			LOG.error("GVAPI_Exception - Change password",e);
+			response = Response.status(Status.BAD_REQUEST).entity("Invalid password: "+newPassword).build();
+		}
+		
 		return response;
 	}
 	
