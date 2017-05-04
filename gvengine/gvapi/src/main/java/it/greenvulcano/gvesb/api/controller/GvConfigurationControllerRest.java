@@ -20,7 +20,9 @@
 package it.greenvulcano.gvesb.api.controller;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.nio.file.Paths;
+import java.util.Objects;
 import java.util.zip.ZipInputStream;
 
 import javax.annotation.security.RolesAllowed;
@@ -38,9 +40,11 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.apache.cxf.rs.security.cors.CrossOriginResourceSharing;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
 
 import it.greenvulcano.configuration.XMLConfig;
 import it.greenvulcano.configuration.XMLConfigException;
@@ -130,6 +134,41 @@ public class GvConfigurationControllerRest {
 			
 		 }
 		 
+		 
+	 }
+	 
+	 @GET
+	 @Path("/configuration")
+	 @Produces(MediaType.APPLICATION_JSON)
+	 @RolesAllowed({"gvadmin","gvmanager"})
+	 public Response getConfigurationFileList() {		 	 
+		 JSONArray files = new JSONArray(XMLConfig.getLoadedFiles());	
+		 
+		 return Response.ok(files.toString()).build();
+	 }
+	 
+	 @GET
+	 @Path("/configuration/{name}")
+	 @Produces(MediaType.APPLICATION_XML)
+	 @RolesAllowed({"gvadmin","gvmanager"})
+	 public Document getConfigurationFile(@PathParam("name") String name){
+		
+		Document document = null;
+		 
+		try {
+			 document = XMLConfig.getDocument(name);
+		} catch (XMLConfigException e) {
+			if (e.getCause() instanceof FileNotFoundException) {
+				throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity("<error><![CDATA[File not found: "+name+"]]></error>").build());
+			}
+			
+			LOG.error("File to retrieve configuration file "+name,e);			
+			throw new WebApplicationException(Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("<error><![CDATA["+e.getMessage()+"]]></error>").build());
+		}
+		 
+		if (Objects.isNull(document)) throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity("<error><![CDATA[File not found: "+name+"]]></error>").build());
+		
+		return document;
 		 
 	 }
 	

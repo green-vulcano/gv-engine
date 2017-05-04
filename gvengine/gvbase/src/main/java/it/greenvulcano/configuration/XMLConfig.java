@@ -31,6 +31,7 @@ import it.greenvulcano.util.xpath.search.XPathAPI;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.net.MalformedURLException;
@@ -2063,8 +2064,8 @@ public final class XMLConfig {
             //
             url = classLoader.getResource(file);
             if (url == null) {
-                System.err.println("XMLConfig: file not found: " + file);
-                throw new XMLConfigException("XML configuration error (File:" + file + ", Node:-, XPath:-)");
+                
+                throw new XMLConfigException("XML configuration error (File:" + file + ", Node:-, XPath:-)", new FileNotFoundException(file));
             }
         }
 
