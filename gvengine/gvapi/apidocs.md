@@ -12,6 +12,9 @@
   * [Get Access Token](#accessToken)
   * [Refresh Token](#refreshToken)
   
+- Configuration API
+  * [Deploy](#deploy)
+  
 
 ----
 
