@@ -56,6 +56,8 @@ public interface UsersManager {
 		
 		Set<User> getUsers();
 		
+		Set<User> getUsers(String fullname, String email, Boolean enabled, Boolean expired, String role);
+		
 		Set<Role> getRoles();
 				
 		void updateUser(String username, UserInfo userInfo, Set<Role> grantedRoles, boolean enabled) throws UserNotFoundException, InvalidRoleException;
@@ -67,11 +69,7 @@ public interface UsersManager {
 		User resetUserPassword(String username) throws UserNotFoundException;
 		
 		User changeUserPassword(String username, String oldPassword, String newPassword) throws UserNotFoundException, PasswordMissmatchException, InvalidPasswordException;
-		
-		void addRole(String username, Role role) throws UserNotFoundException, InvalidRoleException;
-		
-		void revokeRole(String username, String roleName) throws UserNotFoundException;		
-		
+						
 		void deleteUser(String username);
 			
 		void deleteRole(String roleName);		

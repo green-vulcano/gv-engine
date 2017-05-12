@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import it.greenvulcano.gvesb.api.dto.CredentialsDTO;
 import it.greenvulcano.gvesb.api.dto.UserDTO;
+import it.greenvulcano.gvesb.iam.domain.Credentials;
 import it.greenvulcano.gvesb.iam.domain.Role;
 import it.greenvulcano.gvesb.iam.domain.User;
 import it.greenvulcano.gvesb.iam.exception.CredentialsExpiredException;
@@ -207,8 +208,10 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 		Response response = null;
 		try {
 			if (Optional.ofNullable(grantType).orElse("").equals("refresh")) {	        
-		        	
-	        	CredentialsDTO credentials = new CredentialsDTO(gvCredentialsManager.refresh(refreshToken, accessToken));
+		        
+				Credentials c = gvCredentialsManager.refresh(Optional.ofNullable(refreshToken).orElseThrow(()->new IllegalArgumentException("Required parameter: refreshToken")), 
+														     Optional.ofNullable(accessToken).orElseThrow(()->new IllegalArgumentException("Required parameter: accessToken")));
+	        	CredentialsDTO credentials = new CredentialsDTO(c);
 	        	response = Response.ok(toJson(credentials)).build();
 		      
 			} else {
@@ -301,7 +304,7 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 			String defaultPassword = user.getUsername();			
 			gvUsersManager.createUser(user.getUsername(), defaultPassword);
 			gvUsersManager.updateUser(user.getUsername(), user.getUserInfo(), user.getGrantedRoles(), user.isEnabled());
-					
+			gvUsersManager.resetUserPassword(user.getUsername());		
 			response = Response.created(URI.create("/admin/users/"+user.getUsername())).build();
 			
 		} catch (InvalidUsernameException|InvalidPasswordException e) {

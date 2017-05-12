@@ -47,7 +47,7 @@ public class RoleRepositoryHibernate extends RepositoryHibernate<Role, Integer> 
 	@Override
 	public Optional<Role> get(String rolename) {		
 		return Optional.ofNullable((Role)getSession().createQuery("from Role where name = :name")
-								  .setString("name", rolename)
+								  .setParameter("name", rolename)
 								  .uniqueResult());
 	}
 

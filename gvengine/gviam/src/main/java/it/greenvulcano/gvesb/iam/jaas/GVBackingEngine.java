@@ -79,8 +79,7 @@ public class GVBackingEngine implements BackingEngine {
 		user.setPassword(getEncryptedPassword(password));
 		user.setPasswordTime(new Date());
 		user.setEnabled(true);
-		user.setExpired(true);
-		
+				
 		try {
 			userRepository.add(user);
 		} catch (org.hibernate.StaleObjectStateException|ConstraintViolationException constraintViolationException) {			

@@ -19,13 +19,14 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb.iam.repository.hibernate;
 
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.Query;
 
 import it.greenvulcano.gvesb.iam.domain.User;
 import it.greenvulcano.gvesb.iam.repository.UserRepository;
@@ -50,37 +51,50 @@ public class UserRepositoryHibernate extends RepositoryHibernate<User, Integer> 
 	@Override
 	public Optional<User> get(String username) {		
 		return Optional.ofNullable((User)getSession().createQuery("from User where username = :uname")
-								  .setString("uname", username)
+								  .setParameter("uname", username)
 								  .uniqueResult());
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public Set<User> find(String fullname, Boolean expired, Boolean enabled, Set<String> roles) {
+	public Set<User> find(String fullname, String email, Boolean expired, Boolean enabled, String role) {
 		Set<User> result = new LinkedHashSet<>();
 		
-		Criteria criteria = getSession().createCriteria(User.class);
+		
+		Map<String, Object> params = new LinkedHashMap<>();
+		StringBuilder query = new StringBuilder("from User u ");
+
+		if (role!=null && role.trim().length()>0) {
+			query.append("join u.roles role where role.name = :_role ");
+			params.put("_role", fullname);	
+		} else {
+			query.append("where u.id is not null ");			
+		}
 		
 		if (fullname!=null && fullname.trim().length()>0) {
-			criteria.add(Restrictions.ilike("userInfo.fullname", fullname));
+			query.append("and u.userInfo.fullName like :_fullname ");
+			params.put("_fullname", fullname+"%");			
+		}
+		
+		if (email!=null && email.trim().length()>0) {
+			query.append("and u.userInfo.email = :_email ");
+			params.put("_email", email);			
 		}
 		
 		if (expired!=null) {
-			criteria.add(Restrictions.eq("expired", expired));
+			query.append("and u.expired = :expired ");
+			params.put("_expired", expired);			
 		}
 		
 		if (enabled!=null) {
-			criteria.add(Restrictions.eq("enabled", enabled));
+			query.append("and u.enabled = :enabled ");
+			params.put("_enabled", enabled);
 		}
 		
-		if (roles!=null && !roles.isEmpty()) {
-			criteria.createAlias("roles", "role");
-			
-			roles.stream().map(r -> Restrictions.eq("role.name", r)).forEach(criteria::add);
-			
-		}
+		Query<User> q = getSession().createQuery(query.toString());		
+		params.entrySet().forEach(p-> q.setParameter(p.getKey(), p.getValue()));
 		
-		result.addAll(criteria.list());
+		result.addAll(q.getResultList());
 		
 		return result;
 	}

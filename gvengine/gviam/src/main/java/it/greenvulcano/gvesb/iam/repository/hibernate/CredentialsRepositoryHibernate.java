@@ -27,7 +27,7 @@ public class CredentialsRepositoryHibernate extends RepositoryHibernate<Credenti
 	@Override
 	public Optional<Credentials> find(String username) {
 		return Optional.ofNullable((Credentials)getSession().createQuery("from Credentials where resourceOwner.username = :uname")
-				  .setString("uname", username)
+				  .setParameter("uname", username)
 				  .uniqueResult());
 	}
 

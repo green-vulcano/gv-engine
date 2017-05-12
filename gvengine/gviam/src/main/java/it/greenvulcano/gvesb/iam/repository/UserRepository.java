@@ -32,6 +32,6 @@ public interface UserRepository extends Repository<User, Integer> {
 	
 	Optional<User> get(String username);
 			
-	Set<User> find(String fullname, Boolean expired, Boolean enabled, Set<String> roles);
+	Set<User> find(String fullname, String email, Boolean expired, Boolean enabled, String role);
 
 }

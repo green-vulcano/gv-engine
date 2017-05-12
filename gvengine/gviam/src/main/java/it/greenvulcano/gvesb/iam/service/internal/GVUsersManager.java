@@ -20,7 +20,6 @@
 package it.greenvulcano.gvesb.iam.service.internal;
 
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -164,19 +163,7 @@ public class GVUsersManager implements UsersManager {
 		return user;
 
 	}
-
-	@Override
-	public void addRole(String username, Role role) throws UserNotFoundException {
-		jaasEngine.addRole(username, role.getName());
-
-	}
-
-	@Override
-	public void revokeRole(String username, String roleName) throws UserNotFoundException {
-		jaasEngine.deleteRole(username, roleName);
-
-	}
-	
+		
 	@Override
 	public void deleteRole(String roleName) {		
 		roleRepository.get(roleName).ifPresent(roleRepository::remove);
@@ -191,6 +178,11 @@ public class GVUsersManager implements UsersManager {
 	@Override
 	public Set<User> getUsers() {		
 		return userRepository.getAll();
+	}
+	
+	@Override
+	public Set<User> getUsers(String fullname, String email, Boolean enabled, Boolean expired, String role) {		
+		return userRepository.find(fullname, email, expired, enabled, role);
 	}
 
 	@Override
@@ -214,10 +206,8 @@ public class GVUsersManager implements UsersManager {
 	@Override
 	public void checkManagementRequirements() {
 		final Logger logger = LoggerFactory.getLogger(getClass());
-		Set<String> roles = new HashSet<>();
-		roles.add("admin");
-		
-		Set<User> admins = userRepository.find(null, null, null, roles);
+				
+		Set<User> admins = userRepository.find(null, null, null, null, "gvadmin");
 		/**
 		 * Adding default user 'gvadmin' if no present		
 		 */

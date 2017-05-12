@@ -29,7 +29,6 @@ abstract class RepositoryHibernate<T, K extends Serializable> implements Reposit
 		return sessionFactory.getCurrentSession();
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public Optional<T> get(K key) {		
 		return Optional.ofNullable((T)getSession().get(entityClass, key));

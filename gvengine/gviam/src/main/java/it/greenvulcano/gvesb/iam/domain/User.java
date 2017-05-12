@@ -56,8 +56,8 @@ import org.hibernate.annotations.CascadeType;
 public class User implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	public static final String USERNAME_PATTERN = "(?=^.{4,28}$)^[a-zA-Z][a-zA-Z0-9._@-]*[a-zA-Z0-9]+$";
-	public static final String PASSWORD_PATTERN = "(?=^.{4,28}$)^[a-zA-Z0-9._@&$#!?-]+$";
+	public static final String USERNAME_PATTERN = "(?=^.{4,256}$)^[a-zA-Z][a-zA-Z0-9._@-]*[a-zA-Z0-9]+$";
+	public static final String PASSWORD_PATTERN = "(?=^.{4,128}$)^[a-zA-Z0-9._@&$#!?-]+$";
 		
 	@Id @GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
