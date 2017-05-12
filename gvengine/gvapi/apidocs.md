@@ -12,6 +12,9 @@
   * [Get Access Token](#accessToken)
   * [Refresh Token](#refreshToken)
   
+- Configuration API
+  * [Deploy](#deploy)
+  
 
 ----
 
@@ -194,3 +197,15 @@
     "issue_date":"2017-01-30T12:00:35.0+02:00" //ISO-8601 
    }  
 ```
+
+## Configuration API
+
+----
+### <a name="deploy"></a>Deploy
+
+    POST /gvconfig/deploy/{configuration_id}
+
+**Authentication** : Client identified by Basic Authentication
+
+**Consume** :  multipart/form-data 
+  - gvconfiguration = [ multipart type=application/zip]
