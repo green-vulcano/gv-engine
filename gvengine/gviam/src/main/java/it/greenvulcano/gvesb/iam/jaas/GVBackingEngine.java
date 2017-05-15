@@ -99,7 +99,7 @@ public class GVBackingEngine implements BackingEngine {
 		
 		User user = userRepository.get(username).orElseThrow(()->new SecurityException(new UserNotFoundException(username)));
 		
-		Role role = roleRepository.get(username).orElse(new Role(rolename, "Created by JAAS"));
+		Role role = roleRepository.get(rolename).orElse(new Role(rolename, "Created by JAAS"));
 		user.getRoles().add(role);
 		
 		userRepository.add(user);

@@ -134,7 +134,8 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 				
 				if (newPassword.matches(User.PASSWORD_PATTERN)){
 					String username = securityContext.get().getUserPrincipal().getName();
-					gvUsersManager.resetUserPassword(username);
+										
+					gvUsersManager.resetUserPassword(username, username);
 					gvUsersManager.changeUserPassword(username, username, newPassword);
 					
 					response = Response.status(Status.NO_CONTENT).build();
@@ -303,8 +304,8 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 			
 			String defaultPassword = user.getUsername();			
 			gvUsersManager.createUser(user.getUsername(), defaultPassword);
-			gvUsersManager.updateUser(user.getUsername(), user.getUserInfo(), user.getGrantedRoles(), user.isEnabled());
-			gvUsersManager.resetUserPassword(user.getUsername());		
+			gvUsersManager.updateUser(user.getUsername(), user.getUserInfo(), user.getGrantedRoles(), user.isEnabled(), true);
+
 			response = Response.created(URI.create("/admin/users/"+user.getUsername())).build();
 			
 		} catch (InvalidUsernameException|InvalidPasswordException e) {
@@ -329,7 +330,7 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 		
 		try {
 			UserDTO user = parseJson(data, UserDTO.class);			
-			gvUsersManager.updateUser(username, user.getUserInfo(), user.getGrantedRoles(), user.isEnabled());
+			gvUsersManager.updateUser(username, user.getUserInfo(), user.getGrantedRoles(), user.isEnabled(), user.isExpired());
 			
 			response = Response.ok().build();
 		
@@ -377,7 +378,7 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 		Response response = null;
 		
 		try {
-			UserDTO user = new UserDTO(gvUsersManager.resetUserPassword(username));
+			UserDTO user = new UserDTO(gvUsersManager.resetUserPassword(username, username));
 			
 			response = Response.ok(toJson(user)).build();
 			

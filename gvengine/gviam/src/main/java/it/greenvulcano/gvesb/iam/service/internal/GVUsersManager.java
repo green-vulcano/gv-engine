@@ -20,6 +20,7 @@
 package it.greenvulcano.gvesb.iam.service.internal;
 
 import java.util.Date;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -80,10 +81,11 @@ public class GVUsersManager implements UsersManager {
 	
 
 	@Override
-	public void updateUser(String username, UserInfo userInfo, Set<Role> grantedRoles, boolean enabled) throws UserNotFoundException, InvalidRoleException {
+	public void updateUser(String username, UserInfo userInfo, Set<Role> grantedRoles, boolean enabled, boolean expired) throws UserNotFoundException, InvalidRoleException {
 		User user = userRepository.get(username).orElseThrow(()->new UserNotFoundException(username));
 		user.setUserInfo(userInfo);
 		user.setEnabled(enabled);
+		user.setExpired(expired);
 		user.getRoles().clear();
 		if (grantedRoles!=null) {
 			
@@ -117,10 +119,12 @@ public class GVUsersManager implements UsersManager {
 	}
 
 	@Override
-	public User resetUserPassword(String username) throws UserNotFoundException {
+	public User resetUserPassword(String username, String defaultPassword) throws UserNotFoundException, InvalidPasswordException {
 		User user = userRepository.get(username).orElseThrow(()->new UserNotFoundException(username));
+	
+		if (!Objects.requireNonNull(defaultPassword, "A default password is required").matches(User.PASSWORD_PATTERN)) throw new InvalidPasswordException(defaultPassword);
 		
-		user.setPassword(jaasEngine.getEncryptedPassword(username));
+		user.setPassword(jaasEngine.getEncryptedPassword(defaultPassword));
 		user.setPasswordTime(new Date());
 		user.setExpired(true);
 		userRepository.add(user);
@@ -189,6 +193,15 @@ public class GVUsersManager implements UsersManager {
 	public User enableUser(String username, boolean enable) throws UserNotFoundException {
 		User user = userRepository.get(username).orElseThrow(()->new UserNotFoundException(username));
 		user.setEnabled(enable);
+		userRepository.add(user);
+		
+		return user;
+	}
+	
+	@Override
+	public User setUserExpiration(String username, boolean expired) throws UserNotFoundException {
+		User user = userRepository.get(username).orElseThrow(()->new UserNotFoundException(username));
+		user.setExpired(expired);
 		userRepository.add(user);
 		
 		return user;

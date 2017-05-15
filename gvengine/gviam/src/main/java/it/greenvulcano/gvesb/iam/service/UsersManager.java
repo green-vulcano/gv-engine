@@ -60,13 +60,15 @@ public interface UsersManager {
 		
 		Set<Role> getRoles();
 				
-		void updateUser(String username, UserInfo userInfo, Set<Role> grantedRoles, boolean enabled) throws UserNotFoundException, InvalidRoleException;
+		void updateUser(String username, UserInfo userInfo, Set<Role> grantedRoles, boolean enabled, boolean expired) throws UserNotFoundException, InvalidRoleException;
 			
 		User enableUser(String username, boolean enable) throws UserNotFoundException;		
 		
 		User switchUserStatus(String username) throws UserNotFoundException;
 		
-		User resetUserPassword(String username) throws UserNotFoundException;
+		User setUserExpiration(String username, boolean expired) throws UserNotFoundException;
+		
+		User resetUserPassword(String username, String defaultPassword) throws UserNotFoundException, InvalidPasswordException;
 		
 		User changeUserPassword(String username, String oldPassword, String newPassword) throws UserNotFoundException, PasswordMissmatchException, InvalidPasswordException;
 						
