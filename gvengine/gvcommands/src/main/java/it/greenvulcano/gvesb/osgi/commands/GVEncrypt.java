@@ -1,8 +1,6 @@
 package it.greenvulcano.gvesb.osgi.commands;
 
 import java.util.Optional;
-import java.util.Scanner;
-
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.Option;
@@ -28,18 +26,14 @@ public class GVEncrypt implements Action {
 	public Object execute() throws Exception {
 		String out;
 		try {
-			
-			System.out.println("Insert text to encrypt:");
-			Scanner scanner = new Scanner(System.in);
-			
-			String input =  scanner.next();
-			scanner.close();
-			
+						
+			char[] input = System.console().readPassword("%s", "Insert text to encrypt: ");
+						
 			if (showInput){
-				System.out.println("Input clear text: "+input);
+				System.out.println("Input clear text: "+String.valueOf(input));
 			}		
 			
-			out = CryptoHelper.encrypt(Optional.ofNullable(keyId).orElse(CryptoHelper.DEFAULT_KEY_ID), input, true);
+			out = CryptoHelper.encrypt(Optional.ofNullable(keyId).orElse(CryptoHelper.DEFAULT_KEY_ID), String.valueOf(input), true);
 			System.out.print("Encrypted output: ");
 		} catch (Exception exc) {
 			LOG.error("GVEncrypt - Deploy configuration failed", exc);
