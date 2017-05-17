@@ -194,6 +194,7 @@
     <module>gvconsole</module>
     <module>gvdte</module>
     <module>gviam</module>
+    <module>gviamx</module>
     <module>gvpolicy</module>
     <module>gvscheduler</module>
     <module>gvstatistics</module>

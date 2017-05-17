@@ -23,7 +23,7 @@ public class InvalidPasswordException extends GVSecurityException {
 	private static final long serialVersionUID = 1L;
 
 	public InvalidPasswordException(String password) {
-		super("Invalid password '"+password);
+		super("Invalid password: "+password);
 		
 	}
 

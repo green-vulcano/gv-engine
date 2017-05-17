@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC
+"-//Hibernate/Hibernate Configuration DTD//EN"
+"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+ 
+<hibernate-configuration>
+    <session-factory>   
+    	<property name="hibernate.connection.datasource">osgi:service/gviam-ds</property> 
+        <property name="hibernate.transaction.factory_class">org.hibernate.transaction.JTATransactionFactory</property>        
+                
+        <mapping class="it.greenvulcano.gvesb.gviamx.domain.SignUpRequest"/>
+        <mapping class="it.greenvulcano.gvesb.gviamx.domain.PasswordResetRequest"/>
+                				  
+    </session-factory>
+ 
+</hibernate-configuration>

@@ -1,0 +1,142 @@
+package it.greenvulcano.gvesb.gviamx.service.internal;
+
+import java.security.SecureRandom;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.stream.IntStream;
+
+import org.apache.commons.codec.digest.DigestUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import it.greenvulcano.gvesb.gviamx.domain.SignUpRequest;
+import it.greenvulcano.gvesb.gviamx.repository.SignUpRepository;
+import it.greenvulcano.gvesb.gviamx.service.CallBackManager;
+import it.greenvulcano.gvesb.gviamx.service.NotificationManager;
+import it.greenvulcano.gvesb.iam.exception.UserExistException;
+import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
+import it.greenvulcano.gvesb.iam.service.UsersManager;
+
+public class SignUpManager {
+	
+	private final static Logger LOG = LoggerFactory.getLogger(SignUpManager.class);
+
+	private final ExecutorService executor = Executors.newWorkStealingPool();
+	private final SecureRandom secureRandom = new SecureRandom();		
+	
+	private final List<NotificationManager> notificationServices = new LinkedList<>();
+	private final List<CallBackManager> callbackServices  = new LinkedList<>();;
+	
+	private SignUpRepository signupRepository;
+	private UsersManager usersManager;
+	private Long expireTime = 60*60*1024L;
+	
+	public void setNotificationServices(List<NotificationManager> notificationServices){
+		if (notificationServices!=null && !notificationServices.isEmpty()) {
+			this.notificationServices.addAll(notificationServices);
+		} else {
+			notificationServices.clear();
+		}
+	}
+	
+	public void setCallbackServices(List<CallBackManager> callbackServices){
+		if (callbackServices!=null && !callbackServices.isEmpty()) {
+			this.callbackServices.addAll(callbackServices);
+		} else {
+			callbackServices.clear();
+		}
+		
+	}
+	
+	public void setRepository(SignUpRepository signupRepository) {
+		this.signupRepository = signupRepository;
+	}
+	
+	public void setUsersManager(UsersManager usersManager) {
+		this.usersManager = usersManager;
+	}
+		
+	public UsersManager getUsersManager() {
+		return usersManager;
+	}
+	
+	public void setExpireTime(Long expireTime) {
+		this.expireTime = expireTime;
+	}	
+	
+	public void createSignUpRequest(String email, String password, byte[] request) throws UserExistException {		
+		
+		if (email == null ||  !email.matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$")) {
+			throw new IllegalArgumentException("Invalid email: "+email);
+		}
+		
+		try {
+			usersManager.getUser(email);
+			throw new UserExistException(email);
+		} catch (UserNotFoundException e) {			
+			if 	(usersManager.getUsers(null, email, null, null, null).size()>0) {
+		    	throw new UserExistException(email);
+		    }		
+		}		
+		
+	    SignUpRequest signUpRequest = signupRepository.get(email).orElseGet(SignUpRequest::new);
+	    signUpRequest.setEmail(email);
+	    signUpRequest.setIssueTime(new Date());
+	    signUpRequest.setExpireTime(expireTime);
+		signUpRequest.setRequest(request);
+	    
+		
+		byte[] token = new byte[4]; 
+		secureRandom.nextBytes(token);
+		
+		String clearTextToken = String.format(Locale.US, "%02x%02x%02x%02x", IntStream.range(0, token.length).mapToObj(i->Byte.valueOf(token[i])).toArray());
+		signUpRequest.setToken(DigestUtils.sha256Hex(clearTextToken));	
+		
+		signupRepository.add(signUpRequest);
+		
+		signUpRequest.setToken(clearTextToken);
+		notificationServices.stream().map(n-> new NotificationManager.NotificationTask(n, signUpRequest, "welcome")).forEach(executor::submit);
+		
+		
+	}
+	
+	public SignUpRequest retrieveSignUpRequest(String email, String token) {
+		
+		SignUpRequest signupRequest = signupRepository.get(email).orElseThrow(()->new IllegalArgumentException("No sign-up request found for this email"));
+						
+		if (DigestUtils.sha256Hex(token).equals(signupRequest.getToken())) {
+			
+			if (System.currentTimeMillis() > signupRequest.getIssueTime().getTime()+signupRequest.getExpireTime()) {
+				signupRepository.remove(signupRequest);
+				throw new IllegalArgumentException("No sign-up request found for this email");
+			}
+			
+			return signupRequest;
+						
+		} else {
+			throw new SecurityException("Token missmatch");
+		}
+		
+	}
+	
+	public void consumeSignUpRequest(SignUpRequest signupRequest) {
+
+		try {
+			signupRepository.remove(signupRequest);
+			callbackServices.stream()
+							.map(c->new CallBackManager.CallBackTask(c, signupRequest.getRequest()))
+							.forEach(executor::submit);
+						
+		} catch (Exception fatalException) {
+			LOG.error("Fail to process sign-up request with id "+signupRequest.getId(), fatalException);
+			usersManager.deleteUser(signupRequest.getEmail());
+			throw fatalException;
+		}
+	}
+	
+
+}
