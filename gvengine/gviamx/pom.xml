@@ -145,9 +145,12 @@
                             javax.persistence,
                             javax.ws.rs.core,
                             javax.ws.rs,
+                            javax.annotation.security,
                             javassist.util.proxy,
                             org.apache.commons.codec.digest,
                             org.apache.cxf.rs.security.cors,
+                            org.apache.cxf.interceptor.security,
+                            org.apache.cxf.jaxrs.security,
                         	org.json,
                         	org.slf4j,
                             org.hibernate,
@@ -159,7 +162,9 @@
                         	it.greenvulcano.gvesb.iam.exception,
                         	it.greenvulcano.gvesb.iam.service,
                         	it.greenvulcano.gvesb.iam.domain,
-                        	it.greenvulcano.util.crypto
+                        	it.greenvulcano.gvesb.iam.modules,                        	
+              				it.greenvulcano.gvesb.api.security,
+                        	it.greenvulcano.util.crypto                        	
                         </Import-Package>
                         <Embed-Dependency>*;scope=compile;type=jar</Embed-Dependency>
 						<Embed-Transitive>false</Embed-Transitive>

@@ -182,10 +182,12 @@ public class KarafJMXEntryPoint extends JMXEntryPoint {
         
 
         ManagedBean managed = registry.findManagedBean(descriptorName);
-        ModelMBean mbean = managed.createMBean(object);
-        mBeanServer.registerMBean(mbean, oname);
-        if (object instanceof ModelMBeanUser) {
-            ((ModelMBeanUser) object).setMBean(mbean, oname);
+        if (managed!=null) {
+	        ModelMBean mbean = managed.createMBean(object);
+	        mBeanServer.registerMBean(mbean, oname);
+	        if (object instanceof ModelMBeanUser) {
+	            ((ModelMBeanUser) object).setMBean(mbean, oname);
+	        }
         }
     }
 
@@ -247,13 +249,18 @@ public class KarafJMXEntryPoint extends JMXEntryPoint {
         
 
         ManagedBean managed = registry.findManagedBean(descriptorName);
-        ModelMBean mbean = managed.createMBean(object);
-        ObjectName oname = calculateObjectName(object, mBeanServer, managed, keyProperties, descriptorName);
-        mBeanServer.registerMBean(mbean, oname);
-        if (object instanceof ModelMBeanUser) {
-            ((ModelMBeanUser) object).setMBean(mbean, oname);
+        if (managed!= null) {
+	        ModelMBean mbean = managed.createMBean(object);       
+	        ObjectName oname = calculateObjectName(object, mBeanServer, managed, keyProperties, descriptorName);
+	        mBeanServer.registerMBean(mbean, oname);
+	        if (object instanceof ModelMBeanUser) {
+	            ((ModelMBeanUser) object).setMBean(mbean, oname);
+	        }
+	        return oname;
         }
-        return oname;
+        
+        return null;
+        
     }
 
     /**
@@ -372,9 +379,15 @@ public class KarafJMXEntryPoint extends JMXEntryPoint {
         
 
         ManagedBean managed = registry.findManagedBean(descriptorName);
-        ObjectName oname = calculateObjectName(null, mBeanServer, managed, keyProperties, descriptorName);
-        mBeanServer.unregisterMBean(oname);
-        return oname;
+        if (managed!=null){
+        	ObjectName oname = calculateObjectName(null, mBeanServer, managed, keyProperties, descriptorName);
+        	mBeanServer.unregisterMBean(oname);
+        	
+        	return oname;
+        }
+        
+        
+        return null;
     }
 
     /**
@@ -394,9 +407,13 @@ public class KarafJMXEntryPoint extends JMXEntryPoint {
         
 
         ManagedBean managed = registry.findManagedBean(descriptorName);
-        ObjectName oname = calculateObjectName(object, mBeanServer, managed, keyProperties, descriptorName);
-        mBeanServer.unregisterMBean(oname);
-        return oname;
+        if (managed!=null){
+	        ObjectName oname = calculateObjectName(object, mBeanServer, managed, keyProperties, descriptorName);
+	        mBeanServer.unregisterMBean(oname);
+	        return oname;
+        }
+        
+        return null;
     }
 
     /**

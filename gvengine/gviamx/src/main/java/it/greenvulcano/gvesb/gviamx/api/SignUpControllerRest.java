@@ -21,6 +21,7 @@ package it.greenvulcano.gvesb.gviamx.api;
 
 import java.util.Optional;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -62,6 +63,7 @@ public class SignUpControllerRest {
 	@Path("/signup")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed({"gvadmin","gvaccman"})
 	public Response checkResgistrationStatus(@QueryParam("check") String email) {
 			
 		JSONObject status = new JSONObject();
@@ -95,7 +97,8 @@ public class SignUpControllerRest {
 	
 	@Path("/signup")
 	@POST
-	@Consumes(MediaType.APPLICATION_JSON)	
+	@Consumes(MediaType.APPLICATION_JSON)
+	@RolesAllowed({"gvadmin","gvaccman"})
 	public Response submitSignUpRequest(String request) {
 		Response response = null;
 		

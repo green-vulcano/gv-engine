@@ -21,6 +21,7 @@ package it.greenvulcano.gvesb.gviamx.api;
 
 import java.util.Optional;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
@@ -46,6 +47,7 @@ public class PasswordResetControllerRest {
 	@Path("/restore")
 	@POST
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@RolesAllowed({"gvadmin","gvaccman"})
 	public Response submitResetPasswordRequest(@FormParam("email") String email){
 		Response response = null;
 		try {
@@ -66,6 +68,7 @@ public class PasswordResetControllerRest {
 	@Path("/restore")
 	@PUT
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@RolesAllowed({"gvadmin","gvaccman"})
 	public Response consumeResetPasswordRequest(@FormParam("email")String email, @FormParam("token")String token, @FormParam("password")String password) {
 		
 		Response response = null;
