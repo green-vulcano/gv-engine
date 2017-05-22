@@ -81,7 +81,9 @@ public class SignUpControllerRest {
 			
 			try {
 				signupManager.retrieveSignUpRequest(email, "");
-				status.put("status", "PENDING");
+				throw new RuntimeException("Invalid request token");
+			} catch (SecurityException e) {
+				status.put("status", "PENDING");					
 			} catch (IllegalArgumentException signupRequestNotExistException) {
 				status.put("status", "UNKNOWN");
 			}
