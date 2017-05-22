@@ -32,6 +32,7 @@ import it.greenvulcano.util.xpath.XPathDOMBuilder;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.management.Notification;
 import javax.management.ObjectName;
@@ -621,7 +622,7 @@ public final class ServiceOperationInfoManager implements ConfigurationListener,
      */
     private String getLocation()
     {
-        if (location.equals("")) {
+        if (Optional.ofNullable(location).orElse("").equals("")) {
             Iterator<ObjectName> it = mbeans.keySet().iterator();
             location = it.next().getKeyProperty("Location");
         }
