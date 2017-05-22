@@ -81,7 +81,7 @@ public class ScheduleControllerRest {
 		return obj;
 	};
 	
-	@RolesAllowed("gvadmin")
+	@RolesAllowed({"gvadmin", "gvscheduler", "gvscheduler-ro"})
 	@Path("/schedules")
 	@GET @Produces(MediaType.APPLICATION_JSON)
 	public Response getSchedules() {
@@ -103,7 +103,7 @@ public class ScheduleControllerRest {
 		return response;
 	}
 	
-	@RolesAllowed("gvadmin")
+	@RolesAllowed({"gvadmin", "gvscheduler", "gvscheduler-ro"})
 	@Path("/schedules/{id}")
 	@GET @Produces(MediaType.APPLICATION_JSON)
 	public Response getSchedule(@PathParam("id")String id) {
@@ -123,7 +123,7 @@ public class ScheduleControllerRest {
 		return response;
 	}
 	
-	@RolesAllowed("gvadmin")
+	@RolesAllowed({"gvadmin", "gvscheduler"})
 	@Path("/schedules/{id}")
 	@DELETE @Produces(MediaType.APPLICATION_JSON)
 	public Response deleteSchedule(@PathParam("id")String id) {
@@ -142,7 +142,7 @@ public class ScheduleControllerRest {
 		return response;
 	}
 	
-	@RolesAllowed("gvadmin")
+	@RolesAllowed({"gvadmin", "gvscheduler"})
 	@Path("/schedules/{id}/pause")
 	@PUT @Produces(MediaType.APPLICATION_JSON)
 	public Response pauseSchedule(@PathParam(value = "id")String id) {
@@ -161,6 +161,7 @@ public class ScheduleControllerRest {
 		return response;
 	}
 	
+	@RolesAllowed({"gvadmin", "gvscheduler"})
 	@Path("/schedules/{id}/resume")
 	@PUT @Produces(MediaType.APPLICATION_JSON)
 	public Response resumeSchedule(@PathParam(value = "id")String id) {
@@ -178,7 +179,7 @@ public class ScheduleControllerRest {
 		return response;
 	}
 	
-	@RolesAllowed("gvadmin")
+	@RolesAllowed({"gvadmin", "gvscheduler"})
 	@Path("/schedule/{service}/{operation}")
 	@POST @Consumes(MediaType.APPLICATION_JSON) @Produces(MediaType.APPLICATION_JSON)
 	public Response scheduleOperation(@PathParam("service")String serviceName, @PathParam("operation")String operationName, String scheduleData) {
