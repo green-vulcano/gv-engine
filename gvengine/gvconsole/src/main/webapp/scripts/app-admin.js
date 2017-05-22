@@ -1,6 +1,6 @@
 angular.module('gvconsole')
  .service('AdminService', ['ENDPOINTS', '$http', function(Endpoints, $http){
-	 	
+
 		this.getAllUsers = function(){
 			 return $http.get(Endpoints.gviam + '/admin/users');
 		}
@@ -114,13 +114,10 @@ angular.module('gvconsole')
 		this.addRole = function(){
 
 			if (instance.newrole) {
-				var role = instance.roles.find( function(r){ return r.name == instance.newrole });
+				var newrole = {name: instance.newrole, description:'Created by GVConsole'};
 
-				if (role) {
-					instance.user.roles[role.name] = role;
-				} else {
-					instance.user.roles[instance.newrole] = {name: instance.newrole, description:'Created by GVConsole'};
-				} 		
+				instance.user.roles[instance.newrole] = {name: instance.newrole, description:'Created by GVConsole'};
+
 				delete instance.newrole;
 			}
 		}

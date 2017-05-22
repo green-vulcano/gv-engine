@@ -1,69 +1,51 @@
 <app-header></app-header>
-<div class="container">
+<div class="container-fluid">
+  <div class="side-body">
+  <h1> Users </h1>
+  <div class="row" data-ng-controller="UsersListController as ctrl">
 
-	<div class="row page-header">
-		<h1>Users</h1>
-	</div>
-
-	<div class="row" data-ng-controller="UsersListController as ctrl">
-
-	<div data-ng-repeat="alert in ctrl.alerts" class="alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
-
-	<div class="panel panel-default" >
-		<div class="panel-heading clearfix">
-	    	<h3 class="panel-title pull-left" style="line-height: 34px; vertical-align: middle">
-	    		<i class="fa fa-users"></i> Found: {{ctrl.list.length}}
-	    	</h3>
-	    	<a href="#/users/new" class="btn btn-primary pull-right">
-	    		<i class="fa fa-user-plus"></i> Add New User
-	    	</a>
-	  	</div>
-
-	<table id="users" class="table table-hover" >
-        <thead >
-            <tr>
-                <th >Username</th>
-                <th >Status</th>
-                <th >Full name</th>
-                <th >E-mail</th>
-                <th >Roles</th>
-				<th class="text-right">Action</th>
-            </tr>
-        </thead>
-        <tbody>
-
-        	<tr data-ng-repeat="user in ctrl.list">
-        		<td>{{user.username}}</td>
-        		<td>
-        			<ul class="list-inline">
-        				<li class="text-danger" data-ng-hide="user.enabled"><i class="fa fa-ban"></i> </li>
-        				<li class="text-success" data-ng-show="user.enabled"><i class="fa fa-check"></i> </li>
-        				<li class="text-warning" data-ng-show="user.expired"><i class="fa fa-key"></i> </li>
-        			</ul>
-        		</td>
-        		<td>{{user.userInfo.fullname}}</td>
-        		<td>{{user.userInfo.email}}</td>
-        		<td>
-        			<ul class="list-inline">
-        				<li	data-ng-repeat="(k,role) in user.roles">
-        					<span class="label label-info">{{role.name}}</span>
-        				</li>
-        			</ul>
-        		</td>
-				<td class="text-right"><button data-ng-click="go('/users/'+user.username)" class="btn btn-sm btn-warning"><i class="fa fa-edit"></i> Edit </button> </td>
-
-        	</tr>
-
-        </tbody>
-
-
+  <div data-ng-repeat="alert in ctrl.alerts" class="alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
+  <div class="panel panel-default">
+    <div id="panelHead"  class="panel-heading"><i class="fa fa-users"></i> Found: {{ctrl.list.length}}<a href="#/users/new" class="btn btn-primary pull-right">
+      <i class="fa fa-user-plus"></i> Add New User
+    </a></div>
+    <table id="users" class="table table-hover">
+      <thead>
+        <tr>
+          <th>Users</th>
+          <th>Status</th>
+          <th>Full Name</th>
+          <th>E-Mail</th>
+          <th>Roles</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr data-ng-repeat="user in ctrl.list">
+          <td>{{user.username}}</td>
+          <td>
+            <ul class="list-inline">
+              <li class="text-danger" data-ng-hide="user.enabled"><i class="fa fa-ban"></i> </li>
+              <li class="text-success" data-ng-show="user.enabled"><i class="fa fa-check"></i> </li>
+              <li class="text-warning" data-ng-show="user.expired"><i class="fa fa-key"></i> </li>
+            </ul>
+          </td>
+          <td>{{user.userInfo.fullname}}</td>
+          <td>{{user.userInfo.email}}</td>
+          <td>
+            <ul class="list-inline">
+              <li	data-ng-repeat="(k,role) in user.roles">
+                <span class="label label-info">{{role.name}}</span>
+              </li>
+            </ul>
+          </td>
+          <td id="actionTable">
+            <button data-ng-click="go('/users/'+user.username)" type="button" class="btn btn-warning"><i class="fa fa-pencil" aria-hidden="true"></i></button>
+          </td>
+        </tr>
+      </tbody>
     </table>
-
-    <div class="panel-footer" style="text-align: center">
-    	<pagination data-ng-show="ctrl.list.lenght>10" style="margin: 0" total-items="ctrl.list.lenght" ng-model="ctrl.currentPage" class="pagination-sm" boundary-links="true" rotate="false"></pagination>
-    </div>
-
-   </div>
+  </div>
 </div>
-
+</div>
 </div>

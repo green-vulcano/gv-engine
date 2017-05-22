@@ -178,7 +178,7 @@ angular.module('gvconsole')
             	 $scope.dataLoading = false;
             	switch (status) {
 	                	case 200:
-		                    $location.path('/users');
+		                    $location.path('/myprofile');
 		                    break;
 
 	                	case 403:
@@ -200,7 +200,7 @@ angular.module('gvconsole')
             	$scope.dataLoading = false;
             	switch (status) {
                 	case 200:
-	                    $location.path('/users');
+	                    $location.path('/myprofile');
 	                    break;
 
                     default:

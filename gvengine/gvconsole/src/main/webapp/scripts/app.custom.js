@@ -20,8 +20,14 @@ angular.module('gvconsole', ['ngCookies','ngRoute','angular-quartz-cron', 'ui.bo
         when('/users/:userId', {
           templateUrl: 'topics/users/form.html'
         }).
+				when('/myprofile', {
+          templateUrl: 'topics/profile/myprofile.html'
+        }).
+				when('/monitoring', {
+					templateUrl: 'topics/monitoring/graph.html'
+				}).
           otherwise({
-    	        redirectTo: '/users'
+    	        redirectTo: '/myprofile'
     	  });
 }])
 .run(['$rootScope', '$location', '$cookieStore', '$http',
