@@ -34,7 +34,7 @@ import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
 
 /**
  * 
- * Manage sucurity-related business operations supporting subject direct interaction
+ * Manage security-related business operations supporting subject direct interaction
  * 
  *   (Yes, it is for login and user management)
  * 
@@ -54,11 +54,11 @@ public interface UsersManager {
 		
 		User validateUser(String username, String password) throws UserNotFoundException, UserExpiredException, PasswordMissmatchException;
 		
-		Set<User> getUsers();
-		
-		Set<User> getUsers(String fullname, String email, Boolean enabled, Boolean expired, String role);
+				
 		
 		Set<Role> getRoles();
+		
+		SearchResult searchUsers(SearchCriteria criteria);
 				
 		void updateUser(String username, UserInfo userInfo, Set<Role> grantedRoles, boolean enabled, boolean expired) throws UserNotFoundException, InvalidRoleException;
 			
@@ -74,6 +74,6 @@ public interface UsersManager {
 						
 		void deleteUser(String username);
 			
-		void deleteRole(String roleName);		
+		void deleteRole(String roleName);
 
 }

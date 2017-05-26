@@ -20,10 +20,17 @@
 package it.greenvulcano.gvesb.iam.service.internal;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +49,10 @@ import it.greenvulcano.gvesb.iam.jaas.GVBackingEngine;
 import it.greenvulcano.gvesb.iam.jaas.GVBackingEngineFactory;
 import it.greenvulcano.gvesb.iam.repository.RoleRepository;
 import it.greenvulcano.gvesb.iam.repository.UserRepository;
+import it.greenvulcano.gvesb.iam.repository.UserRepository.Order;
+import it.greenvulcano.gvesb.iam.repository.UserRepository.Parameter;
+import it.greenvulcano.gvesb.iam.service.SearchCriteria;
+import it.greenvulcano.gvesb.iam.service.SearchResult;
 import it.greenvulcano.gvesb.iam.service.UsersManager;
 
 public class GVUsersManager implements UsersManager {
@@ -179,14 +190,38 @@ public class GVUsersManager implements UsersManager {
 		return roleRepository.getAll();
 	}
 
-	@Override
+	
 	public Set<User> getUsers() {		
 		return userRepository.getAll();
 	}
 	
 	@Override
-	public Set<User> getUsers(String fullname, String email, Boolean enabled, Boolean expired, String role) {		
-		return userRepository.find(fullname, email, expired, enabled, role);
+	public SearchResult searchUsers(SearchCriteria criteria) {	
+		
+		SearchResult result = new SearchResult();
+		
+		Map<Parameter, Object> parameters = criteria.getParameters()
+				                                    .keySet().stream()
+				                                    .map(UserRepository.Parameter::valueOf)
+				                                    .filter(Objects::nonNull)
+				                                    .collect(Collectors.toMap(Function.identity(), k->criteria.getParameters().get(k.name())));
+		
+		LinkedHashMap<Parameter, Order> order = new LinkedHashMap<>(criteria.getOrder().size());
+		for (Entry<String, String>  e : criteria.getOrder().entrySet()) {
+			Optional.ofNullable(UserRepository.Parameter.get(e.getKey())).ifPresent(p-> {
+				order.put(p, UserRepository.Order.get(e.getValue()));
+			});
+		}
+		
+		result.setTotalCount(userRepository.count(parameters));
+		if (criteria.getOffset()>result.getTotalCount()) {
+			result.setFounds(new HashSet<>());
+		} else {
+			result.setFounds(userRepository.find(parameters, order, criteria.getOffset(), criteria.getLimit() ));
+		}
+		
+		
+		return result;
 	}
 
 	@Override
@@ -219,12 +254,16 @@ public class GVUsersManager implements UsersManager {
 	@Override
 	public void checkManagementRequirements() {
 		final Logger logger = LoggerFactory.getLogger(getClass());
-				
-		Set<User> admins = userRepository.find(null, null, null, null, "gvadmin");
+		
+		Map<Parameter, Object> parameters = new HashMap<>(2);
+		parameters.put(UserRepository.Parameter.role, "gvadmin");
+		parameters.put(UserRepository.Parameter.enabled, Boolean.TRUE);
+		
+		int admins = userRepository.count(parameters);
 		/**
 		 * Adding default user 'gvadmin' if no present		
 		 */
-		if (admins.isEmpty()) {
+		if (admins==0) {
 			logger.info("Creating a default 'gvadmin'");
 			User admin;
 			try {

@@ -38,6 +38,7 @@ import it.greenvulcano.gvesb.gviamx.service.CallBackManager;
 import it.greenvulcano.gvesb.gviamx.service.NotificationManager;
 import it.greenvulcano.gvesb.iam.exception.UserExistException;
 import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
+import it.greenvulcano.gvesb.iam.service.SearchCriteria;
 import it.greenvulcano.gvesb.iam.service.UsersManager;
 
 public class SignUpManager {
@@ -48,27 +49,24 @@ public class SignUpManager {
 	private final SecureRandom secureRandom = new SecureRandom();		
 	
 	private final List<NotificationManager> notificationServices = new LinkedList<>();
-	private final List<CallBackManager> callbackServices  = new LinkedList<>();;
+	private final List<CallBackManager> callbackServices  = new LinkedList<>();
 	
 	private SignUpRepository signupRepository;
 	private UsersManager usersManager;
 	private Long expireTime = 60*60*1024L;
 	
 	public void setNotificationServices(List<NotificationManager> notificationServices){
+		this.notificationServices.clear();
 		if (notificationServices!=null && !notificationServices.isEmpty()) {
 			this.notificationServices.addAll(notificationServices);
-		} else {
-			notificationServices.clear();
 		}
 	}
 	
 	public void setCallbackServices(List<CallBackManager> callbackServices){
+		this.callbackServices.clear();
 		if (callbackServices!=null && !callbackServices.isEmpty()) {
 			this.callbackServices.addAll(callbackServices);
-		} else {
-			callbackServices.clear();
-		}
-		
+		}	
 	}
 	
 	public void setRepository(SignUpRepository signupRepository) {
@@ -96,8 +94,9 @@ public class SignUpManager {
 		try {
 			usersManager.getUser(email);
 			throw new UserExistException(email);
-		} catch (UserNotFoundException e) {			
-			if 	(usersManager.getUsers(null, email, null, null, null).size()>0) {
+		} catch (UserNotFoundException e) {
+			;		
+			if 	(usersManager.searchUsers(SearchCriteria.builder().byEmail(email).limitedTo(1).build()).getTotalCount()>0) {
 		    	throw new UserExistException(email);
 		    }		
 		}		

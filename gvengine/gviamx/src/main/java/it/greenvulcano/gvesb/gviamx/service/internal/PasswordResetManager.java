@@ -54,6 +54,7 @@ public class PasswordResetManager {
 	private Long expireTime = 60*60*1024L;
 	
 	public void setNotificationServices(List<NotificationManager> notificationServices){
+		this.notificationServices.clear();
 		if (notificationServices!=null && !notificationServices.isEmpty()) {
 			this.notificationServices.addAll(notificationServices);
 		}
