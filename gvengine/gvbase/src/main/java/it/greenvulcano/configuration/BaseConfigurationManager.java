@@ -28,9 +28,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.locks.ReentrantLock;
@@ -59,12 +62,21 @@ public class BaseConfigurationManager implements GVConfigurationManager {
 	private final Logger LOG = LoggerFactory.getLogger(getClass());	
 	private final ReentrantLock LOCK = new ReentrantLock();
 	
-	private ConfigRepository configRepository;
+	private ConfigRepository configRepository;	
+	private final List<DeployListener> deployLiseteners = Collections.synchronizedList(new LinkedList<>());
 	
 	public void setConfigRepository(ConfigRepository configRepository) {
 		this.configRepository = configRepository;
-	}
+	}	
 	
+	public void setDeployLiseteners(List<DeployListener> deployLiseteners) {
+		
+		this.deployLiseteners.clear();
+		if (deployLiseteners!=null) {
+			this.deployLiseteners.addAll(deployLiseteners);
+		}
+	}
+
 	@Override
 	public void updateConfiguration(Document xmlConfiguration) throws XMLConfigException {
 		String fileName = xmlConfiguration.getDocumentElement().getTagName().concat(".xml");

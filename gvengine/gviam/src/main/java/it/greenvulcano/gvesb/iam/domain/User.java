@@ -84,11 +84,11 @@ public class User implements Serializable {
     private int version;
     
     @CreationTimestamp @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="creation_time", nullable=false)
+    @Column(name="creation_time")
     private Date creationTime;
     
     @UpdateTimestamp @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="update_time", nullable=false)
+    @Column(name="update_time")
     private Date updateTime;
    
     @Embedded

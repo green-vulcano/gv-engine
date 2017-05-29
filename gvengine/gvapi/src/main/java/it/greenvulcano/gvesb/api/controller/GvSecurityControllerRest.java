@@ -2,6 +2,7 @@ package it.greenvulcano.gvesb.api.controller;
 
 import java.net.URI;
 import java.util.Base64;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -291,7 +292,7 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 				throw new IndexOutOfBoundsException("*/"+result.getTotalCount());
 			}
 			
-			Set<UserDTO> users =result.getFounds().stream().map(UserDTO::new).collect(Collectors.toSet());			
+			Set<UserDTO> users =result.getFounds().stream().map(UserDTO::new).collect(Collectors.toCollection(LinkedHashSet::new));			
 			response = Response.ok(toJson(users)).header("Content-Range", offset +"-"+(offset+limit)+"/"+ result.getTotalCount()).build();
 		
 		} catch (IndexOutOfBoundsException e) {

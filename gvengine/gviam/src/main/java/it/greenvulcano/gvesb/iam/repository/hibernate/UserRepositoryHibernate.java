@@ -59,7 +59,7 @@ public class UserRepositoryHibernate extends RepositoryHibernate<User, Integer> 
 	@Override
 	public Set<User> find(Map<Parameter, Object> parameters, LinkedHashMap<Parameter, Order> order, int firstResult, int maxResult) {
 		Set<User> result = new LinkedHashSet<>();
-		
+				
 		QueryHelper helper = buildQueryHelper(false, parameters, order);
 		
 		@SuppressWarnings("unchecked")
@@ -75,8 +75,8 @@ public class UserRepositoryHibernate extends RepositoryHibernate<User, Integer> 
 	}
 
 	@Override
-	public int count(Map<Parameter, Object> parameters) {
-		QueryHelper helper = buildQueryHelper(true, parameters, null);
+	public int count(Map<Parameter, Object> parameters) {		
+		QueryHelper helper = buildQueryHelper(true, parameters, new LinkedHashMap<>());
 		
 		@SuppressWarnings("unchecked")
 		Query<Long> q = getSession().createQuery(helper.getQuery().toString());
@@ -99,13 +99,15 @@ public class UserRepositoryHibernate extends RepositoryHibernate<User, Integer> 
 			}
 			
 			Optional.ofNullable((String)parameters.get(Parameter.username)).ifPresent(username-> {
-				helper.getQuery().append("and u.userInfo.username like :_username ");
-				helper.getParams().put("_username", username+"%");
+				helper.getQuery().append("and u.username like :_username ");
+				if (username!=null) username = username.replaceAll("\\*","%");
+				helper.getParams().put("_username", username);
 			});
 			
 			Optional.ofNullable((String)parameters.get(Parameter.fullname)).ifPresent(fullname-> {
 				helper.getQuery().append("and u.userInfo.fullName like :_fullname ");
-				helper.getParams().put("_fullname", fullname+"%");
+				if (fullname!=null) fullname = fullname.replaceAll("\\*","%");
+				helper.getParams().put("_fullname", fullname);
 			});
 			
 			Optional.ofNullable((String)parameters.get(Parameter.email)).ifPresent(email-> {
@@ -113,21 +115,21 @@ public class UserRepositoryHibernate extends RepositoryHibernate<User, Integer> 
 				helper.getParams().put("_email", email);			
 			});
 			
-			Optional.ofNullable((Boolean)parameters.get(Parameter.expired)).ifPresent(expired-> {
-				helper.getQuery().append("and u.expired = :expired ");
-				helper.getParams().put("_expired", expired);			
+			Optional.ofNullable(parameters.get(Parameter.expired)).ifPresent(expired-> {
+				helper.getQuery().append("and u.expired = :_expired ");
+				helper.getParams().put("_expired", Boolean.valueOf(expired.toString()));			
 			});
 			
-			Optional.ofNullable((Boolean)parameters.get(Parameter.enabled)).ifPresent(enabled -> {
-				helper.getQuery().append("and u.enabled = :enabled ");
-				helper.getParams().put("_enabled", enabled);
+			Optional.ofNullable(parameters.get(Parameter.enabled)).ifPresent(enabled -> {
+				helper.getQuery().append("and u.enabled = :_enabled ");
+				helper.getParams().put("_enabled", Boolean.valueOf(enabled.toString()));
 			});
 		}
 	
 		if (order!=null && !order.isEmpty()) {			
-			String orderBy = order.keySet().stream()
-					              .map(k -> k.name()+ " " +Optional.ofNullable(order.get(k)).orElse(Order.desc).name())
-					              .collect(Collectors.joining(",", "order by ", null));
+			String orderBy = order.entrySet().stream()					               
+					               .map(e -> e.getKey().name()+ " " +Optional.ofNullable(e.getValue()).orElse(Order.desc).name())
+					               .collect(Collectors.joining(",", "order by ", ""));
 			helper.getQuery().append(orderBy);
 		}
 			
