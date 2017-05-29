@@ -111,7 +111,8 @@ public class UserRepositoryHibernate extends RepositoryHibernate<User, Integer> 
 			});
 			
 			Optional.ofNullable((String)parameters.get(Parameter.email)).ifPresent(email-> {
-				helper.getQuery().append("and u.userInfo.email = :_email ");
+				helper.getQuery().append("and u.userInfo.email like :_email ");
+				if (email!=null) email = email.replaceAll("\\*","%");
 				helper.getParams().put("_email", email);			
 			});
 			
