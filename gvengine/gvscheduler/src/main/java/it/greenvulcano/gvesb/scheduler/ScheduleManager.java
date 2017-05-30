@@ -21,15 +21,37 @@ package it.greenvulcano.gvesb.scheduler;
 
 
 import java.text.ParseException;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Set;
 
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 
 public interface ScheduleManager {
+	
+public final static class Authority {
+		
+		public final static String ADMINISTRATOR = "gvadmin";
+		public final static String MANAGER = "gvmanager_schedule";			
+		public final static String GUEST = "gvguest_schedule";
+		
+		public final static Set<String> entries;
+		
+		static {
+			Set<String> e = new LinkedHashSet<>();
+			e.add(ADMINISTRATOR);
+			e.add(MANAGER);			
+			e.add(GUEST);
+			
+			entries = Collections.unmodifiableSet(e);
+		}
+		
+	}	
 	
 	public List<Trigger> getTriggersList() throws SchedulerException;		
 	

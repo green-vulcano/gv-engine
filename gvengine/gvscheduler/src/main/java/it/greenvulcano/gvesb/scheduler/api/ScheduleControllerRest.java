@@ -51,6 +51,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import it.greenvulcano.gvesb.scheduler.ScheduleManager;
+import it.greenvulcano.gvesb.scheduler.ScheduleManager.Authority;
 
 public class ScheduleControllerRest {
 		
@@ -81,7 +82,7 @@ public class ScheduleControllerRest {
 		return obj;
 	};
 	
-	@RolesAllowed({"gvadmin", "gvscheduler", "gvscheduler-ro"})
+	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER, Authority.GUEST})
 	@Path("/schedules")
 	@GET @Produces(MediaType.APPLICATION_JSON)
 	public Response getSchedules() {
@@ -103,7 +104,7 @@ public class ScheduleControllerRest {
 		return response;
 	}
 	
-	@RolesAllowed({"gvadmin", "gvscheduler", "gvscheduler-ro"})
+	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER, Authority.GUEST})
 	@Path("/schedules/{id}")
 	@GET @Produces(MediaType.APPLICATION_JSON)
 	public Response getSchedule(@PathParam("id")String id) {
@@ -123,7 +124,7 @@ public class ScheduleControllerRest {
 		return response;
 	}
 	
-	@RolesAllowed({"gvadmin", "gvscheduler"})
+	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
 	@Path("/schedules/{id}")
 	@DELETE @Produces(MediaType.APPLICATION_JSON)
 	public Response deleteSchedule(@PathParam("id")String id) {
@@ -142,7 +143,7 @@ public class ScheduleControllerRest {
 		return response;
 	}
 	
-	@RolesAllowed({"gvadmin", "gvscheduler"})
+	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
 	@Path("/schedules/{id}/pause")
 	@PUT @Produces(MediaType.APPLICATION_JSON)
 	public Response pauseSchedule(@PathParam(value = "id")String id) {
@@ -161,7 +162,7 @@ public class ScheduleControllerRest {
 		return response;
 	}
 	
-	@RolesAllowed({"gvadmin", "gvscheduler"})
+	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
 	@Path("/schedules/{id}/resume")
 	@PUT @Produces(MediaType.APPLICATION_JSON)
 	public Response resumeSchedule(@PathParam(value = "id")String id) {
@@ -179,7 +180,7 @@ public class ScheduleControllerRest {
 		return response;
 	}
 	
-	@RolesAllowed({"gvadmin", "gvscheduler"})
+	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
 	@Path("/schedule/{service}/{operation}")
 	@POST @Consumes(MediaType.APPLICATION_JSON) @Produces(MediaType.APPLICATION_JSON)
 	public Response scheduleOperation(@PathParam("service")String serviceName, @PathParam("operation")String operationName, String scheduleData) {

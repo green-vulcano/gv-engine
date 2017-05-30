@@ -20,6 +20,9 @@
 package it.greenvulcano.gvesb;
 
 import java.nio.file.Path;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.zip.ZipInputStream;
 
 import org.w3c.dom.Document;
@@ -27,6 +30,25 @@ import org.w3c.dom.Document;
 import it.greenvulcano.configuration.XMLConfigException;
 
 public interface GVConfigurationManager {
+	
+	public final static class Authority {
+		
+		public final static String ADMINISTRATOR = "gvadmin";
+		public final static String MANAGER = "gvmanager_config";			
+		public final static String GUEST = "gvguest_config";
+		
+		public final static Set<String> entries;
+		
+		static {
+			Set<String> e = new LinkedHashSet<>();
+			e.add(ADMINISTRATOR);
+			e.add(MANAGER);			
+			e.add(GUEST);
+			
+			entries = Collections.unmodifiableSet(e);
+		}
+		
+	}
 	
 	byte[] exportConfiguration() throws XMLConfigException;
 	

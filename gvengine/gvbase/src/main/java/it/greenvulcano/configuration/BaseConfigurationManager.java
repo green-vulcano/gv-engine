@@ -63,17 +63,17 @@ public class BaseConfigurationManager implements GVConfigurationManager {
 	private final ReentrantLock LOCK = new ReentrantLock();
 	
 	private ConfigRepository configRepository;	
-	private final List<DeployListener> deployLiseteners = Collections.synchronizedList(new LinkedList<>());
+	private final List<DeployListener> deployListeners = Collections.synchronizedList(new LinkedList<>());
 	
 	public void setConfigRepository(ConfigRepository configRepository) {
 		this.configRepository = configRepository;
 	}	
 	
-	public void setDeployLiseteners(List<DeployListener> deployLiseteners) {
+	public void setDeployListeners(List<DeployListener> deployListeners) {
 		
-		this.deployLiseteners.clear();
-		if (deployLiseteners!=null) {
-			this.deployLiseteners.addAll(deployLiseteners);
+		this.deployListeners.clear();
+		if (deployListeners!=null) {
+			this.deployListeners.addAll(deployListeners);
 		}
 	}
 
@@ -178,7 +178,10 @@ public class BaseConfigurationManager implements GVConfigurationManager {
 					 				
 					XMLConfig.setBaseConfigPath(configPath);
 				}
+				
 				LOG.debug("Deploy complete");
+				deployListeners.forEach(l-> l.onDeploy(destination));
+								
 			} catch (Exception e) {
 				
 				if (Objects.nonNull(destination) && Files.exists(destination)) {

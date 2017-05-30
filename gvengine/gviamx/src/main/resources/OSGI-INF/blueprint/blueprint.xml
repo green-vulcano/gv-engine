@@ -95,52 +95,37 @@
   		<property name="expireTime" value="${gviamx.reset.life}"/>
   </bean> 
   
-   <reference-list id="securityModulesReferences" interface="it.greenvulcano.gvesb.iam.modules.SecurityModule" 
+  <bean id="accountController" class="it.greenvulcano.gvesb.gviamx.api.GVAccountControllerRest">
+  		<property name="signupManager" ref="signupManager"/>
+  		<property name="passwordResetManager" ref="passwordResetManager"/>
+  </bean>
+  
+  <reference-list id="securityModulesReferences" interface="it.greenvulcano.gvesb.iam.modules.SecurityModule" 
 			   		member-type="service-reference" availability="mandatory"/>
 		
   <bean id="gvAuthenticationFilter" class="it.greenvulcano.gvesb.api.security.GVSecurityFilter">        
         <property name="gvSecurityModulesReferences" ref="securityModulesReferences"/>    
   </bean>
     
-  <bean id="cors-filter" class="org.apache.cxf.rs.security.cors.CrossOriginResourceSharingFilter"/>
-
-  <bean id="signupController" class="it.greenvulcano.gvesb.gviamx.api.SignUpControllerRest">
-  		<property name="signupManager" ref="signupManager"/>
-  </bean>
+  <bean id="cors-filter" class="org.apache.cxf.rs.security.cors.CrossOriginResourceSharingFilter"/> 
   
-  <bean id="signupControllerAuthorizationInterceptor" class="org.apache.cxf.interceptor.security.SecureAnnotationsInterceptor">
+  <bean id="authorizationInterceptor" class="org.apache.cxf.interceptor.security.SecureAnnotationsInterceptor">
   		<property name="allowAnonymousUsers" value="false" />
   		<property name="checkConfiguredRolesOnly" value="false" />
-  		<property name="securedObject" ref="signupController"/>
+  		<property name="securedObject" ref="accountController"/>
   </bean>
   
-  <bean id="signupControllerAuthorizationFilter" class="org.apache.cxf.jaxrs.security.SimpleAuthorizingFilter">	   
-    <property name="interceptor" ref="signupControllerAuthorizationInterceptor"/>
+  <bean id="authorizationFilter" class="org.apache.cxf.jaxrs.security.SimpleAuthorizingFilter">	   
+    <property name="interceptor" ref="authorizationInterceptor"/>
   </bean>
-  
-   <bean id="passwordResetController" class="it.greenvulcano.gvesb.gviamx.api.PasswordResetControllerRest">
-  		<property name="passwordResetManager" ref="passwordResetManager"/>
-  </bean>
-
-  <bean id="passwordResetControllerAuthorizationInterceptor" class="org.apache.cxf.interceptor.security.SecureAnnotationsInterceptor">
-  		<property name="allowAnonymousUsers" value="false" />
-  		<property name="checkConfiguredRolesOnly" value="false" />
-  		<property name="securedObject" ref="passwordResetController"/>
-  </bean>
-  
-  <bean id="passwordResetAuthorizationFilter" class="org.apache.cxf.jaxrs.security.SimpleAuthorizingFilter">	   
-    <property name="interceptor" ref="passwordResetControllerAuthorizationInterceptor"/>
-  </bean>
-			
+  			
   <jaxrs:server address="/gviamx" id="gviamx">
        <jaxrs:serviceBeans>            
-          <ref component-id="signupController" />
-          <ref component-id="passwordResetController" />            
+          <ref component-id="accountController" />                   
        </jaxrs:serviceBeans> 
        <jaxrs:providers>
           <ref component-id="gvAuthenticationFilter"/>
-          <ref component-id="signupControllerAuthorizationFilter"/> 
-          <ref component-id="passwordResetAuthorizationFilter"/>               
+          <ref component-id="authorizationFilter"/>                         
        	  <ref component-id="cors-filter" />
        </jaxrs:providers>       
   </jaxrs:server>

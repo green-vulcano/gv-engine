@@ -51,6 +51,7 @@ import it.greenvulcano.gvesb.iam.service.CredentialsManager;
 import it.greenvulcano.gvesb.iam.service.SearchCriteria;
 import it.greenvulcano.gvesb.iam.service.SearchResult;
 import it.greenvulcano.gvesb.iam.service.UsersManager;
+import it.greenvulcano.gvesb.iam.service.UsersManager.Authority;
 
 @CrossOriginResourceSharing(allowAllOrigins=true, allowCredentials=true)
 public class GvSecurityControllerRest extends BaseControllerRest {
@@ -169,7 +170,7 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 	@POST	
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed("gvoauth2_client")
+	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER, Authority.CLIENT})
 	public Response createAccessToken(@Context HttpHeaders headers, @FormParam("grant_type")String grantType, @FormParam("username")String username, @FormParam("password")String password ){
 		
 		Response response = null;
@@ -208,7 +209,7 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 	@POST	
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed("gvoauth2_client")
+	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER, Authority.CLIENT})
 	public Response refreshAccessToken(@Context HttpHeaders headers, @FormParam("grant_type")String grantType, @FormParam("access_token")String accessToken, @FormParam("refresh_token")String refreshToken ){
 		
 		Response response = null;
@@ -238,7 +239,7 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 	
 	@Path("/admin/users")
 	@GET @Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed("gvadmin")
+	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
 	public Response getUsers(@Context MessageContext jaxrsContext) {
 		
 		String range = Optional.ofNullable(jaxrsContext.getHttpHeaders().getHeaderString("Range")).orElse("");
@@ -309,7 +310,7 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 	
 	@Path("/admin/roles")
 	@GET @Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed("gvadmin")
+	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
 	public Response getRoles() {
 		
 		Response response = null;
@@ -329,7 +330,7 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 	
 	@Path("/admin/users/{username}")
 	@GET @Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed("gvadmin")
+	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
 	public Response getUser(@PathParam("username") String username) {
 		
 		Response response = null;
@@ -352,7 +353,7 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 	@Path("/admin/users")
 	@POST @Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed("gvadmin")
+	@RolesAllowed(Authority.ADMINISTRATOR)
 	public Response createUser(String data) {
 		Response response = null;
 		
@@ -381,7 +382,7 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 	@Path("/admin/users/{username}")
 	@PUT @Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed("gvadmin")
+	@RolesAllowed(Authority.ADMINISTRATOR)
 	public Response editUser(@PathParam("username") String username, String data) {
 		Response response = null;
 		
@@ -406,7 +407,7 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 	@Path("/admin/users/{username}/enabled")
 	@PATCH 
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed("gvadmin")
+	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
 	public Response switchUserStatus(@PathParam("username") String username){
 		Response response = null;
 		
@@ -430,7 +431,7 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 	@Path("/admin/users/{username}/password")
 	@PATCH 
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed("gvadmin")
+	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
 	public Response resetUserPassword(@PathParam("username") String username) {
 		Response response = null;
 		
@@ -453,7 +454,7 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 	@Path("/admin/users/{username}")
 	@DELETE
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed("gvadmin")
+	@RolesAllowed(Authority.ADMINISTRATOR)
 	public Response deleteUser(@PathParam("username") String username) {
 		Response response = null;
 		

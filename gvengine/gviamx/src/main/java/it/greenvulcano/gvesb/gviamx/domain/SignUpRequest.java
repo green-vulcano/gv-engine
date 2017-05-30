@@ -22,8 +22,8 @@ package it.greenvulcano.gvesb.gviamx.domain;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Optional;
-
+import java.util.HashMap;
+import java.util.Map;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -111,21 +111,21 @@ public class SignUpRequest extends UserActionRequest implements Serializable{
 	}
 	
 	@Transient
-	public JSONObject getRequestObject() {
+	public Map<String, Object> getActionData() {
 		if (requestObject==null) {
 			try {
 				requestObject = new JSONObject(new String(request));
 			} catch (Exception e) {
-				return null;
+				return new HashMap<>();
 			}
 		}
-		return requestObject;
+		return requestObject.toMap();
 	}
 	
 	@Transient @Override
 	public String getFullname() {
 				
-		return Optional.ofNullable(getRequestObject()).orElseGet(JSONObject::new).optString("fullname", null);
+		return (String) getActionData().get("fullname");
 	}
 	
 	@Override

@@ -83,7 +83,7 @@
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
-			<version>20151123</version>
+			<version>20160810</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -151,6 +151,9 @@
                             org.apache.cxf.rs.security.cors,
                             org.apache.cxf.interceptor.security,
                             org.apache.cxf.jaxrs.security,
+                            org.apache.cxf.jaxrs.utils,
+                            org.apache.cxf.security,
+                            org.apache.cxf.message,
                         	org.json,
                         	org.slf4j,
                             org.hibernate,
