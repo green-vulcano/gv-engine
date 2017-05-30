@@ -46,6 +46,7 @@ import it.greenvulcano.gvesb.iam.exception.UserExpiredException;
 import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
 import it.greenvulcano.gvesb.iam.service.CredentialsManager;
 import it.greenvulcano.gvesb.iam.service.UsersManager;
+import it.greenvulcano.gvesb.iam.service.UsersManager.Authority;
 
 @CrossOriginResourceSharing(allowAllOrigins=true, allowCredentials=true)
 public class GvSecurityControllerRest extends BaseControllerRest {
@@ -164,7 +165,7 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 	@POST	
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed("gvoauth2_client")
+	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER, Authority.CLIENT})
 	public Response createAccessToken(@Context HttpHeaders headers, @FormParam("grant_type")String grantType, @FormParam("username")String username, @FormParam("password")String password ){
 		
 		Response response = null;
@@ -203,7 +204,7 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 	@POST	
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed("gvoauth2_client")
+	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER, Authority.CLIENT})
 	public Response refreshAccessToken(@Context HttpHeaders headers, @FormParam("grant_type")String grantType, @FormParam("access_token")String accessToken, @FormParam("refresh_token")String refreshToken ){
 		
 		Response response = null;
@@ -233,8 +234,56 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 	
 	@Path("/admin/users")
 	@GET @Produces(MediaType.APPLICATION_JSON)
+<<<<<<< HEAD
 	@RolesAllowed("gvadmin")
 	public Response getUsers() {
+=======
+	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
+	public Response getUsers(@Context MessageContext jaxrsContext) {
+		
+		String range = Optional.ofNullable(jaxrsContext.getHttpHeaders().getHeaderString("Range")).orElse("");
+		
+		int offset=0;
+		int limit=300;
+		
+		if (range.matches("^users [0-9]*-[0-9]*$")) {
+			try {
+				String[] r = range.split("\\s")[1].split("-");
+				
+			    offset = Integer.valueOf(r[0]);
+				limit = Integer.valueOf(r[1]) - offset;				
+				
+				if (offset<0) throw new IllegalArgumentException();
+				if (limit<1) throw new IllegalArgumentException();
+			} catch (Exception e) {
+				LOG.warn("GVAPI_Exception - Invalid range in request: "+range, e);
+			}
+		}
+		
+		SearchCriteria criteria = new SearchCriteria(offset, limit);
+		
+		for (Entry<String, List<String>> q : jaxrsContext.getUriInfo().getQueryParameters().entrySet()){
+			
+			if (q.getKey().toLowerCase().equals("order")) {
+				
+				for (String orderKey : q.getValue()) {
+					
+					if (orderKey.endsWith(":reverse")) {
+						criteria.getOrder().put(orderKey.replace(":reverse", ""), "desc" );
+					} else {
+						criteria.getOrder().put(orderKey, "asc" );
+					}
+				}				
+				
+			} else if (q.getKey().toLowerCase().equals("enabled") || q.getKey().toLowerCase().equals("expired") ) {
+				criteria.getParameters().put(q.getKey(), q.getValue().isEmpty()? Boolean.TRUE : q.getValue().get(0));
+			} else {
+				criteria.getParameters().put(q.getKey(), q.getValue().size()==1? q.getValue().get(0) : q.getValue());
+			}
+			
+			
+		}
+>>>>>>> 556629a... Improved role management
 		
 		Response response = null;
 		
@@ -252,7 +301,7 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 	
 	@Path("/admin/roles")
 	@GET @Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed("gvadmin")
+	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
 	public Response getRoles() {
 		
 		Response response = null;
@@ -272,7 +321,7 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 	
 	@Path("/admin/users/{username}")
 	@GET @Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed("gvadmin")
+	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
 	public Response getUser(@PathParam("username") String username) {
 		
 		Response response = null;
@@ -295,7 +344,7 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 	@Path("/admin/users")
 	@POST @Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed("gvadmin")
+	@RolesAllowed(Authority.ADMINISTRATOR)
 	public Response createUser(String data) {
 		Response response = null;
 		
@@ -324,7 +373,7 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 	@Path("/admin/users/{username}")
 	@PUT @Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed("gvadmin")
+	@RolesAllowed(Authority.ADMINISTRATOR)
 	public Response editUser(@PathParam("username") String username, String data) {
 		Response response = null;
 		
@@ -349,7 +398,7 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 	@Path("/admin/users/{username}/enabled")
 	@PATCH 
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed("gvadmin")
+	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
 	public Response switchUserStatus(@PathParam("username") String username){
 		Response response = null;
 		
@@ -373,7 +422,7 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 	@Path("/admin/users/{username}/password")
 	@PATCH 
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed("gvadmin")
+	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
 	public Response resetUserPassword(@PathParam("username") String username) {
 		Response response = null;
 		
@@ -396,7 +445,7 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 	@Path("/admin/users/{username}")
 	@DELETE
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed("gvadmin")
+	@RolesAllowed(Authority.ADMINISTRATOR)
 	public Response deleteUser(@PathParam("username") String username) {
 		Response response = null;
 		

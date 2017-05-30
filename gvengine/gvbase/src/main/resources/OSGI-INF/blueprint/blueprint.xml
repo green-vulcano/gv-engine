@@ -7,8 +7,11 @@
 
 	<reference id="karafConfigRepository" interface="org.apache.karaf.config.core.ConfigRepository" />
 
+	<reference-list id="gvDeployListeners" availability="optional" interface="it.greenvulcano.gvesb.GVConfigurationManager.DeployListener"/>
+
 	<bean id="gvConfigManager" class="it.greenvulcano.configuration.BaseConfigurationManager">
 		<property name="configRepository" ref="karafConfigRepository"/>
+		<property name="deployListeners" ref="gvDeployListeners"/>
 	</bean> 
 
     <service id="configurationManager" interface="it.greenvulcano.gvesb.GVConfigurationManager" ref="gvConfigManager"/>

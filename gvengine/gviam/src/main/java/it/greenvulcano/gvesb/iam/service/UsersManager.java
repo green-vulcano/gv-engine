@@ -19,6 +19,8 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb.iam.service;
 
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import it.greenvulcano.gvesb.iam.domain.Role;
@@ -41,7 +43,27 @@ import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
  */
 public interface UsersManager {
 	
-		
+		public final static class Authority {
+				
+			public final static String ADMINISTRATOR = "gvadmin";
+			public final static String MANAGER = "gvmanager_account";
+			public final static String CLIENT = "gvclient_account";
+			public final static String GUEST = "gvguest_account";
+			
+			public final static Set<String> entries;
+			
+			static {
+				Set<String> e = new LinkedHashSet<>();
+				e.add(ADMINISTRATOR);
+				e.add(MANAGER);
+				e.add(CLIENT);
+				e.add(GUEST);
+				
+				entries = Collections.unmodifiableSet(e);
+			}
+			
+		}	
+	
 		void checkManagementRequirements();
 	
 		User createUser(String username, String password) throws InvalidUsernameException, InvalidPasswordException, UserExistException;
@@ -54,7 +76,13 @@ public interface UsersManager {
 		
 		User validateUser(String username, String password) throws UserNotFoundException, UserExpiredException, PasswordMissmatchException;
 		
+<<<<<<< HEAD
 		Set<User> getUsers();
+=======
+		void addRole(String username, String role) throws InvalidRoleException, UserNotFoundException;
+		
+		void revokeRole(String username, String role) throws UserNotFoundException;
+>>>>>>> 556629a... Improved role management
 		
 		Set<User> getUsers(String fullname, String email, Boolean enabled, Boolean expired, String role);
 		

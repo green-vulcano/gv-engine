@@ -219,8 +219,17 @@ public class GVUsersManager implements UsersManager {
 	@Override
 	public void checkManagementRequirements() {
 		final Logger logger = LoggerFactory.getLogger(getClass());
+<<<<<<< HEAD
 				
 		Set<User> admins = userRepository.find(null, null, null, null, "gvadmin");
+=======
+		
+		Map<Parameter, Object> parameters = new HashMap<>(2);
+		parameters.put(UserRepository.Parameter.role, Authority.ADMINISTRATOR);
+		parameters.put(UserRepository.Parameter.enabled, Boolean.TRUE);
+		
+		int admins = userRepository.count(parameters);
+>>>>>>> 556629a... Improved role management
 		/**
 		 * Adding default user 'gvadmin' if no present		
 		 */
@@ -243,7 +252,9 @@ public class GVUsersManager implements UsersManager {
 			admin = userRepository.get("gvadmin").get();
 			admin.setEnabled(true);
 			admin.getRoles().clear();
-			admin.getRoles().add(new Role("gvadmin", "Created by GV"));
+			admin.getRoles().add(new Role(Authority.ADMINISTRATOR, "Created by GV"));
+
+			//roles required to use karaf 
 			admin.getRoles().add(new Role("admin", "Created by GV"));
 			admin.getRoles().add(new Role("manager", "Created by GV"));
 			admin.getRoles().add(new Role("viewer", "Created by GV"));
@@ -252,6 +263,37 @@ public class GVUsersManager implements UsersManager {
 			userRepository.add(admin);
 		}	
 		
-	}	
+	}
+
+	@Override
+	public void addRole(String username, String rolename) throws InvalidRoleException, UserNotFoundException{
+		try {
+			jaasEngine.addRole(username, rolename);
+		} catch (SecurityException e) {
+			if (e.getCause() instanceof UserNotFoundException) {
+				throw (UserNotFoundException) e.getCause();
+			} else {
+				throw e;
+			}
+		}
+		
+		
+	}
+
+	@Override
+	public void revokeRole(String username, String role) throws UserNotFoundException {
+		try {
+			jaasEngine.deleteRole(username, role);
+		} catch (SecurityException e) {
+			if (e.getCause() instanceof UserNotFoundException) {
+				throw (UserNotFoundException) e.getCause();
+			} else {
+				throw e;
+		
+			}
+		}
+	}
+	
+	
 
 }

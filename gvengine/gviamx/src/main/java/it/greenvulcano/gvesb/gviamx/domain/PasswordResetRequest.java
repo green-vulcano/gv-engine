@@ -21,6 +21,8 @@ package it.greenvulcano.gvesb.gviamx.domain;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Map;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -30,8 +32,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
-
-import org.json.JSONObject;
 
 import it.greenvulcano.gvesb.iam.domain.User;
 
@@ -186,10 +186,10 @@ public class PasswordResetRequest extends UserActionRequest implements Serializa
 			return false;
 		return true;
 	}
-	
 	@Override
-	public JSONObject getRequestObject() {		
+	public Map<String, Object> getActionData() {		
 		return null;
-	}	
+	}
+	
 
 }
