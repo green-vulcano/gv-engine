@@ -1,22 +1,22 @@
-/*******************************************************************************
- * Copyright (c) 2009, 2016 GreenVulcano ESB Open Source Project.
- * All rights reserved.
+/*
+ * Copyright (c) 2009-2014 GreenVulcano ESB Open Source Project. All rights
+ * reserved.
  *
  * This file is part of GreenVulcano ESB.
  *
- * GreenVulcano ESB is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * GreenVulcano ESB is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by the
+ * Free Software Foundation, either version 3 of the License, or (at your
+ * option) any later version.
  *
- * GreenVulcano ESB is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Lesser General Public License for more details.
+ * GreenVulcano ESB is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with GreenVulcano ESB. If not, see <http://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package it.greenvulcano.gvesb.gvdte.transformers.json;
 
 import it.greenvulcano.configuration.XMLConfig;
@@ -30,14 +30,15 @@ import it.greenvulcano.gvesb.gvdte.util.TransformerHelper;
 import it.greenvulcano.gvesb.gvdte.util.xml.EntityResolver;
 import it.greenvulcano.gvesb.gvdte.util.xml.ErrorHandler;
 import it.greenvulcano.gvesb.gvdte.util.xml.URIResolver;
+
 import it.greenvulcano.util.json.JSONUtils;
 import it.greenvulcano.util.json.JSONUtilsException;
+import it.greenvulcano.util.metadata.PropertiesHandler;
 import it.greenvulcano.util.xml.XMLUtils;
 import it.greenvulcano.util.xml.XMLUtilsException;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -71,8 +72,7 @@ import org.w3c.dom.NodeList;
  *
  */
 public class JSON2XMLTransformer implements DTETransformer {
-  
-	private static Logger          logger    = org.slf4j.LoggerFactory.getLogger(JSON2XMLTransformer.class);
+	private static Logger logger = org.slf4j.LoggerFactory.getLogger(XML2JSONTransformer.class);
 
     private String                 name;
     private String                 validationType;
@@ -92,8 +92,9 @@ public class JSON2XMLTransformer implements DTETransformer {
     private List<TransformerHelper> helpers = new ArrayList<TransformerHelper>();
     
     private ConversionPolicy        policy          = ConversionPolicy.SIMPLE;
-        
-    private Set<String>             forceAttributes = new HashSet<String>();
+    
+    private String             		forceAttributes = "";
+    private Set<String>             forceAttributesSet = new HashSet<String>();
 
     public JSON2XMLTransformer() {
         // do nothing
@@ -140,12 +141,10 @@ public class JSON2XMLTransformer implements DTETransformer {
 
             policy = ConversionPolicy.fromString(XMLConfig.get(nodo, "@ConversionPolicy", ConversionPolicy.SIMPLE.toString()));
             if (policy == ConversionPolicy.SIMPLE) {
-                String fAttrs = XMLConfig.get(nodo, "@ForceAttributes", "");
-                for (String attr : fAttrs.split(",")) {
-                    forceAttributes.add(attr.trim());
-                }
+            	forceAttributes = XMLConfig.get(nodo, "@ForceAttributes", "");
+            	forceAttributesSet = listToSet(forceAttributes);
             }
-                                    
+            
             logger.debug("Loaded parameters: outputXslMapName = " + xslMapName + " - DataSourceSet: "
                     + dataSourceSet + " - validate = " + validateXSL + " - transformerFactory = " + transformerFactory
                     + " - conversionPolicy = " + policy
@@ -177,6 +176,14 @@ public class JSON2XMLTransformer implements DTETransformer {
         return name;
     }
 
+    private Set<String> listToSet(String list) {
+		Set<String> set = new HashSet<String>();
+		for (String el : list.split(",")) {
+		    set.add(el.trim());
+		}
+		return set;
+	}
+
     /**
      * This method initialize the Map containing templates for certain
      * dataSource and xslMapName
@@ -185,10 +192,9 @@ public class JSON2XMLTransformer implements DTETransformer {
      * @throws DTETransfException
      */
     private Map<String, Templates> initTemplMap() throws DTETransfException {
-        if (xslMapName == null || xslMapName.equalsIgnoreCase("text")) {
+        if (xslMapName == null) {
             return null;
         }
-        
         String key = dataSourceSet + "::" + xslMapName;
         try {
             templHashMap = new HashMap<String, Templates>();
@@ -251,52 +257,45 @@ public class JSON2XMLTransformer implements DTETransformer {
         try {
             Document docXML = null; 
             if (policy == ConversionPolicy.SIMPLE) {
-                docXML = (Document) JSONUtils.jsonToXml(input, forceAttributes);
+            	Set<String> currForceAttributesSet = forceAttributesSet;
+            	if (!PropertiesHandler.isExpanded(forceAttributes)) {
+            		currForceAttributesSet = listToSet(PropertiesHandler.expand(forceAttributes, mapParam));
+            	}
+                docXML = (Document) JSONUtils.jsonToXml(input, currForceAttributesSet);
             }
             else {
                 docXML = (Document) JSONUtils.jsonToXml_BadgerFish(input);
             }
-            
             if (xslMapName != null) {
-            	if (xslMapName.equalsIgnoreCase("text")) {
-            		DOMSource domSource = new DOMSource(docXML);
-                	StringWriter writer = new StringWriter();
-                	StreamResult result = new StreamResult(writer);
-                
-                	transformer = TransformerFactory.newInstance().newTransformer();
-                	transformer.transform(domSource, result);
-                	logger.debug("Transform stop");
-                	return writer.toString();
-            	} else {
-	                transformer = getTransformer(mapParam);
-	                setParams(transformer, mapParam);
-	                Source theSource = new DOMSource(docXML);
-	                String outputType = transformer.getOutputProperty(OutputKeys.METHOD);
-	                if (outputType == null) {
-	                    outputType = "xml";
-	                }
-	                if (outputType.equals("xml")) {
-	                    DOMResult theDOMResult = new DOMResult();
-	                    transformer.transform(theSource, theDOMResult);
-	                    Document docValidation = (Document) theDOMResult.getNode();
-	                    if (validate()) {
-	                        executeValidation(docValidation, mapParam);
-	                    }
-	                    logger.debug("Transform stop");
-	                    return theDOMResult.getNode();
-	                }
-	                ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
-	                StreamResult theStreamResult = new StreamResult(byteOutputStream);
-	                transformer.transform(theSource, theStreamResult);
-	                byte[] byteResult = byteOutputStream.toByteArray();
-	
-	                logger.debug("Transform stop");
-	                return byteResult;
-            	}
+                transformer = getTransformer(mapParam);
+                setParams(transformer, mapParam);
+                Source theSource = new DOMSource(docXML);
+                String outputType = transformer.getOutputProperty(OutputKeys.METHOD);
+                if (outputType == null) {
+                    outputType = "xml";
+                }
+                if (outputType.equals("xml")) {
+                    DOMResult theDOMResult = new DOMResult();
+                    transformer.transform(theSource, theDOMResult);
+                    Document docValidation = (Document) theDOMResult.getNode();
+                    if (validate()) {
+                        executeValidation(docValidation, mapParam);
+                    }
+                    logger.debug("Transform stop");
+                    return theDOMResult.getNode();
+                }
+                ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
+                StreamResult theStreamResult = new StreamResult(byteOutputStream);
+                transformer.transform(theSource, theStreamResult);
+                byte[] byteResult = byteOutputStream.toByteArray();
+
+                logger.debug("Transform stop");
+                return byteResult;
             }
-            
-            logger.debug("Transform stop");
-            return docXML;            
+            else {
+                logger.debug("Transform stop");
+                return docXML;
+            }
         }
         catch (DTETransfException exc) {
             throw exc;
