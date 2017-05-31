@@ -59,10 +59,26 @@ public class BaseConfigurationManager implements GVConfigurationManager {
 	private final Logger LOG = LoggerFactory.getLogger(getClass());	
 	private final ReentrantLock LOCK = new ReentrantLock();
 	
+<<<<<<< HEAD
 	private ConfigRepository configRepository;
 	
 	public void setConfigRepository(ConfigRepository configRepository) {
 		this.configRepository = configRepository;
+=======
+	private ConfigRepository configRepository;	
+	private final List<DeployListener> deployListeners = Collections.synchronizedList(new LinkedList<>());
+	
+	public void setConfigRepository(ConfigRepository configRepository) {
+		this.configRepository = configRepository;
+	}	
+	
+	public void setDeployListeners(List<DeployListener> deployListeners) {
+		
+		this.deployListeners.clear();
+		if (deployListeners!=null) {
+			this.deployListeners.addAll(deployListeners);
+		}
+>>>>>>> 556629a... Improved role management
 	}
 	
 	@Override
@@ -166,7 +182,10 @@ public class BaseConfigurationManager implements GVConfigurationManager {
 					 				
 					XMLConfig.setBaseConfigPath(configPath);
 				}
+				
 				LOG.debug("Deploy complete");
+				deployListeners.forEach(l-> l.onDeploy(destination));
+								
 			} catch (Exception e) {
 				
 				if (Objects.nonNull(destination) && Files.exists(destination)) {

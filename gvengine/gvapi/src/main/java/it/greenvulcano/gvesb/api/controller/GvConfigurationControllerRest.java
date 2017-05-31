@@ -49,6 +49,7 @@ import org.w3c.dom.Document;
 import it.greenvulcano.configuration.XMLConfig;
 import it.greenvulcano.configuration.XMLConfigException;
 import it.greenvulcano.gvesb.GVConfigurationManager;
+import it.greenvulcano.gvesb.GVConfigurationManager.Authority;
 
 
 @CrossOriginResourceSharing(allowAllOrigins=true, allowCredentials=true)
@@ -64,7 +65,7 @@ public class GvConfigurationControllerRest {
 	
 	 @GET
 	 @Path("/deploy")
-	 @RolesAllowed({"gvadmin","gvmanager"})
+	 @RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER, Authority.GUEST})
 	 public Response getConfigurationInfo(){
 		 File currentConfig = new File(XMLConfig.getBaseConfigPath());
 		 
@@ -85,7 +86,7 @@ public class GvConfigurationControllerRest {
 	 @GET
 	 @Path("/deploy/{configId}")
 	 @Produces(MediaType.APPLICATION_OCTET_STREAM)
-	 @RolesAllowed({"gvadmin","gvmanager"})
+	 @RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
 	 public Response exportConfiguration(@PathParam("configId") String id) {
 		 File currentConfig = new File(XMLConfig.getBaseConfigPath());
 		 
@@ -109,7 +110,7 @@ public class GvConfigurationControllerRest {
 	 @POST
 	 @Path("/deploy/{configId}")
 	 @Consumes(MediaType.MULTIPART_FORM_DATA)
-	 @RolesAllowed({"gvadmin","gvmanager"})
+	 @RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
 	 public void deploy(@PathParam("configId") String id,
 			            @Multipart(value="gvconfiguration", type="application/zip") Attachment config) {
 		 
@@ -140,7 +141,7 @@ public class GvConfigurationControllerRest {
 	 @GET
 	 @Path("/configuration")
 	 @Produces(MediaType.APPLICATION_JSON)
-	 @RolesAllowed({"gvadmin","gvmanager"})
+	 @RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
 	 public Response getConfigurationFileList() {		 	 
 		 JSONArray files = new JSONArray(XMLConfig.getLoadedFiles());	
 		 
@@ -150,7 +151,7 @@ public class GvConfigurationControllerRest {
 	 @GET
 	 @Path("/configuration/{name}")
 	 @Produces(MediaType.APPLICATION_XML)
-	 @RolesAllowed({"gvadmin","gvmanager"})
+	 @RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
 	 public Document getConfigurationFile(@PathParam("name") String name){
 		
 		Document document = null;

@@ -27,7 +27,7 @@
 		<bundle start-level="80">mvn:org.apache.geronimo.specs/geronimo-jaxrpc_1.1_spec/2.1</bundle>
 		<bundle start-level="80">mvn:org.apache.geronimo.specs/geronimo-jaxr_1.0_spec/2.1</bundle>
 
-		<bundle start-level="80">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.json/20140107_1</bundle>
+		<bundle start-level="80">mvn:org.json/json/20160810</bundle>
 		<bundle start-level="80">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.axiom-api/1.2.13_2</bundle>
 		<bundle start-level="80">mvn:jaxen/jaxen/1.1.6</bundle>	
 		<bundle start-level="80"><![CDATA[wrap:mvn:commons-modeler/commons-modeler/2.0.1$Bundle-SymbolicName=commons-modeler&Bundle-Version=2.0.1]]></bundle>

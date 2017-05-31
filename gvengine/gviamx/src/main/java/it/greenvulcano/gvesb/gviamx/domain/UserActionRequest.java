@@ -19,7 +19,7 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb.gviamx.domain;
 
-import org.json.JSONObject;
+import java.util.Map;
 
 public abstract class UserActionRequest {
 	
@@ -30,6 +30,6 @@ public abstract class UserActionRequest {
 	
 	public abstract String getEmail();
 	
-	public abstract JSONObject getRequestObject();
+	public abstract Map<String, Object> getActionData();
 		
 }
