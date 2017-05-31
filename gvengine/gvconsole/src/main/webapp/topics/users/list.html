@@ -45,6 +45,16 @@
         </tr>
       </tbody>
     </table>
+    <div id="panelPagination"  class="panel-footer">
+  <div class="row">
+    <div class="col col-xs-8" style="float: right;">
+      <div ng-controller="PaginationDemoCtrl">
+      <ul class="pagination hidden-xs pull-right" style="margin: 3px;">
+        <ul uib-pagination total-items="bigTotalItems" ng-model="bigCurrentPage" max-size="maxSize" class="pagination-sm" boundary-link-numbers="true" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" style="margin: 0;"></ul>
+        </div>
+    </div>
+  </div>
+</div>
   </div>
 </div>
 </div>

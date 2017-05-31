@@ -227,3 +227,19 @@ angular.module('gvconsole')
 		controllerAs: 'app'
 	}
 });
+angular.module('ui.bootstrap').controller('PaginationDemoCtrl', function ($scope, $log) {
+  $scope.totalItems = 64;
+  $scope.currentPage = 2;
+
+  $scope.setPage = function (pageNo) {
+    $scope.currentPage = pageNo;
+  };
+
+  $scope.pageChanged = function() {
+    $log.log('Page changed to: ' + $scope.currentPage);
+  };
+
+  $scope.maxSize = 5;
+  $scope.bigTotalItems = 200;
+  $scope.bigCurrentPage = 1;
+});

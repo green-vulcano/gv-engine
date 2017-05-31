@@ -23,9 +23,10 @@
             <div class="col-xs-12">
                <div class="form-group clearfix">
                   <quartz-cron-selection output="schedule.cronExpression"></quartz-cron-selection>
-                  <button type="button" class="btn btn-warning" data-toggle="collapse" data-target="#demo"><i class="fa fa-question" aria-hidden="true"></i></button>
                </div>
-               <div id="demo" class="collapse">
+               <div id="buttonInfo">
+                 <button type="button" class="btn btn-warning" data-toggle="collapse" data-target="#demo"><i class="fa fa-question" aria-hidden="true"></i></button>
+                  <div id="demo" class="collapse">
                   Crono Expression: <br>
                   &nbsp; <strong>1st position</strong>: seconds <br>
                   &nbsp; <strong>2nd position</strong>: minutes <br>
@@ -43,15 +44,16 @@
                   &nbsp; <strong>L</strong> = last <br>
                   &nbsp; <strong>W</strong> = weekday <br>
                   &nbsp; <strong>#</strong> = specify the day of month
-               </div>
+                </div>
+              </div>
                <hr>
             </div>
             <div id="formLeft" class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
                <div class="form-group clearfix">
-                  <label id="labelLeft" class="control-label col-sm-4">Operation</label>
+                  <label id="labelLeft" class="control-label optionForm col-sm-4">Operation</label>
                   <div class="col-sm-8">
                      <select id="flow" name="flow"
-                        class="form-control" ng-model="flow" 
+                        class="form-control" ng-model="flow"
                         ng-options="entry.operation group by entry.service for entry in operations"
                         required>
                         <option value="">------</option>
@@ -68,12 +70,12 @@
             </div>
             <div id="formLeft" class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
                <div class="form-group clearfix">
-                  <label id="labelLeft" class="control-label col-sm-4">Input data</label>
+                  <label id="labelLeft" class="control-label optionForm col-sm-4">Input data</label>
                   <div class="col-xs-12">
                      <textarea class="form-control" rows="3" ng-model="schedule.object"></textarea>
                   </div>
                </div>
-               <label class="control-label col-sm-4">Properties</label>
+               <label class="control-label optionForm col-sm-4">Properties</label>
                <br><br/>
                <div class="form-group clearfix">
                   <div class="col-sm-5"><input type="text" class="form-control" ng-model="key" placeholder="key"></div>
@@ -96,7 +98,5 @@
          </form>
          </div>
       </div>
-      <h1> Output Flow </h1>
-      <textarea class="form-control" row="10"></textarea>
    </div>
 </div>

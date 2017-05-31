@@ -1,0 +1,29 @@
+Manifest-Version: 1.0
+Bnd-LastModified: 1496215935765
+Build-Jdk: 1.8.0_131
+Built-By: greenvulcano
+Bundle-Blueprint: OSGI-INF/blueprint/context.xml
+Bundle-ClassPath: .,reflections-0.9.9-RC1.jar,mx4j-jmx-3.0.1.jar
+Bundle-DocURL: http://www.greenvulcanotechnologies.com
+Bundle-ManifestVersion: 2
+Bundle-Name: GreenVulcano Monitoring
+Bundle-SymbolicName: gvmonitoring
+Bundle-Vendor: GreenVulcano Technologies
+Bundle-Version: 4.0.0.SNAPSHOT
+Created-By: Apache Maven Bundle Plugin
+Embed-Dependency: *;scope=compile;type=jar
+Embed-Transitive: false
+Embedded-Artifacts: reflections-0.9.9-RC1.jar;g="org.reflections";a="ref
+ lections";v="0.9.9-RC1",mx4j-jmx-3.0.1.jar;g="mx4j";a="mx4j-jmx";v="3.0
+ .1"
+Import-Package: javax.ws.rs;version="[2.0,3)",javax.ws.rs.core;version="
+ [2.0,3)",org.apache.cxf.rs.security.cors;version="[3.1,4)",org.apache.c
+ xf.jaxrs.security;version="[3.1,4)",org.apache.cxf.interceptor.security
+ ;version="[3.1,4)",it.greenvulcano.gvesb.iam.modules,it.greenvulcano.gv
+ esb.api.security,com.fasterxml.jackson.core;version="[2.7,3)",com.faste
+ rxml.jackson.databind;version="[2.7,3)",org.apache.cxf.interceptor;vers
+ ion="[3.1,4)",it.greenvulcano.gvesb.iam.service
+Import-Service: it.greenvulcano.gvesb.iam.modules.SecurityModule;multipl
+ e:=true;availability:=optional
+Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.8))"
+Tool: Bnd-3.3.0.201609221906

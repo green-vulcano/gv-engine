@@ -4,6 +4,9 @@ body {
   font-size: 14px;
   line-height: 1.42857143;
 }
+.optionForm{
+  padding-left:0;
+}
 .monitoringGraph{
   width: 1000;
   height: 1000;
@@ -27,6 +30,18 @@ body {
 }
 .input-group-btn {
     z-index: 0;
+}
+#panelPagination {
+  color: #fff;
+  background-color: #238650;
+  font-size: 18px;
+}
+#setNewPassword {
+  margin-bottom: 20px;
+}
+#buttonInfo{
+  text-align: var(50px);
+
 }
 #newrole {
     z-index: 0;

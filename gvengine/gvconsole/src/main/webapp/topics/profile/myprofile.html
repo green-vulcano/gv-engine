@@ -7,24 +7,25 @@
     <div id="rolesP">
     <p data-ng-repeat="role in globals.currentUser.roles">{{role.name}}</p>
   </div>
-    <h4>You can access at GV Console and modify everything.</h4>
-    <form name="renewForm" class="form" data-ng-submit="changePassword()" role="form" >
-       <h4 class="text-danger">Please if it's your first access or you want to change password set the new password here:</h4>
-       <div class="form-group" data-ng-class="{ 'has-success': loginForm.new_password.$valid }">
-          <label for="new_password" class="control-label"></label>
-          <input type="password" name="new_password" class="form-control input-lg"
-             placeholder="New password" data-ng-model="newPassword"
-             pattern="(?=^.{4,28}$)^[a-zA-Z0-9._@&$#!?-]+$" required>
-          <span class="help-block small">
-          Length: min 4, max 28 <br> Valid chars: a-z A-Z 0-9 &#46; &#95; &#64; &amp; &#36; &#35; &#33; &#63; &#45; (no white space)
-          </span>
-       </div>
-       <div class="form-group">
-          <button class="btn btn-danger btn-block btn-lg"
-             data-ng-disabled="renewForm.new_password.$invalid || dataLoading">Confirm</button>
-          <img data-ng-show="dataLoading"
-             src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
-       </div>
-       </form>
+  <div>
+    <h3>If you want to change password click the button below</h3>
+  <button type="button" class="btn btn-primary" id="myBtn">Change Password</button>
+  <div id="myModal" class="modal">
+    <div class="modal-content">
+  <h4>Set new password</h4>
+  <div id="setNewPassword" class="input-group">
+  <span class="input-group-addon"><i class="fa fa-key fa-fw"></i></span>
+  <input class="form-control" type="password" placeholder="Old Password">
+  </div>
+  <div id="setNewPassword" class="input-group">
+  <span class="input-group-addon"><i class="fa fa-key fa-fw"></i></span>
+  <input class="form-control" type="password" placeholder="New Password">
+  </div>
+  <button type="button" class="btn exite">Back</button>
+  <button type="button" data-ng-click="" class="btn btn-success">Confirm</button>
+</div>
+</div>
+<script type="text/javascript" src="scripts/delete_wind.js"></script>
+</div>
 </div>
 </div>
