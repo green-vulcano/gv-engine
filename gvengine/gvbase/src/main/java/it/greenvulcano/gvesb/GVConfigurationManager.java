@@ -57,5 +57,10 @@ public interface GVConfigurationManager {
 	void updateConfiguration(Document xmlConfiguration) throws XMLConfigException;
 	
 	void reload() throws XMLConfigException;
+	
+	public static interface DeployListener {
+		
+		void onDeploy(Path destination);
+	}
 
 }

@@ -2,9 +2,12 @@ package it.greenvulcano.gvesb.api.controller;
 
 import java.net.URI;
 import java.util.Base64;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import javax.annotation.security.PermitAll;
@@ -45,6 +48,8 @@ import it.greenvulcano.gvesb.iam.exception.UserExistException;
 import it.greenvulcano.gvesb.iam.exception.UserExpiredException;
 import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
 import it.greenvulcano.gvesb.iam.service.CredentialsManager;
+import it.greenvulcano.gvesb.iam.service.SearchCriteria;
+import it.greenvulcano.gvesb.iam.service.SearchResult;
 import it.greenvulcano.gvesb.iam.service.UsersManager;
 import it.greenvulcano.gvesb.iam.service.UsersManager.Authority;
 
@@ -234,10 +239,6 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 	
 	@Path("/admin/users")
 	@GET @Produces(MediaType.APPLICATION_JSON)
-<<<<<<< HEAD
-	@RolesAllowed("gvadmin")
-	public Response getUsers() {
-=======
 	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
 	public Response getUsers(@Context MessageContext jaxrsContext) {
 		
@@ -283,14 +284,22 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 			
 			
 		}
->>>>>>> 556629a... Improved role management
 		
 		Response response = null;
 		
 		try {			
+			SearchResult result = gvUsersManager.searchUsers(criteria);
+			if (offset > result.getTotalCount()) {
+				throw new IndexOutOfBoundsException("*/"+result.getTotalCount());
+			}
 			
-			Set<UserDTO> users = gvUsersManager.getUsers().stream().map(UserDTO::new).collect(Collectors.toSet());			
-			response = Response.ok(toJson(users)).build();
+			Set<UserDTO> users =result.getFounds().stream().map(UserDTO::new).collect(Collectors.toCollection(LinkedHashSet::new));			
+			response = Response.ok(toJson(users)).header("Content-Range", offset +"-"+(offset+limit)+"/"+ result.getTotalCount()).build();
+		
+		} catch (IndexOutOfBoundsException e) {
+			response = Response.status(Status.REQUESTED_RANGE_NOT_SATISFIABLE).header("Content-Range", e.getMessage()).build();
+		
+			
 		} catch (Exception e) {
 			LOG.error("GVAPI_Exception - Retrieving users",e);
 			response = Response.status(Status.SERVICE_UNAVAILABLE).entity(toJson(e)).build();

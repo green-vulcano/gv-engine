@@ -1,22 +1,22 @@
-/*******************************************************************************
- * Copyright (c) 2009, 2016 GreenVulcano ESB Open Source Project.
- * All rights reserved.
+/*
+ * Copyright (c) 2009-2014 GreenVulcano ESB Open Source Project. All rights
+ * reserved.
  *
  * This file is part of GreenVulcano ESB.
  *
- * GreenVulcano ESB is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * GreenVulcano ESB is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by the
+ * Free Software Foundation, either version 3 of the License, or (at your
+ * option) any later version.
  *
- * GreenVulcano ESB is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Lesser General Public License for more details.
+ * GreenVulcano ESB is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with GreenVulcano ESB. If not, see <http://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package it.greenvulcano.gvesb.gvdte.transformers.json;
 
 import it.greenvulcano.configuration.XMLConfig;
@@ -31,7 +31,9 @@ import it.greenvulcano.gvesb.gvdte.util.UtilsException;
 import it.greenvulcano.gvesb.gvdte.util.xml.EntityResolver;
 import it.greenvulcano.gvesb.gvdte.util.xml.ErrorHandler;
 import it.greenvulcano.gvesb.gvdte.util.xml.URIResolver;
+
 import it.greenvulcano.util.json.JSONUtils;
+import it.greenvulcano.util.metadata.PropertiesHandler;
 import it.greenvulcano.util.xml.ErrHandler;
 import it.greenvulcano.util.xml.XMLUtils;
 import it.greenvulcano.util.xml.XMLUtilsException;
@@ -56,8 +58,8 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
 
-import org.slf4j.Logger;
 import org.json.JSONObject;
+import org.slf4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -72,7 +74,7 @@ import org.w3c.dom.NodeList;
  *
  */
 public class XML2JSONTransformer implements DTETransformer {
-    private static Logger          logger    = org.slf4j.LoggerFactory.getLogger(XML2JSONTransformer.class);
+	private static Logger logger = org.slf4j.LoggerFactory.getLogger(XML2JSONTransformer.class);
     
     public enum ConversionPolicy {
         // simple conversion policy
@@ -119,9 +121,11 @@ public class XML2JSONTransformer implements DTETransformer {
 
     private List<TransformerHelper> helpers = new ArrayList<TransformerHelper>();
     
-    private ConversionPolicy        policy             = ConversionPolicy.SIMPLE;
-    private Set<String>             forceElementsArray = new HashSet<String>();
-    private Set<String>             forceStringValue   = new HashSet<String>();
+    private ConversionPolicy        policy             	= ConversionPolicy.SIMPLE;
+    private String 					forceElementsArray 	= "";
+    private Set<String>             forceElementsArraySet = new HashSet<String>();
+    private String             		forceStringValue    = "";
+    private Set<String>             forceStringValueSet = new HashSet<String>();
 
     public XML2JSONTransformer() {
         // do nothing
@@ -168,14 +172,10 @@ public class XML2JSONTransformer implements DTETransformer {
 
             policy = ConversionPolicy.fromString(XMLConfig.get(nodo, "@ConversionPolicy", ConversionPolicy.SIMPLE.toString()));
             if (policy == ConversionPolicy.SIMPLE) {
-                String fElem = XMLConfig.get(nodo, "@ForceElementsArray", "");
-                for (String el : fElem.split(",")) {
-                    forceElementsArray.add(el.trim());
-                }
-                String fStr = XMLConfig.get(nodo, "@ForceStringValue", "");
-                for (String str : fStr.split(",")) {
-                    forceStringValue.add(str.trim());
-                }
+            	forceElementsArray = XMLConfig.get(nodo, "@ForceElementsArray", "");
+            	forceElementsArraySet = listToSet(forceElementsArray);
+                forceStringValue = XMLConfig.get(nodo, "@ForceStringValue", "");
+                forceStringValueSet = listToSet(forceStringValue);
             }
 
             logger.debug("Loaded parameters: inputXslMapName = " + xslMapName + " - DataSourceSet: "
@@ -209,6 +209,14 @@ public class XML2JSONTransformer implements DTETransformer {
     public String getName() {
         return name;
     }
+
+	private Set<String> listToSet(String list) {
+		Set<String> set = new HashSet<String>();
+		for (String el : list.split(",")) {
+		    set.add(el.trim());
+		}
+		return set;
+	}
 
     /**
      * This method initialize the Map containing templates for certain
@@ -300,7 +308,16 @@ public class XML2JSONTransformer implements DTETransformer {
             }
             JSONObject json = null;
             if (policy == ConversionPolicy.SIMPLE) {
-                json = JSONUtils.xmlToJson(docXML, forceElementsArray, forceStringValue);
+            	Set<String> currForceElementsArraySet = forceElementsArraySet;
+            	if (!PropertiesHandler.isExpanded(forceElementsArray)) {
+            		currForceElementsArraySet = listToSet(PropertiesHandler.expand(forceElementsArray, mapParam));
+            	}
+            	Set<String> currForceStringValueSet = forceStringValueSet;
+            	if (!PropertiesHandler.isExpanded(forceStringValue)) {
+            		currForceStringValueSet = listToSet(PropertiesHandler.expand(forceStringValue, mapParam));
+            	}
+            	
+                json = JSONUtils.xmlToJson(docXML, currForceElementsArraySet, currForceStringValueSet);
             }
             else {
                 json = JSONUtils.xmlToJson_BadgerFish(docXML);

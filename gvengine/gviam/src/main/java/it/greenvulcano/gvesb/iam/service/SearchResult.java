@@ -8,57 +8,44 @@
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ *  
  * GreenVulcano ESB is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Lesser General Public License for more details.
- *
+ *  
  * You should have received a copy of the GNU Lesser General Public License
  * along with GreenVulcano ESB. If not, see <http://www.gnu.org/licenses/>.
  *******************************************************************************/
-package it.greenvulcano.gvesb.iam.repository;
+package it.greenvulcano.gvesb.iam.service;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import it.greenvulcano.gvesb.iam.domain.User;
 
-/**
- * Business interface to deal with {@link User} entity
- * 
- */
-public interface UserRepository extends Repository<User, Integer> {
+public class SearchResult {
 	
-	enum Parameter {
-		username, fullname, email, expired, creationTime, updateTime, passwordTime, enabled, role;
-		
-		public static Parameter get(String v) {
-			try {
-				return valueOf(v);
-			} catch (Exception e) {
-				return null;
-			}
-		}
+	private int totalCount;
+	private int offset;
+	private Set<User> founds;
+	
+	public int getTotalCount() {
+		return totalCount;
 	}
-	
-	enum Order {desc, asc;
-	
-		public static Order get(String v) {
-			try {
-				return valueOf(v);
-			} catch (Exception e) {
-				return null;
-			}
-		}
+	public void setTotalCount(int totalCount) {
+		this.totalCount = totalCount;
+	}	
+	public int getOffset() {
+		return offset;
 	}
+	public void setOffset(int offset) {
+		this.offset = offset;
+	}
+	public Set<User> getFounds() {
+		return founds;
+	}
+	public void setFounds(Set<User> founds) {
+		this.founds = founds;
+	}	
 	
-	Optional<User> get(String username);
-			
-	Set<User> find(Map<Parameter, Object> parameters, LinkedHashMap<Parameter, Order> order, int firstResult, int maxResult);
-	
-	int count(Map<Parameter, Object> parameters);
-
 }

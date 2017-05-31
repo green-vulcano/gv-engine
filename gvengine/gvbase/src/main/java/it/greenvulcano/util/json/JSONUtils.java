@@ -1,22 +1,22 @@
-/*******************************************************************************
- * Copyright (c) 2009, 2016 GreenVulcano ESB Open Source Project.
- * All rights reserved.
+/*
+ * Copyright (c) 2009-2014 GreenVulcano ESB Open Source Project. All rights
+ * reserved.
  *
  * This file is part of GreenVulcano ESB.
  *
- * GreenVulcano ESB is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * GreenVulcano ESB is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by the
+ * Free Software Foundation, either version 3 of the License, or (at your
+ * option) any later version.
  *
- * GreenVulcano ESB is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Lesser General Public License for more details.
+ * GreenVulcano ESB is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with GreenVulcano ESB. If not, see <http://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package it.greenvulcano.util.json;
 
 import it.greenvulcano.util.xml.XMLUtils;
@@ -42,70 +42,6 @@ import org.w3c.dom.NodeList;
  */
 public class JSONUtils
 {
-	/**
-     * Returns a JSONObject from the given input object.
-     * 
-     * @param object
-     *        input object
-     * @return a JSONObject parsed from the given input object.
-     * @throws JSONUtilsException
-     */
-	public static JSONObject parseObject(Object input) throws JSONUtilsException {
-		JSONObject json = null;
-		if (input == null) {
-			return null;
-		}
-		if (input instanceof String) {
-            json = new JSONObject((String) input);
-        }
-        else if (input instanceof byte[]) {
-            json = new JSONObject(new String((byte[]) input));
-        }
-        else if (input instanceof JSONObject) {
-            json = (JSONObject) input;
-        }
-        else {
-        	throw new JSONUtilsException("Invalid input type: " + input.getClass());
-        }
-		return json;
-	}
-	
-	/**
-     * Serialize a given JSONObject to a string, using default character encoding
-     * UTF-8 and no indentation.
-     * 
-     * @param json
-     *        The input JSONObject
-     * @return the serialized JSON (as a <tt>String</tt> encoded using
-     *         default character encoding UTF-8)
-     * @throws JSONUtilsException
-     *         on errors
-     */
-    public static String serializeJSON(JSONObject json) throws JSONUtilsException
-    {
-        String result = json.toString();
-        return result;
-    }
-
-	/**
-     * Serialize a given JSONObject to a string, using default character encoding
-     * UTF-8 and given indentation.
-     * 
-     * @param json
-     *        The input JSONObject
-     * @param indentFactor
-     *        The formatting indentation to use
-     * @return the serialized JSON (as a <tt>String</tt> encoded using
-     *         default character encoding UTF-8)
-     * @throws JSONUtilsException
-     *         on errors
-     */
-    public static String serializeJSON(JSONObject json, int indentFactor) throws JSONUtilsException
-    {
-        String result = json.toString(indentFactor);
-        return result;
-    }
-
     /**
      * Convert the input XML to a JSONObject.
      * JSON does not distinguish between elements and attributes.
@@ -113,7 +49,7 @@ public class JSONUtils
      * If an element have attributes, content text/cdata may be placed in a "contentText" member.
      * Comments and namespaces are ignored.
      * If the root element is 'DEFAULT_ROOT' then isn't included into JSON output.
-     *
+     * 
      * @param xml
      *        the document to convert
      * @return
@@ -127,7 +63,7 @@ public class JSONUtils
      * Convert the input XML to a JSONObject.
      * JSON does not distinguish between elements and attributes.
      * Sequences of similar elements (or elements which local-name are in forceElementsArray)
-     * are represented as JSONArrays.
+     * are represented as JSONArrays. 
      * If an element have attributes, content text/cdata may be placed in a "contentText" member.
      * Comments and namespaces are ignored.
      * If the root element is 'DEFAULT_ROOT' then isn't included into JSON output.
@@ -183,6 +119,7 @@ public class JSONUtils
 
     private static Object processElement(XMLUtils parser, Element el, Set<String> forceElementsArray, Set<String> forceStringValue) throws JSONUtilsException {
         try {
+        	boolean forceString = forceStringValue.contains("*");
             if (el.hasAttributes() || el.hasChildNodes()) {
                 JSONObject current = new JSONObject();
                 boolean hasAttributes = el.hasAttributes();
@@ -196,7 +133,7 @@ public class JSONUtils
                         if (!name.equals("xmlns") && !"xmlns".equals(att.getPrefix())) {
                             usableAttribute = true;
                             String value = parser.getNodeContent(att);
-                            if (forceStringValue.contains(name)) {
+                            if (forceString || forceStringValue.contains(name)) {
                                 current.put(name, value);
                             }
                             else {
@@ -218,7 +155,7 @@ public class JSONUtils
                         switch (nodeType) {
                             case Node.ELEMENT_NODE :
                                 if (forceElementsArray.contains(name)) {
-                                	if (n.hasChildNodes() || hasElementChild) {
+                                	if (n.hasChildNodes() || n.hasAttributes()) {
                                 		current.append(name, processElement(parser, (Element) n, forceElementsArray, forceStringValue));
                                 	}
                                 	else {
@@ -237,8 +174,8 @@ public class JSONUtils
                                 }
                                 if (!"".equals(n.getTextContent().trim())) {
                                 	String valStr = parser.getNodeContent(el);
-                                    Object value = valStr;
-                                    if (!forceStringValue.contains(el.getLocalName())) {
+                                    Object value = valStr; 
+                                    if (!(forceString || forceStringValue.contains(el.getLocalName()))) {
                                     	value = stringToValue(valStr);
                                     }
                                     if (hasAttributes) {
@@ -252,7 +189,7 @@ public class JSONUtils
                         }
                     }
                 }
-                return current;
+                return (current.length() > 0) ? current : "";
             }
             else {
                 return "";
@@ -265,44 +202,44 @@ public class JSONUtils
             throw new JSONUtilsException("Error converting Element[" + el.getTagName() + "] to JSON", exc);
         }
     }
-
+    
     /**
      * Convert a JSONObject into an XML structure.
-     * If the JSON to be converted doesn't have a single root element
+     * If the JSON to be converted doesn't have a single root element 
      * then is automatically created a 'DEFAULT_ROOT' root element.
-     *
-     * @param json
+     * 
+     * @param json 
      *        a JSONObject
-     * @return
+     * @return 
      * @throws  JSONException
      */
     public static Node jsonToXml(Object json) throws JSONUtilsException {
-        return jsonToXml(json, null, new HashSet<String>());
+        return jsonToXml(json, null, new HashSet<String>()); 
     }
 
     /**
      * Convert a JSONObject into an XML structure.
-     * If the JSON to be converted doesn't have a single root element
+     * If the JSON to be converted doesn't have a single root element 
      * then is automatically created a 'DEFAULT_ROOT' root element.
-     *
-     * @param json
+     * 
+     * @param json 
      *        a JSONObject
      * @param forceAttribute
      *        a set containing keys name to be set as XML attributes
-     * @return
+     * @return 
      * @throws  JSONException
      */
     public static Node jsonToXml(Object json, Set<String> forceAttributes) throws JSONUtilsException {
-        return jsonToXml(json, null, forceAttributes);
+        return jsonToXml(json, null, forceAttributes); 
     }
 
-
+    
 
     /**
      * Convert a JSONObject into Node structure.
      * If not specified a rootName and the JSON to be converted doesn't have
      * a single root element then is automatically created a 'DEFAULT_ROOT' root element.
-     *
+     * 
      * @param json
      *        a JSONObject
      * @param rootName
@@ -318,7 +255,7 @@ public class JSONUtils
      * Convert a JSONObject into Node structure.
      * If not specified a rootName and the JSON to be converted doesn't have
      * a single root element then is automatically created a 'DEFAULT_ROOT' root element.
-     *
+     * 
      * @param json
      *        a JSONObject
      * @param rootName
@@ -364,8 +301,8 @@ public class JSONUtils
         finally {
             XMLUtils.releaseParserInstance(parser);
         }
-    }
-
+    }    
+        
     private static Node jsonToXml(XMLUtils parser, Document doc, Object json, String tagName,
             Element context, Set<String> forceAttributes) throws JSONUtilsException {
         Element el = null;
@@ -382,7 +319,7 @@ public class JSONUtils
             if (json instanceof JSONObject) {
                 // Loop thru the keys.
                 JSONObject jo = (JSONObject) json;
-                Iterator<?> keys = jo.keys();
+                Iterator<String> keys = jo.keys();
                 while (keys.hasNext()) {
                     String key = keys.next().toString();
                     Object value = jo.opt(key);
@@ -406,11 +343,15 @@ public class JSONUtils
                         } else {
                             parser.insertText(el, value.toString());
                         }
-
+    
                     // Emit an array of similar keys
                     } else if (value instanceof JSONArray) {
                         JSONArray ja = (JSONArray) value;
                         int length = ja.length();
+                        if (el == null) {
+                        	el = parser.createElement(doc, "DEFAULT_ROOT");
+                        	doc.appendChild(el);
+                        }
                         for (int i = 0; i < length; i += 1) {
                             value = ja.get(i);
                             jsonToXml(parser, doc, value, key, el, forceAttributes);
@@ -422,11 +363,11 @@ public class JSONUtils
                         else {
                             parser.insertElement(el, key);
                         }
-
+    
                     // Emit a new tag <k>
                     } else {
                         if (doc.getDocumentElement() == null) {
-                            jsonToXml(parser, doc, value, null,
+                            jsonToXml(parser, doc, value, null, 
                                     (Element) doc.appendChild(parser.createElement(doc, key)), forceAttributes);
                         }
                         else {
@@ -439,7 +380,7 @@ public class JSONUtils
                         }
                     }
                 }
-
+    
             // XML does not have good support for arrays. If an array appears in a place
             // where XML is lacking, synthesize an <array> element.
             } else {
@@ -461,11 +402,11 @@ public class JSONUtils
             return el;
         }
         catch (Exception exc) {
-            throw new JSONUtilsException("Error converting JSON[" + tagName + "] to XML[" +
+            throw new JSONUtilsException("Error converting JSON[" + tagName + "] to XML[" + 
                                          (el != null ? el.getLocalName() : "null") + "]", exc);
         }
     }
-
+    
     /**
      * Try to convert a string into a number, boolean, or null. If the string
      * can't be converted, return the string. This is much less ambitious than
@@ -513,11 +454,11 @@ public class JSONUtils
         }
         return string;
     }
-
+    
     /**
      * Convert the input XML to a JSONObject using BadgerFish convention.
      * See <a href="http://badgerfish.ning.com">http://badgerfish.ning.com</a>
-     *
+     * 
      * @param xml
      *        the document to convert
      * @return
@@ -580,7 +521,7 @@ public class JSONUtils
                     current.putOnce("@" + name, value);
                 }
             }
-
+            
             String ns = el.getNamespaceURI();
             if (ns != null) {
                 if (el.isDefaultNamespace(ns)) {
@@ -630,12 +571,12 @@ public class JSONUtils
             throw new JSONUtilsException("Error converting Element[" + el.getTagName() + "] to JSON BadgerFish", exc);
         }
     }
-
-
+    
+    
     /**
      * Convert a JSONObject in BadgerFish notation into Node structure.
      * See <a href="http://badgerfish.ning.com">http://badgerfish.ning.com</a>
-     *
+     * 
      * @param json
      *        a JSONObject
      * @return
@@ -653,7 +594,7 @@ public class JSONUtils
             else if (json instanceof byte[]) {
                 json = new JSONObject(new String((byte[]) json));
             }
-
+            
             doc = parser.newDocument();
             jsonToXml_BadgerFish(parser, doc, json, null, null);
 
@@ -668,8 +609,8 @@ public class JSONUtils
         finally {
             XMLUtils.releaseParserInstance(parser);
         }
-    }
-
+    }    
+        
     private static Node jsonToXml_BadgerFish(XMLUtils parser, Document doc, Object json, String tagName,
             Element context) throws JSONUtilsException {
         Element el = null;
@@ -677,7 +618,7 @@ public class JSONUtils
         try {
             if (json instanceof JSONObject) {
                 JSONObject jo = (JSONObject) json;
-
+                
                 // create tagName element, if needed
                 if (tagName != null) {
                     el = createElementNS(parser, doc, jo, tagName);
@@ -688,7 +629,7 @@ public class JSONUtils
                 }
 
                 // Loop thru the keys.
-                Iterator<?> keys = jo.keys();
+                Iterator<String> keys = jo.keys();
                 while (keys.hasNext()) {
                     String key = keys.next().toString();
                     Object value = jo.opt(key);
@@ -698,7 +639,7 @@ public class JSONUtils
 
                     // Skip element's namespace
                     if ("@xmlns".equals(key)) {
-                       // do nothing
+                       // do nothing 
                     }
                     // Emit element's attributes
                     else if (key.startsWith("@")) {
@@ -720,7 +661,7 @@ public class JSONUtils
                     // Emit a new tag <k>
                     } else {
                         if (doc.getDocumentElement() == null) {
-                            jsonToXml_BadgerFish(parser, doc, value, null,
+                            jsonToXml_BadgerFish(parser, doc, value, null, 
                                     (Element) doc.appendChild(createElementNS(parser, doc, (JSONObject) value, key)));
                         }
                         else {
@@ -732,11 +673,11 @@ public class JSONUtils
             return el;
         }
         catch (Exception exc) {
-            throw new JSONUtilsException("Error converting JSON[" + tagName + "] BadgerFish to XML[" +
+            throw new JSONUtilsException("Error converting JSON[" + tagName + "] BadgerFish to XML[" + 
                                          (el != null ? el.getLocalName() : "null") + "]", exc);
         }
     }
-
+    
     private static Element createElementNS(XMLUtils parser, Document doc, JSONObject json, String tagName) throws Exception {
         Element el = null;
         if (json.has("@xmlns")) {
@@ -747,7 +688,7 @@ public class JSONUtils
             else if (tagName.contains(":")) {
                 String prefix = tagName.split(":")[0];
                 tagName = tagName.split(":")[1];
-
+                
                 el = parser.createElementNS(doc, tagName, xmlns.get(prefix).toString());
                 el.setPrefix(prefix);
             }

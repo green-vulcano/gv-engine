@@ -43,6 +43,8 @@ import javax.persistence.Version;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 /**
  * 
@@ -80,6 +82,14 @@ public class User implements Serializable {
     
     @Version
     private int version;
+    
+    @CreationTimestamp @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="creation_time")
+    private Date creationTime;
+    
+    @UpdateTimestamp @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="update_time")
+    private Date updateTime;
    
     @Embedded
     private UserInfo userInfo;
@@ -151,18 +161,28 @@ public class User implements Serializable {
 
 	public void setUserInfo(UserInfo userInfo) {
 		this.userInfo = userInfo;
+	}	
+
+	public Date getCreationTime() {
+		return creationTime;
+	}
+
+	public Date getUpdateTime() {
+		return updateTime;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((creationTime == null) ? 0 : creationTime.hashCode());
 		result = prime * result + (enabled ? 1231 : 1237);
 		result = prime * result + (expired ? 1231 : 1237);
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((password == null) ? 0 : password.hashCode());
 		result = prime * result + ((passwordTime == null) ? 0 : passwordTime.hashCode());
 		result = prime * result + ((roles == null) ? 0 : roles.hashCode());
+		result = prime * result + ((updateTime == null) ? 0 : updateTime.hashCode());
 		result = prime * result + ((userInfo == null) ? 0 : userInfo.hashCode());
 		result = prime * result + ((username == null) ? 0 : username.hashCode());
 		result = prime * result + version;
@@ -178,6 +198,11 @@ public class User implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		User other = (User) obj;
+		if (creationTime == null) {
+			if (other.creationTime != null)
+				return false;
+		} else if (!creationTime.equals(other.creationTime))
+			return false;
 		if (enabled != other.enabled)
 			return false;
 		if (expired != other.expired)
@@ -201,6 +226,11 @@ public class User implements Serializable {
 			if (other.roles != null)
 				return false;
 		} else if (!roles.equals(other.roles))
+			return false;
+		if (updateTime == null) {
+			if (other.updateTime != null)
+				return false;
+		} else if (!updateTime.equals(other.updateTime))
 			return false;
 		if (userInfo == null) {
 			if (other.userInfo != null)
@@ -230,6 +260,10 @@ public class User implements Serializable {
 		builder.append(userInfo);
 		builder.append("\",\"passwordTime\":");
 		builder.append(passwordTime);
+		builder.append("\",\"creationTime\":");
+		builder.append(creationTime);
+		builder.append("\",\"updateTime\":");
+		builder.append(updateTime);
 		builder.append(",\"expired\":");
 		builder.append(expired);
 		builder.append(",\"enabled\":");

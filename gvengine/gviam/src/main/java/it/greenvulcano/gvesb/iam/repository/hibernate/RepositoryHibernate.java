@@ -1,8 +1,10 @@
 package it.greenvulcano.gvesb.iam.repository.hibernate;
 
 import java.io.Serializable;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -51,6 +53,30 @@ abstract class RepositoryHibernate<T, K extends Serializable> implements Reposit
 	public void remove(T role) {
 		getSession().delete(role);
 		getSession().flush();
+	}
+	
+	static class QueryHelper {
+		
+		private final Map<String, Object> params = new LinkedHashMap<>();
+		private final StringBuilder query;
+		
+		public QueryHelper() {
+			query = new StringBuilder();
+		}
+		
+		public QueryHelper(String queryStart) {
+			 query = new StringBuilder(queryStart);
+		}
+
+		public Map<String, Object> getParams() {
+			return params;
+		}
+
+		public StringBuilder getQuery() {
+			return query;
+		}
+		
+		
 	}
 
 }
