@@ -6,11 +6,16 @@
 <hibernate-configuration>
     <session-factory>   
     	<property name="hibernate.connection.datasource">osgi:service/gviam-ds</property> 
-        <property name="hibernate.transaction.factory_class">org.hibernate.transaction.JTATransactionFactory</property>        
-                
+        <property name="hibernate.transaction.factory_class">org.hibernate.transaction.JTATransactionFactory</property>
+         <property name="hibernate.hbm2ddl.auto">update</property>       
+          
+        <mapping class="it.greenvulcano.gvesb.gviamx.domain.UserActionRequest"/>      
         <mapping class="it.greenvulcano.gvesb.gviamx.domain.SignUpRequest"/>
         <mapping class="it.greenvulcano.gvesb.gviamx.domain.PasswordResetRequest"/>
-                				  
+        <mapping class="it.greenvulcano.gvesb.gviamx.domain.EmailChangeRequest"/>
+        
+        <mapping class="it.greenvulcano.gvesb.iam.domain.User"/>
+        <mapping class="it.greenvulcano.gvesb.iam.domain.Role"/>
     </session-factory>
  
 </hibernate-configuration>

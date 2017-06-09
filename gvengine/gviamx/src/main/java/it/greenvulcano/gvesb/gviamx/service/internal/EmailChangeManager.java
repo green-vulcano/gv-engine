@@ -32,16 +32,17 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import it.greenvulcano.gvesb.gviamx.domain.PasswordResetRequest;
+import it.greenvulcano.gvesb.gviamx.domain.EmailChangeRequest;
+import it.greenvulcano.gvesb.gviamx.domain.UserActionRequest;
 import it.greenvulcano.gvesb.gviamx.repository.UserActionRepository;
 import it.greenvulcano.gvesb.gviamx.service.NotificationManager;
 import it.greenvulcano.gvesb.iam.domain.User;
 import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
 import it.greenvulcano.gvesb.iam.service.UsersManager;
 
-public class PasswordResetManager {
+public class EmailChangeManager {
 	
-	private final static Logger LOG = LoggerFactory.getLogger(PasswordResetManager.class);
+	private final static Logger LOG = LoggerFactory.getLogger(EmailChangeManager.class);
 	
 	private final ExecutorService executor = Executors.newWorkStealingPool();	
 	private final SecureRandom secureRandom = new SecureRandom();
@@ -76,45 +77,49 @@ public class PasswordResetManager {
 		this.expireTime = expireTime;
 	}
 	
-	public void createPasswordResetRequest(String email) throws UserNotFoundException {		
-			
-		User user = usersManager.getUser(email);			
+	public void createEmailChangeRequest(String currentEmailAddress, String newEmailAddress) throws UserNotFoundException {		
 		
-	    PasswordResetRequest passwordResetRequest = repository.get(email, PasswordResetRequest.class).orElseGet(PasswordResetRequest::new);
-	    passwordResetRequest.setUser(user);
-	    passwordResetRequest.setEmail(email);
-	    passwordResetRequest.setIssueTime(new Date());
-	    passwordResetRequest.setExpireTime(expireTime);
+		if (newEmailAddress == null ||  !newEmailAddress.matches(UserActionRequest.EMAIL_PATTERN)) {
+			throw new IllegalArgumentException("Invalid email: "+newEmailAddress);
+		}
+		
+		User user = usersManager.getUser(currentEmailAddress);			
+		
+	    EmailChangeRequest request = repository.get(newEmailAddress, EmailChangeRequest.class).orElseGet(EmailChangeRequest::new);
+	    request.setUser(user);
+	    request.setEmail(newEmailAddress);
+	    request.setIssueTime(new Date());
+	    request.setExpireTime(expireTime);
 			    
 		
 		byte[] token = new byte[4]; 
 		secureRandom.nextBytes(token);
 		
 		String clearTextToken = String.format(Locale.US, "%02x%02x%02x%02x", IntStream.range(0, token.length).mapToObj(i->Byte.valueOf(token[i])).toArray());
-		passwordResetRequest.setToken(DigestUtils.sha256Hex(clearTextToken));	
+		request.setToken(DigestUtils.sha256Hex(clearTextToken));	
 		
-		repository.add(passwordResetRequest);
+		repository.add(request);
 		
-		passwordResetRequest.setToken(clearTextToken);
+		request.setToken(clearTextToken);
 		notificationServices.stream()
-							.map( n -> new NotificationManager.NotificationTask(n, passwordResetRequest, "reset"))
+							.map( n -> new NotificationManager.NotificationTask(n, request, "update"))
 							.forEach(executor::submit);
 		
 		
 	}
 	
-	public PasswordResetRequest retrievePasswordResetRequest(String email, String token) {
+	public EmailChangeRequest retrieveEmailChangeRequest(String email, String token) {
 		
-		PasswordResetRequest signupRequest = repository.get(email, PasswordResetRequest.class).orElseThrow(()->new IllegalArgumentException("No password reset request found for this email"));
+		EmailChangeRequest request = repository.get(email, EmailChangeRequest.class).orElseThrow(()->new IllegalArgumentException("No password reset request found for this email"));
 						
-		if (DigestUtils.sha256Hex(token).equals(signupRequest.getToken())) {
+		if (DigestUtils.sha256Hex(token).equals(request.getToken())) {
 			
-			if (System.currentTimeMillis() > signupRequest.getIssueTime().getTime()+signupRequest.getExpireTime()) {
-				repository.remove(signupRequest);
+			if (System.currentTimeMillis() > request.getIssueTime().getTime()+request.getExpireTime()) {
+				repository.remove(request);
 				throw new SecurityException("No password reset request found for this email");
 			}
 			
-			return signupRequest;
+			return request;
 						
 		} else {
 			throw new SecurityException("Token missmatch");
@@ -122,13 +127,13 @@ public class PasswordResetManager {
 		
 	}
 	
-	public void consumePasswordResetRequest(PasswordResetRequest passwordResetRequest) {
+	public void consumeEmailChangeRequest(EmailChangeRequest request) {
 
 		try {
 			
-			repository.remove(passwordResetRequest);
+			repository.remove(request);
 		} catch (Exception fatalException) {
-			LOG.error("Fail to process  password reset request with id "+passwordResetRequest.getId(), fatalException);
+			LOG.error("Fail to process  password reset request with id "+request.getId(), fatalException);
 			
 			throw fatalException;
 		}

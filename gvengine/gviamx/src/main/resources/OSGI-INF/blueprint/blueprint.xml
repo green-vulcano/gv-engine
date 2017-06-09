@@ -29,18 +29,14 @@
           <cm:property name="gviamx.signup.callback.url" value="" />
           <cm:property name="gviamx.signup.callback.auth" value="" />
           <cm:property name="gviamx.reset.life" value="3600000"/>
+          <cm:property name="gviamx.update.life" value="3600000"/>
       </cm:default-properties>
   </cm:property-placeholder>
   
-  <bean id="signupRepositoryHibernate" class="it.greenvulcano.gvesb.gviamx.repository.hibernate.SignUpRepositoryHibernate">
+  <bean id="userActionRepositoryHibernate" class="it.greenvulcano.gvesb.gviamx.repository.hibernate.UserActionRepositoryHibernate">
   		<property name="sessionFactory" ref="hibernateSessionFactory"/>
 		<tx:transaction method="*" value="Required"/>
-  </bean>
-  
-  <bean id="passwordResetRepositoryHibernate" class="it.greenvulcano.gvesb.gviamx.repository.hibernate.PasswordResetRepositoryHibernate">
-  		<property name="sessionFactory" ref="hibernateSessionFactory"/>
-		<tx:transaction method="*" value="Required"/>
-  </bean>  
+  </bean> 
   
   <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
       <property name="host" value="${gviamx.mail.host}" />
@@ -80,7 +76,7 @@
 			</list>
 		</property>
   		<property name="usersManager" ref="usersManager"/>  			
-  		<property name="repository" ref="signupRepositoryHibernate"/>
+  		<property name="repository" ref="userActionRepositoryHibernate"/>
   		<property name="expireTime" value="${gviamx.signup.life}"/>
   </bean> 
   
@@ -91,13 +87,25 @@
 			</list>
 		</property>
   		<property name="usersManager" ref="usersManager"/>  			
-  		<property name="repository" ref="passwordResetRepositoryHibernate"/>
+  		<property name="repository" ref="userActionRepositoryHibernate"/>
   		<property name="expireTime" value="${gviamx.reset.life}"/>
-  </bean> 
+  </bean>
+  
+  <bean id="emailChangeManager" class="it.greenvulcano.gvesb.gviamx.service.internal.EmailChangeManager">
+  		<property name="notificationServices"> 
+			<list>
+				<ref component-id="emailNotificationManager" />				
+			</list>
+		</property>
+  		<property name="usersManager" ref="usersManager"/>  			
+  		<property name="repository" ref="userActionRepositoryHibernate"/>
+  		<property name="expireTime" value="${gviamx.reset.life}"/>
+  </bean>
   
   <bean id="accountController" class="it.greenvulcano.gvesb.gviamx.api.GVAccountControllerRest">
   		<property name="signupManager" ref="signupManager"/>
   		<property name="passwordResetManager" ref="passwordResetManager"/>
+  		<property name="emailChangeManager" ref="emailChangeManager"/>
   </bean>
   
   <reference-list id="securityModulesReferences" interface="it.greenvulcano.gvesb.iam.modules.SecurityModule" 

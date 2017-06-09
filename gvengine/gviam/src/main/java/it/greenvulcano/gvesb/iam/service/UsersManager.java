@@ -85,6 +85,8 @@ public interface UsersManager {
 		SearchResult searchUsers(SearchCriteria criteria);
 				
 		void updateUser(String username, UserInfo userInfo, Set<Role> grantedRoles, boolean enabled, boolean expired) throws UserNotFoundException, InvalidRoleException;
+		
+		void updateUsername(String username, String newUsername) throws UserNotFoundException, InvalidUsernameException;
 			
 		User enableUser(String username, boolean enable) throws UserNotFoundException;		
 		

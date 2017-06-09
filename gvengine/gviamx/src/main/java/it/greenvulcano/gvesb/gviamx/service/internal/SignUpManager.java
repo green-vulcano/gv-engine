@@ -33,7 +33,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import it.greenvulcano.gvesb.gviamx.domain.SignUpRequest;
-import it.greenvulcano.gvesb.gviamx.repository.SignUpRepository;
+import it.greenvulcano.gvesb.gviamx.domain.UserActionRequest;
+import it.greenvulcano.gvesb.gviamx.repository.UserActionRepository;
 import it.greenvulcano.gvesb.gviamx.service.CallBackManager;
 import it.greenvulcano.gvesb.gviamx.service.NotificationManager;
 import it.greenvulcano.gvesb.iam.exception.UserExistException;
@@ -51,7 +52,7 @@ public class SignUpManager {
 	private final List<NotificationManager> notificationServices = new LinkedList<>();
 	private final List<CallBackManager> callbackServices  = new LinkedList<>();
 	
-	private SignUpRepository signupRepository;
+	private UserActionRepository signupRepository;
 	private UsersManager usersManager;
 	private Long expireTime = 60*60*1024L;
 	
@@ -69,7 +70,7 @@ public class SignUpManager {
 		}	
 	}
 	
-	public void setRepository(SignUpRepository signupRepository) {
+	public void setRepository(UserActionRepository signupRepository) {
 		this.signupRepository = signupRepository;
 	}
 	
@@ -87,7 +88,7 @@ public class SignUpManager {
 	
 	public void createSignUpRequest(String email, String password, byte[] request) throws UserExistException {		
 		
-		if (email == null ||  !email.matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$")) {
+		if (email == null ||  !email.matches(UserActionRequest.EMAIL_PATTERN)) {
 			throw new IllegalArgumentException("Invalid email: "+email);
 		}
 		
@@ -95,13 +96,13 @@ public class SignUpManager {
 			usersManager.getUser(email);
 			throw new UserExistException(email);
 		} catch (UserNotFoundException e) {
-			;		
+			
 			if 	(usersManager.searchUsers(SearchCriteria.builder().byEmail(email).limitedTo(1).build()).getTotalCount()>0) {
 		    	throw new UserExistException(email);
 		    }		
 		}		
 		
-	    SignUpRequest signUpRequest = signupRepository.get(email).orElseGet(SignUpRequest::new);
+	    SignUpRequest signUpRequest = signupRepository.get(email, SignUpRequest.class).orElseGet(SignUpRequest::new);
 	    signUpRequest.setEmail(email);
 	    signUpRequest.setIssueTime(new Date());
 	    signUpRequest.setExpireTime(expireTime);
@@ -117,14 +118,14 @@ public class SignUpManager {
 		signupRepository.add(signUpRequest);
 		
 		signUpRequest.setToken(clearTextToken);
-		notificationServices.stream().map(n-> new NotificationManager.NotificationTask(n, signUpRequest, "welcome")).forEach(executor::submit);
+		notificationServices.stream().map(n-> new NotificationManager.NotificationTask(n, signUpRequest, "signup")).forEach(executor::submit);
 		
 		
 	}
 	
 	public SignUpRequest retrieveSignUpRequest(String email, String token) {
 		
-		SignUpRequest signupRequest = signupRepository.get(email).orElseThrow(()->new IllegalArgumentException("No sign-up request found for this email"));
+		SignUpRequest signupRequest = signupRepository.get(email, SignUpRequest.class).orElseThrow(()->new IllegalArgumentException("No sign-up request found for this email"));
 						
 		if (DigestUtils.sha256Hex(token).equals(signupRequest.getToken())) {
 			

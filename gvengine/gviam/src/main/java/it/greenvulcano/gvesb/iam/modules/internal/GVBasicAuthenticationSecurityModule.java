@@ -61,7 +61,7 @@ public class GVBasicAuthenticationSecurityModule implements SecurityModule {
         String[] parts = Optional.ofNullable(authorization).orElse("").split(" ");
         if (parts.length == 2 && "Basic".equalsIgnoreCase(parts[0])) {
         	
-        	LOG.debug("GVBasicAuthenticationSecurityModule - Resovling identity");
+        	LOG.debug("GVBasicAuthenticationSecurityModule - Resolving identity");
         	String[] credentials = new String(Base64.getDecoder().decode(parts[1])).split(":");            
     	    		
         	return Optional.of(getIdentity(credentials[0], credentials[1]));
