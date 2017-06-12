@@ -24,10 +24,10 @@ angular.module('gvconsole', ['ngCookies','ngRoute','angular-quartz-cron', 'ui.bo
           templateUrl: 'topics/profile/myprofile.html'
         }).
 				when('/monitoring', {
-					templateUrl: 'topics/monitoring/graph.html'
+					templateUrl: 'topics/monitoring/monitoring.html'
 				}).
 				when('/service', {
-					templateUrl: 'topics/service/testFlow.html'
+					templateUrl: 'topics/service/service.html'
 				}).
           otherwise({
     	        redirectTo: '/myprofile'

@@ -18,6 +18,11 @@ body {
   margin-right: 0;
   margin-left: 0;
 }
+#searchBarUser {
+  margin: 0px;
+  padding: 0px;
+  margin-bottom: 18px;
+}
 .container {
   max-width: 100%;
   padding-right: 0px;

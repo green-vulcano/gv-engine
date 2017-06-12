@@ -35,21 +35,44 @@ angular.module('gvconsole')
 
  }]);
 
+ angular.module('gvconsole')
+ .controller('PaginationDemoCtrl', ['AdminService', '$scope', '$log', function (AdminService, $scope, $log) {
+
+   $scope.viewby = 10;
+   $scope.itemsPerPage = 10;
+   $scope.totalItems = 64;
+   $scope.currentPage = 1;
+   $scope.itemsPerPage = $scope.viewby;
+
+   $scope.setItemsPerPage = function(num) {
+   $scope.itemsPerPage = num;
+   $scope.currentPage = 1;
+}
+
+   AdminService.getAllUsers().then(
+      function(response) {
+        $scope.totalItems = response.data.length;
+   });
+
+   $scope.maxSize = $scope.totalItems/3;
+
+ }]);
+
 angular.module('gvconsole')
-.controller('UsersListController',['AdminService' ,'$scope', '$location', function(AdminService, $scope, $location){
+.controller('UsersListController',['AdminService','$scope', '$location', function(AdminService, $scope, $location){
 
 	var instance = this;
 
 	this.alerts = [];
 
 	this.list = [];
-	this.currentPage = 1;
 
 	AdminService.getAllUsers().then(
 				function(response){
-					instance.alerts = [];
-					instance.list = response.data;
-				},
+
+          instance.alerts = [];
+          instance.list = response.data;
+          },
 				function(response){
 					switch (response.status) {
 
@@ -64,7 +87,30 @@ angular.module('gvconsole')
 			$scope.loadStatus = "error";
 		});
 
+    $scope.order = function(by){
+
+      $scope.orderby = by;
+
+      if($scope.orderby == $scope.reverse){
+        $scope.orderby = '-' + $scope.orderby;
+        $scope.reverse = $scope.orderby;
+      }else{
+
+      $scope.reverse = $scope.orderby;
+    }
+
+      };
+
+    $scope.query = {};
+
 }]);
+
+angular.module('gvconsole')
+.filter('slice', function(){
+  return function(arr,a,b){
+    return arr.slice(a,b);
+  }
+});
 
 angular.module('gvconsole')
 .controller('UserFormController',['AdminService' , '$scope', '$routeParams', '$location', function(AdminService, $scope, $routeParams, $location){

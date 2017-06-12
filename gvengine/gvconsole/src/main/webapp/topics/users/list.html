@@ -2,7 +2,30 @@
 <div class="container-fluid">
   <div class="side-body">
   <h1> Users </h1>
-  <div class="row" data-ng-controller="UsersListController as ctrl">
+
+
+
+
+ <div data-ng-controller="PaginationDemoCtrl">
+
+   <div class="row" data-ng-controller="UsersListController as ctrl">
+
+  <div class="row">
+  <div id="searchBarUser" class="col-xs-8 col-xs-offset-2">
+
+
+       <div class="input-group">
+
+              <!-- <input type="hidden" name="search_param" value="all" id="search_param"> -->
+               <input type="text" ng-model="query['$']" class="form-control" name="x" placeholder="Search">
+               <span class="input-group-btn">
+                   <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"></span></button>
+               </span>
+           </div>
+       </div>
+     </div>
+
+
 
   <div data-ng-repeat="alert in ctrl.alerts" class="alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
   <div class="panel panel-default">
@@ -12,16 +35,16 @@
     <table id="users" class="table table-hover">
       <thead>
         <tr>
-          <th>Users</th>
+          <th data-ng-click="order('username')">Users</th>
           <th>Status</th>
-          <th>Full Name</th>
-          <th>E-Mail</th>
+          <th data-ng-click="order('userInfo.fullname')">Full Name</th>
+          <th data-ng-click="order('userInfo.email')">E-Mail</th>
           <th>Roles</th>
           <th>Action</th>
         </tr>
       </thead>
       <tbody>
-        <tr data-ng-repeat="user in ctrl.list">
+        <tr data-ng-repeat="user in ctrl.list | filter:query | orderBy : orderby | slice:((currentPage-1)*itemsPerPage):((currentPage)*itemsPerPage)">
           <td>{{user.username}}</td>
           <td>
             <ul class="list-inline">
@@ -48,14 +71,14 @@
     <div id="panelPagination"  class="panel-footer">
   <div class="row">
     <div class="col col-xs-8" style="float: right;">
-      <div ng-controller="PaginationDemoCtrl">
-      <ul class="pagination hidden-xs pull-right" style="margin: 3px;">
-        <ul uib-pagination total-items="bigTotalItems" ng-model="bigCurrentPage" max-size="maxSize" class="pagination-sm" boundary-link-numbers="true" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" style="margin: 0;"></ul>
-        </div>
+        <ul class="pagination hidden-xs pull-right" style="margin: 3px;">
+        <ul uib-pagination total-items="totalItems" ng-model="currentPage" items-per-page="itemsPerPage" max-size="maxSize" class="pagination-sm" boundary-link-numbers="true" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" style="margin: 0;"></ul>
     </div>
+    View <select style="color:red;" ng-model="viewby" ng-change="setItemsPerPage(viewby)"><option>3</option><option>5</option><option>10</option><option>20</option><option>30</option><option>40</option><option>50</option></select> users at once.
   </div>
 </div>
   </div>
+</div>
 </div>
 </div>
 </div>

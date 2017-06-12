@@ -89,8 +89,8 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
       <version>${version.slf4j}</version>
-      <scope>provided</scope>      
-    </dependency>    
+      <scope>provided</scope>
+    </dependency>
 
     <!-- *************** TEST *************** -->
     <dependency>
@@ -195,11 +195,12 @@
     <module>gvdte</module>
     <module>gviam</module>
     <module>gviamx</module>
+    <module>gvmonitoring</module>
     <module>gvpolicy</module>
     <module>gvscheduler</module>
     <module>gvstatistics</module>
     <module>gvvcl</module>
-    <module>gvvcl-internal</module>  
+    <module>gvvcl-internal</module>
     <module>features</module>
   </modules>
 
