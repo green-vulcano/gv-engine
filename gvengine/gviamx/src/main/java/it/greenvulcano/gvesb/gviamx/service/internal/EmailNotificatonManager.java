@@ -77,7 +77,7 @@ public class EmailNotificatonManager implements NotificationManager {
 			messageHelper.setFrom(Optional.ofNullable(config.get(configPrefix+"from")).orElseThrow(()-> new MessagingException("Missing 'from' in configuration")).toString());		
 			messageHelper.setSubject(Optional.ofNullable(config.get(configPrefix+"subject")).orElseThrow(()-> new MessagingException("Missing 'subject' in configuration")).toString());
 		
-			String contentPath = Optional.ofNullable(config.get(configPrefix+"content")).orElseThrow(()-> new MessagingException("Missing 'subject' in configuration")).toString();
+			String contentPath = Optional.ofNullable(config.get(configPrefix+"content")).orElseThrow(()-> new MessagingException("Missing 'content' in configuration")).toString();
 						
 			Mustache content = mustacheFactory.compile(new FileReader(contentPath), configPrefix+"template");
 			
@@ -88,9 +88,9 @@ public class EmailNotificatonManager implements NotificationManager {
 			messageHelper.setTo(userActionRequest.getEmail());
 						
 			mailSender.send(message);
-			LOG.debug("Email sent successfully for password reset request with id "+userActionRequest.getId());
+			LOG.debug("Email sent successfully for " + event	+ " request with id "+userActionRequest.getId());
 		} catch (MessagingException|IOException e) {
-			LOG.error("Fail to send email for password reset with id "+userActionRequest.getId(),e);
+			LOG.error("Fail to send email for " +event + " reset with id "+userActionRequest.getId(),e);
 		} 		
 		
 	}

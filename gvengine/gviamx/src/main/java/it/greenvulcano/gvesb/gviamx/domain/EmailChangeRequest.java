@@ -20,21 +20,6 @@
 package it.greenvulcano.gvesb.gviamx.domain;
 
 import java.io.Serializable;
-<<<<<<< HEAD
-import java.util.Date;
-import java.util.Map;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
-
-=======
 import java.util.Map;
 
 import javax.persistence.DiscriminatorValue;
@@ -42,14 +27,13 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
->>>>>>> master
 import it.greenvulcano.gvesb.iam.domain.User;
 
 @Entity
-@DiscriminatorValue(value="PWD_RESET")
-public class PasswordResetRequest extends UserActionRequest implements Serializable{
+@DiscriminatorValue(value="EMAiL_CHANGE")
+public class EmailChangeRequest extends UserActionRequest implements Serializable{
 	private static final long serialVersionUID = 1L;
-			
+		
 	@ManyToOne(optional=false, fetch=FetchType.EAGER)
 	@JoinColumn(name="user_id", nullable=true)
 	private User user;			
@@ -77,7 +61,7 @@ public class PasswordResetRequest extends UserActionRequest implements Serializa
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		PasswordResetRequest other = (PasswordResetRequest) obj;
+		EmailChangeRequest other = (EmailChangeRequest) obj;
 		if (user == null) {
 			if (other.user != null)
 				return false;

@@ -120,8 +120,8 @@ public class Activator implements BundleActivator {
 		
 		try {
 			CryptoHelper.init();
-		} catch(Exception exception) {
-			LOG.error("Failed to initalize CryptoHelper configuration ", exception);
+		} catch(Throwable wtf) {
+			LOG.error("Failed to initalize CryptoHelper configuration ", wtf);
 		}	
 	}
 

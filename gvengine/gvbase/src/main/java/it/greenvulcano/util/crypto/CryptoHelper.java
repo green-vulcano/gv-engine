@@ -433,7 +433,7 @@ public final class CryptoHelper implements ConfigurationListener {
             
             try {
                 
-            	String path =  XMLConfig.get(CRYPTO_HELPER_FILE, DEFAULT_KEY_STORE_FOLDER, "");            	
+            	String path =  XMLConfig.get(CRYPTO_HELPER_FILE, DEFAULT_KEY_STORE_FOLDER, "");          	
             	Path keystoreFolder= Paths.get(PropertiesHandler.expand(path));
             	keystorePath =  Files.isDirectory(keystoreFolder) ? keystoreFolder.toString() : keystoreFolder.getParent().toString();
             			
@@ -476,11 +476,12 @@ public final class CryptoHelper implements ConfigurationListener {
                 catch (Exception exc) {
                 	LOG.error("CryptoHelper - Error reading file '" + CRYPTO_HELPER_FILE + "' - using only default keyID", exc);                    
                 }
-            }
-            catch (KeyStoreUtilsException exc) {
+            } catch (KeyStoreUtilsException exc) {
             	LOG.error("CryptoHelper Error", exc);                
             } catch (PropertiesHandlerException e) {
-            	LOG.error("PropertiHaenler fails to expand value of "+DEFAULT_KEY_STORE_FOLDER , e);
+            	LOG.error("PropertiesHandler fails to expand value of "+DEFAULT_KEY_STORE_FOLDER , e);
+			}  catch (Exception e) {
+            	LOG.error("Error in CryptoHelper init " , e);
 			}
         }
     }

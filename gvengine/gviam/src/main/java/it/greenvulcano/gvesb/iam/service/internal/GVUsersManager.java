@@ -323,6 +323,22 @@ public class GVUsersManager implements UsersManager {
 			}
 		}
 	}
+<<<<<<< HEAD
+=======
+
+	@Override
+	public void updateUsername(String username, String newUsername) throws UserNotFoundException, InvalidUsernameException {
+		
+		User user = userRepository.get(username).orElseThrow(()->new UserNotFoundException(username));
+		if (username.matches(User.USERNAME_PATTERN)) {
+			user.setUsername(newUsername);
+		} else {
+			throw new InvalidUsernameException(newUsername);
+		}		
+		
+		userRepository.add(user);
+	}
+>>>>>>> master
 	
 	
 
