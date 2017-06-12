@@ -20,6 +20,7 @@
 package it.greenvulcano.util.thread;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -37,7 +38,7 @@ public final class ThreadMap
     /**
      * Map(Thread, Map)
      */
-    private static Map<Thread, HashMap<Object, Object>> threadsMap = new WeakHashMap<Thread, HashMap<Object, Object>>();
+    private static Map<Thread, HashMap<Object, Object>> threadsMap = Collections.synchronizedMap(new WeakHashMap<Thread, HashMap<Object, Object>>());
 
     /**
      * Constructor

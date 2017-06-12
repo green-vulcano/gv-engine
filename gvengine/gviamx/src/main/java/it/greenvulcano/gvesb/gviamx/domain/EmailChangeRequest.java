@@ -20,55 +20,36 @@
 package it.greenvulcano.gvesb.gviamx.domain;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
-import javax.persistence.Basic;
-import javax.persistence.Column;
+
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.Lob;
-import javax.persistence.Transient;
-
-import org.json.JSONObject;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import it.greenvulcano.gvesb.iam.domain.User;
 
 @Entity
-@DiscriminatorValue(value="SIGNUP")
-public class SignUpRequest extends UserActionRequest implements Serializable{
+@DiscriminatorValue(value="EMAiL_CHANGE")
+public class EmailChangeRequest extends UserActionRequest implements Serializable{
 	private static final long serialVersionUID = 1L;
-	
-	@Column(nullable=true)
-	@Lob() @Basic(fetch=FetchType.LAZY)
-	private byte[] request;
-	
-	@Transient
-	private JSONObject requestObject;
 		
-	public byte[] getRequest() {
-		return request;
-	}
-	public void setRequest(byte[] request) {
-		this.request = request;
-	}
+	@ManyToOne(optional=false, fetch=FetchType.EAGER)
+	@JoinColumn(name="user_id", nullable=true)
+	private User user;			
 	
-	@Transient
-	public Map<String, Object> getActionData() {
-		if (requestObject==null) {
-			try {
-				requestObject = new JSONObject(new String(request));
-			} catch (Exception e) {
-				return new HashMap<>();
-			}
-		}
-		return requestObject.toMap();
+	public User getUser() {
+		return user;
 	}
-			
+	public void setUser(User user) {
+		this.user = user;	
+	}
+		
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + Arrays.hashCode(request);
+		result = prime * result + ((user == null) ? 0 : user.hashCode());
 		return result;
 	}
 	
@@ -80,10 +61,18 @@ public class SignUpRequest extends UserActionRequest implements Serializable{
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		SignUpRequest other = (SignUpRequest) obj;
-		if (!Arrays.equals(request, other.request))
+		EmailChangeRequest other = (EmailChangeRequest) obj;
+		if (user == null) {
+			if (other.user != null)
+				return false;
+		} else if (!user.equals(other.user))
 			return false;
 		return true;
-	}	
+	}
+	@Override
+	public Map<String, Object> getActionData() {		
+		return null;
+	}
+	
 
 }

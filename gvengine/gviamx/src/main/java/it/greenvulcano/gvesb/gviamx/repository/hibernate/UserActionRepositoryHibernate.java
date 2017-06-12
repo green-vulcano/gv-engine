@@ -19,7 +19,6 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb.gviamx.repository.hibernate;
 
-import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
@@ -27,19 +26,15 @@ import java.util.Set;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 
-import it.greenvulcano.gvesb.gviamx.repository.Repository;
+import it.greenvulcano.gvesb.gviamx.domain.UserActionRequest;
+import it.greenvulcano.gvesb.gviamx.repository.UserActionRepository;
 
-abstract class RepositoryHibernate<T, K extends Serializable> implements Repository<T, K> {
+public class UserActionRepositoryHibernate implements UserActionRepository {
 	
 	private SessionFactory sessionFactory;
-	
-	private Class<T> entityClass;
-	
-	RepositoryHibernate(Class<T> entityClass) {
-		this.entityClass = entityClass;
-	} 
-	
+		
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
@@ -49,27 +44,34 @@ abstract class RepositoryHibernate<T, K extends Serializable> implements Reposit
 	}
 	
 	@Override
-	public Optional<T> get(K key) {		
-		return Optional.ofNullable((T)getSession().get(entityClass, key));
+	public Optional<UserActionRequest> get(Long key) {		
+		return Optional.ofNullable(getSession().get(UserActionRequest.class, key));
 	}
 
 	@Override
-	public void add(T role) {
-		getSession().saveOrUpdate(role);
+	public void add(UserActionRequest userActionRequest) {
+		getSession().saveOrUpdate(userActionRequest);
 		getSession().flush();
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Set<T> getAll() {		
-		List<T> roles = getSession().createQuery("from "+ entityClass.getName()).list();
-		return new LinkedHashSet<T>(roles);
+	public Set<UserActionRequest> getAll() {
+		List<UserActionRequest> userActions = getSession().createQuery("from "+ UserActionRequest.class.getName()).list();
+		return new LinkedHashSet<UserActionRequest>(userActions);
 	}
 
 	@Override
-	public void remove(T role) {
-		getSession().delete(role);
+	public void remove(UserActionRequest userActionRequest) {
+		getSession().delete(userActionRequest);
 		getSession().flush();
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends UserActionRequest> Optional<T> get(String email, Class<T> type) {		
+		Query<T> query = getSession().createQuery("from "+type.getName() + " a where a.email = :_email");		
+		return query.setParameter("_email", email).uniqueResultOptional();
 	}
 
 }

@@ -19,23 +19,21 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb.gviamx.repository;
 
-import java.io.Serializable;
 import java.util.Optional;
 import java.util.Set;
 
-/**
- * 
- * Generic business interface to deal with domain entities
- * 
- */
-public interface Repository<T, K extends Serializable> {
+import it.greenvulcano.gvesb.gviamx.domain.UserActionRequest;
+
+public interface UserActionRepository {
 	
-	Optional<T> get(K key);
+	Optional<UserActionRequest> get(Long key);
 	
-	void add(T entity);
+	<T extends UserActionRequest> Optional<T> get(String email, Class<T> type);
 	
-	Set<T> getAll();
+	void add(UserActionRequest entity);
 	
-	void remove(T entity);
+	Set<UserActionRequest> getAll();
+	
+	void remove(UserActionRequest entity);	
 
 }
