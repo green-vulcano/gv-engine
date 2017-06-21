@@ -31,7 +31,7 @@
                   <li data-ng-class="{ active: routeIsIn('/schedule')}"><a id="optionMenu" href="#/schedule"><i class="fa fa-calendar-plus-o" aria-hidden="true"></i> Scheduling</a></li>
                   <li data-ng-class="{ active: routeIsIn('/config')}"><a id="optionMenu" href="#/config"><i class="fa fa-cogs" aria-hidden="true"></i> Configuration</a></li>
                   <li data-ng-class="{ active: routeIsIn('/service')}"><a id="optionMenu" href="#/service"><i class="fa fa-code" aria-hidden="true"></i> Service</a></li>
-                  <li data-ng-class="{ active: routeIsIn('/monitoring')}"><a id="optionMenu" href="#/monitoring"><i class="fa fa-area-chart" aria-hidden="true"></i> Monitoring</a></li>
+                  <li data-ng-class="{ active: routeIsIn('/monitoring')}" onClick="window.location.reload()"><a id="optionMenu" href="#/monitoring"><i class="fa fa-area-chart" aria-hidden="true"></i> Monitoring</a></li>
                   <li class="sidebar_user" data-ng-class="{ active: routeIsIn('/myprofile')}"><a id="profileButton" href="#/myprofile"><i class="fa fa-user-o" aria-hidden="true"></i> My Profile</a></li>
                   <li><a id="logout" data-ng-click="app.logout()" href="#/login"><i class="fa fa-sign-out" aria-hidden="true"></i> Logout</a></li>
                </ul>

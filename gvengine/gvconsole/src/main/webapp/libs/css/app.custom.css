@@ -7,6 +7,18 @@ body {
 .optionForm{
   padding-left:0;
 }
+.input-group-addon {
+    background-color: #fff;
+}
+#selctNum{
+  width: 50px;
+  height: 20px;
+  display: inline-block;
+  padding: 0px 6px;
+}
+.off{
+  display:none;
+}
 .monitoringGraph{
   width: 1000;
   height: 1000;

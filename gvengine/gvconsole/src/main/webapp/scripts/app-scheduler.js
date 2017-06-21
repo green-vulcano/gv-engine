@@ -28,10 +28,14 @@ angular.module('gvconsole')
 
 
 angular.module('gvconsole')
-.controller('ScheduleListController',['SchedulerService', '$scope', '$location', function(SchedulerService, $scope, $http, $location){
+.controller('ScheduleListController',['SchedulerService','$rootScope', '$scope', '$location', function(SchedulerService,$rootScope, $scope, $http, $location){
 
   var instance = this;
-
+  for( prop in $rootScope.globals.currentUser.roles){
+    if($rootScope.globals.currentUser.roles[prop].name == "gvadmin" || $rootScope.globals.currentUser.roles[prop].name == "admin" ){
+      $scope.auth = true;
+    }
+  };
   this.alerts = [];
 
   this.schedules = {};
@@ -49,14 +53,17 @@ angular.module('gvconsole')
 
         case 401: case 403:
           $location.path('login');
+          $scope.dataNa=true;
           break;
 
         case 404:
             instance.alerts.push({type: 'warning', msg: 'GVScheduler module not found'});
+            $scope.dataNa=true;
             break;
 
         default:
           instance.alerts.push({type: 'danger', msg: 'Data not available'});
+          $scope.dataNa=true;
           break;
       }
 

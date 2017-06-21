@@ -7,7 +7,7 @@
       <div class="panel panel-default">
          <div id="panelHead" class="panel-heading">
             <i class="fa fa-calendar-check-o"></i>Schedule Found: {{ctrl.list.length}}
-            <a href="#/schedule/add" class="btn btn-primary pull-right">
+            <a href="#/schedule/add" class="btn btn-primary pull-right" data-ng-class="{'btn btn-primary pull-right disabled': dataNa == true || auth != true}">
             <i class="fa fa-calendar-plus-o"></i> Add New Schedule
             </a>
          </div>

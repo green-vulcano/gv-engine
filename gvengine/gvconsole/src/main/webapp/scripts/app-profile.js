@@ -44,8 +44,8 @@ angular.module('gvconsole')
   function ($scope, $rootScope, profileService) {
 
 
-var instance = this;
-this.alerts = [];
+    var instance = this;
+    this.alerts = [];
 
 
   $scope.changePassword = function(){

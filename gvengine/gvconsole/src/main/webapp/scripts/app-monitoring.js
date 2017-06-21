@@ -62,10 +62,15 @@ angular.module('gvconsole')
 					   'SED00205':'cpuUsage'
 					};
 
+          if(value == null || value==undefined){
+            gloveChart.load({
+  						columns: [[gloveMap[id], 0]]
+  					});
+          }else{
 					gloveChart.load({
 						columns: [[gloveMap[id], value]]
 					});
-
+        }
 			}
 		};
 	});
@@ -106,18 +111,23 @@ angular.module('gvconsole')
   			updateGloveChart: function(id, value) {
 
   					var gloveMap = {
-  					   'SED00201':'totalLoadedClasses',
-  					   'SED00202':'loadedClasses',
-  					   'SED00203':'unLoadedClasses',
-  					   'SED00204':'totalThreads',
-  					   'SED00205':'daemonThreads',
-               'SED00206':'peakThreads'
+  					   'SED00206':'totalLoadedClasses',
+  					   'SED00207':'loadedClasses',
+  					   'SED00208':'unLoadedClasses',
+  					   'SED00209':'totalThreads',
+  					   'SED00210':'daemonThreads',
+               'SED00211':'peakThreads'
   					};
 
+            if(value == null || value==undefined){
+              gloveChart.load({
+    						columns: [[gloveMap[id], 0]]
+    					});
+            }else{
   					gloveChart.load({
   						columns: [[gloveMap[id], value]]
   					});
-
+          }
   			}
   		};
 });
@@ -158,31 +168,28 @@ $interval(function(){
          $scope.error = response;
     });
 
+    MonitoringServices.getCPU().then(
+      function(response) {
+         $scope.cpuUsage = response.data;
+      }, function(response){
+           $scope.error = response;
+      });
+
   chartServiceMemory.updateGloveChart('SED00201', $scope.maxMemory);
   chartServiceMemory.updateGloveChart('SED00202', $scope.totalMemory);
   chartServiceMemory.updateGloveChart('SED00203', $scope.freeMemory);
   chartServiceMemory.updateGloveChart('SED00204', $scope.heapMemory);
 
-  chartServiceClassesThreads.updateGloveChart('SED00201', $scope.totalLoadedClasses);
-  chartServiceClassesThreads.updateGloveChart('SED00202', $scope.loadedClasses);
-  chartServiceClassesThreads.updateGloveChart('SED00203', $scope.unLoadedClasses);
-  chartServiceClassesThreads.updateGloveChart('SED00204', $scope.totalThreads);
-  chartServiceClassesThreads.updateGloveChart('SED00205', $scope.daemonThreads);
-  chartServiceClassesThreads.updateGloveChart('SED00206', $scope.peakThreads);
+  chartServiceMemory.updateGloveChart('SED00205', $scope.cpuUsage);
+
+  chartServiceClassesThreads.updateGloveChart('SED00206', $scope.totalLoadedClasses);
+  chartServiceClassesThreads.updateGloveChart('SED00207', $scope.loadedClasses);
+  chartServiceClassesThreads.updateGloveChart('SED00208', $scope.unLoadedClasses);
+
+  chartServiceClassesThreads.updateGloveChart('SED00209', $scope.totalThreads);
+  chartServiceClassesThreads.updateGloveChart('SED00210', $scope.daemonThreads);
+  chartServiceClassesThreads.updateGloveChart('SED00211', $scope.peakThreads);
 
 },1000);
-
-
-$interval(function(){
-
-  MonitoringServices.getCPU().then(
-    function(response) {
-       $scope.cpuUsage = response.data;
-    }, function(response){
-         $scope.error = response;
-    });
-
-  chartServiceMemory.updateGloveChart('SED00205', $scope.cpuUsage);
-},2000);
 
 }]);

@@ -59,9 +59,14 @@ angular.module('gvconsole')
  }]);
 
 angular.module('gvconsole')
-.controller('UsersListController',['AdminService','$scope', '$location', function(AdminService, $scope, $location){
+.controller('UsersListController',['AdminService','$rootScope', '$scope', '$location', function(AdminService,$rootScope, $scope, $location){
 
 	var instance = this;
+  for( prop in $rootScope.globals.currentUser.roles){
+    if($rootScope.globals.currentUser.roles[prop].name == "gvadmin" || $rootScope.globals.currentUser.roles[prop].name == "admin" ){
+      $scope.auth = true;
+    }
+  };
 
 	this.alerts = [];
 
@@ -82,6 +87,7 @@ angular.module('gvconsole')
 
 							default:
 								instance.alerts.push({type: 'danger', msg: 'Data not available'});
+                $scope.dataNa=true;
 								break;
 					}
 			$scope.loadStatus = "error";
@@ -100,8 +106,6 @@ angular.module('gvconsole')
     }
 
       };
-
-    $scope.query = {};
 
 }]);
 

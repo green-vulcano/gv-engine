@@ -3,8 +3,57 @@
 <div class="side-body">
 
 <h1>Service</h1>
-
-
+<div class="row" >
+  <div id="formLeft" class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+     <div class="form-group clearfix">
+        <label id="labelLeft" class="control-label optionForm col-sm-4">Operation</label>
+        <div class="col-sm-8">
+           <select id="flow" name="flow"
+              class="form-control" ng-model="flow"
+              ng-options="entry.operation group by entry.service for entry in operations"
+              required>
+              <option value="">------</option>
+           </select>
+           <p style="margin: 0">
+              <span data-ng-show="taskForm.submitted && taskForm.flow.$error.required" class="text-warning">
+              <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+              Required
+              </span>
+           </p>
+        </div>
+     </div>
+     <hr>
+  </div>
+<div id="formLeft" class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+   <div class="form-group clearfix">
+      <label id="labelLeft" class="control-label optionForm col-sm-4">Input data</label>
+      <div class="col-xs-12">
+         <textarea class="form-control" rows="3" ng-model="schedule.object"></textarea>
+      </div>
+   </div>
+   <label class="control-label optionForm col-sm-4">Properties</label>
+   <br><br/>
+   <div class="form-group clearfix">
+      <div class="col-sm-5"><input type="text" class="form-control" ng-model="key" placeholder="key"></div>
+      <div class="col-sm-6"><input type="text" class="form-control" ng-model="value" placeholder="value"></div>
+      <button class="btn btn-default" ng-click="addParameter()"><i class="fa fa-plus"></i></button>
+   </div>
+   <div ng-repeat="(key,param) in schedule.properties">
+      <div class="form-group clearfix">
+         <div class="col-sm-5"><strong>{{key}}</strong></div>
+         <div class="col-sm-6">{{param}}</div>
+         <a class="close" ng-click="removeParameter(key)">×</a>
+      </div>
+   </div>
+   <div class="form-group">
+      <div class="col-sm-offset-4 col-sm-8">
+         <button type="button" class="btn btn-primary" data-ng-click="go('schedule')">Back</button>
+         <button type="submit" class="btn btn-success" data-ng-click="taskForm.submitted = true" >Save</button>
+      </div>
+   </div>
+</form>
+</div>
+</div>
 
 </div>
 </div>
