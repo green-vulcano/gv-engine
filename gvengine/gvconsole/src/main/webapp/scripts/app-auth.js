@@ -181,7 +181,7 @@ angular.module('gvconsole')
 		                    $location.path('/users');
 		                    break;
 
-	                	case 403:
+	                	case 400:
 	                		$scope.expired=true;
 	                		break;
 
