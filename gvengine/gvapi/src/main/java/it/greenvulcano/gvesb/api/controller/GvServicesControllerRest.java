@@ -244,7 +244,7 @@ public class GvServicesControllerRest extends BaseControllerRest {
 			} else if (e.getMessage().contains("GVCORE_BAD_GVOPERATION_NAME_ERROR")) {
 				throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity(toJson(e)).build());
 			}  else if (e.getMessage().contains("GV_SERVICE_POLICY_ERROR")) {
-				throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).entity(toJson(e)).build());
+				throw new WebApplicationException(Response.status(Response.Status.FORBIDDEN).entity(toJson(e)).build());
 			}
 			
 			throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(toJson(e)).build());

@@ -78,7 +78,7 @@ public class GVSecurityFilter implements ContainerRequestFilter {
 					
 				}
 			} catch (UserExpiredException|CredentialsExpiredException userExpiredException) {	        		
-        		requestContext.abortWith(Response.status(Response.Status.FORBIDDEN).entity("Credentials expired").build());
+        		requestContext.abortWith(Response.status(Response.Status.BAD_REQUEST).entity("Credentials expired").build());
 			} catch (PasswordMissmatchException|UserNotFoundException|InvalidCredentialsException unauthorizedException){
 				LOG.warn("Failed to authenticate user", unauthorizedException);
 				requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
