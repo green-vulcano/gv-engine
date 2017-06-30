@@ -2,19 +2,19 @@ angular.module('gvconsole')
 .service('MonitoringServices', ['ENDPOINTS', '$http', function(Endpoints, $http){
 
   this.getMemory = function(){
-    return $http.post(Endpoints.gvmonitoring + "/monitoring/memory");
+    return $http.get(Endpoints.gvmonitoring + "/monitoring/memory");
   }
 
   this.getClasses = function(){
-    return $http.post(Endpoints.gvmonitoring + "/monitoring/classes");
+    return $http.get(Endpoints.gvmonitoring + "/monitoring/classes");
   }
 
   this.getThreads = function(){
-    return $http.post(Endpoints.gvmonitoring + "/monitoring/threads");
+    return $http.get(Endpoints.gvmonitoring + "/monitoring/threads");
   }
 
   this.getCPU = function(){
-    return $http.post(Endpoints.gvmonitoring + "/monitoring/cpuUsage");
+    return $http.get(Endpoints.gvmonitoring + "/monitoring/cpu");
   }
 
 }]);
@@ -170,7 +170,7 @@ $interval(function(){
 
     MonitoringServices.getCPU().then(
       function(response) {
-         $scope.cpuUsage = response.data;
+         $scope.cpuUsage = response.data.usage;
       }, function(response){
            $scope.error = response;
       });

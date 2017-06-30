@@ -107,6 +107,21 @@ angular.module('gvconsole')
 	           $http.defaults.headers.common['Authorization'] = 'Basic ' + authdata;
 	           $http.post(Endpoints.gviam +'/authenticate').then(function(response) {
 	        	   			angular.merge($rootScope.globals.currentUser, response.data);
+	        	   			
+	        	   			if (response.data.roles) {
+		        	   			for ( var item in response.data.roles) {		        	   						
+		        	   						        	   				
+		        	   				$rootScope.globals.currentUser.isAdministrator = $rootScope.globals.currentUser.isAdministrator || (item == 'gvadmin'); 
+			        	   			$rootScope.globals.currentUser.isAccountManager = $rootScope.globals.currentUser.isAccountManager || (item == 'gvmanager_account');
+			        	   			$rootScope.globals.currentUser.isAccountClient = $rootScope.globals.currentUser.isAccountClient || (item == 'gvclient_account');
+			        	   			$rootScope.globals.currentUser.isAccountGuest = $rootScope.globals.currentUser.isAccountGuest || (item == 'gvguest_account');
+			        	   			$rootScope.globals.currentUser.isSchedulerManager = $rootScope.globals.currentUser.isSchedulerManager || (item == 'gvmanager_schedule');
+			        	   			$rootScope.globals.currentUser.isSchedulerGuest = $rootScope.globals.currentUser.isSchedulerGuest || (item == 'gvguest_schedule');
+			        	   			$rootScope.globals.currentUser.isConfigManager = $rootScope.globals.currentUser.isConfigManager || (item == 'gvmanager_config');
+			        	   			$rootScope.globals.currentUser.isConfigGuest = $rootScope.globals.currentUser.isConfigGuest || (item == 'gvguest_config');
+		        	   				
+		        	   			}      	   			
+	        	   			}	   			
 	        	   			$cookieStore.put('globals', $rootScope.globals);
 	        	   			callback(response.status);
 	           			},

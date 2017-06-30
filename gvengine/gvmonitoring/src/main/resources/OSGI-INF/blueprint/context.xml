@@ -8,7 +8,11 @@
     			http://cxf.apache.org/blueprint/jaxws http://cxf.apache.org/schemas/blueprint/jaxws.xsd"	  			
 	  			default-activation="eager">
 
-	 <bean id="gvMonitoring" class="it.greenvulcano.gvesb.monitoring.api.MonitoringRest"/>
+	 <bean id="gvMonitoring" class="it.greenvulcano.gvesb.monitoring.api.MonitoringRest">
+	 	<property name="systemMonitor" ref="systemMonitor" />
+	 </bean>
+	 
+	 <bean id="systemMonitor" class="it.greenvulcano.gvesb.monitoring.service.runtime.SystemMonitorService"/>
 
      <reference-list id="securityModulesReferences" interface="it.greenvulcano.gvesb.iam.modules.SecurityModule"
 			   		member-type="service-reference" availability="optional"/>
