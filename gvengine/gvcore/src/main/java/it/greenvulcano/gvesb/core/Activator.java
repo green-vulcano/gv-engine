@@ -82,7 +82,7 @@ public class Activator implements BundleActivator  {
 				"        .+ --- +."+"\n"+
 				"        o  GVT  o                          T e c h n o l o g i e s"+"\n"+
 				"        .+ --- +. "+"\n"+
-				"          -:::-'                                 GV ESB v4"+"\n";
+				"          -:::-'                             GV ESB v4 EVOLUTION"+"\n";
 		
 		System.out.println(logo);
 	}

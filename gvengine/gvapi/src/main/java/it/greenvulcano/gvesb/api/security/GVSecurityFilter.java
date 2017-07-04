@@ -61,11 +61,14 @@ public class GVSecurityFilter implements ContainerRequestFilter {
 		if (securityModulesReferences!=null && !securityModulesReferences.isEmpty()) {				
 			LOG.debug("SecurityManager found, handling authentication");
 			
+			String wwwAuthenticate = "unknown";
 			try {
 				
 				for (ServiceReference<SecurityModule> securityModuleRef :  securityModulesReferences) {
 					
 					SecurityModule securityModule = securityModuleRef.getBundle().getBundleContext().getService(securityModuleRef);
+					wwwAuthenticate = securityModule.getSchema() + " realm="+ securityModule.getRealm();
+					
 					Optional<SecurityContext> securityContext = securityModule.resolve(authorization).map(GVSecurityContext::new);
 					
 					if (securityContext.isPresent()) {
@@ -77,11 +80,24 @@ public class GVSecurityFilter implements ContainerRequestFilter {
 					}					
 					
 				}
-			} catch (UserExpiredException|CredentialsExpiredException userExpiredException) {	        		
-        		requestContext.abortWith(Response.status(Response.Status.BAD_REQUEST).entity("Credentials expired").build());
+			} catch (UserExpiredException|CredentialsExpiredException userExpiredException) {
+				
+				Response expiredResponse = Response.status(Response.Status.UNAUTHORIZED)
+						                 .header("X-Auth-Status", "Expired")
+						                 .header("WWW-Authenticate", wwwAuthenticate)
+						                 .entity("Credentials expired").build();
+				
+        		requestContext.abortWith(expiredResponse);
 			} catch (PasswordMissmatchException|UserNotFoundException|InvalidCredentialsException unauthorizedException){
+				
+				Response errorResponse = Response.status(Response.Status.UNAUTHORIZED)
+		                 .header("X-Auth-Status", "Denied")
+		                 .header("WWW-Authenticate", wwwAuthenticate)
+		                 .entity("Credentials expired").build();
+
 				LOG.warn("Failed to authenticate user", unauthorizedException);
-				requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
+				requestContext.abortWith(errorResponse);
+				
         	} catch (Exception e) {
         		LOG.warn("Authentication process failed", e);
         		requestContext.abortWith(Response.status(Response.Status.INTERNAL_SERVER_ERROR).build());

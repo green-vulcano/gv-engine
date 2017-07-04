@@ -108,12 +108,12 @@ angular.module('gvconsole')
 	           $http.post(Endpoints.gviam +'/authenticate').then(function(response) {
 	        	   			angular.merge($rootScope.globals.currentUser, response.data);
 	        	   			$cookieStore.put('globals', $rootScope.globals);
-	        	   			callback(response.status);
+	        	   			callback(response);
 	           			},
 	        		   function(response) {
 	           				delete $http.defaults.headers.common.Authorization;
 	           				$rootScope.globals = {};
-	           				callback(response.status);
+	           				callback(response);
 	           		   });
 
 	        };
@@ -174,20 +174,23 @@ angular.module('gvconsole')
         $scope.login = function () {
             $scope.dataLoading = true;
             $scope.error = false;
-            authenticationService.createContext($scope.username, $scope.password, function(status){
+            authenticationService.createContext($scope.username, $scope.password, function(response){
             	 $scope.dataLoading = false;
-            	switch (status) {
-	                	case 200:
+            	switch (response.status) {
+	                	
+            			case 200:
 		                    $location.path('/users');
 		                    break;
 
-	                	case 400:
-	                		$scope.expired=true;
-	                		break;
+	                	case 401:
+	                		if (response.headers("X-Auth-Status") == "Expired") {
+	                			$scope.expired=true;
+	                			break;
+	                		} 	                		
 
-                    default:
-	                	  $scope.error = true;
-	                    $scope.errorMessage = 'Login failed';
+	                	default:
+	                	    $scope.error = true;
+	                    	$scope.errorMessage = 'Login failed';
 	                    break;
                 }
             });
