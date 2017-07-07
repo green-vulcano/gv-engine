@@ -57,9 +57,9 @@ public class GreenVulcanoPool implements ShutdownEventListener
 
     public static final int          DEFAULT_INITIAL_SIZE      = 1;
 
-    public static final int          DEFAULT_MAXIMUM_SIZE      = 10;
+    public static final int          DEFAULT_MAXIMUM_SIZE      = 8;
 
-    public static final int          DEFAULT_MAXIMUM_CREATION  = 50;
+    public static final int          DEFAULT_MAXIMUM_CREATION  = 32;
 
     private static final Logger      logger                    = org.slf4j.LoggerFactory.getLogger(GreenVulcanoPool.class);
     /**
@@ -170,7 +170,7 @@ public class GreenVulcanoPool implements ShutdownEventListener
         init(initialSizeL, maximumSizeL, maximumCreationL, subsystemL);
         setDefaultTimeout(XMLConfig.getLong(config, "@default-timeout", DEFAULT_TIMEOUT));
         setShrinkDelayTime(XMLConfig.getLong(config, "@shrink-timeout", DEFAULT_SHRINK_DELAY_TIME));
-        nextShrinkTime = System.currentTimeMillis() + shrinkDelayTime;
+        
         logger.debug("Initialized GreenVulcanoPool instance: subsystem= " + subsystem + ", initialSize= " + initialSize 
                 + ", maximumSize= " + maximumSize + ", maximumCreation= " + maximumCreation + ", defaultTimeout= " 
                 + defaultTimeout + ", shrinkDelayTime= " + shrinkDelayTime);
@@ -195,6 +195,7 @@ public class GreenVulcanoPool implements ShutdownEventListener
             throw new IllegalArgumentException("shrinkDelayTime can be -1 or > 0, subsystem=" + subsystem);
         }
         this.shrinkDelayTime = shrinkDelayTime;
+        this.nextShrinkTime = System.currentTimeMillis() + shrinkDelayTime;
     }
 
     /**
