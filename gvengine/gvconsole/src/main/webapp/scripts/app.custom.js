@@ -56,3 +56,9 @@ angular.module('gvconsole', ['ngCookies','ngRoute','angular-quartz-cron', 'ui.bo
                         return  $location.path().startsWith(route);
                       };
 }]);
+
+function gototab(reload)
+{
+window.location.hash = '#/monitoring';
+window.location.reload(true);
+};

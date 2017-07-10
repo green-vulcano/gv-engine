@@ -4,11 +4,47 @@ body {
   font-size: 14px;
   line-height: 1.42857143;
 }
+#output_service {
+  background-color: #333;
+  color: #11c104;
+}
+@-webkit-keyframes blinker {
+  from {opacity: 1.0;}
+  to {opacity: 0.0;}
+}
+#fabuttonplus{
+  margin-left: 15px;
+  margin-top: 5px;
+}
+.modal-backdrop {
+  position: relative;
+}
+.paused{
+  color: #efc23b;
+  font-weight: bold;
+}
+.started{
+  color: #238650;
+  font-weight: bold;
+}
 .optionForm{
   padding-left:0;
 }
+.padding-box{
+  margin-bottom: 18px;
+}
 .input-group-addon {
     background-color: #fff;
+}
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+        cursor: pointer;
 }
 #selctNum{
   width: 50px;

@@ -32,7 +32,7 @@ angular.module('gvconsole')
 
   var instance = this;
   for( prop in $rootScope.globals.currentUser.roles){
-    if($rootScope.globals.currentUser.roles[prop].name == "gvadmin" || $rootScope.globals.currentUser.roles[prop].name == "admin" ){
+    if($rootScope.globals.currentUser.isAdministrator || $rootScope.globals.currentUser.isSchedulerManager){
       $scope.auth = true;
     }
   };
@@ -120,7 +120,6 @@ angular.module('gvconsole')
 
     $scope.alerts = [];
     $scope.operations = [];
-
 
     ConfigService.getServices().then(
     	function(response) {
