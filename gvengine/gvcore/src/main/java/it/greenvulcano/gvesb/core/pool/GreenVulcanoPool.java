@@ -31,6 +31,7 @@ import it.greenvulcano.gvesb.log.GVBufferMDC;
 import it.greenvulcano.jmx.JMXEntryPoint;
 
 import it.greenvulcano.util.Stats;
+import it.greenvulcano.util.thread.ThreadMap;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -438,6 +439,8 @@ public class GreenVulcanoPool implements ShutdownEventListener
         if (gvesb == null) {
             return;
         }
+        
+        ThreadMap.clean();
 
         logger.debug("Releasing GreenVulcano[" + gvesb.isValid() + "] instance " + gvesb);
         logger.debug("subsystem=" + subsystem + " - releasing instance(" + pool.size() + "/" + created + "/"
