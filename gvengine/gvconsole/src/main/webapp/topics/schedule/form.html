@@ -1,102 +1,99 @@
 <app-header></app-header>
 <div class="container-fluid">
-<div class="side-body">
-   <div class="container" data-ng-controller="ScheduleFormController as ctrl">
+  <div class="side-body">
+    <div class="container" data-ng-controller="ScheduleFormController as ctrl">
       <div class="row page-header">
-         <h1>New scheduled execution</h1>
+        <h1>New scheduled execution</h1>
       </div>
-      <div class="row" >
-         <div data-ng-repeat="alert in alerts" class="alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
-         <form name="taskForm" data-ng-submit="taskForm.$valid && save()" novalidate>
-            <div id="formLeft" class="col-md-offset-4 col-md-4 col-sm-6">
-               <div class="form-group clearfix">
-                  <h4>Cron Expression</h4>
-                  <input type="text" id="cronExpression" name="cronExpression" class="form-control" ng-model="schedule.cronExpression" required>
-               </div>
-               <p style="margin: 0">
-                  <span data-ng-show="taskForm.submitted && taskForm.cronExpression.$error.required" class="text-warning">
-                  <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                  A cron-expression is required
-                  </span>
-               </p>
+      <div class="row">
+        <div data-ng-repeat="alert in alerts" class="alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
+        <form name="taskForm" data-ng-submit="taskForm.$valid && save()" novalidate>
+          <div id="formLeft" class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+            <div class="form-group clearfix">
+              <label id="labelLeft" class="control-label optionForm col-sm-4">Cron Expression</label>
+              <div id="formLeft" class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+
+                <input type="text" id="cronExpression" name="cronExpression" class="form-control" ng-model="schedule.cronExpression" required>
+              </div>
             </div>
+            <p style="margin: 0">
+              <span data-ng-show="taskForm.submitted && taskForm.cronExpression.$error.required" class="text-warning">
+                  <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> A cron-expression is required
+              </span>
+            </p>
+          </div>
+          <div class="col-xs-12">
+            <div class="form-group clearfix">
+              <quartz-cron-selection output="schedule.cronExpression"></quartz-cron-selection>
+            </div>
+
             <div class="col-xs-12">
-               <div class="form-group clearfix">
-                  <quartz-cron-selection output="schedule.cronExpression"></quartz-cron-selection>
-               </div>
-               <div id="buttonInfo">
-                 <button type="button" class="btn btn-warning" data-toggle="collapse" data-target="#demo"><i class="fa fa-question" aria-hidden="true"></i></button>
-                  <div id="demo" class="collapse">
-                  Crono Expression: <br>
-                  &nbsp; <strong>1st position</strong>: seconds <br>
-                  &nbsp; <strong>2nd position</strong>: minutes <br>
-                  &nbsp; <strong>3rd position</strong>: hours <br>
-                  &nbsp; <strong>4th position</strong>: day of the month <br>
-                  &nbsp; <strong>5th position</strong>: month <br>
-                  &nbsp; <strong>6th position</strong>: day of week <br>
-                  &nbsp; <strong>7th position</strong>: year <br><br>
-                  Each element can have the characters following (in addition to the numbers): <br>
-                  &nbsp; <strong>*</strong> = all values <br>
-                  &nbsp; <strong>?</strong> = no specific value <br>
-                  &nbsp; <strong>-</strong> = specify ranges <br>
-                  &nbsp; <strong>,</strong> = additional values <br>
-                  &nbsp; <strong>/</strong> = increment <br>
-                  &nbsp; <strong>L</strong> = last <br>
-                  &nbsp; <strong>W</strong> = weekday <br>
-                  &nbsp; <strong>#</strong> = specify the day of month
+              <div class="form-group clearfix">
+                <div id="buttonInfo">
+                  <button type="button" class="btn btn-warning" data-toggle="collapse" data-target="#demo"><i class="fa fa-question" aria-hidden="true"></i></button>
                 </div>
               </div>
-               <hr>
+              <div id="demo" class="collapse">
+                <strong>Crono Expression: </strong><br><br> &nbsp; <strong>1st position</strong>: seconds <br> &nbsp; <strong>2nd position</strong>: minutes <br> &nbsp; <strong>3rd position</strong>: hours <br> &nbsp; <strong>4th position</strong>: day
+                of the month <br> &nbsp; <strong>5th position</strong>: month <br> &nbsp; <strong>6th position</strong>: day of week <br> &nbsp; <strong>7th position</strong>: year <br><br> Each element can have the characters following (in addition to
+                the numbers): <br> &nbsp; <strong>*</strong> = all values <br> &nbsp; <strong>?</strong> = no specific value <br> &nbsp; <strong>-</strong> = specify ranges <br> &nbsp; <strong>,</strong> = additional values <br> &nbsp; <strong>/</strong>                = increment <br> &nbsp; <strong>L</strong> = last <br> &nbsp; <strong>W</strong> = weekday <br> &nbsp; <strong>#</strong> = specify the day of month
+              </div>
             </div>
-            <div id="formLeft" class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
-               <div class="form-group clearfix">
-                  <label id="labelLeft" class="control-label optionForm col-sm-4">Operation</label>
-                  <div class="col-sm-8">
-                     <select id="flow" name="flow"
-                        class="form-control" ng-model="flow"
-                        ng-options="entry.operation group by entry.service for entry in operations"
-                        required>
+            <hr>
+          </div>
+          <div id="formLeft" class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+            <div class="form-group clearfix">
+              <label id="labelLeft" class="control-label optionForm col-sm-4">Operation</label>
+              <div id="formLeft" class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+
+                <select id="flow" name="flow" class="form-control " ng-model="flow" ng-options="entry.operation group by entry.service for entry in operations" required>
                         <option value="">------</option>
                      </select>
-                     <p style="margin: 0">
-                        <span data-ng-show="taskForm.submitted && taskForm.flow.$error.required" class="text-warning">
-                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                        Required
-                        </span>
-                     </p>
-                  </div>
-               </div>
-               <hr>
+                <p style="margin: 0">
+                  <span data-ng-show="taskForm.submitted && taskForm.flow.$error.required" class="text-warning">
+                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Required
+                  </span>
+                </p>
+              </div>
+
             </div>
-            <div id="formLeft" class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
-               <div class="form-group clearfix">
-                  <label id="labelLeft" class="control-label optionForm col-sm-4">Input data</label>
-                  <div class="col-xs-12">
-                     <textarea class="form-control" rows="3" ng-model="schedule.object"></textarea>
-                  </div>
-               </div>
-               <label class="control-label optionForm col-sm-4">Properties</label>
-               <br><br/>
-               <div class="form-group clearfix">
-                  <div class="col-sm-5"><input type="text" class="form-control" ng-model="key" placeholder="key"></div>
-                  <div class="col-sm-6"><input type="text" class="form-control" ng-model="value" placeholder="value"></div>
-                  <button class="btn btn-default" ng-click="addParameter()"><i class="fa fa-plus"></i></button>
-               </div>
-               <div ng-repeat="(key,param) in schedule.properties">
-                  <div class="form-group clearfix">
-                     <div class="col-sm-5"><strong>{{key}}</strong></div>
-                     <div class="col-sm-6">{{param}}</div>
-                     <a class="close" ng-click="removeParameter(key)">×</a>
-                  </div>
-               </div>
-               <div class="form-group">
-                  <div class="col-sm-offset-4 col-sm-8">
-                     <button type="button" class="btn btn-primary" data-ng-click="go('schedule')">Back</button>
-                     <button type="submit" class="btn btn-success" data-ng-click="taskForm.submitted = true" >Save</button>
-                  </div>
-               </div>
-         </form>
-         </div>
+            <hr>
+          </div>
+          <div id="formLeft" class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+            <div class="form-group clearfix">
+              <label id="labelLeft" class="control-label optionForm col-sm-4">Input data</label>
+              <div class="col-xs-12">
+                <textarea class="form-control" rows="3" ng-model="schedule.object"></textarea>
+              </div>
+            </div>
+            <label class="control-label optionForm col-sm-4">Properties</label>
+            <br>
+            <div class="col-xs-12">
+              <div class="form-inline">
+                <input type="text" class="form-control" ng-model="key" placeholder="key">
+                <input type="text" class="form-control" ng-model="value" placeholder="value">
+                <button class="btn btn-default" ng-click="addParameter()"><i class="fa fa-plus"></i></button>
+              </div>
+
+            </div>
+
+            <div id="keypar" ng-repeat="(key,param) in schedule.properties">
+              <div class="form-group clearfix">
+                <div class="col-sm-5"><strong>{{key}}</strong></div>
+                <div class="col-sm-6">{{param}}</div>
+                <a class="close" ng-click="removeParameter(key)">×</a>
+              </div>
+            </div>
+
+          </div>
+
+
+          <div style="margin-top:50px" class="col-sm-offset-4 col-sm-8">
+            <button type="button" class="btn btn-primary" data-ng-click="go('schedule')">Back</button>
+            <button type="submit" class="btn btn-success" data-ng-click="taskForm.submitted = true">Save</button>
+          </div>
       </div>
-   </div>
+
+    </div>
+  </div>
 </div>

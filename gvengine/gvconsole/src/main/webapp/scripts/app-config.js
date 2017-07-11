@@ -48,7 +48,11 @@ angular.module('gvconsole')
  }]);
 
 angular.module('gvconsole')
-.controller('ConfigController',['ConfigService' ,'$scope', '$location', function(ConfigService, $scope, $location){
+.controller('ConfigController',['ConfigService' ,'$scope', '$rootScope', '$location', function(ConfigService, $scope, $rootScope, $location){
+
+  if($rootScope.globals.currentUser.isAdministrator || $rootScope.globals.currentUser.isConfigManager){
+    document.getElementById("myFieldset").disabled = false;
+  }
 
 	var instance = this;
 
@@ -145,5 +149,7 @@ angular.module('gvconsole')
 			});
 
 	}
+
+
 
 }]);
