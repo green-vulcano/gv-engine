@@ -73,6 +73,8 @@ Export a configuration from Developer studio. Then choose whether to use "Develo
 You can setup a fine-grained logging service configuring proprerly **log4j** in karaf.
 This is a sample configuration in *etc/org.ops4j.pax.logging.cfg* to logging each service in a single file:
 ```
+log4j2.property.MASTER_SERVICE = NOOP
+
 # GVESB Appender to produce multiple log files - One per value of MASTER_SERVICE key in thread context map
 log4j2.appender.gv.type = Routing
 log4j2.appender.gv.name = RoutingGVCore
@@ -94,14 +96,12 @@ log4j2.appender.gv.routes.service.appender.policies.size.size = 32MB
 log4j2.logger.greenvulcano.name = it.greenvulcano
 log4j2.logger.greenvulcano.level = DEBUG
 log4j2.logger.greenvulcano.appenderRef.gv.ref = RoutingGVCore
-log4j2.logger.greenvulcano.appenderRef.gv.filter.mdc.type = ThreadContextMapFilter
-log4j2.logger.greenvulcano.appenderRef.gv.filter.mdc.operator = or
-log4j2.logger.greenvulcano.appenderRef.gv.filter.mdc.fleet.type = KeyValuePair
-log4j2.logger.greenvulcano.appenderRef.gv.filter.mdc.fleet.key = MASTER_SERVICE
-log4j2.logger.greenvulcano.appenderRef.gv.filter.mdc.fleet.value = (service name)
-log4j2.logger.greenvulcano.appenderRef.gv.filter.mdc.vehicle.type = KeyValuePair
-log4j2.logger.greenvulcano.appenderRef.gv.filter.mdc.vehicle.key = MASTER_SERVICE
-log4j2.logger.greenvulcano.appenderRef.gv.filter.mdc.vehicle.value = (service name)
+# Filtering specific services
+#log4j2.logger.greenvulcano.appenderRef.gv.filter.mdc.type = ThreadContextMapFilter
+#log4j2.logger.greenvulcano.appenderRef.gv.filter.mdc.operator = or
+#log4j2.logger.greenvulcano.appenderRef.gv.filter.mdc.fleet.type = KeyValuePair
+#log4j2.logger.greenvulcano.appenderRef.gv.filter.mdc.fleet.key = MASTER_SERVICE
+#log4j2.logger.greenvulcano.appenderRef.gv.filter.mdc.fleet.value = (service name)
 ```
 [GreenVulcano]: https://github.com/green-vulcano/gv-engine
 [Apache Karaf]: <http://karaf.apache.org>
