@@ -45,9 +45,7 @@ public class GVCredentialsManager implements CredentialsManager {
 	public Credentials create(String username, String password, String clientUsername, String clientPassword) throws UserNotFoundException, UserExpiredException, PasswordMissmatchException {
 				
 		User client = usersManager.validateUser(clientUsername, clientPassword);
-		User resourceOwner = usersManager.validateUser(username, password);
-		
-		credentialsRepository.find(resourceOwner.getUsername()).ifPresent(credentialsRepository::remove);
+		User resourceOwner = usersManager.validateUser(username, password);		
 		
 		Credentials credentials = new Credentials();
 		credentials.setClient(client);

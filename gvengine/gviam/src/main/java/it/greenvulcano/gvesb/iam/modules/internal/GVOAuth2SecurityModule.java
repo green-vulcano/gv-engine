@@ -19,9 +19,14 @@ import it.greenvulcano.gvesb.iam.service.CredentialsManager;
 public class GVOAuth2SecurityModule implements SecurityModule {
 
 	private CredentialsManager credentialsManager;
+	private String realm;
 	
 	public void setCredentialsManager(CredentialsManager credentialsManager) {
 		this.credentialsManager = credentialsManager;
+	}
+	
+	public void setRealm(String realm) {
+		this.realm = realm;
 	}
 	
 	@Override
@@ -68,6 +73,16 @@ public class GVOAuth2SecurityModule implements SecurityModule {
 			
 		}
 		return Optional.empty();
+	}
+
+	@Override
+	public String getSchema() {		
+		return "Bearer";
+	}
+
+	@Override
+	public String getRealm() {		
+		return realm;
 	}
 
 }

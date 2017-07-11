@@ -167,6 +167,9 @@ public final class GreenVulcanoPoolManager implements ConfigurationListener
             // no already initialized pools...
             if (greenVulcanoPools.isEmpty()) {
             	GreenVulcanoPool defaultPool = new GreenVulcanoPool(GreenVulcanoPool.DEFAULT_INITIAL_SIZE, GreenVulcanoPool.DEFAULT_MAXIMUM_SIZE, GreenVulcanoPool.DEFAULT_MAXIMUM_CREATION, GreenVulcanoPool.DEFAULT_SUBSYSTEM);
+            	defaultPool.setDefaultTimeout(GreenVulcanoPool.DEFAULT_TIMEOUT);
+            	defaultPool.setShrinkDelayTime(GreenVulcanoPool.DEFAULT_SHRINK_DELAY_TIME);
+            	register(defaultPool);
             	greenVulcanoPools.put(GreenVulcanoPool.DEFAULT_SUBSYSTEM, defaultPool);
             	
             	if (XMLConfig.exists(CONF_FILE_NAME, "//GreenVulcanoPool")) {

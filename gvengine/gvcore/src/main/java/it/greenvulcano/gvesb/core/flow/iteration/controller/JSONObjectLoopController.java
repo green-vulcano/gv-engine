@@ -19,6 +19,7 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb.core.flow.iteration.controller;
 
+import java.util.Objects;
 import java.util.Optional;
 import org.json.JSONObject;
 
@@ -37,11 +38,13 @@ import it.greenvulcano.gvesb.core.flow.iteration.LoopController;
  */
 public class JSONObjectLoopController extends BaseLoopController {
 	protected static final String GV_LOOP_KEY = "GV_LOOP_KEY";
-	private JSONObject jsonObject = null; 
 	
+	private GVBuffer inputBuffer;
+	private JSONObject jsonObject = null; 
+		
 	@Override
 	protected GVBuffer doLoop(GVBuffer inputCollection) throws GVException{
-		
+		inputBuffer = inputCollection;
 		jsonObject = parseGVBuffer(inputCollection).orElseThrow(() -> {
 			return new GVException("GVCORE_UNPARSABLE_JSON_DATA", new String[][]{{"name", "'collection-type'"},
                 {"object", "" + inputCollection.getObject()}});
@@ -66,7 +69,9 @@ public class JSONObjectLoopController extends BaseLoopController {
 		
 			GVBuffer itemData = null;
 			try {
-				itemData = new GVBuffer();
+				
+				itemData = new GVBuffer(inputBuffer, false);
+				
 				itemData.setProperty(GV_LOOP_KEY, key);
 				itemData.setObject(jsonObject.get(key));
 			} catch (Exception e) {
@@ -78,7 +83,9 @@ public class JSONObjectLoopController extends BaseLoopController {
 	private Optional<JSONObject> parseGVBuffer(GVBuffer data){
 		JSONObject json = null;
 		try {
-			if (data.getObject() instanceof JSONObject) {
+			if (Objects.isNull(data.getObject())) {
+				return Optional.empty();
+			} else if (data.getObject() instanceof JSONObject) {
 				json = JSONObject.class.cast(data.getObject());
 			} else if (data.getObject() instanceof String) {
 				json = new JSONObject(data.getObject().toString());

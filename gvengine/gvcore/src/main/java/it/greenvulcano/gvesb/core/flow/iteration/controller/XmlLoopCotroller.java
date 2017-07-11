@@ -48,6 +48,7 @@ import it.greenvulcano.gvesb.core.flow.iteration.LoopController;
  */
 public class XmlLoopCotroller extends BaseLoopController {
 
+	private GVBuffer inputBuffer;
 
 	private final String CHILD_NODE_NAME ="CHILD_NODE_NAME";
 	
@@ -55,7 +56,7 @@ public class XmlLoopCotroller extends BaseLoopController {
 	
 	@Override
 	protected GVBuffer doLoop(GVBuffer inputCollection) throws GVException {
-		
+		inputBuffer = inputCollection;
 		NodeList nodeList =  parseGVBuffer(inputCollection).orElseThrow(() -> {
 			return new GVException("GVCORE_UNPARSABLE_XML_DATA", new String[][]{{"name", "'collection-type'"},
                 {"object", "" + inputCollection.getObject()}});
@@ -110,7 +111,7 @@ public class XmlLoopCotroller extends BaseLoopController {
 		
 		GVBuffer itemData = null;
 		try {
-			itemData = new GVBuffer();			
+			itemData = new GVBuffer(inputBuffer, false);			
 			itemData.setProperty(CHILD_NODE_NAME, node.getNodeName());
 			itemData.setObject(node);
 		} catch (Exception e) {

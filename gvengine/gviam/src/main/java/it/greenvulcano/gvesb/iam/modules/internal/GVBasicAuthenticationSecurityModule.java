@@ -47,11 +47,15 @@ public class GVBasicAuthenticationSecurityModule implements SecurityModule {
 	private final static Logger LOG = LoggerFactory.getLogger(GVBasicAuthenticationSecurityModule.class);
 	
 	private UsersManager usersManager;
+	private String realm;
 	
 	public void setUsersManager(UsersManager usersManager) {
 		this.usersManager = usersManager;
 	}
 	
+	public void setRealm(String realm) {
+		this.realm = realm;
+	}	
 	
 	@Override
 	public Optional<Identity> resolve(String authorization)  throws UserNotFoundException, UserExpiredException, PasswordMissmatchException {
@@ -100,6 +104,17 @@ public class GVBasicAuthenticationSecurityModule implements SecurityModule {
 		}
 		
 		return Optional.empty();
+	}
+
+
+	@Override
+	public String getSchema() {		
+		return "Basic";
+	}
+
+	@Override
+	public String getRealm() {		
+		return realm;
 	}
 	
 	

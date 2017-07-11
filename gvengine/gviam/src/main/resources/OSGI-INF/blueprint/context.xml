@@ -70,6 +70,7 @@
 	
 	<bean id="gvBasicAuthenticationSecurityModule" class="it.greenvulcano.gvesb.iam.modules.internal.GVBasicAuthenticationSecurityModule">
 		<property name="usersManager" ref="gvUsersManager"/>
+		<property name="realm" value="karaf"/>
 	</bean>
 	
 	<service id="basicAuthenticationSecurityModule" ref="gvBasicAuthenticationSecurityModule" interface="it.greenvulcano.gvesb.iam.modules.SecurityModule">
@@ -81,6 +82,7 @@
 	
 	<bean id="gvOAuth2SecurityModule" class="it.greenvulcano.gvesb.iam.modules.internal.GVOAuth2SecurityModule">
 		<property name="credentialsManager" ref="gvCredentialsManager"/>
+		<property name="realm" value="karaf"/>
 	</bean>
 	
 	<service id="oauth2SecurityModule" ref="gvOAuth2SecurityModule" interface="it.greenvulcano.gvesb.iam.modules.SecurityModule">

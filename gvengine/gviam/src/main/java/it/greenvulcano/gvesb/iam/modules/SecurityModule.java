@@ -32,6 +32,10 @@ import it.greenvulcano.gvesb.iam.exception.GVSecurityException;
 public interface SecurityModule {
 	
 	
+	String getSchema();
+	
+	String getRealm();
+	
 	Optional<Identity> resolve(String authorization) throws GVSecurityException;
 	
 	Optional<Identity> resolve(String type, Map<String,Object> authorization) throws GVSecurityException;
