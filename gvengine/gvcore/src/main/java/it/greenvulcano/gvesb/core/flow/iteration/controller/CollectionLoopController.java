@@ -37,10 +37,12 @@ import it.greenvulcano.gvesb.core.flow.iteration.LoopController;
  * 
  */
 public class CollectionLoopController extends BaseLoopController {
+	
+	private GVBuffer inputBuffer;
 
 	@Override
 	protected GVBuffer doLoop(GVBuffer inputCollection) throws GVException {
-		
+		inputBuffer = inputCollection;
 		if ( inputCollection.getObject() instanceof Collection<?>) {
 			Collection<?> inputCollectionData = (Collection<?>) inputCollection.getObject();
 			
@@ -66,7 +68,7 @@ public class CollectionLoopController extends BaseLoopController {
 			
 		GVBuffer itemData = null;
 		try {
-			itemData = new GVBuffer();
+			itemData = new GVBuffer(inputBuffer, false);
 			itemData.setObject(o);
 		} catch (Exception e) {
 			LOG.error("Exception on GVBuffer creation ", e);

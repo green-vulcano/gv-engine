@@ -37,11 +37,13 @@ import it.greenvulcano.gvesb.core.flow.iteration.LoopController;
  */
 public class JSONObjectLoopController extends BaseLoopController {
 	protected static final String GV_LOOP_KEY = "GV_LOOP_KEY";
-	private JSONObject jsonObject = null; 
 	
+	private GVBuffer inputBuffer;
+	private JSONObject jsonObject = null; 
+		
 	@Override
 	protected GVBuffer doLoop(GVBuffer inputCollection) throws GVException{
-		
+		inputBuffer = inputCollection;
 		jsonObject = parseGVBuffer(inputCollection).orElseThrow(() -> {
 			return new GVException("GVCORE_UNPARSABLE_JSON_DATA", new String[][]{{"name", "'collection-type'"},
                 {"object", "" + inputCollection.getObject()}});
@@ -66,7 +68,9 @@ public class JSONObjectLoopController extends BaseLoopController {
 		
 			GVBuffer itemData = null;
 			try {
-				itemData = new GVBuffer();
+				
+				itemData = new GVBuffer(inputBuffer, false);
+				
 				itemData.setProperty(GV_LOOP_KEY, key);
 				itemData.setObject(jsonObject.get(key));
 			} catch (Exception e) {
