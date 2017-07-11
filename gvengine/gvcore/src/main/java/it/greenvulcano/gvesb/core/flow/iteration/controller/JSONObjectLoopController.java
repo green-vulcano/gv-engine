@@ -19,6 +19,7 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb.core.flow.iteration.controller;
 
+import java.util.Objects;
 import java.util.Optional;
 import org.json.JSONObject;
 
@@ -82,7 +83,9 @@ public class JSONObjectLoopController extends BaseLoopController {
 	private Optional<JSONObject> parseGVBuffer(GVBuffer data){
 		JSONObject json = null;
 		try {
-			if (data.getObject() instanceof JSONObject) {
+			if (Objects.isNull(data.getObject())) {
+				return Optional.empty();
+			} else if (data.getObject() instanceof JSONObject) {
 				json = JSONObject.class.cast(data.getObject());
 			} else if (data.getObject() instanceof String) {
 				json = new JSONObject(data.getObject().toString());
