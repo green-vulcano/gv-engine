@@ -192,7 +192,7 @@ angular.module('gvconsole')
             authenticationService.createContext($scope.username, $scope.password, function(response){
             	 $scope.dataLoading = false;
             	switch (response.status) {
-	                	
+
             			case 200:
 		                    $location.path('/myprofile');
 		                    break;
