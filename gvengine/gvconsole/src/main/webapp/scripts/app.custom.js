@@ -1,5 +1,8 @@
 angular.module('gvconsole', ['ngCookies','ngRoute','angular-quartz-cron', 'ui.bootstrap'])
 .constant('ENDPOINTS', getEndpoints())
+.config(['$httpProvider', function($httpProvider){
+	$httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+}])
 .config(['$routeProvider', function($routeProvider) {
 	    $routeProvider.
 	      when('/login', {
