@@ -1,8 +1,8 @@
 angular.module('gvconsole')
  .service('AdminService', ['ENDPOINTS', '$http', function(Endpoints, $http){
 
-		this.getAllUsers = function(){
-			 return $http.get(Endpoints.gviam + '/admin/users');
+		this.getAllUsers = function(range){
+			 return $http.get(Endpoints.gviam + '/admin/users', {headers: {'Range':'users ' + range}});
 		}
 
 		this.getUser = function(id){
@@ -35,29 +35,6 @@ angular.module('gvconsole')
 
  }]);
 
- angular.module('gvconsole')
- .controller('PaginationDemoCtrl', ['AdminService', '$scope', '$log', function (AdminService, $scope, $log) {
-
-   $scope.viewby = 10;
-   $scope.itemsPerPage = 10;
-   $scope.totalItems = 64;
-   $scope.currentPage = 1;
-   $scope.itemsPerPage = $scope.viewby;
-
-   $scope.setItemsPerPage = function(num) {
-   $scope.itemsPerPage = num;
-   $scope.currentPage = 1;
-}
-
-   AdminService.getAllUsers().then(
-      function(response) {
-        $scope.totalItems = response.data.length;
-   });
-
-   $scope.maxSize = $scope.totalItems/3;
-
- }]);
-
 angular.module('gvconsole')
 .controller('UsersListController',['AdminService','$rootScope', '$scope', '$location', function(AdminService,$rootScope, $scope, $location){
 
@@ -68,16 +45,33 @@ angular.module('gvconsole')
     }
   };
 
+  $scope.viewby = 10;
+  $scope.itemsPerPage = 10;
+  $scope.totalItems = 64;
+  $scope.currentPage = 1;
+  $scope.itemsPerPage = $scope.viewby;
+
+  $scope.setItemsPerPage = function(num) {
+  $scope.itemsPerPage = num;
+};
+
+  $scope.min = ($scope.currentPage * 10)-10;
+  $scope.max = ($scope.currentPage *10);
+
+
+  $scope.range = $scope.min + '-' + $scope.max;
+
 	this.alerts = [];
 
 	this.list = [];
 
-	AdminService.getAllUsers().then(
+	AdminService.getAllUsers($scope.range).then(
 				function(response){
 
           instance.alerts = [];
           instance.list = response.data;
-
+          //$scope.totalItems = response.data.length;
+          //console.log(response.headers('Content-Range'));
 
           },
 				function(response){
@@ -94,6 +88,8 @@ angular.module('gvconsole')
 					}
 			$scope.loadStatus = "error";
 		});
+
+    $scope.maxSize = $scope.totalItems/3;
 
     $scope.order = function(by){
 
