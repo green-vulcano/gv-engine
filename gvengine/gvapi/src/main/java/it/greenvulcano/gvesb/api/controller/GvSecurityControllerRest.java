@@ -53,7 +53,7 @@ import it.greenvulcano.gvesb.iam.service.SearchResult;
 import it.greenvulcano.gvesb.iam.service.UsersManager;
 import it.greenvulcano.gvesb.iam.service.UsersManager.Authority;
 
-@CrossOriginResourceSharing(allowAllOrigins=true, allowCredentials=true)
+@CrossOriginResourceSharing(allowAllOrigins=true, allowCredentials=true, exposeHeaders={"Content-type", "Content-Range", "X-Auth-Status"} )
 public class GvSecurityControllerRest extends BaseControllerRest {
 			
 	private final static Logger LOG = LoggerFactory.getLogger(GvSecurityControllerRest.class);	
