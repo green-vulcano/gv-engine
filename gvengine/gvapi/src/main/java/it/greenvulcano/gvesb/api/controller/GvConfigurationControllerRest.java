@@ -52,7 +52,7 @@ import it.greenvulcano.gvesb.GVConfigurationManager;
 import it.greenvulcano.gvesb.GVConfigurationManager.Authority;
 
 
-@CrossOriginResourceSharing(allowAllOrigins=true, allowCredentials=true)
+@CrossOriginResourceSharing(allowAllOrigins=true, allowCredentials=true, exposeHeaders={"Content-type", "Content-Range", "X-Auth-Status"})
 public class GvConfigurationControllerRest {
 	 private final static Logger LOG = LoggerFactory.getLogger(GvConfigurationControllerRest.class);	
 	

@@ -62,12 +62,16 @@ public class GVSecurityFilter implements ContainerRequestFilter {
 			LOG.debug("SecurityManager found, handling authentication");
 			
 			String wwwAuthenticate = "unknown";
+			Optional<String> xRequestedWith = Optional.ofNullable(requestContext.getHeaderString("X-Requested-With"));
 			try {
 				
 				for (ServiceReference<SecurityModule> securityModuleRef :  securityModulesReferences) {
 					
 					SecurityModule securityModule = securityModuleRef.getBundle().getBundleContext().getService(securityModuleRef);
 					wwwAuthenticate = securityModule.getSchema() + " realm="+ securityModule.getRealm();
+					if (xRequestedWith.isPresent()) {
+						wwwAuthenticate = xRequestedWith.get() + "+" + wwwAuthenticate;
+					}
 					
 					Optional<SecurityContext> securityContext = securityModule.resolve(authorization).map(GVSecurityContext::new);
 					
