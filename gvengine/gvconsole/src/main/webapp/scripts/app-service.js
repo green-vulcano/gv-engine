@@ -32,17 +32,17 @@ angular.module('gvconsole')
 
     $scope.run = function(){
 
-      var authdata = Base64.encode($scope.username + ':' + $scope.password);
+      $http.defaults.headers.common['Authorization'] = undefined;
 
-      if($scope.username == ""){
-        $http.defaults.headers.common['Authorization'] = undefined;
-      }else{
+      if($scope.username != undefined && $scope.username != ""){
+
+        var authdata = Base64.encode($scope.username + ':' + $scope.password);
+
         $http.defaults.headers.common['Authorization'] = "Basic " + authdata;
-      }
+      };
+
 
       $scope.call = "http://localhost:8181/cxf/gvesb/" + Object.values($scope.flow)[2];
-
-      console.log('service/operation: ' + Object.values($scope.flow)[2]);
 
       var request = {
         method: $scope.http_method,
@@ -60,7 +60,6 @@ angular.module('gvconsole')
       $http(request).then(function(response){
 
       $scope.output = 'RESULT :\n\n' + response.data;
-      console.log('response' + Object.keys(response));
 
       },function(response){
 
