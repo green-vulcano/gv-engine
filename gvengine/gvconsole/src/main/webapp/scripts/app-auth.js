@@ -105,7 +105,7 @@ angular.module('gvconsole')
 	            };
 
 	           $http.defaults.headers.common['Authorization'] = 'Basic ' + authdata;
-						 
+
 	           $http.post(Endpoints.gviam +'/authenticate').then(function(response) {
 	        	   			angular.merge($rootScope.globals.currentUser, response.data);
 

@@ -201,73 +201,81 @@ angular.module('gvconsole')
 
 
 angular.module('gvconsole')
-.controller('MonitoringController', ['MonitoringServices', '$scope', '$http', 'ChartServiceMemory', 'ChartServiceClassesThreads', 'ChartServiceCPU' , '$interval',
- function(MonitoringServices, $scope, $http, chartServiceMemory, chartServiceClassesThreads, ChartServiceCPU, $interval){
+.controller('MonitoringController', ['$location', 'MonitoringServices', '$scope', '$http', 'ChartServiceMemory', 'ChartServiceClassesThreads', 'ChartServiceCPU' , '$interval',
+ function($location, MonitoringServices, $scope, $http, chartServiceMemory, chartServiceClassesThreads, ChartServiceCPU, $interval){
 
-$interval(function(){
+    $interval(function(){
 
-  MonitoringServices.getMemory().then(
-     function(response) {
-       $scope.maxMemory = (response.data.maxMemory/1048576).toFixed(2);
-       $scope.totalMemory = (response.data.totalMemory/1048576).toFixed(2);
-       $scope.freeMemory = (response.data.freeMemory/1048576).toFixed(2);
-       $scope.heapMemory = (response.data.heapMemory/1048576).toFixed(2);
-  }, function(response){
-       $scope.error = response;
-  });
+      if($location.path() == '/monitoring'){
 
-   MonitoringServices.getClasses().then(
-      function(response) {
-        $scope.totalLoadedClasses = response.data.totalLoadedClasses;
-        $scope.loadedClasses = response.data.loadedClasses;
-        $scope.unLoadedClasses = response.data.unLoadedClasses;
-   }, function(response){
-        $scope.error = response;
-   });
-
-    MonitoringServices.getThreads().then(
-       function(response) {
-         $scope.totalThreads = response.data.totalThreads;
-         $scope.daemonThreads = response.data.daemonThreads;
-         $scope.peakThreads = response.data.peakThreads;
-    }, function(response){
-         $scope.error = response;
-    });
-
-    MonitoringServices.getCPU().then(
-      function(response) {
-         $scope.cpuUse = response.data.usage;
-
+      MonitoringServices.getMemory().then(
+         function(response) {
+           $scope.maxMemory = (response.data.maxMemory/1048576).toFixed(2);
+           $scope.totalMemory = (response.data.totalMemory/1048576).toFixed(2);
+           $scope.freeMemory = (response.data.freeMemory/1048576).toFixed(2);
+           $scope.heapMemory = (response.data.heapMemory/1048576).toFixed(2);
       }, function(response){
            $scope.error = response;
       });
 
-  chartServiceMemory.updateGloveChart('SED00201', $scope.maxMemory);
-  chartServiceMemory.updateGloveChart('SED00202', $scope.totalMemory);
-  chartServiceMemory.updateGloveChart('SED00203', $scope.freeMemory);
-  chartServiceMemory.updateGloveChart('SED00204', $scope.heapMemory);
+       MonitoringServices.getClasses().then(
+          function(response) {
+            $scope.totalLoadedClasses = response.data.totalLoadedClasses;
+            $scope.loadedClasses = response.data.loadedClasses;
+            $scope.unLoadedClasses = response.data.unLoadedClasses;
+       }, function(response){
+            $scope.error = response;
+       });
 
-  chartServiceClassesThreads.updateGloveChart('SED00206', $scope.totalLoadedClasses);
-  chartServiceClassesThreads.updateGloveChart('SED00207', $scope.loadedClasses);
-  chartServiceClassesThreads.updateGloveChart('SED00208', $scope.unLoadedClasses);
+        MonitoringServices.getThreads().then(
+           function(response) {
+             $scope.totalThreads = response.data.totalThreads;
+             $scope.daemonThreads = response.data.daemonThreads;
+             $scope.peakThreads = response.data.peakThreads;
+        }, function(response){
+             $scope.error = response;
+        });
 
-  chartServiceClassesThreads.updateGloveChart('SED00209', $scope.totalThreads);
-  chartServiceClassesThreads.updateGloveChart('SED00210', $scope.daemonThreads);
-  chartServiceClassesThreads.updateGloveChart('SED00211', $scope.peakThreads);
-},1000);
+        MonitoringServices.getCPU().then(
+          function(response) {
+             $scope.cpuUse = response.data.usage;
 
-$interval(function(){
+          }, function(response){
+               $scope.error = response;
+          });
 
-  MonitoringServices.getCPU().then(
-      function(response) {
-         $scope.cpuUse = response.data.usage;
+      chartServiceMemory.updateGloveChart('SED00201', $scope.maxMemory);
+      chartServiceMemory.updateGloveChart('SED00202', $scope.totalMemory);
+      chartServiceMemory.updateGloveChart('SED00203', $scope.freeMemory);
+      chartServiceMemory.updateGloveChart('SED00204', $scope.heapMemory);
 
-      }, function(response){
-           $scope.error = response;
-      });
+      chartServiceClassesThreads.updateGloveChart('SED00206', $scope.totalLoadedClasses);
+      chartServiceClassesThreads.updateGloveChart('SED00207', $scope.loadedClasses);
+      chartServiceClassesThreads.updateGloveChart('SED00208', $scope.unLoadedClasses);
 
-      ChartServiceCPU.updateGloveChart('SED00212',$scope.cpuUse);
+      chartServiceClassesThreads.updateGloveChart('SED00209', $scope.totalThreads);
+      chartServiceClassesThreads.updateGloveChart('SED00210', $scope.daemonThreads);
+      chartServiceClassesThreads.updateGloveChart('SED00211', $scope.peakThreads);
+};
 
-},3000);
+    },1000);
+
+    $interval(function(){
+
+      if($location.path() == '/monitoring'){
+
+      MonitoringServices.getCPU().then(
+          function(response) {
+             $scope.cpuUse = response.data.usage;
+
+          }, function(response){
+               $scope.error = response;
+          });
+
+          ChartServiceCPU.updateGloveChart('SED00212',$scope.cpuUse);
+
+        };
+
+    },3000);
 
 }]);

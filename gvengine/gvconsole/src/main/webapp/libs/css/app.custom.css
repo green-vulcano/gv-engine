@@ -1,10 +1,19 @@
+html{
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 1.5em;
+}
 body {
   background-color: #efefef;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 14px;
   line-height: 1.42857143;
+  margin-bottom: 5%;
 }
-#output_service {
+.name{
+ vertical-align: middle;
+}
+.panel-title{
+  font-size: 18px;
+}
+#outputArea{
   background-color: #333;
   color: #11c104;
 }
@@ -12,12 +21,22 @@ body {
   from {opacity: 1.0;}
   to {opacity: 0.0;}
 }
-#fabuttonplus{
-  margin-left: 15px;
-  margin-top: 5px;
-}
 .modal-backdrop {
   position: relative;
+}
+.padding-box{
+  margin-bottom: 18px;
+}
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+        cursor: pointer;
+
 }
 .paused{
   color: #efc23b;
@@ -30,27 +49,14 @@ body {
 .optionForm{
   padding-left:0;
 }
-.padding-box{
-  margin-bottom: 18px;
-}
 .input-group-addon {
     background-color: #fff;
 }
-.noselect {
-  -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-     -khtml-user-select: none; /* Konqueror HTML */
-       -moz-user-select: none; /* Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
-            user-select: none; /* Non-prefixed version, currently
-                                  supported by Chrome and Opera */
-        cursor: pointer;
-}
 #selctNum{
-  width: 50px;
-  height: 20px;
+  width: 3.5em;
+  height: 1.4em;
   display: inline-block;
-  padding: 0px 6px;
+  padding: 0em 0.4em;
 }
 .off{
   display:none;
@@ -66,20 +72,27 @@ body {
   margin-right: 0;
   margin-left: 0;
 }
+#showrole{
+  margin-top: 15px;
+}
+#fabuttonplus{
+  margin-left: 15px;
+  margin-top: 0;
+}
 #searchBarUser {
-  margin: 0px;
-  padding: 0px;
-  margin-bottom: 18px;
+  margin: 0;
+  padding: 0;
+  margin-bottom: 1.1em;
 }
 .container {
   max-width: 100%;
-  padding-right: 0px;
-  padding-left: 0px;
+  padding-right: 0;
+  padding-left: 0;
   margin-right: auto;
   margin-left: auto;
 }
 .form.ng-pristine.ng-invalid.ng-invalid-required.ng-valid-pattern {
-  margin-top:  50px;
+  margin-top:  3.1em;
 }
 .input-group-btn {
     z-index: 0;
@@ -87,13 +100,13 @@ body {
 #panelPagination {
   color: #fff;
   background-color: #238650;
-  font-size: 18px;
+  font-size: 1.05em;
 }
 #setNewPassword {
-  margin-bottom: 20px;
+  margin-bottom: 1.25em;
 }
 #buttonInfo{
-  text-align: var(50px);
+  text-align: var(3.12px);
 
 }
 #newrole {
@@ -104,23 +117,23 @@ body {
   font-weight: bold;
 }
 #rolesP{
-  font-size: 20px;
+  font-size: 1.25em;
   color: #238650;
-  margin-left: 10px;
+  margin-left: 0.62em;
   font-weight: bold;
-  margin-bottom: 20px;
+  margin-bottom: 1.25em;
 }
 #formLeft {
   text-align: left;
-  margin: 0px;
-  font-size: 18px;
+  margin: 0;
+  font-size: 1.29em;
   width: 70%;
 }
 #labelLeft{
   text-align: left;
 }
 #panelHead {
-  line-height: 34px;
+  line-height: 2.12em;
   vertical-align: middle;
 }
 #actionTable {
@@ -129,29 +142,22 @@ body {
 
 #addTableButton {
   float: right;
-  font-size: 18px;
+  font-size: 1.29em;
 }
-
-
-
 #loginLogo{
   width: 100%;
-  margin-bottom: 20px;
+  margin-bottom: 1.25em;
 }
 #text {
   display: inherit;
-  font-size: 20px;
-  margin-bottom: 5px;
+  font-size: 1.25em;
+  margin-bottom: 0.31em;
 }
-
-
-
-
 #setPassword {
     width: 20%;
 }
 #formSetPassword {
-  margin-bottom: 10px;
+  margin-bottom: 0.62em;
 }
 /******* Start Nav-bar Style *******/
 .navbar-default .navbar-toggle {
@@ -190,7 +196,7 @@ thead {
 .panel-default>.panel-heading {
     color: #fff;
     background-color: #238650;
-    font-size: 18px;
+    font-size: 1.12em;
 }
 /******* End Panel Style *******/
 
@@ -200,19 +206,20 @@ thead {
 }
 
 #gvesb_name{
-  font-size:25px;
+  font-size:1.5em;
   text-align: center;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 /******* Start Logo and Brand *******/
 
 /******* Start Side Bar Style ******/
-
 .side-menu {
   position: fixed;
-  width: 300px;
+  width: 21.4em;
   height: 100%;
   background-color: #fff;
-  border-right: 1px solid #e7e7e7;
+  border-right: 0.07em solid #e7e7e7;
+  overflow: overlay;
 }
 .side-menu .navbar {
   border: inherit;
@@ -220,47 +227,53 @@ thead {
 }
 .side-menu .navbar-header {
   width: 100%;
-  border-bottom: 1px solid #e7e7e7;
+  border-bottom: 0.07em solid #e7e7e7;
 }
 .side-menu .navbar-nav .active a {
   background-color: transparent;
-  margin-right: -1px;
-  border-right: 5px solid #e7e7e7;
+  margin-right: -0.07em;
+  border-right: 0.2em solid #e7e7e7;
 }
 .side-menu .navbar-nav li {
   display: block;
   width: 100%;
-  border-bottom: 1px solid #e7e7e7;
+  border-bottom: 0.07em solid #e7e7e7;
 }
 .side-menu .navbar-nav li a {
-  padding: 15px;
-  font-size: 20px;
-  height: 60px;
+  padding: 1.07em;
+  font-size: 1.43em;
+  height: 2.9em;
 }
 .side-menu .navbar-nav li a .glyphicon {
-  padding-right: 10px;
+  padding-right: 0.71em;
 }
 
 .side-menu .brand-name-wrapper {
-  min-height: 50px;
+  min-height: 3.58em;
 }
 .side-menu .brand-name-wrapper .navbar-brand {
   display: block;
 }
 /* Main body section */
 .side-body {
-  margin-left: 310px;
+  margin-left: 22.1em;
 }
 /******* End Side Bar Style ******/
 
 /******* Start Style for Small-Screen *******/
 @media (max-width: 768px) {
+  #fabuttonplus{
+    margin-left: 15px;
+    margin-top: 5px;;
+  }
   .side-menu {
-    position: relative;
+    position: fixed;
     width: 100%;
     height: 0;
     border-right: 0;
-    border-bottom: 1px solid #e7e7e7;
+    overflow: unset;
+    z-index: 2;
+
   }
   .side-menu .brand-name-wrapper .navbar-brand {
     display: inline-block;
@@ -269,36 +282,36 @@ thead {
     border-bottom: none;
   }
   #logo, #gvesb_name{
-    height: 100%;
+    height: 50px;
   }
   #logo{
-    width: 100px;
+    width: 6.25em;
   }
   .navbar-brand {
       padding: 0;
   }
   @-moz-keyframes slidein {
     0% {
-      left: -300px;
+      left: -21.4em;
     }
     100% {
-      left: 10px;
+      left: 0.71em;
     }
   }
   @-webkit-keyframes slidein {
     0% {
-      left: -300px;
+      left: -21.4em;
     }
     100% {
-      left: 10px;
+      left: 0.71em;
     }
   }
   @keyframes slidein {
     0% {
-      left: -300px;
+      left: -21.4em;
     }
     100% {
-      left: 10px;
+      left: 0.71em;
     }
   }
   @-moz-keyframes slideout {
@@ -306,7 +319,7 @@ thead {
       left: 0;
     }
     100% {
-      left: -300px;
+      left: -21.4em;
     }
   }
   @-webkit-keyframes slideout {
@@ -314,7 +327,7 @@ thead {
       left: 0;
     }
     100% {
-      left: -300px;
+      left: -21.4em;
     }
   }
   @keyframes slideout {
@@ -322,7 +335,7 @@ thead {
       left: 0;
     }
     100% {
-      left: -300px;
+      left: -21.4em;
     }
   }
   .side-menu-container > .navbar-nav.slide-in {
@@ -332,14 +345,15 @@ thead {
     animation: slidein 300ms forwards;
     -webkit-transform-style: preserve-3d;
     transform-style: preserve-3d;
+    overflow: auto;
   }
   .side-menu-container > .navbar-nav {
     position: fixed;
-    left: -300px;
-    width: 300px;
-    top: 43px;
+    left: -21.4em;
+    width: 21.4em;
+    top: 3.07em;
     height: 100%;
-    border-right: 1px solid #e7e7e7;
+    border-right: 0.07em solid #e7e7e7;
     background-color: #ffffff;
     -moz-animation: slideout 300ms forwards;
     -o-animation: slideout 300ms forwards;
@@ -347,13 +361,14 @@ thead {
     animation: slideout 300ms forwards;
     -webkit-transform-style: preserve-3d;
     transform-style: preserve-3d;
+    overflow: auto;
   }
   @-moz-keyframes bodyslidein {
     0% {
       left: 0;
     }
     100% {
-      left: 300px;
+      left: 21.4em;
     }
   }
   @-webkit-keyframes bodyslidein {
@@ -361,7 +376,7 @@ thead {
       left: 0;
     }
     100% {
-      left: 300px;
+      left: 21.4em;
     }
   }
   @keyframes bodyslidein {
@@ -369,12 +384,12 @@ thead {
       left: 0;
     }
     100% {
-      left: 300px;
+      left: 21.4em;
     }
   }
   @-moz-keyframes bodyslideout {
     0% {
-      left: 300px;
+      left: 21.4em;
     }
     100% {
       left: 0;
@@ -382,7 +397,7 @@ thead {
   }
   @-webkit-keyframes bodyslideout {
     0% {
-      left: 300px;
+      left: 21.4em;
     }
     100% {
       left: 0;
@@ -390,15 +405,15 @@ thead {
   }
   @keyframes bodyslideout {
     0% {
-      left: 300px;
+      left: 21.4em;
     }
     100% {
       left: 0;
     }
   }
   .side-body {
-    margin-left: 5px;
-    margin-top: 70px;
+    margin-left: 0.3em;
+    margin-top: 5em;
     position: relative;
     -moz-animation: bodyslideout 300ms forwards;
     -o-animation: bodyslideout 300ms forwards;
@@ -416,9 +431,10 @@ thead {
     transform-style: preserve-3d;
   }
   .navbar-toggle {
+    height: 3.6em;
     border: 0;
     float: left;
-    padding: 18px;
+    padding: 1.2em;
     margin: 0;
     border-radius: 0;
     background-color: #f3f3f3;
@@ -433,7 +449,7 @@ thead {
     display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
     z-index: 1; /* Sit on top */
-    padding-top: 100px; /* Location of the box */
+    padding-top: 7.1em; /* Location of the box */
     left: 0;
     top: 0;
     width: 100%; /* Full width */
@@ -448,11 +464,30 @@ thead {
     background-color: #fefefe;
     margin: auto;
     text-align: center;
-    padding: 20px;
-    border: 1px solid #888;
+    padding: 21.4em;
+    border: 0.'7em' solid #888;
     width: 40%;
 }
 
 /******* End Delete Confirm Window Style ******/
+/******* Animation slide disabled *******/
+.preload *{
+ -o-transition-property: none !important;
+ -moz-transition-property: none !important;
+ -ms-transition-property: none !important;
+ -webkit-transition-property: none !important;
+ transition-property: none !important;
 
+ -o-transform: none !important;
+ -moz-transform: none !important;
+ -ms-transform: none !important;
+ -webkit-transform: none !important;
+ transform: none !important;
+
+ -webkit-animation: none !important;
+ -moz-animation: none !important;
+ -o-animation: none !important;
+ -ms-animation: none !important;
+ animation: none !important;
+ }
 /******* End Style for Small-Screen *******/

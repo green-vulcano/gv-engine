@@ -1,6 +1,6 @@
 <app-header></app-header>
 <div class="container-fluid">
-   <div class="side-body">
+   <div class="side-body" data-ng-app="services">
       <div class="container" data-ng-controller="ServiceController as ctrl">
          <h1>Service</h1>
          <div class="row" >
@@ -46,9 +46,9 @@
             </div>
             <div id="formLeft" class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
                <div class="form-group clearfix">
-                  <label id="labelLeft" class="control-label optionForm col-sm-4">Input data</label>
+                  <label id="labelLeft" class="control-label optionForm col-sm-4">Body</label>
                   <div class="col-xs-12">
-                     <textarea class="form-control" rows="3" ng-model="service.object"></textarea>
+                     <textarea id="noTab" class="form-control" rows="5" ng-model="service.object"></textarea>
                   </div>
                </div>
                <label class="control-label optionForm col-sm-4">Properties</label>
@@ -65,6 +65,12 @@
                      <a class="close" ng-click="removeParameter(key)">×</a>
                   </div>
                </div>
+               <label id="labelLeft" class="control-label optionForm col-sm-4">Credentials</label>
+               <br></br>
+               <div class="form-group clearfix">
+                  <div class="col-sm-5"><input type="text" class="form-control" ng-model="username" placeholder="username"></div>
+                  <div class="col-sm-6"><input type="password" class="form-control" ng-model="password" placeholder="password"></div>
+               </div>
                <div class="form-group">
                   <div id="btnspace" class="col-sm-offset-4 col-sm-8">
                      <button type="button" class="btn btn-danger" type="reset" value="Reset">Cancel</button>
@@ -74,7 +80,7 @@
                </form>
                <div class="row">
                   <h2>Output</h2>
-                  <textarea id="output_service" readonly class="form-control" rows="10" cols="50">{{output}}</textarea>
+                  <textarea id="output_service" class="form-control" rows="10" cols="50" readonly>{{output}}</textarea>
                </div>
             </div>
          </div>

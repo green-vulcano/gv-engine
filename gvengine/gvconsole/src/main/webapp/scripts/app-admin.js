@@ -38,6 +38,8 @@ angular.module('gvconsole')
 angular.module('gvconsole')
 .controller('UsersListController',['AdminService','$rootScope', '$scope', '$location', function(AdminService,$rootScope, $scope, $location){
 
+console.log('indirizzo: ' + $location.path());
+
 	var instance = this;
   for( prop in $rootScope.globals.currentUser.roles){
     if($rootScope.globals.currentUser.isAdministrator){
@@ -46,48 +48,46 @@ angular.module('gvconsole')
   };
 
   $scope.viewby = 10;
-  $scope.itemsPerPage = 10;
   $scope.totalItems = 64;
   $scope.currentPage = 1;
-  $scope.itemsPerPage = $scope.viewby;
-
-  $scope.setItemsPerPage = function(num) {
-  $scope.itemsPerPage = num;
-};
-
-  $scope.min = ($scope.currentPage * 10)-10;
-  $scope.max = ($scope.currentPage *10);
-
-
-  $scope.range = $scope.min + '-' + $scope.max;
 
 	this.alerts = [];
 
 	this.list = [];
 
-	AdminService.getAllUsers($scope.range).then(
-				function(response){
+  $scope.$watch("currentPage", function(newValue,oldValue) {
 
-          instance.alerts = [];
-          instance.list = response.data;
-          //$scope.totalItems = response.data.length;
-          //console.log(response.headers('Content-Range'));
+    $scope.min = (newValue * $scope.viewby) - $scope.viewby;
+    $scope.max = (newValue * $scope.viewby);
 
-          },
-				function(response){
-					switch (response.status) {
+    $scope.range = $scope.min + '-' + $scope.max;
 
-							case 401: case 403:
-								$location.path('login');
-								break;
+    console.log($scope.range);
 
-							default:
-								instance.alerts.push({type: 'danger', msg: 'Data not available'});
-                $scope.dataNa=true;
-								break;
-					}
-			$scope.loadStatus = "error";
-		});
+    AdminService.getAllUsers($scope.range).then(
+  				function(response){
+
+            instance.alerts = [];
+            instance.list = response.data;
+            $scope.totalItems = (response.headers('Content-Range').split('/'))[1];
+
+            },
+  				function(response){
+  					switch (response.status) {
+
+  							case 401: case 403:
+  								$location.path('login');
+  								break;
+
+  							default:
+  								instance.alerts.push({type: 'danger', msg: 'Data not available'});
+                  $scope.dataNa=true;
+  								break;
+  					}
+  			$scope.loadStatus = "error";
+  		});
+
+    });
 
     $scope.maxSize = $scope.totalItems/3;
 
