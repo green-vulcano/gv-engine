@@ -38,8 +38,6 @@ angular.module('gvconsole')
 angular.module('gvconsole')
 .controller('UsersListController',['AdminService','$rootScope', '$scope', '$location', function(AdminService,$rootScope, $scope, $location){
 
-console.log('indirizzo: ' + $location.path());
-
 	var instance = this;
   for( prop in $rootScope.globals.currentUser.roles){
     if($rootScope.globals.currentUser.isAdministrator){
@@ -55,14 +53,12 @@ console.log('indirizzo: ' + $location.path());
 
 	this.list = [];
 
-  $scope.$watch("currentPage", function(newValue,oldValue) {
+  $scope.$watchGroup(["currentPage","viewby"], function(newValue) {
 
-    $scope.min = (newValue * $scope.viewby) - $scope.viewby;
-    $scope.max = (newValue * $scope.viewby);
+    $scope.min = (newValue[0] * newValue[1]) - newValue[1];
+    $scope.max = (newValue[0] * newValue[1]);
 
     $scope.range = $scope.min + '-' + $scope.max;
-
-    console.log($scope.range);
 
     AdminService.getAllUsers($scope.range).then(
   				function(response){
