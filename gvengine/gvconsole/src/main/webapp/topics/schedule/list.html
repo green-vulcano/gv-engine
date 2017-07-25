@@ -7,12 +7,12 @@
       <div class="panel panel-default">
          <div id="panelHead" class="panel-heading">
             <i class="fa fa-calendar-check-o"></i>Schedule Found: {{ctrl.list.length}}
-            <a href="#/schedule/add" class="btn btn-primary pull-right" data-ng-class="{'btn btn-primary pull-right disabled': dataNa == true || auth != true}">
+            <a href="#/schedule/add" onClick="slide();" class="btn btn-primary pull-right" data-ng-class="{'btn btn-primary pull-right disabled': dataNa == true || auth != true}">
             <i class="fa fa-calendar-plus-o"></i> Add New Schedule
             </a>
          </div>
          <table id="flows" class="table table-hover" >
-            <thead >
+            <thead>
                <tr>
                   <th>Id</th>
                   <th>Operation</th>
@@ -27,16 +27,23 @@
                   <td>{{entry.description}}</td>
                   <td>{{entry.cronExpression}}</td>
                   <td ng-class="{'paused' : entry.status=='PAUSED', 'started' : entry.status=='NORMAL'}">{{entry.status}}</td>
-                  <td class="text-right">
+                  <td class="text-left">
                      <a class="btn btn-warning btn-sm" data-ng-show="entry.status == 'NORMAL'" data-ng-click="ctrl.pause(id)">
-                     <i class="fa fa-pause" aria-hidden="true"></i>
+                     <i class="fa fa-pause" aria-hidden="true" data-ng-class="{'btn btn-warning btn-sm disabled': auth != true}"></i>
                      </a>
                      <a class="btn btn-success btn-sm" data-ng-show="entry.status == 'PAUSED'" data-ng-click="ctrl.resume(id)">
-                     <i class="fa fa-play" aria-hidden="true"></i>
+                     <i class="fa fa-play" aria-hidden="true" data-ng-class="{'btn btn-success btn-sm disabled': auth != true}"></i>
                      </a>
-                     <a class="btn btn-danger btn-sm" data-ng-click="ctrl.delete(id)">
-                     <i class="fa fa-trash-o" aria-hidden="true"></i>
-                     </a>
+                     <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#myModal">
+                     <i class="fa fa-trash-o" aria-hidden="true" data-ng-class="{'btn btn-danger btn-sm disabled': auth != true}"></i>
+                   </button>
+                   <div id="myModal" class="modal fadeout">
+                     <div class="modal-content">
+                       <h4> Are you sure to delete this schedule ? </h4>
+                       <button type="button" class="btn" data-dismiss="modal">Back</button>
+                       <button type="button" class="btn btn-success" data-ng-click="ctrl.delete(id)">Confirm</button>
+                     </div>
+                   </div>
                   </td>
                </tr>
             </tbody>

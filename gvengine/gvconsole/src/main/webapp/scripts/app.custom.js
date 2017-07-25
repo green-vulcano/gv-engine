@@ -1,9 +1,3 @@
-function gototab(reload)
-{
-window.location.hash = '#/monitoring';
-window.location.reload(true);
-};
-
 angular.module('gvconsole', ['ngCookies','ngRoute','angular-quartz-cron', 'ui.bootstrap'])
 .constant('ENDPOINTS', getEndpoints())
 .config(['$httpProvider', function($httpProvider){
@@ -65,3 +59,17 @@ angular.module('gvconsole', ['ngCookies','ngRoute','angular-quartz-cron', 'ui.bo
                         return  $location.path().startsWith(route);
                       };
 }]);
+function gototab(reload)
+{
+window.location.hash = '#/monitoring';
+window.location.reload(true);
+};
+function slideHamburger(){
+		$( "*" ).removeClass( "preload" );
+		$('.navbar-nav').toggleClass('slide-in');
+		$('.side-body').toggleClass('body-slide-in');
+};
+function slideButtonMenu(){
+	setTimeout(function(){$( "*" ).addClass( "preload" );}, 200);
+
+};

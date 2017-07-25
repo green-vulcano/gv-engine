@@ -94,17 +94,34 @@
     			    <label id="labelLeft" class="col-sm-4 control-label">Roles</label>
     			    <div class="col-sm-8">
 
+
     			     	<div>
-    						<div class="input-group">
-    							<input id="newrole" name="newrole" class="form-control" type="text" placeholder="Add..."
-    								   data-uib-typeahead="role.name for role in ctrl.roles | filter:$viewValue | limitTo:8"
-    								   data-ng-model="ctrl.newrole" pattern="(?=^.{4,28}$)^[a-zA-Z][a-zA-Z0-9._@-]*[a-zA-Z0-9]+$"/>
-    							  <span class="input-group-btn">
-    								<button type="button" class="btn" data-ng-click="userForm.newrole.$valid && ctrl.addRole()">
-    									<i class="fa fa-plus" aria-hidden="true"></i>
-    								</button>
-    							  </span>
-    						</div>
+
+                  <div class="input-group">
+      							<input id="newrole" name="newrole" class="form-control" type="text" placeholder="Add..."
+      								   data-uib-typeahead="role.name for role in ctrl.roles | filter:$viewValue | limitTo:8"
+      								   data-ng-model="ctrl.newrole" pattern="(?=^.{4,28}$)^[a-zA-Z][a-zA-Z0-9._@-]*[a-zA-Z0-9]+$"/>
+
+                      <span class="input-group-btn">
+                        <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#showrole">
+                          <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> Show Roles</button>
+                          <button type="button" class="btn" data-ng-click="userForm.newrole.$valid && ctrl.addRole()">
+                            <i class="fa fa-plus" aria-hidden="true"></i>
+                          </button>
+                      </span>
+                    </div>
+
+
+                    <!--Choose Role from the Dropdown list-->
+                    <div id="showrole" class="collapse">
+                      <div class="input-group-btn">
+                        <select ng-model="ctrl.newrole" class="form-control">
+                          <option value="" disabled selected >Choose role</option>
+                          <option id="newrole" class="list-group-item list-group-item-action list-group-item-info" data-ng-repeat="" >{{roles.name}}</option>
+                        </select>
+                      </div>
+                    </div>
+                    <p style="margin: 0">&ensp;</p>
 
     		      				 <span data-ng-show="userForm.newrole.$invalid" class="text-warning">
     					       		<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
@@ -123,7 +140,7 @@
 
     			  <div class="form-group">
     			    <div class="col-sm-offset-4 col-sm-8">
-    			      <button type="button" class="btn btn-primary" data-ng-click="go('users')">Back</button>
+    			      <button type="button" class="btn btn-primary" data-ng-click="go('users'); slide();">Back</button>
     			      <button type="submit" class="btn btn-success" data-ng-click="userForm.submitted = true" >Save</button>
 
     			      <div class="pull-right" data-ng-hide="newUser">

@@ -20,7 +20,7 @@
      </div>
 
   <div class="panel panel-default">
-    <div id="panelHead"  class="panel-heading"><i class="fa fa-users"></i> Found: {{totalItems}}<a href="#/users/new" class="btn btn-primary pull-right" data-ng-class="{'btn btn-primary pull-right disabled': dataNa == true || auth != true}">
+    <div id="panelHead"  class="panel-heading"><i class="fa fa-users"></i> Found: {{totalItems}}<a href="#/users/new" onClick="slide();" class="btn btn-primary pull-right" data-ng-class="{'btn btn-primary pull-right disabled': dataNa == true || auth != true}">
       <i class="fa fa-user-plus"></i> Add New User
     </a></div>
     <table id="users" class="table table-hover">
@@ -54,7 +54,7 @@
             </ul>
           </td>
           <td id="actionTable">
-            <button data-ng-click="go('/users/'+user.username)" type="button" class="btn btn-warning"><i class="fa fa-pencil" aria-hidden="true"></i></button>
+            <button data-ng-click="go('/users/'+user.username)" onClick="slide();" type="button" class="btn btn-warning"><i class="fa fa-pencil" aria-hidden="true"></i></button>
           </td>
         </tr>
       </tbody>

@@ -36,6 +36,7 @@ angular.module('gvconsole')
       $scope.auth = true;
     }
   };
+
   this.alerts = [];
 
   this.schedules = {};
@@ -43,7 +44,9 @@ angular.module('gvconsole')
   this.loadList = function() {
 	  SchedulerService.getAll().then(
 
+
       function(response){
+        console.log('schedules: ' + Object.keys(response));
         instance.alerts = [];
         instance.schedules = response.data;
 
@@ -174,3 +177,7 @@ angular.module('gvconsole')
 	};
 
 }]);
+
+function slide(){
+  $( "*" ).addClass( "preload" );
+};

@@ -1,5 +1,5 @@
 angular.module('gvconsole')
-.controller('ServiceController', ['Base64','$scope', 'ConfigService', '$http', function(Base64, $scope, ConfigService, $http){
+.controller('ServiceController', ['$rootScope', 'Base64','$scope', 'ConfigService', '$http', function($rootScope, Base64, $scope, ConfigService, $http){
 
     $scope.operations = [];
     $scope.service = {};
@@ -42,7 +42,9 @@ angular.module('gvconsole')
       };
 
 
-      $scope.call = "http://localhost:8181/cxf/gvesb/" + Object.values($scope.flow)[2];
+      $scope.call = "http://localhost:8181/cxf/gvesb/" + $scope.flow.service + '/' + $scope.flow.operation;
+
+      console.log('call: ' + $scope.call);
 
       var request = {
         method: $scope.http_method,
@@ -66,6 +68,8 @@ angular.module('gvconsole')
         $scope.output = 'Error\n\n' + 'Status code: ' + response.status;
 
       });
+
+      $http.defaults.headers.common['Authorization'] = 'Basic ' + $rootScope.globals.currentUser.authdata;
 
     };
 

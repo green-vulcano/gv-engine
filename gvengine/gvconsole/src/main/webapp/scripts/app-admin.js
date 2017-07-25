@@ -115,13 +115,6 @@ angular.module('gvconsole')
 }]);
 
 angular.module('gvconsole')
-.filter('slice', function(){
-  return function(arr,a,b){
-    return arr.slice(a,b);
-  }
-});
-
-angular.module('gvconsole')
 .controller('UserFormController',['AdminService' , '$scope', '$routeParams', '$location', function(AdminService, $scope, $routeParams, $location){
 
 		$scope.userDataStatus = "loading";
@@ -293,3 +286,7 @@ angular.module('gvconsole')
 		}
 
 }]);
+
+function slide(){
+  $( "*" ).addClass( "preload" );
+};
