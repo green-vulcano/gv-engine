@@ -46,7 +46,6 @@ angular.module('gvconsole')
 
 
       function(response){
-        console.log('schedules: ' + Object.keys(response));
         instance.alerts = [];
         instance.schedules = response.data;
 

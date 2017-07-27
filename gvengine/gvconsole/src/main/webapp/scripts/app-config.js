@@ -1,3 +1,4 @@
+
 angular.module('gvconsole')
 .directive('fileModel', ['$parse', function ($parse) {
     return {
@@ -44,6 +45,14 @@ angular.module('gvconsole')
 		        responseType: 'arraybuffer'
 			});
 		}
+
+    this.getConfigFiles = function(){
+      return $http.get(Endpoints.gvconfig + '/configuration');
+    }
+
+    this.getConfigFile = function(fileName){
+      return $http.get(Endpoints.gvconfig + '/configuration/' + fileName);
+    }
 
  }]);
 
@@ -97,7 +106,6 @@ angular.module('gvconsole')
 
 		ConfigService.getConfigInfo().then(
 				function(response){
-
 					instance.configInfo = response.data;
 				},
 				function(response){
@@ -149,7 +157,5 @@ angular.module('gvconsole')
 			});
 
 	}
-
-
 
 }]);

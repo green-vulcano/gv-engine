@@ -2,7 +2,7 @@
 <div class="container-fluid">
 <div class="side-body">
    <h1>Configuration</h1>
-   <div class="row" data-ng-controller=" ConfigController as ctrl" data-ng-init="ctrl.loadConfigInfo()">
+   <div class="row" data-ng-controller="ConfigController as ctrl" data-ng-init="ctrl.loadConfigInfo()">
    <!-- FadeOut Function -->
    <div id="fadeout" data-ng-repeat="alert in ctrl.alerts" class="fadeout alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
    <!-- FadeOut Function -->
