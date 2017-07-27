@@ -31,7 +31,7 @@
     <artifactId>gvmonitoring</artifactId>
     <packaging>bundle</packaging>
 
-    <name>GreenVulcano Monitoring</name>
+    <name>GreenVulcano System monitoring module</name>
 
     <properties>
         <maven-bundle-plugin.version>3.3.0</maven-bundle-plugin.version>

@@ -102,6 +102,7 @@
 
 		<bundle start-level="96">mvn:it.greenvulcano.gvesb/gvapi/${project.version}</bundle>
 		<bundle start-level="99">mvn:it.greenvulcano.gvesb/gvcommands/${project.version}</bundle>
+		<bundle start-level="96">mvn:it.greenvulcano.gvesb/gvmonitoring/${project.version}</bundle>
 		<bundle start-level="99">mvn:it.greenvulcano.gvesb/gvconsole/${project.version}/war</bundle>
 	</feature>
 	

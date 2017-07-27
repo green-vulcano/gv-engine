@@ -230,19 +230,3 @@ angular.module('gvconsole')
             });
         };
 }]);
-
-angular.module('gvconsole')
-.directive('appHeader', function(){
-	return {
-		restrict: 'E',
-		templateUrl: 'topics/auth/header.html',
-		controller: ['AuthenticationService', function(authenticationService){
-
-			this.logout = function() {
-				authenticationService.clearContext();
-			}
-
-		}],
-		controllerAs: 'app'
-	}
-});

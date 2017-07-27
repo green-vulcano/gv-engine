@@ -1,8 +1,8 @@
-<app-header></app-header>
+
 <div class="container-fluid">
-   <div class="side-body" data-ng-app="services">
-      <div class="container" data-ng-controller="ServiceController as ctrl">
-         <h1>Service</h1>
+   <div class="side-body">
+      <div class="container" data-ng-controller="FlowController as ctrl">
+         <h1>Flow testing</h1>
          <div class="row" >
             <div id="formLeft" class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
                <div class="form-group clearfix">
@@ -24,26 +24,7 @@
                </div>
                <hr>
             </div>
-            <div id="formLeft" class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
-               <div class="form-group clearfix">
-                  <label id="labelLeft" class="control-label optionForm col-sm-4">HTTP Methods</label>
-                  <div class="col-sm-8">
-                     <select ng-model="http_method" class="form-control" required>
-                        <option value="">------</option>
-                        <option value="GET">GET</option>
-                        <option value="POST">POST</option>
-                        <option value="DELETE">DELETE</option>
-                     </select>
-                     <p style="margin: 0">
-                        <span data-ng-show="taskForm.submitted && taskForm.flow.$error.required" class="text-warning">
-                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                        Required
-                        </span>
-                     </p>
-                  </div>
-               </div>
-               <hr>
-            </div>
+            
             <div id="formLeft" class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
                <div class="form-group clearfix">
                   <label id="labelLeft" class="control-label optionForm col-sm-4">Body</label>
