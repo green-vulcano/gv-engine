@@ -1,8 +1,8 @@
 angular.module('gvconsole')
  .service('AdminService', ['ENDPOINTS', '$http', function(Endpoints, $http){
-	 	
-		this.getAllUsers = function(){
-			 return $http.get(Endpoints.gviam + '/admin/users');
+
+		this.getAllUsers = function(range){
+			 return $http.get(Endpoints.gviam + '/admin/users', {headers: {'Range':'users ' + range}});
 		}
 
 		this.getUser = function(id){
@@ -36,33 +36,81 @@ angular.module('gvconsole')
  }]);
 
 angular.module('gvconsole')
-.controller('UsersListController',['AdminService' ,'$scope', '$location', function(AdminService, $scope, $location){
+.controller('UsersListController',['AdminService','$rootScope', '$scope', '$location', function(AdminService,$rootScope, $scope, $location){
 
 	var instance = this;
+  for( prop in $rootScope.globals.currentUser.roles){
+    if($rootScope.globals.currentUser.isAdministrator){
+      $scope.auth = true;
+    }
+  };
+
+  $scope.viewby = 10;
+  $scope.totalItems = 64;
+  $scope.currentPage = 1;
 
 	this.alerts = [];
 
 	this.list = [];
-	this.currentPage = 1;
 
-	AdminService.getAllUsers().then(
-				function(response){
-					instance.alerts = [];
-					instance.list = response.data;
-				},
-				function(response){
-					switch (response.status) {
+  $scope.$watchGroup(["currentPage","viewby"], function(newValue) {
 
-							case 401: case 403:
-								$location.path('login');
-								break;
+    $scope.min = (newValue[0] * newValue[1]) - newValue[1];
+    $scope.max = (newValue[0] * newValue[1]);
 
-							default:
-								instance.alerts.push({type: 'danger', msg: 'Data not available'});
-								break;
-					}
-			$scope.loadStatus = "error";
-		});
+    $scope.range = $scope.min + '-' + $scope.max;
+
+    AdminService.getAllUsers($scope.range).then(
+  				function(response){
+
+            instance.alerts = [];
+            instance.list = response.data;
+            $scope.totalItems = (response.headers('Content-Range').split('/'))[1];
+
+            },
+  				function(response){
+  					switch (response.status) {
+
+  							case 401: case 403:
+  								$location.path('login');
+  								break;
+
+  							default:
+  								instance.alerts.push({type: 'danger', msg: 'Data not available'});
+                  $scope.dataNa=true;
+  								break;
+  					}
+  			$scope.loadStatus = "error";
+  		});
+
+    });
+
+    $scope.maxSize = $scope.totalItems/3;
+
+    $scope.order = function(by){
+
+      for(count in instance.list){
+        if(instance.list[count].userInfo.email == "" || instance.list[count].userInfo.email == null){
+          instance.list[count].userInfo.email = undefined;
+        }
+
+        if(instance.list[count].userInfo.fullname == "" || instance.list[count].userInfo.fullname == null){
+          instance.list[count].userInfo.fullname = undefined;
+        }
+
+      };
+
+      $scope.orderby = by;
+
+      if($scope.orderby == $scope.reverse){
+        $scope.orderby = '-' + $scope.orderby;
+        $scope.reverse = $scope.orderby;
+      }else{
+
+      $scope.reverse = $scope.orderby;
+    }
+
+      };
 
 }]);
 
@@ -113,15 +161,18 @@ angular.module('gvconsole')
 
 		this.addRole = function(){
 
-			if (instance.newrole) {
-				var role = instance.roles.find( function(r){ return r.name == instance.newrole });
+			this.addRole = function(){
 
-				if (role) {
-					instance.user.roles[role.name] = role;
-				} else {
-					instance.user.roles[instance.newrole] = {name: instance.newrole, description:'Created by GVConsole'};
-				} 		
-				delete instance.newrole;
+				if (instance.newrole) {
+					var role = instance.roles.find( function(r){ return r.name == instance.newrole });
+
+					if (role) {
+						instance.user.roles[role.name] = role;
+					} else {
+						instance.user.roles[instance.newrole] = {name: instance.newrole, description:'Created by GVConsole'};
+					}
+					delete instance.newrole;
+				}
 			}
 		}
 
@@ -137,12 +188,14 @@ angular.module('gvconsole')
 			save.then(function(response) {
 
 				  instance.alerts.push({type: 'success', msg: 'User data saved'});
+          setTimeout(function(){ $(".fadeout").fadeOut(); }, 3000);
 				  $scope.userDataStatus = "ready";
 				  if($scope.newUser) {
 					  $location.path('/users');
 				  }
 			  	},function(response){
 				  instance.alerts.push({type: 'danger', msg: response.data.message || 'Operation failed'});
+          setTimeout(function(){ $(".fadeout").fadeOut(); }, 3000);
 				  $scope.userDataStatus = "ready";
 
 			  });
@@ -154,6 +207,7 @@ angular.module('gvconsole')
 					.then(function(response) {
 				 		instance.user = response.data;
 				 		instance.alerts.push({type: 'success', msg: 'User status switched'});
+            setTimeout(function(){ $(".fadeout").fadeOut(); }, 3000);
 				 		$scope.userDataStatus = "ready";
 				 		$location.path('/users');
 			 		},function(response){
@@ -168,6 +222,7 @@ angular.module('gvconsole')
 
 			 				default:
 			 					instance.alerts.push({type: 'danger', msg: response.data.message || 'Operation failed'});
+                setTimeout(function(){ $(".fadeout").fadeOut(); }, 3000);
 			 					break;
 			 			}
 
@@ -231,3 +286,7 @@ angular.module('gvconsole')
 		}
 
 }]);
+
+function slide(){
+  $( "*" ).addClass( "preload" );
+};

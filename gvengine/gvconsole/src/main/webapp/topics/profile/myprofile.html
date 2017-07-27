@@ -1,0 +1,38 @@
+<app-header></app-header>
+<div class="container-fluid">
+<div class="side-body" data-ng-controller="profileController as ctrl">
+     <h1>Welcome in GVESB Console <span id="profileName">{{globals.currentUser.username}}</span>!</h1>
+     <div data-ng-repeat="alert in ctrl.alerts" class="fadeout2 alert alert-{{alert.type}}" role="alert" data-ng-class="{'off': error==true}">{{alert.msg}}</div>
+  <hr>
+  <h3>Your roles are:</h3>
+    <div id="rolesP">
+    <p data-ng-repeat="role in globals.currentUser.roles">{{role.name}}</p>
+  </div>
+  <div>
+    <h3>If you want to change password click the button below</h3>
+  <button type="button" class="btn btn-primary" id="myBtn">Change Password</button>
+  <div id="myModal" class="modal fadeout">
+    <div class="modal-content">
+  <form name="renewForm" data-ng-submit="changePassword()">
+  <h4>Set new password</h4>
+  <div data-ng-repeat="alert in ctrl.alerts" class="fadeout2 alert alert-{{alert.type}}" role="alert" data-ng-class="{'off': error==false}">{{alert.msg}}</div>
+  <div id="setNewPassword" class="input-group">
+  <span class="input-group-addon"><i class="fa fa-key fa-fw"></i></span>
+  <input class="form-control" type="password" placeholder="Old Password" name="j_password" data-ng-model="oldPassword" required>
+  </div>
+  <div id="setNewPassword" class="input-group">
+  <span class="input-group-addon"><i class="fa fa-key fa-fw"></i></span>
+  <input class="form-control" type="password" placeholder="New Password" data-ng-model="newPassword" name="new_password" pattern="(?=^.{4,28}$)^[a-zA-Z0-9._@&$#!?-]+$" required>
+  </div>
+  <span class="help-block small">
+  Length: min 4, max 28 <br> Valid chars: a-z A-Z 0-9 &#46; &#95; &#64; &amp; &#36; &#35; &#33; &#63; &#45; (no white space)
+  </span>
+  <button type="button" class="btn exite">Back</button>
+  <button type="submit" id="prova" class="btn btn-success" data-ng-disabled="renewForm.new_password.$invalid">Confirm</button>
+</form>
+</div>
+</div>
+<script type="text/javascript" src="scripts/delete_wind.js"></script>
+</div>
+</div>
+</div>

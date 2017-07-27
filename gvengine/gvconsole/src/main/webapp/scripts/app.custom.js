@@ -1,5 +1,8 @@
 angular.module('gvconsole', ['ngCookies','ngRoute','angular-quartz-cron', 'ui.bootstrap'])
 .constant('ENDPOINTS', getEndpoints())
+.config(['$httpProvider', function($httpProvider){
+	$httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+}])
 .config(['$routeProvider', function($routeProvider) {
 	    $routeProvider.
 	      when('/login', {
@@ -20,8 +23,17 @@ angular.module('gvconsole', ['ngCookies','ngRoute','angular-quartz-cron', 'ui.bo
         when('/users/:userId', {
           templateUrl: 'topics/users/form.html'
         }).
+				when('/myprofile', {
+          templateUrl: 'topics/profile/myprofile.html'
+        }).
+				when('/monitoring', {
+					templateUrl: 'topics/monitoring/monitoring.html'
+				}).
+				when('/service', {
+					templateUrl: 'topics/service/service.html'
+				}).
           otherwise({
-    	        redirectTo: '/users'
+    	        redirectTo: '/myprofile'
     	  });
 }])
 .run(['$rootScope', '$location', '$cookieStore', '$http',
@@ -47,3 +59,17 @@ angular.module('gvconsole', ['ngCookies','ngRoute','angular-quartz-cron', 'ui.bo
                         return  $location.path().startsWith(route);
                       };
 }]);
+function gototab(reload)
+{
+window.location.hash = '#/monitoring';
+window.location.reload(true);
+};
+function slideHamburger(){
+		$( "*" ).removeClass( "preload" );
+		$('.navbar-nav').toggleClass('slide-in');
+		$('.side-body').toggleClass('body-slide-in');
+};
+function slideButtonMenu(){
+	setTimeout(function(){$( "*" ).addClass( "preload" );}, 200);
+
+};

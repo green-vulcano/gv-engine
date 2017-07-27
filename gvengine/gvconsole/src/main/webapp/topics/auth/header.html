@@ -1,23 +1,42 @@
-<!-- Header Bar -->
-<nav class="navbar navbar-default" role="navigation">
-	<div class="container">
-	<div class="navbar-header">
-		<button type="button" class="navbar-toggle" ng-click="isNavCollapsed = !isNavCollapsed">
-			<span class="sr-only">Toggle navigation</span>
-			<span class="icon-bar"></span>
-			<span class="icon-bar"></span>
-			<span class="icon-bar"></span>
-		</button>
-		<a class="navbar-brand"><img src="imgs/header.png" class="img-responsive"> GV ESB 4</a>
-	</div>
-	<div class="collapse navbar-collapse" uib-collapse="isNavCollapsed">
-		<ul class="nav navbar-nav navbar-right">
-			<li data-ng-class="{ active: routeIsIn('/users')}" ><a href="#/users">Users</a></li>
-			<li data-ng-class="{ active: routeIsIn('/schedule')}"><a href="#/schedule">Scheduling</a></li>
-			<li data-ng-class="{ active: routeIsIn('/config')}"><a href="#/config">Configuration</a></li>
-			<li><a data-ng-click="app.logout()" href="/gvconsole"><i class="glyphicon glyphicon-log-out"></i> Log out</a></li>
-		</ul>
-	</div>
-	</div>
-</nav>
-<!-- End Header Bar -->
+<div class="row">
+   <div class="side-menu">
+      <nav class="navbar navbar-default" role="navigation">
+         <div class="container">
+            <!-- Hamburger -->
+            <button type="button" class="navbar-toggle" ng-click="isNavCollapsed = !isNavCollapsed" onClick="slideHamburger();">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+           <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+               <div class="brand-wrapper">
+                  <!-- Brand -->
+                  <div id="divLogo" class="brand-name-wrapper">
+                     <a class="navbar-brand col-xs-3 col-sm-12 col-md-12" >
+                     <img id="logo" src="assets/logo.png">
+                     </a>
+                     <div id="gvesb_name" class="col-xs-4 col-sm-12 col-md-12">
+                        <span>GVESB 4</span>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <!-- Main Menu -->
+            <div class="side-menu-container">
+               <ul class="nav navbar-nav">
+                  <li data-ng-class="{ active: routeIsIn('/users')}" data-ng-show="globals.currentUser.isAdministrator" ><a id="optionMenu" href="#/users" onClick="slideButtonMenu();"><i class="fa fa-user-circle" aria-hidden="true"></i> Users</a></li>
+                  <li data-ng-class="{ active: routeIsIn('/schedule')}" data-ng-show="globals.currentUser.isAdministrator||globals.currentUser.isSchedulerManager"><a id="optionMenu" href="#/schedule" onClick="slideButtonMenu();"><i class="fa fa-calendar-plus-o" aria-hidden="true"></i> Scheduling</a></li>
+                  <li data-ng-class="{ active: routeIsIn('/config')}" data-ng-show="globals.currentUser.isAdministrator||globals.currentUser.isConfigManager"><a id="optionMenu" href="#/config" onClick="slideButtonMenu();"><i class="fa fa-cogs" aria-hidden="true"></i> Configuration</a></li>
+                  <li data-ng-class="{ active: routeIsIn('/service')}" data-ng-show="globals.currentUser.isAdministrator||globals.currentUser.isConfigManager"><a id="optionMenu" href="#/service" onClick="slideButtonMenu();"><i class="fa fa-code" aria-hidden="true"></i> Service</a></li>
+                  <li data-ng-class="{ active: routeIsIn('/monitoring')}"><a id="optionMenu" href="#/monitoring" onClick="gototab(); slideButtonMenu();"><i class="fa fa-area-chart" aria-hidden="true"></i> Monitoring</a></li>
+                  <li class="sidebar_user" data-ng-class="{ active: routeIsIn('/myprofile')}"><a id="profileButton" href="#/myprofile" onClick="slideButtonMenu();"><i class="fa fa-user-o" aria-hidden="true"></i> My Profile</a></li>
+                  <li><a id="logout" data-ng-click="app.logout()" href="#/login"><i class="fa fa-sign-out" aria-hidden="true"></i> Logout</a></li>
+               </ul>
+            </div>
+         </div>
+         <!-- /.navbar-collapse -->
+      </nav>
+   </div>
+</div>

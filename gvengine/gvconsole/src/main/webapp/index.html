@@ -1,49 +1,54 @@
 <!DOCTYPE HTML>
 <html manifest="gvconsole.appcache">
+   <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>GreenVulcano ESB Web Console</title>
+      <link rel="stylesheet" href="libs/css/bootstrap.min.css"/>
+      <link rel="stylesheet" href="libs/css/font-awesome.min.css"/>
+      <link rel="stylesheet" href="libs/css/angular-quartz-cron.css"/>
+      <link rel="stylesheet" href="libs/css/c3.min.css"/>
+      <script type="text/javascript" src="libs/js/d3.min.js"></script>
+      <script type="text/javascript" src="libs/js/c3.min.js"></script>
+      <script type="text/javascript" src="libs/js/jquery-3.2.0.min.js"></script>
+      <script type="text/javascript" src="libs/js/angular.js"></script>
+      <script type="text/javascript" src="libs/js/angular-route.js"></script>
+      <script type="text/javascript" src="libs/js/angular-cookies.js"></script>
+      <script type="text/javascript" src="libs/js/bootstrap.js"></script>
+      <script type="text/javascript" src="libs/js/ui-bootstrap.js"></script>
+      <script type="text/javascript" src="libs/js/angular-quartz-cron.js"></script>
+      <script type="text/javascript" src="libs/js/smoothie.js"></script>
+      <script type="text/javascript" src="libs/js/ui-bootstrap-tpls-0.14.3.js"></script>
+      <script type="text/javascript" src="libs/js/mqttws31.js"></script>
 
-<head>
-	<meta charset="UTF-8">
-  	<meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="stylesheet" href="libs/css/app.custom.css"/>
+      <!-- API Registry function to use when webapp run out of API container -->
+      <script type="text/javascript">
+         function getEndpoints() {
+           var basePath = 'http://localhost:8181/cxf';
 
-	<title>GreenVulcano ESB Web Console</title>
-
-    <link rel="stylesheet" href="libs/css/bootstrap-3.3.5.min.css"/>	
-	<link rel="stylesheet" href="libs/css/font-awesome.min.css"/>
-	<link rel="stylesheet" href="libs/css/angular-quartz-cron.css"/>
-	
-	<script type="text/javascript" src="libs/js/angular.js"></script>
-	<script type="text/javascript" src="libs/js/angular-route.js"></script>
-	<script type="text/javascript" src="libs/js/angular-cookies.js"></script>
-	<script type="text/javascript" src="libs/js/ui-bootstrap.js"></script>
-	<script type="text/javascript" src="libs/js/angular-quartz-cron.js"></script>
-  	
-	<link rel="stylesheet" href="libs/css/app.css"/>
-
-	<!-- API Registry function to use when webapp run out of API container
-	<script type="text/javascript">
-	  function getEndpoints() { 
-		  var basePath = 'http://localhost:8181/cxf'; 
-		  
-		  return { 
-			       gviam : basePath +'/gviam',		  
-			  	   gvscheduler : basePath + '/gvscheduler',
-			  	   gvconfig : basePath + '/gvconfig',
-			  	   gvesb : basePath + '/gvesb'
-			  	 }
-	  }		  
-	</script>
-	-->
-    <!-- API Registry servlet to use when webapp run inside the same container of API-->
-	<script type="text/javascript" src="registry"></script> 
-	<script type="text/javascript" src="scripts/app.js"></script>
-	<script type="text/javascript" src="scripts/app-auth.js"></script>
-	<script type="text/javascript" src="scripts/app-admin.js"></script>
-	<script type="text/javascript" src="scripts/app-config.js"></script>
-	<script type="text/javascript" src="scripts/app-scheduler.js"></script>
-	
-<head>
-
-<body data-ng-app="gvconsole">
-	<div data-ng-view></div>
-</body>
+           return {
+                  gviam : basePath +'/gviam',
+                  gvscheduler : basePath + '/gvscheduler',
+                  gvconfig : basePath + '/gvconfig',
+                  gvesb : basePath + '/gvesb',
+                  gvmonitoring : basePath + '/gvmonitoring'
+                }
+         }
+      </script>
+      <!-- API Registry servlet to use when webapp run inside the same container of API
+      <script type="text/javascript" src="registry"></script> -->
+      <script type="text/javascript" src="scripts/app.custom.js"></script>
+      <script type="text/javascript" src="scripts/app-auth.js"></script>
+      <script type="text/javascript" src="scripts/app-admin.js"></script>
+      <script type="text/javascript" src="scripts/app-config.js"></script>
+      <script type="text/javascript" src="scripts/app-scheduler.js"></script>
+      <script type="text/javascript" src="scripts/app-monitoring.js"></script>
+      <script type="text/javascript" src="scripts/app-profile.js"></script>
+      <script type="text/javascript" src="scripts/app-service.js"></script>
+   </head>
+   <body data-ng-app="gvconsole">
+      <div data-ng-view>
+      </div>
+   </body>
 </html>
