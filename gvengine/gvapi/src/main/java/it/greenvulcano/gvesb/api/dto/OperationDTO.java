@@ -26,9 +26,23 @@ public class OperationDTO {
 	private final String name;
 	private final boolean enabled;
 	
+	private final long successes;
+	private final long failures;
+	
 	public OperationDTO(String name, boolean enabled) {	
 		this.name = Objects.requireNonNull(name);
 		this.enabled = enabled;
+		this.successes = 0;
+		this.failures = 0;
+		
+	}
+	
+	public OperationDTO(String name, boolean enabled, long successes, long failures) {	
+		this.name = Objects.requireNonNull(name);
+		this.enabled = enabled;
+		this.successes = successes;
+		this.failures = failures;
+		
 	}
 
 	public String getName() {
@@ -37,6 +51,14 @@ public class OperationDTO {
 
 	public boolean isEnabled() {
 		return enabled;
-	}	
+	}
+	
+	public long getSuccesses() {
+		return successes;
+	}
+	
+	public long getFailures() {
+		return failures;
+	}
 	
 }

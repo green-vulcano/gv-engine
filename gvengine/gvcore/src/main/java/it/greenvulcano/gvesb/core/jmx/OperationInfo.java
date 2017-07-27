@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.log4j.Level;
 import org.slf4j.Logger;
@@ -77,11 +78,11 @@ public class OperationInfo
     /**
      * the total successful invocation
      */
-    private long                             totalSuccess            = 0;
+    private final AtomicLong                       totalSuccess            = new AtomicLong(0);
     /**
      * the total failed invocation
      */
-    private long                             totalFailure            = 0;
+    private final AtomicLong                       totalFailure            = new AtomicLong(0);
     /**
      * the activation flag
      */
@@ -424,7 +425,7 @@ public class OperationInfo
      */
     public long getTotalSuccess()
     {
-        return totalSuccess;
+        return totalSuccess.get();
     }
 
     /**
@@ -432,7 +433,7 @@ public class OperationInfo
      */
     public long getTotalFailure()
     {
-        return totalFailure;
+        return totalFailure.get();
     }
 
     /**
@@ -440,7 +441,7 @@ public class OperationInfo
      */
     public long getTotal()
     {
-        return (totalSuccess + totalFailure);
+        return (getTotalSuccess() + getTotalFailure());
     }
 
     /**
@@ -448,8 +449,8 @@ public class OperationInfo
      */
     public void resetCounter()
     {
-        totalSuccess = 0;
-        totalFailure = 0;
+        totalSuccess.set(0);
+        totalFailure.set(0);
     }
 
     /**
@@ -516,11 +517,11 @@ public class OperationInfo
     public void flowTerminated(String flowId, boolean success)
     {
         if (success) {
-            totalSuccess++;
+            totalSuccess.incrementAndGet();
         }
         else {
             statFailures.hint();
-            totalFailure++;
+            totalFailure.incrementAndGet();
             execFailureAction();
         }
         String threadName = Thread.currentThread().getName();

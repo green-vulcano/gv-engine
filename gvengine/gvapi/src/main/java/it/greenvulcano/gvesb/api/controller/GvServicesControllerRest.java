@@ -62,6 +62,9 @@ import it.greenvulcano.gvesb.api.security.JaxRsIdentityInfo;
 import it.greenvulcano.gvesb.buffer.GVBuffer;
 import it.greenvulcano.gvesb.buffer.GVException;
 import it.greenvulcano.gvesb.buffer.GVPublicException;
+import it.greenvulcano.gvesb.core.jmx.OperationInfo;
+import it.greenvulcano.gvesb.core.jmx.ServiceOperationInfo;
+import it.greenvulcano.gvesb.core.jmx.ServiceOperationInfoManager;
 import it.greenvulcano.gvesb.core.pool.GreenVulcanoPool;
 import it.greenvulcano.gvesb.core.pool.GreenVulcanoPoolException;
 import it.greenvulcano.gvesb.core.pool.GreenVulcanoPoolManager;
@@ -117,8 +120,10 @@ public class GvServicesControllerRest extends BaseControllerRest {
 						   .build();
 		}
 		
-		String response = null;
+		String response = null;		
+		
 		try {
+			
 			Node serviceNode = Optional.ofNullable(XMLConfig.getNode("GVServices.xml", "//Service[@id-service='"+service+"']"))
 									   .orElseThrow(NoSuchElementException::new);
 			
@@ -134,15 +139,7 @@ public class GvServicesControllerRest extends BaseControllerRest {
 		return Response.ok(response).build();
 	}
 	
-	private List<OperationDTO> getOperations(Node serviceNode) throws XMLConfigException{
-		NodeList operationNodes = XMLConfig.getNodeList(serviceNode, "./Operation");
-		return IntStream.range(0, operationNodes.getLength())
-							  .mapToObj(operationNodes::item)
-							  .map(this::buildOperationFromConfig)
-							  .filter(Optional::isPresent)
-							  .map(Optional::get)
-							  .collect(Collectors.toList());
-	}
+	
 	
 	@Path("/{service}/{operation}")
 	@POST
@@ -262,14 +259,36 @@ public class GvServicesControllerRest extends BaseControllerRest {
 	}	
 		
 	private Optional<ServiceDTO> buildServiceFromConfig(Node config) {
+		
+		
+		
 		try {
 			ServiceDTO service = new ServiceDTO(XMLConfig.get(config, "@id-service"), 
 										  XMLConfig.get(config, "@group-name"), 
 										  XMLConfig.get(config, "@service-activation").equals("on"), 
 										  XMLConfig.get(config, "@statistics").equals("on"));
 						
-			getOperations(config).stream().forEach( op -> service.getOperations().put(op.getName(), op) );
+			NodeList operationNodes = XMLConfig.getNodeList(config, "./Operation");
 			
+			
+			ServiceOperationInfo serviceInfo = null;
+			try {
+				serviceInfo = ServiceOperationInfoManager.instance().getServiceOperationInfo(service.getIdService(), false);
+			
+			} catch (Exception e) {
+				LOG.warn("Fail to retrieve ServiceOperationInfo MBean for service "+service, e);
+			}
+			
+			final Optional<ServiceOperationInfo> serviceOperationInfo = Optional.ofNullable(serviceInfo);
+			
+			IntStream.range(0, operationNodes.getLength())
+			  .mapToObj(operationNodes::item)
+			  .map(node -> buildOperationFromConfig(node,  serviceOperationInfo))
+			  .filter(Optional::isPresent)
+			  .map(Optional::get).forEach( op -> service.getOperations().put(op.getName(), op) );
+			
+			
+						
 			return Optional.of(service);
 		} catch (NullPointerException|XMLConfigException xmlConfigException){
 			LOG.error("Error reading service configuration", xmlConfigException);
@@ -278,12 +297,24 @@ public class GvServicesControllerRest extends BaseControllerRest {
 		return Optional.empty();
 		
 	}
-	
-	private Optional<OperationDTO> buildOperationFromConfig(Node config) {
+			
+	private Optional<OperationDTO> buildOperationFromConfig(Node config, Optional<ServiceOperationInfo> serviceOperationInfo) {
 		try {
-			OperationDTO operation = new OperationDTO(XMLConfig.get(config, "@forward-name", XMLConfig.get(config, "@name") ), 
-										  XMLConfig.get(config, "@operation-activation").equals("on"));
+			
+			String operationName = XMLConfig.get(config, "@forward-name", XMLConfig.get(config, "@name") );
+			
+			OperationDTO operation = null;			
+			
+			try {
+				OperationInfo operationInfo = serviceOperationInfo.get().getOperationInfo(operationName, false) ;
+				operation = new OperationDTO(operationInfo.getOperation(), operationInfo.getOperationActivation(), operationInfo.getTotalSuccess(), operationInfo.getTotalFailure());
+								
+			} catch (Exception e) {
+				operation = new OperationDTO( operationName,  XMLConfig.get(config, "@operation-activation").equals("on")) ;
+			}											
+			
 			return Optional.of(operation);
+			
 		} catch (NullPointerException|XMLConfigException xmlConfigException){
 			LOG.error("Error reading operation configuration", xmlConfigException);
 		}
@@ -291,4 +322,5 @@ public class GvServicesControllerRest extends BaseControllerRest {
 		return Optional.empty();
 		
 	}	
+	
 }
