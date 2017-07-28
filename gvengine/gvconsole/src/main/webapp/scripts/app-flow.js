@@ -1,16 +1,16 @@
 angular.module('gvconsole')
 .service('FlowService', ['ENDPOINTS', '$http', function(Endpoints, $http){
-	
+
 	this.executeFlow = function(serviceName, operationName, properties, payload, auth) {
-	      
+
 	      var request = {
 	        method: 'GET',
-	        url : Endpoints.gvesb + '/' + serviceName + '/' + operationName,        	        
+	        url : Endpoints.gvesb + '/' + serviceName + '/' + operationName,
 	        transformResponse: [function (data) {
 	          return data;
 	        }]
 	      };
-	      
+
 	      if (auth) {
 	    	  request.headers = {
 		        	'authorization' : auth
@@ -20,20 +20,20 @@ angular.module('gvconsole')
 			        	'authorization' : undefined
 			        }
 	      }
-	      
+
 	      if (properties) {
 	    	  request.params = properties;
 	      }
-	      
+
 	      if (payload) {
 	    	  request.method = 'POST';
 	    	  request.data = payload;
 	      }
-	      
+
 	     return $http(request);
-		
+
 	}
-	
+
 }]);
 
 angular.module('gvconsole')
@@ -70,21 +70,27 @@ angular.module('gvconsole')
 
     $scope.run = function(){
 
+				console.log('username: ' + $scope.username);
+
 	      var auth;
 	      if($scope.username && $scope.password){
-	        auth = 'Basic ' +  Base64.encode($scope.username + ':' + $scope.password);        
+	        auth = 'Basic ' +  Base64.encode($scope.username + ':' + $scope.password);
+					console.log('entrata');
 	      }
-	      
+
+
 	      FlowService.executeFlow($scope.flow.service, $scope.flow.operation, $scope.service.properties, $scope.service.object, auth)
 	                 .then(function(response){
-	
+
 				    	  $scope.output = response.data;
-				
+
 				      }, function(response){
-				
+
 				    	  $scope.output = response.data;
-				
+
 				      });
+
+			 $scope.username = false;
     }
 
     angular.element("textarea").keydown(function(e) {

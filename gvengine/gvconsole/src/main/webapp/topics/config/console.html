@@ -4,29 +4,7 @@
    <div class="row" data-ng-controller="ConfigController as ctrl" data-ng-init="ctrl.loadConfigInfo()">
    <!-- FadeOut Function -->
    <div id="fadeout" data-ng-repeat="alert in ctrl.alerts" class="fadeout alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
-   <!-- FadeOut Function -->
-      <div class="panel panel-default">
-         <div class="panel-heading clearfix">
-            <h4 class="panel-title pull-left" style="line-height: 34px; vertical-align: middle">
-               <i class="fa fa-sitemap fa-rotate-270"></i> Current
-            </h4>
-         </div>
-         <div class="panel-body">
-            <div class="col-sm-8 col-sm-offset-2">
-               <h2>
-                  {{ctrl.configInfo.id}}
-                  <p><small>{{ctrl.configInfo.time | date : 'd MMMM yyyy H:mm:ss'}}</small></p>
-               </h2>
-            </div>
-         </div>
-         <div class="panel-footer clearfix" style="text-align: center">
-            <div class="pull-right">
-               <img data-ng-show="exportInProgress"
-                  src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
-               <a id="export" data-ng-hide="exportInProgress" ng-click="ctrl.exportConfig()" class="btn btn-primary"><i class="fa fa-download"></i> Export</a>
-            </div>
-         </div>
-      </div>
+   <!-- FadeOut Function -->      
       <form id="deployForm" name="deployForm" class="form-horizontal"
          data-ng-submit="ctrl.deployConfiguration()">
         <fieldset id="myFieldset">
@@ -64,6 +42,28 @@
          </div>
        </fieldset>
       </form>
+      <div class="panel panel-default">
+         <div class="panel-heading clearfix">
+            <h4 class="panel-title pull-left" style="line-height: 34px; vertical-align: middle">
+               <i class="fa fa-sitemap fa-rotate-270"></i> Current
+            </h4>
+         </div>
+         <div class="panel-body">
+            <div class="col-sm-8 col-sm-offset-2">
+               <h2>
+                  {{ctrl.configInfo.id}}
+                  <p><small>{{ctrl.configInfo.time | date : 'd MMMM yyyy H:mm:ss'}}</small></p>
+               </h2>
+            </div>
+         </div>
+         <div class="panel-footer clearfix" style="text-align: center">
+            <div class="pull-right">
+               <img data-ng-show="exportInProgress"
+                  src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+               <a id="export" data-ng-hide="exportInProgress" ng-click="ctrl.exportConfig()" class="btn btn-primary"><i class="fa fa-download"></i> Export</a>
+            </div>
+         </div>
+      </div>
    </div>
 </div>
 </div>

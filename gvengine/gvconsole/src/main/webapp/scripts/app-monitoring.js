@@ -38,19 +38,27 @@ angular.module('gvconsole')
                 totalMemory: '#238650',
                 freeMemory: '#961E24',
                 heapMemory: '#124667',
-                cpuUsage: '#333333',
             },
             labels: true
 			  	},
 				axis: {
-					y: {
-					    max: 550,
-					    min: 0,
-					    padding: {top:0, bottom:0}
-					}
-				    },
-			  	bar: {
-				   width: 64
+  				y: {
+  				    max: 550,
+  				    min: 0,
+  				    padding: {top:0, bottom:0},
+              tick: {
+                fill : " "
+              }
+  				}
+  			},
+        tooltip: {
+          format: {
+            title: function(){return "Memory";},
+            value: function(value){return value + ' MB';}
+          }
+        },
+			  bar: {
+				width: 64
 				}
 			});
 		};
@@ -114,6 +122,11 @@ angular.module('gvconsole')
   					    padding: {top:0, bottom:0}
   					}
   				    },
+              tooltip: {
+                format: {
+                  title: function(){return "Classes";}
+                }
+              },
   			  	bar: {
   				   width: 64
   				}

@@ -18,46 +18,46 @@
        </div>
      </div>
 
-  <div class="panel panel-default">
+  <div class="panel panel-default" style="overflow-x:auto;">
     <div id="panelHead"  class="panel-heading"><i class="fa fa-users"></i> Found: {{totalItems}}<a href="#/users/new" onClick="slide();" class="btn btn-primary pull-right" data-ng-class="{'btn btn-primary pull-right disabled': dataNa == true || auth != true}">
       <i class="fa fa-user-plus"></i> Add New User
     </a></div>
-    <table id="users" class="table table-hover">
-      <thead>
-        <tr>
-          <th data-ng-click="order('username')" class="handPointer noselect">Users <i aria-hidden="true" data-ng-class="{'fa fa-sort': orderby != 'username' && orderby != '-'+'username', 'fa fa-sort-asc': orderby == 'username', 'fa fa-sort-desc': orderby == '-'+'username'}"></i></th>
-          <th>Status</th>
-          <th data-ng-click="order('userInfo.fullname')" class="handPointer noselect">Full Name <i aria-hidden="true" data-ng-class="{'fa fa-sort': orderby != 'userInfo.fullname' && orderby != '-'+'userInfo.fullname', 'fa fa-sort-asc': orderby == 'userInfo.fullname', 'fa fa-sort-desc': orderby == '-'+'userInfo.fullname'}"></i></th>
-          <th data-ng-click="order('userInfo.email')" class="handPointer noselect">E-Mail <i aria-hidden="true" data-ng-class="{'fa fa-sort': orderby != 'userInfo.email' && orderby != '-'+'userInfo.email', 'fa fa-sort-asc': orderby == 'userInfo.email', 'fa fa-sort-desc': orderby == '-'+'userInfo.email'}"></i></th>
-          <th>Roles</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr data-ng-repeat="user in ctrl.list | orderBy : orderby | filter : query">
-          <td>{{user.username}}</td>
-          <td>
-            <ul class="list-inline">
-              <li class="text-danger" data-ng-hide="user.enabled"><i class="fa fa-ban"></i> </li>
-              <li class="text-success" data-ng-show="user.enabled"><i class="fa fa-check"></i> </li>
-              <li class="text-warning" data-ng-show="user.expired"><i class="fa fa-key"></i> </li>
-            </ul>
-          </td>
-          <td>{{user.userInfo.fullname}}</td>
-          <td>{{user.userInfo.email}}</td>
-          <td>
-            <ul class="list-inline">
-              <li	data-ng-repeat="(k,role) in user.roles">
-                <span class="label label-info">{{role.name}}</span>
-              </li>
-            </ul>
-          </td>
-          <td id="actionTable">
-            <button data-ng-click="go('/users/'+user.username)" onClick="slide();" type="button" class="btn btn-warning"><i class="fa fa-pencil" aria-hidden="true"></i></button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+      <table id="users" class="table table-hover">
+        <thead>
+          <tr>
+            <th data-ng-click="order('username')" class="handPointer noselect">Users <i aria-hidden="true" data-ng-class="{'fa fa-sort': orderby != 'username' && orderby != '-'+'username', 'fa fa-sort-asc': orderby == 'username', 'fa fa-sort-desc': orderby == '-'+'username'}"></i></th>
+            <th>Status</th>
+            <th data-ng-click="order('userInfo.fullname')" class="handPointer noselect">Full Name <i aria-hidden="true" data-ng-class="{'fa fa-sort': orderby != 'userInfo.fullname' && orderby != '-'+'userInfo.fullname', 'fa fa-sort-asc': orderby == 'userInfo.fullname', 'fa fa-sort-desc': orderby == '-'+'userInfo.fullname'}"></i></th>
+            <th data-ng-click="order('userInfo.email')" class="handPointer noselect">E-Mail <i aria-hidden="true" data-ng-class="{'fa fa-sort': orderby != 'userInfo.email' && orderby != '-'+'userInfo.email', 'fa fa-sort-asc': orderby == 'userInfo.email', 'fa fa-sort-desc': orderby == '-'+'userInfo.email'}"></i></th>
+            <th>Roles</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-ng-repeat="user in ctrl.list | orderBy : orderby | filter : query">
+            <td>{{user.username}}</td>
+            <td>
+              <ul class="list-inline">
+                <li class="text-danger" data-ng-hide="user.enabled"><i class="fa fa-ban"></i> </li>
+                <li class="text-success" data-ng-show="user.enabled"><i class="fa fa-check"></i> </li>
+                <li class="text-warning" data-ng-show="user.expired"><i class="fa fa-key"></i> </li>
+              </ul>
+            </td>
+            <td>{{user.userInfo.fullname}}</td>
+            <td>{{user.userInfo.email}}</td>
+            <td>
+              <ul class="list-inline">
+                <li	data-ng-repeat="(k,role) in user.roles">
+                  <span class="label label-info">{{role.name}}</span>
+                </li>
+              </ul>
+            </td>
+            <td id="actionTable">
+              <button data-ng-click="go('/users/'+user.username)" onClick="slide();" type="button" class="btn btn-warning"><i class="fa fa-pencil" aria-hidden="true"></i></button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     <div id="panelPagination"  class="panel-footer">
   <div class="row">
     <div class="col col-xs-8" style="float: right;">

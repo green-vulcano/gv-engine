@@ -64,12 +64,16 @@ function gototab(reload)
 window.location.hash = '#/monitoring';
 window.location.reload(true);
 };
-function slideHamburger(){
-		$( "*" ).removeClass( "preload" );
-		$('.navbar-nav').toggleClass('slide-in');
-		$('.side-body').toggleClass('body-slide-in');
-};
+angular.element(document).ready(function() {
+  angular.element('.navbar-toggle').click(function () {
+      angular.element('.navbar-nav').toggleClass('slide-in');
+      angular.element('.side-body').toggleClass('body-slide-in');
+  });
+});
 function slideButtonMenu(){
-	setTimeout(function(){$( "*" ).addClass( "preload" );}, 200);
-
+	var width = angular.element(window).width();
+	if(width <= 768){
+      angular.element('.navbar-nav').toggleClass('slide-in');
+      angular.element('.side-body').toggleClass('body-slide-in');
+		};
 };

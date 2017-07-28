@@ -286,7 +286,3 @@ angular.module('gvconsole')
 		}
 
 }]);
-
-function slide(){
-  $( "*" ).addClass( "preload" );
-};
