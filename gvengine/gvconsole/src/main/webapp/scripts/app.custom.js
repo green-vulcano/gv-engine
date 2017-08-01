@@ -64,6 +64,7 @@ function gototab(reload)
 window.location.hash = '#/monitoring';
 window.location.reload(true);
 };
+
 angular.element(document).ready(function() {
   angular.element('.navbar-toggle').click(function () {
       angular.element('.navbar-nav').toggleClass('slide-in');

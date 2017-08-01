@@ -1,6 +1,6 @@
-$(document).ready(function() {
-  $('.navbar-toggle').click(function () {
-      $('.navbar-nav').toggleClass('slide-in');
-      $('.side-body').toggleClass('body-slide-in');
+angular.element(document).ready(function() {
+  angular.element('.navbar-toggle').click(function () {
+      angular.element('.navbar-nav').toggleClass('slide-in');
+      angular.element('.side-body').toggleClass('body-slide-in');
   });
 });

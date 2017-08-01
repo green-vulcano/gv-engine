@@ -48,12 +48,19 @@ angular.module('gvconsole')
   $scope.viewby = 10;
   $scope.totalItems = 64;
   $scope.currentPage = 1;
+  $scope.selected = true;
 
 	this.alerts = [];
 
 	this.list = [];
 
   $scope.$watchGroup(["currentPage","viewby"], function(newValue) {
+
+    if($scope.selected ) {
+      angular.element('#selctNum option:eq(3)').prop('selected', true);
+      $scope.selected = false;
+    }
+    angular.element("#selctNum option[value='? number:10 ?']").remove();
 
     $scope.min = (newValue[0] * newValue[1]) - newValue[1];
     $scope.max = (newValue[0] * newValue[1]);
@@ -188,14 +195,14 @@ angular.module('gvconsole')
 			save.then(function(response) {
 
 				  instance.alerts.push({type: 'success', msg: 'User data saved'});
-          setTimeout(function(){ $(".fadeout").fadeOut(); }, 3000);
+          setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
 				  $scope.userDataStatus = "ready";
 				  if($scope.newUser) {
 					  $location.path('/users');
 				  }
 			  	},function(response){
 				  instance.alerts.push({type: 'danger', msg: response.data.message || 'Operation failed'});
-          setTimeout(function(){ $(".fadeout").fadeOut(); }, 3000);
+          setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
 				  $scope.userDataStatus = "ready";
 
 			  });
@@ -207,7 +214,7 @@ angular.module('gvconsole')
 					.then(function(response) {
 				 		instance.user = response.data;
 				 		instance.alerts.push({type: 'success', msg: 'User status switched'});
-            setTimeout(function(){ $(".fadeout").fadeOut(); }, 3000);
+            setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
 				 		$scope.userDataStatus = "ready";
 				 		$location.path('/users');
 			 		},function(response){
@@ -222,7 +229,7 @@ angular.module('gvconsole')
 
 			 				default:
 			 					instance.alerts.push({type: 'danger', msg: response.data.message || 'Operation failed'});
-                setTimeout(function(){ $(".fadeout").fadeOut(); }, 3000);
+                setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
 			 					break;
 			 			}
 
@@ -286,3 +293,7 @@ angular.module('gvconsole')
 		}
 
 }]);
+
+function slide(){
+      angular.element('.side-body').blockClass('body-slide-in');
+};

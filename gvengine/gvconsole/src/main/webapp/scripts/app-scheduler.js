@@ -181,7 +181,7 @@ angular.module('gvconsole')
           var start = this.selectionStart;
           var end = this.selectionEnd;
 
-          var $this = $(this);
+          var $this = angular.element(this);
           var value = $this.val();
 
           // set textarea value to: text before caret + tab + text after caret

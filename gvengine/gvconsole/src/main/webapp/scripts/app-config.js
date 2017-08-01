@@ -83,7 +83,7 @@ angular.module('gvconsole')
 			instance.deploy = {};
 			instance.loadConfigInfo();
 			instance.alerts.push({type: 'success', msg: 'Configuration deployed successfully'});
-      setTimeout(function(){ $(".fadeout").fadeOut(); }, 3000);
+      setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
 		}, function(response){
 			switch (response.status) {
 
@@ -94,7 +94,7 @@ angular.module('gvconsole')
 			default:
 				$scope.deployInProgress = false;
 				instance.alerts.push({type: 'danger', msg: 'Configuration deploy failed'});
-        setTimeout(function(){ $(".fadeout").fadeOut(); }, 3000);
+        setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
 				break;
 			}
 

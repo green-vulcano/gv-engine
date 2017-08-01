@@ -58,15 +58,15 @@ angular.module('gvconsole')
             $scope.error = false;
             instance.alerts.push({type: 'success', msg: 'Change Password success!'});
             $scope.errorMessage = 'Password changed';
-            setTimeout(function(){ $(".fadeout").fadeOut(); }, 0000);
-            setTimeout(function(){ $(".fadeout2").fadeOut(); }, 3000);
+            setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 0000);
+            setTimeout(function(){ angular.element(".fadeout2").fadeOut(); }, 3000);
             break;
 
         case 401:
             instance.alerts.length = 0;
             $scope.error = true;
             instance.alerts.push({type: 'danger', msg: 'Authentication failed, please check old password.'});
-            setTimeout(function(){ $(".fadeout2").fadeOut(); }, 3000);
+            setTimeout(function(){ angular.element(".fadeout2").fadeOut(); }, 3000);
             break;
       };
 

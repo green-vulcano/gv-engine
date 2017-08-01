@@ -38,6 +38,7 @@ body {
         cursor: pointer;
 
 }
+
 .paused{
   color: #efc23b;
   font-weight: bold;
@@ -127,7 +128,7 @@ body {
   text-align: left;
   margin: 0;
   font-size: 1.29em;
-  width: 70%;
+  width: 90%;
 }
 #labelLeft{
   text-align: left;
@@ -181,9 +182,6 @@ body {
 #logout:hover {
   background: rgba(149, 29, 35, 0.4);
 }
-#profileButton:hover {
-  background: rgba(35, 134, 80, 0.4);
-}
 /******* End Nav-bar Option Style *******/
 
 /******* Start Panel Style *******/
@@ -231,6 +229,7 @@ thead {
 }
 .side-menu .navbar-nav .active a {
   background-color: transparent;
+  color: #333;
   margin-right: -0.07em;
   border-right: 0.2em solid #e7e7e7;
 }
@@ -259,6 +258,12 @@ thead {
   margin-left: 22.1em;
 }
 /******* End Side Bar Style ******/
+@media (max-width: 1065px) {
+  #fabuttonplus{
+    margin-left: 15px;
+    margin-top: 5px;;
+  }
+}
 
 /******* Start Style for Small-Screen *******/
 @media (max-width: 768px) {
@@ -470,6 +475,4 @@ thead {
 }
 
 /******* End Delete Confirm Window Style ******/
-/******* Animation slide disabled *******/
-
 /******* End Style for Small-Screen *******/
