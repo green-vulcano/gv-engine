@@ -18,9 +18,9 @@ angular.module('gvconsole')
 
 }]);
 
-
+/************** START CHART MEMORIES **************/
 angular.module('gvconsole')
-.factory('ChartServiceMemory', function() {
+.factory('ChartServiceMemories', function() {
 
 		function buildChart(chartID) {
 
@@ -29,28 +29,33 @@ angular.module('gvconsole')
 			  	data: {
 				      	columns: [
 				          	['maxMemory', 500],
-						['totalMemory', 500],
-						['freeMemory', 500],
-						['heapMemory', 500]
+						        ['totalMemory', 500],
+        						['freeMemory', 500],
+        						['heapMemory', 500]
 				      	],
 				      	type: 'bar',
                 colors: {
                 totalMemory: '#238650',
                 freeMemory: '#961E24',
                 heapMemory: '#124667',
-                cpuUsage: '#333333',
             },
             labels: true
 			  	},
 				axis: {
-					y: {
-					    max: 550,
-					    min: 0,
-					    padding: {top:0, bottom:0}
-					}
-				    },
-			  	bar: {
-				   width: 64
+  				y: {
+  				    max: 550,
+  				    min: 0,
+  				    padding: {top:0, bottom:0}
+  				}
+  			},
+        tooltip: {
+          format: {
+            title: function(){return "Memories";},
+            value: function(value){return value + ' MB';}
+          }
+        },
+			  bar: {
+				width: 64
 				}
 			});
 		};
@@ -78,9 +83,11 @@ angular.module('gvconsole')
 			}
 		};
 	});
+/************** END CHART MEMORIES **************/
 
+/************** START CHART CLASSES **************/
   angular.module('gvconsole')
-  .factory('ChartServiceClassesThreads', function() {
+  .factory('ChartServiceClasses', function() {
 
   		function buildChart(chartID) {
 
@@ -88,32 +95,30 @@ angular.module('gvconsole')
   			  	bindto: chartID,
   			  	data: {
   				      	columns: [
-  				    ['totalLoadedClasses', 16000],
-  						['loadedClasses', 16000],
-  						['unLoadedClasses', 16000],
-              ['totalThreads',16000],
-  						['daemonThreads', 16000],
-  						['peakThreads', 16000],
+  				    ['totalLoadedClasses', 15000],
+  						['loadedClasses', 15000],
+  						['unLoadedClasses', 15000],
   				      	],
   				      	type: 'bar',
                   colors: {
-                  totalLoadedClasses: '#238650',
-                  loadedClasses: '#961E24',
-                  unLoadedClasses: '#124667',
-                  totalThreads: '#333333',
-                  daemonThreads: '#f0ad4e',
-                  peakThreads: '#5bc0de'
+                  loadedClasses: '#238650',
+                  unLoadedClasses: '#961E24'
               },
               labels: true
   			  	},
 
   				axis: {
   					y: {
-  					    max: 25000,
+  					    max: 17000,
   					    min: 0,
   					    padding: {top:0, bottom:0}
   					}
   				    },
+              tooltip: {
+                format: {
+                  title: function(){return "Classes";}
+                }
+              },
   			  	bar: {
   				   width: 64
   				}
@@ -127,10 +132,7 @@ angular.module('gvconsole')
   					var gloveMap = {
   					   'SED00206':'totalLoadedClasses',
   					   'SED00207':'loadedClasses',
-  					   'SED00208':'unLoadedClasses',
-  					   'SED00209':'totalThreads',
-  					   'SED00210':'daemonThreads',
-               'SED00211':'peakThreads'
+  					   'SED00208':'unLoadedClasses'
   					};
 
             if(value == null || value==undefined){
@@ -145,7 +147,73 @@ angular.module('gvconsole')
   			}
   		};
 });
+/************** END CHART CLASSES **************/
 
+/************** START CHART THREADS **************/
+angular.module('gvconsole')
+.factory('ChartServiceThreads', function() {
+
+    function buildChart(chartID) {
+
+      return c3.generate({
+          bindto: chartID,
+          data: {
+                columns: [
+            ['totalThreads', 350],
+            ['daemonThreads', 350],
+            ['peakThreads', 350],
+                ],
+                type: 'bar',
+                colors: {
+                daemonThreads: '#238650',
+                peakThreads: '#961E24'
+            },
+            labels: true
+          },
+
+        axis: {
+          y: {
+              max: 400,
+              min: 0,
+              padding: {top:0, bottom:0}
+          }
+            },
+            tooltip: {
+              format: {
+                title: function(){return "Threads";}
+              }
+            },
+          bar: {
+           width: 64
+        }
+      });
+    };
+    var gloveChart = buildChart("#glove-chart3");
+
+    return {
+      updateGloveChart: function(id, value) {
+
+          var gloveMap = {
+             'SED00209':'totalThreads',
+             'SED00210':'daemonThreads',
+             'SED00211':'peakThreads'
+          };
+
+          if(value == null || value==undefined){
+            gloveChart.load({
+              columns: [[gloveMap[id], 0]]
+            });
+          }else{
+          gloveChart.load({
+            columns: [[gloveMap[id], value]]
+          });
+        }
+      }
+    };
+});
+/************** END CHART THREADS **************/
+
+/************** START CHART CPU **************/
 angular.module('gvconsole')
 .factory('ChartServiceCPU', function() {
 
@@ -163,7 +231,7 @@ angular.module('gvconsole')
         onmouseout: function (d, i) { console.log("onmouseout", d, i); }
     },
     color: {
-        pattern: ['#FF0000', '#F97600', '#F6C600', '#60B044'], // the three color levels for the percentage values.
+        pattern: ['#60B044', '#F6C600', '#F97600', '#FF0000'], // the three color levels for the percentage values.
         threshold: {
 //            unit: 'value', // percentage is default
 //            max: 200, // 100 is default
@@ -175,7 +243,7 @@ angular.module('gvconsole')
     }
 });
   };
-  var gloveChart = buildChart("#glove-chart3");
+  var gloveChart = buildChart("#glove-chart4");
 
   return {
     updateGloveChart: function(id, value) {
@@ -197,12 +265,12 @@ angular.module('gvconsole')
   };
 
 });
-
+/************** END CHART CPU **************/
 
 
 angular.module('gvconsole')
-.controller('MonitoringController', ['$location', 'MonitoringServices', '$scope', '$http', 'ChartServiceMemory', 'ChartServiceClassesThreads', 'ChartServiceCPU' , '$interval',
- function($location, MonitoringServices, $scope, $http, chartServiceMemory, chartServiceClassesThreads, ChartServiceCPU, $interval){
+.controller('MonitoringController', ['$location', 'MonitoringServices', '$scope', '$http', 'ChartServiceMemories', 'ChartServiceClasses', 'ChartServiceThreads', 'ChartServiceCPU' , '$interval',
+ function($location, MonitoringServices, $scope, $http, chartServiceMemories, chartServiceClasses, chartServiceThreads, chartServiceCPU, $interval){
 
     $interval(function(){
 
@@ -244,18 +312,18 @@ angular.module('gvconsole')
                $scope.error = response;
           });
 
-      chartServiceMemory.updateGloveChart('SED00201', $scope.maxMemory);
-      chartServiceMemory.updateGloveChart('SED00202', $scope.totalMemory);
-      chartServiceMemory.updateGloveChart('SED00203', $scope.freeMemory);
-      chartServiceMemory.updateGloveChart('SED00204', $scope.heapMemory);
+      chartServiceMemories.updateGloveChart('SED00201', $scope.maxMemory);
+      chartServiceMemories.updateGloveChart('SED00202', $scope.totalMemory);
+      chartServiceMemories.updateGloveChart('SED00203', $scope.freeMemory);
+      chartServiceMemories.updateGloveChart('SED00204', $scope.heapMemory);
 
-      chartServiceClassesThreads.updateGloveChart('SED00206', $scope.totalLoadedClasses);
-      chartServiceClassesThreads.updateGloveChart('SED00207', $scope.loadedClasses);
-      chartServiceClassesThreads.updateGloveChart('SED00208', $scope.unLoadedClasses);
+      chartServiceClasses.updateGloveChart('SED00206', $scope.totalLoadedClasses);
+      chartServiceClasses.updateGloveChart('SED00207', $scope.loadedClasses);
+      chartServiceClasses.updateGloveChart('SED00208', $scope.unLoadedClasses);
 
-      chartServiceClassesThreads.updateGloveChart('SED00209', $scope.totalThreads);
-      chartServiceClassesThreads.updateGloveChart('SED00210', $scope.daemonThreads);
-      chartServiceClassesThreads.updateGloveChart('SED00211', $scope.peakThreads);
+      chartServiceThreads.updateGloveChart('SED00209', $scope.totalThreads);
+      chartServiceThreads.updateGloveChart('SED00210', $scope.daemonThreads);
+      chartServiceThreads.updateGloveChart('SED00211', $scope.peakThreads);
 };
 
     },1000);
@@ -272,7 +340,7 @@ angular.module('gvconsole')
                $scope.error = response;
           });
 
-          ChartServiceCPU.updateGloveChart('SED00212',$scope.cpuUse);
+          chartServiceCPU.updateGloveChart('SED00212',$scope.cpuUse);
 
         };
 
