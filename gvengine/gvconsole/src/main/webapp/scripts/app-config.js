@@ -158,4 +158,16 @@ angular.module('gvconsole')
 
 	}
 
+  ConfigService.getConfigFiles().then(
+    function(response){
+
+    $scope.configFile = response.data[0];
+
+    ConfigService.getConfigFile(response.data).then(
+      function(response){
+      $scope.gvcore = response.data;
+      LoadXMLString("XMLHolder" , response.data);
+    })
+  });
+
 }]);

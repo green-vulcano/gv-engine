@@ -4,7 +4,7 @@
    <div class="row" data-ng-controller="ConfigController as ctrl" data-ng-init="ctrl.loadConfigInfo()">
    <!-- FadeOut Function -->
    <div id="fadeout" data-ng-repeat="alert in ctrl.alerts" class="fadeout alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
-   <!-- FadeOut Function -->      
+   <!-- FadeOut Function -->
       <form id="deployForm" name="deployForm" class="form-horizontal"
          data-ng-submit="ctrl.deployConfiguration()">
         <fieldset id="myFieldset">
@@ -63,6 +63,17 @@
                <a id="export" data-ng-hide="exportInProgress" ng-click="ctrl.exportConfig()" class="btn btn-primary"><i class="fa fa-download"></i> Export</a>
             </div>
          </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading clearfix">
+          <h4 class="panel-title pull-left" style="line-height: 34px; vertical-align: middle" data-toggle="collapse">
+             <i class="fa fa-sitemap fa-rotate-270"></i> {{configFile}}
+          </h4>
+        </div>
+        <button type="button" class="btn btn-success" data-toggle="collapse" data-target="#file"> Show </button>
+         <div id="file" class="collapse">
+          <pre id="XMLHolder"> </pre>
+        </div>
       </div>
    </div>
 </div>
