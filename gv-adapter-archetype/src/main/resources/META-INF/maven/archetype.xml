@@ -1,0 +1,10 @@
+<archetype>
+  <id>gv-adapter-archetype</id>
+  <sources>
+    <source>src/main/java/Activator.java</source>
+    <source>src/main/java/MyGVCallOperation.java</source>
+  </sources>
+  <resources>
+    <resource>src/main/resources/features.xml</resource>
+  </resources>
+</archetype>
