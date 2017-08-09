@@ -17,14 +17,14 @@ function LoadXML(ParentElementID,URL)
 }
 function LoadXMLDom(ParentElementID,xmlDoc)
 {
-	if (xmlDoc) {
+	if (xmlDoc) {//entra qui
 		var xmlHolderElement = GetParentElement(ParentElementID);
-		if (xmlHolderElement==null) { return false; }
+		if (xmlHolderElement==null) { return false; } //non entra
 		while (xmlHolderElement.childNodes.length) { xmlHolderElement.removeChild(xmlHolderElement.childNodes.item(xmlHolderElement.childNodes.length-1));	}
 		var Result = ShowXML(xmlHolderElement,xmlDoc.documentElement,0);
 		return Result;
 	}
-	else { return false; }
+	else { return false; } //non entra
 }
 function LoadXMLString(ParentElementID,XMLString)
 {
@@ -86,8 +86,8 @@ function CreateXMLDOM(XMLStr)
 		  xmlDoc.loadXML(XMLStr);
 		  return xmlDoc;
 	}
-	else if (document.implementation && document.implementation.createDocument)	  {
-		  var parser=new DOMParser();
+	else if (document.implementation && document.implementation.createDocument)	  { //entra qui
+		  var parser=new DOMParser(); //visualizza l'errore in caso di errore durante il parsing del file xml
 		  return parser.parseFromString(XMLStr,"text/xml");
 	}
 	else {
@@ -106,8 +106,8 @@ function ShowXML(xmlHolderElement,RootNode,indent)
 	TagEmptyElement.style.position = 'relative';
 	TagEmptyElement.style.left = NestingIndent+'px';
 	if (RootNode.childNodes.length==0) {
-    var ClickableElement = AddTextNode(TagEmptyElement,'','Clickable') ;
-    ClickableElement.id = 'div_empty_' + IDCounter;
+    //var ClickableElement = AddTextNode(TagEmptyElement,'','Clickable') ;
+    //ClickableElement.id = 'div_empty_' + IDCounter;
     AddTextNode(TagEmptyElement,'<','Utility') ;
     AddTextNode(TagEmptyElement,RootNode.nodeName ,'NodeName')
     for (var i = 0; RootNode.attributes && i < RootNode.attributes.length; ++i) {
@@ -118,13 +118,13 @@ function ShowXML(xmlHolderElement,RootNode,indent)
     }
     AddTextNode(TagEmptyElement,' />') ;
     xmlHolderElement.appendChild(TagEmptyElement);
-    //SetVisibility(TagEmptyElement,true);
+		SetVisibility(TagEmptyElement,true);
 	}
 	else { // mo child nodes
 
-    var ClickableElement = AddTextNode(TagEmptyElement,'+','Clickable') ;
-    ClickableElement.onclick  = function() {ToggleElementVisibility(this); }
-    ClickableElement.id = 'div_empty_' + IDCounter;
+    //var ClickableElement = AddTextNode(TagEmptyElement,'+','Clickable') ;
+    //ClickableElement.onclick  = function() {ToggleElementVisibility(this); }
+    //ClickableElement.id = 'div_empty_' + IDCounter;
 
     AddTextNode(TagEmptyElement,'<','Utility') ;
     AddTextNode(TagEmptyElement,RootNode.nodeName ,'NodeName')
@@ -146,9 +146,9 @@ function ShowXML(xmlHolderElement,RootNode,indent)
     TagElement.className = 'Element';
     TagElement.style.position = 'relative';
     TagElement.style.left = NestingIndent+'px';
-    ClickableElement = AddTextNode(TagElement,'-','Clickable') ;
-    ClickableElement.onclick  = function() {ToggleElementVisibility(this); }
-    ClickableElement.id = 'div_content_' + IDCounter;
+    //ClickableElement = AddTextNode(TagElement,'-','Clickable') ;
+    //ClickableElement.onclick  = function() {ToggleElementVisibility(this); }
+    //ClickableElement.id = 'div_content_' + IDCounter;
     ++IDCounter;
     AddTextNode(TagElement,'<','Utility') ;
     AddTextNode(TagElement,RootNode.nodeName ,'NodeName') ;
@@ -186,7 +186,7 @@ function ShowXML(xmlHolderElement,RootNode,indent)
     xmlHolderElement.appendChild(TagElement);
   }
 
-	// if (indent==0) { ToggleElementVisibility(TagElement.childNodes(0)); } - uncomment to collapse the external element
+  //if (indent==0) { ToggleElementVisibility(TagElement.childNodes(0)); } - uncomment to collapse the external element
 	return Result;
 }
 function AddTextNode(ParentNode,Text,Class)
@@ -214,12 +214,10 @@ function CompatibleGetElementByID(id)
 }
 function SetVisibility(HTMLElement,Visible)
 {
-	console.log('HTMLElement: ' + HTMLElement.itemValue + ' visible: ' + Visible);
-	if (!HTMLElement) { return; }
+	if (!HTMLElement) {return; }
 	var VisibilityStr  = (Visible) ? 'block' : 'none';
-	console.log('VisibilityStr: ' + VisibilityStr + ' document.getElementById: ' + document.getElementById);
 	if (document.getElementById) { // DOM3 = IE5, NS6
-		HTMLElement.style.display =VisibilityStr;
+		HTMLElement.style.display = VisibilityStr;
 	}
 	else {
 		if (document.layers) { // Netscape 4

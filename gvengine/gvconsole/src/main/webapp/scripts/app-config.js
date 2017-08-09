@@ -1,4 +1,3 @@
-
 angular.module('gvconsole')
 .directive('fileModel', ['$parse', function ($parse) {
     return {
@@ -157,17 +156,17 @@ angular.module('gvconsole')
 			});
 
 	}
-
+ //XML Viewer
   ConfigService.getConfigFiles().then(
     function(response){
-
-    $scope.configFile = response.data[0];
-
-    ConfigService.getConfigFile(response.data).then(
-      function(response){
-      $scope.gvcore = response.data;
-      LoadXMLString("XMLHolder" , response.data);
-    })
+      $scope.filesName = response.data;
+      angular.forEach($scope.filesName,function(value,key){
+        ConfigService.getConfigFile(value).then(
+          function(response){
+            LoadXMLString(value, response.data);
+          });
+      })
   });
+
 
 }]);

@@ -67,13 +67,15 @@
       <div class="panel panel-default">
         <div class="panel-heading clearfix">
           <h4 class="panel-title pull-left" style="line-height: 34px; vertical-align: middle" data-toggle="collapse">
-             <i class="fa fa-sitemap fa-rotate-270"></i> {{configFile}}
+             <i class="fa fa-sitemap fa-rotate-270"></i> Configuration files
           </h4>
         </div>
-        <button type="button" class="btn btn-success" data-toggle="collapse" data-target="#file"> Show </button>
-         <div id="file" class="collapse">
-          <pre id="XMLHolder"> </pre>
-        </div>
+          <div ng-repeat="(id,file) in filesName">
+            <button type="button" class="btn btn-success" data-toggle="collapse" data-target="#{{id}}">{{file}}</button>
+             <div id="{{id}}" class="collapse">
+               <pre id="{{file}}"> </pre>
+             </div>
+          </div>
       </div>
    </div>
 </div>
