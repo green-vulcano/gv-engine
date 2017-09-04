@@ -52,8 +52,12 @@ angular.module('gvconsole', ['ngCookies','ngRoute','angular-quartz-cron', 'ui.bo
       });
 
       $rootScope.go = function(path) {
-		                    $location.path(path);
-	                    };
+		    $location.path(path);
+	  };
+	                    
+      $rootScope.getUser = function(username){
+		  	$rootScope.user = username;
+	  };
 
       $rootScope.routeIsIn = function(route){
                         return  $location.path().startsWith(route);

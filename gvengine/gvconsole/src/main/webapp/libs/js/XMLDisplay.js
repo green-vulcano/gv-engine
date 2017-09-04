@@ -17,7 +17,7 @@ function LoadXML(ParentElementID,URL)
 }
 function LoadXMLDom(ParentElementID,xmlDoc)
 {
-	if (xmlDoc) {//entra qui
+	if (xmlDoc) {
 		var xmlHolderElement = GetParentElement(ParentElementID);
 		if (xmlHolderElement==null) { return false; } //non entra
 		while (xmlHolderElement.childNodes.length) { xmlHolderElement.removeChild(xmlHolderElement.childNodes.item(xmlHolderElement.childNodes.length-1));	}
@@ -86,7 +86,7 @@ function CreateXMLDOM(XMLStr)
 		  xmlDoc.loadXML(XMLStr);
 		  return xmlDoc;
 	}
-	else if (document.implementation && document.implementation.createDocument)	  { //entra qui
+	else if (document.implementation && document.implementation.createDocument)	  {
 		  var parser=new DOMParser(); //visualizza l'errore in caso di errore durante il parsing del file xml
 		  return parser.parseFromString(XMLStr,"text/xml");
 	}

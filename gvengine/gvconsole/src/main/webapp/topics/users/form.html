@@ -32,7 +32,7 @@
     			      <input id="username" name="username" type="text"
     			      		class="form-control" placeholder="Username"
     			      		data-ng-model="ctrl.user.username"
-    			      		data-ng-minlength="4" data-ng-maxlength="28" required>
+    			      		data-ng-minlength="4" data-ng-maxlength="256" required>
     			       	<p style="margin: 0">
     			       		<span data-ng-show="userForm.submitted && userForm.username.$error.required" class="text-warning">
     			       			<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
@@ -116,7 +116,7 @@
                       <div class="input-group-btn">
                         <select ng-model="ctrl.newrole" class="form-control">
                           <option value="" disabled selected >Choose role</option>
-                          <option id="newrole" class="list-group-item list-group-item-action list-group-item-info" data-ng-repeat="" >{{roles.name}}</option>
+                          <option id="newrole" class="list-group-item list-group-item-action list-group-item-info" data-ng-repeat="role in ctrl.roles">{{role.name}}</option>
                         </select>
                       </div>
                     </div>

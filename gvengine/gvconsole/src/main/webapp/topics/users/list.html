@@ -53,7 +53,7 @@
               </ul>
             </td>
             <td id="actionTable">
-              <button data-ng-click="go('/users/'+user.username)" onClick="slide();" type="button" class="btn btn-warning"><i class="fa fa-pencil" aria-hidden="true"></i></button>
+              <button data-ng-click="getUser(user.username); go('/users/'+ user.id)" onClick="slide();" type="button" class="btn btn-warning"><i class="fa fa-pencil" aria-hidden="true"></i></button>
             </td>
           </tr>
         </tbody>

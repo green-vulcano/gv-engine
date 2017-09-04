@@ -6,7 +6,7 @@ angular.module('gvconsole')
 		}
 
 		this.getUser = function(id){
-			 return $http.get(Endpoints.gviam + '/admin/users/' + id);
+			return $http.get(Endpoints.gviam + '/admin/users/' + id);
 		}
 
 		this.createUser = function(user) {
@@ -122,7 +122,7 @@ angular.module('gvconsole')
 }]);
 
 angular.module('gvconsole')
-.controller('UserFormController',['AdminService' , '$scope', '$routeParams', '$location', function(AdminService, $scope, $routeParams, $location){
+.controller('UserFormController',['AdminService' , '$scope', '$routeParams', '$location', '$rootScope', function(AdminService, $scope, $routeParams, $location, $rootScope){
 
 		$scope.userDataStatus = "loading";
 		this.alerts = [];
@@ -142,8 +142,7 @@ angular.module('gvconsole')
 			$scope.newUser = true;
 			$scope.userDataStatus = "ready";
 		} else {
-
-			AdminService.getUser($routeParams.userId)
+			AdminService.getUser($rootScope.user)
 			.then(function(response) {
 				 		instance.user = response.data;
 				 		$scope.userDataStatus = "ready";
@@ -210,7 +209,7 @@ angular.module('gvconsole')
 
 		this.switchUserStatus =  function(){
 			$scope.userDataStatus = "saving";
-			AdminService.switchUserStatus(instance.user.username)
+			AdminService.switchUserEnablement(instance.user.username)
 					.then(function(response) {
 				 		instance.user = response.data;
 				 		instance.alerts.push({type: 'success', msg: 'User status switched'});
@@ -295,5 +294,5 @@ angular.module('gvconsole')
 }]);
 
 function slide(){
-      angular.element('.side-body').blockClass('body-slide-in');
+      angular.element('.side-body').removeClass('body-slide-in');
 };
