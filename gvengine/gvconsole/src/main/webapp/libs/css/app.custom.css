@@ -14,7 +14,7 @@ body {
   font-size: 18px;
 }
 #outputArea{
-  background-color: #333;
+  background-color: #ffffff;
   color: #11c104;
 }
 @-webkit-keyframes blinker {

@@ -112,7 +112,12 @@ public class GvConfigurationControllerRest {
 	 @Consumes(MediaType.MULTIPART_FORM_DATA)
 	 @RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
 	 public void deploy(@PathParam("configId") String id,
-			            @Multipart(value="gvconfiguration", type="application/zip") Attachment config) {
+			            @Multipart(value="gvconfiguration") Attachment config) {
+		 
+		 switch(config.getHeader("Content-Type")) {
+		 
+		 case "application/zip":
+		 case "application/x-zip-compressed":
 		 
 		 LOG.debug("Deploying configuration with id "+id);
 		 
@@ -133,6 +138,13 @@ public class GvConfigurationControllerRest {
 			LOG.error("Deploy failed, something bad appened",e); 						
 			throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build());
 			
+		 }
+		 
+		 	break;
+		 
+		 default:
+			 throw new WebApplicationException(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
+			 
 		 }
 		 
 		 

@@ -21,7 +21,7 @@
     -->
 
     <modelVersion>4.0.0</modelVersion>
-    
+
     <parent>
 	    <artifactId>gvengine</artifactId>
 	    <groupId>it.greenvulcano.gvesb</groupId>
@@ -64,7 +64,7 @@
 		    <artifactId>jackson-databind</artifactId>
 		    <version>2.7.4</version>
 		    <scope>provided</scope>
-	    </dependency>		
+	    </dependency>
 	    <dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
@@ -125,7 +125,7 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Export-Package>
-                            it.greenvulcano.gvesb.gvmonitoring*;version=${project.version}
+                            it.greenvulcano.gvesb.monitoring*;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             javax.ws.rs,
@@ -138,7 +138,7 @@
                             it.greenvulcano.gvesb.iam.modules,
                             it.greenvulcano.gvesb.api.security,
                             com.fasterxml.jackson.core,
-                            com.fasterxml.jackson.databind                   
+                            com.fasterxml.jackson.databind
                         </Import-Package>
                         <Embed-Dependency>*;scope=compile;type=jar</Embed-Dependency>
 						<Embed-Transitive>false</Embed-Transitive>
