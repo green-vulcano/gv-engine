@@ -103,6 +103,16 @@ log4j2.logger.greenvulcano.appenderRef.gv.ref = RoutingGVCore
 #log4j2.logger.greenvulcano.appenderRef.gv.filter.mdc.fleet.key = MASTER_SERVICE
 #log4j2.logger.greenvulcano.appenderRef.gv.filter.mdc.fleet.value = (service name)
 ```
+## Monitoring
+
+You can access to GV ESB v4 JMX infrastructure using jconsole connected to karaf.
+
+Use this url 
+
+```service:jmx:rmi:///jndi/rmi://<karaf host>:1099/karaf-root```
+
+to connect jconsole on a remote instance. All MBean are under the node `GreenVulcano`
+
 [GreenVulcano]: https://github.com/green-vulcano/gv-engine
 [Apache Karaf]: <http://karaf.apache.org>
 [OPS4J Pax JDBC]: https://ops4j1.jira.com/wiki/display/PAXJDBC/Documentation
