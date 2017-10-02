@@ -42,13 +42,18 @@ import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
  * 
  */
 public interface UsersManager {
-	
+		
+		/**
+		 *  The set of GreenVulcano ESB Administrative roles
+		 */
 		public final static class Authority {
 				
 			public final static String ADMINISTRATOR = "gvadmin";
 			public final static String MANAGER = "gvmanager_account";
 			public final static String CLIENT = "gvclient_account";
-			public final static String GUEST = "gvguest_account";
+			public final static String GUEST = "gvguest_account";			
+			
+			public final static String NOT_AUTHORATIVE = "gv_application";
 			
 			public final static Set<String> entries;
 			
@@ -58,11 +63,38 @@ public interface UsersManager {
 				e.add(MANAGER);
 				e.add(CLIENT);
 				e.add(GUEST);
-				
+								
 				entries = Collections.unmodifiableSet(e);
 			}
 			
-		}	
+		}
+		
+		/**
+		 * The set of Apache Karaf roles
+		 * 
+		 */
+		public final static class System {
+			
+			public final static String ADMINISTRATOR = "admin";
+			public final static String MANAGER = "manager";
+			public final static String CLIENT = "systembundles";
+			public final static String GUEST = "viewer";			
+			
+			public final static String NOT_AUTHORATIVE = "gv_application";
+			
+			public final static Set<String> entries;
+			
+			static {
+				Set<String> e = new LinkedHashSet<>();
+				e.add(ADMINISTRATOR);
+				e.add(MANAGER);
+				e.add(CLIENT);
+				e.add(GUEST);
+								
+				entries = Collections.unmodifiableSet(e);
+			}
+			
+		}
 	
 		void checkManagementRequirements();
 	
@@ -70,7 +102,7 @@ public interface UsersManager {
 		
 		Role createRole(String name, String description) throws InvalidRoleException;
 		
-		User getUser(Integer id) throws UserNotFoundException;
+		User getUser(Long id) throws UserNotFoundException;
 		
 		User getUser(String username) throws UserNotFoundException;
 		

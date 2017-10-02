@@ -97,7 +97,7 @@ public class GVSecurityFilter implements ContainerRequestFilter {
 				Response errorResponse = Response.status(Response.Status.UNAUTHORIZED)
 		                 .header("X-Auth-Status", "Denied")
 		                 .header("WWW-Authenticate", wwwAuthenticate)
-		                 .entity("Credentials expired").build();
+		                 .entity("Access denied").build();
 
 				LOG.warn("Failed to authenticate user", unauthorizedException);
 				requestContext.abortWith(errorResponse);

@@ -105,15 +105,18 @@ public class GVUsersManager implements UsersManager {
 			Optional<Role> notValidRole = grantedRoles.stream().filter(roleIsValid.negate()).findAny();
 			if (notValidRole.isPresent()){
 				throw new InvalidRoleException(notValidRole.get().getName());
-			} 
+			}
 			
-			user.getRoles().addAll(grantedRoles);
+			for (Role r : grantedRoles) {
+				user.getRoles().add(roleRepository.get(r.getName()).orElse(r));
+			}
+			
 		}
 		userRepository.add(user);
 	}
 
 	@Override
-	public User getUser(Integer id) throws UserNotFoundException {
+	public User getUser(Long id) throws UserNotFoundException {
 		User user = userRepository.get(id).orElseThrow(()->new UserNotFoundException(id.toString()));
 		return user;
 	}

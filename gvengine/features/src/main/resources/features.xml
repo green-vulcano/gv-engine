@@ -153,6 +153,12 @@
 		<feature prerequisite="true">gvengine</feature>
 		<bundle start-level="96">mvn:it.greenvulcano.gvesb.adapter/gvmqttx/${project.version}</bundle>		
 	</feature>	
+	
+	<feature name="gvvcl-mail" description="GreenVulcano smtp-call pop-call imap-call extensions" version="${project.version}">		  
+				
+		<feature prerequisite="true">gvengine</feature>
+		<bundle start-level="96">mvn:it.greenvulcano.gvesb.adapter/gvvcl-mail/${project.version}</bundle>		
+	</feature>
 			
 	
 </features>

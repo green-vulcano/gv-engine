@@ -6,8 +6,8 @@
 <hibernate-configuration>
     <session-factory>   
     	<property name="hibernate.connection.datasource">osgi:service/gviam-ds</property> 
-        <property name="hibernate.transaction.factory_class">org.hibernate.transaction.JTATransactionFactory</property>
-         <property name="hibernate.hbm2ddl.auto">update</property>       
+        <property name="hibernate.transaction.coordinator_class">jta</property>
+        <property name="hibernate.hbm2ddl.auto">update</property>       
           
         <mapping class="it.greenvulcano.gvesb.gviamx.domain.UserActionRequest"/>      
         <mapping class="it.greenvulcano.gvesb.gviamx.domain.SignUpRequest"/>

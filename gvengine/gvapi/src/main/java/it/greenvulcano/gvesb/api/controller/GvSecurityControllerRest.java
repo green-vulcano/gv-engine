@@ -30,18 +30,21 @@ import javax.ws.rs.core.SecurityContext;
 
 import org.apache.cxf.jaxrs.ext.MessageContext;
 import org.apache.cxf.jaxrs.ext.PATCH;
+import org.apache.cxf.jaxrs.utils.JAXRSUtils;
 import org.apache.cxf.rs.security.cors.CrossOriginResourceSharing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import it.greenvulcano.gvesb.api.dto.CredentialsDTO;
 import it.greenvulcano.gvesb.api.dto.UserDTO;
+import it.greenvulcano.gvesb.api.security.GVSecurityContext;
 import it.greenvulcano.gvesb.iam.domain.Credentials;
 import it.greenvulcano.gvesb.iam.domain.Role;
 import it.greenvulcano.gvesb.iam.domain.User;
 import it.greenvulcano.gvesb.iam.exception.CredentialsExpiredException;
 import it.greenvulcano.gvesb.iam.exception.InvalidCredentialsException;
 import it.greenvulcano.gvesb.iam.exception.InvalidPasswordException;
+import it.greenvulcano.gvesb.iam.exception.InvalidRoleException;
 import it.greenvulcano.gvesb.iam.exception.InvalidUsernameException;
 import it.greenvulcano.gvesb.iam.exception.PasswordMissmatchException;
 import it.greenvulcano.gvesb.iam.exception.UserExistException;
@@ -52,6 +55,7 @@ import it.greenvulcano.gvesb.iam.service.SearchCriteria;
 import it.greenvulcano.gvesb.iam.service.SearchResult;
 import it.greenvulcano.gvesb.iam.service.UsersManager;
 import it.greenvulcano.gvesb.iam.service.UsersManager.Authority;
+import it.greenvulcano.gvesb.iam.service.UsersManager.System;
 
 @CrossOriginResourceSharing(allowAllOrigins=true, allowCredentials=true, exposeHeaders={"Content-type", "Content-Range", "X-Auth-Status"} )
 public class GvSecurityControllerRest extends BaseControllerRest {
@@ -239,7 +243,7 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 	
 	@Path("/admin/users")
 	@GET @Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
+	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER, Authority.CLIENT})
 	public Response getUsers(@Context MessageContext jaxrsContext) {
 		
 		String range = Optional.ofNullable(jaxrsContext.getHttpHeaders().getHeaderString("Range")).orElse("");
@@ -261,7 +265,12 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 			}
 		}
 		
-		SearchCriteria criteria = new SearchCriteria(offset, limit);
+		/*
+		 *  A gvclient_account user can view only users createad for application purporse 
+		 */
+		SearchCriteria criteria = jaxrsContext.getSecurityContext().isUserInRole(Authority.CLIENT)?
+								  SearchCriteria.builder().havingRole(Authority.NOT_AUTHORATIVE).offsetOf(offset).limitedTo(limit).build() 
+								  : new SearchCriteria(offset, limit);
 		
 		for (Entry<String, List<String>> q : jaxrsContext.getUriInfo().getQueryParameters().entrySet()){
 			
@@ -284,6 +293,8 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 			
 			
 		}
+		
+		
 		
 		Response response = null;
 		
@@ -310,14 +321,23 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 	
 	@Path("/admin/roles")
 	@GET @Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
-	public Response getRoles() {
+	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER, Authority.CLIENT})
+	public Response getRoles(@Context SecurityContext securityContext) {
 		
 		Response response = null;
 		
 		try {			
 			
 			Set<Role> roles = gvUsersManager.getRoles();
+			
+			/*
+			 *  A gvclient_account user can view only roles createad for application purporse 
+			 */
+			if (securityContext.isUserInRole(Authority.CLIENT)) {
+			   roles.removeAll(roles.stream().filter(r -> Authority.entries.contains(r.getName()) || System.entries.contains(r.getName()) ).collect(Collectors.toSet()));
+			} if (securityContext.isUserInRole(Authority.MANAGER)) {
+				roles.removeAll(roles.stream().filter(r -> System.entries.contains(r.getName()) ).collect(Collectors.toSet()));
+			}
 			
 			response = Response.ok(toJson(roles)).build();	
 		} catch (Exception e) {
@@ -328,18 +348,56 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 		return response;
 	}
 	
-	@Path("/admin/users/{username}")
+	@Path("/admin/users/{id}")
 	@GET @Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
-	public Response getUser(@PathParam("username") String username) {
+	@PermitAll
+	public Response getUser(@PathParam("id") Long id) {
 		
 		Response response = null;
 		
-		try {			
+		try {
 			
-			UserDTO user = new UserDTO(gvUsersManager.getUser(username));
+			GVSecurityContext securityContext = (GVSecurityContext) JAXRSUtils.getCurrentMessage().get(org.apache.cxf.security.SecurityContext.class);
 			
-			response = Response.ok(toJson(user)).build();	
+			if (securityContext ==null || securityContext.getUserPrincipal() ==null) {
+				return Response.status(Status.FORBIDDEN).build();
+			}
+			
+			User user = gvUsersManager.getUser(id);
+			
+			UserDTO userDTO;			
+			if (securityContext.isUserInRole(Authority.ADMINISTRATOR) || securityContext.isUserInRole(Authority.MANAGER)) {
+				/*
+				 *  admin and manager can view any user
+				 */				
+				userDTO = new UserDTO(user);
+				
+				
+			} else if (securityContext.isUserInRole(Authority.CLIENT)) {				
+				/*
+				 *  client can view only application user
+				 */
+				if (user.getRoles().stream().map(Role::getName).anyMatch(r -> r.equals(Authority.NOT_AUTHORATIVE))) {
+					userDTO = new UserDTO(user);
+				} else {
+					throw new UserNotFoundException("" + id);
+				}
+				
+			} else {
+				/*
+				 *  any other users can view only it self
+				 */
+				
+				if ( securityContext.getIdentity().getId().equals(id)) {
+					userDTO = new UserDTO(user);
+				} else {
+					throw new UserNotFoundException("" + id);
+				}
+				
+			}			
+			
+		   response = Response.ok(toJson(userDTO)).build();
+					
 		} catch (UserNotFoundException userNotFoundException) {			
 			response = Response.status(Status.NOT_FOUND).build();		
 		} catch (Exception e) {
@@ -353,12 +411,14 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 	@Path("/admin/users")
 	@POST @Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed(Authority.ADMINISTRATOR)
-	public Response createUser(String data) {
+	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER, Authority.CLIENT})
+	public Response createUser(@Context SecurityContext securityContext, String data) {
 		Response response = null;
 		
 		try {
 			UserDTO user = parseJson(data, UserDTO.class);
+			
+			checkSecurityContraint(securityContext, user);
 			
 			String defaultPassword = user.getUsername();			
 			gvUsersManager.createUser(user.getUsername(), defaultPassword);
@@ -366,7 +426,7 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 
 			response = Response.created(URI.create("/admin/users/"+user.getUsername())).build();
 			
-		} catch (InvalidUsernameException|InvalidPasswordException e) {
+		} catch (InvalidUsernameException|InvalidPasswordException|InvalidRoleException e) {
 			response = Response.status(Status.NOT_ACCEPTABLE).entity(toJson(e)).build();		
 		} catch (UserExistException e) {
 			response = Response.status(Status.CONFLICT).entity(toJson(e)).build();
@@ -379,19 +439,22 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 		
 	}
 	
-	@Path("/admin/users/{username}")
+	@Path("/admin/users/{id}")
 	@PUT @Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed(Authority.ADMINISTRATOR)
-	public Response editUser(@PathParam("username") String username, String data) {
+	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER, Authority.CLIENT})
+	public Response editUser(@Context SecurityContext securityContext, @PathParam("id") Long id, String data) {
 		Response response = null;
 		
 		try {
 			UserDTO user = parseJson(data, UserDTO.class);			
-			gvUsersManager.updateUser(username, user.getUserInfo(), user.getGrantedRoles(), user.isEnabled(), user.isExpired());
+			checkSecurityContraint(securityContext, user);
+			
+			gvUsersManager.updateUser(user.getUsername(), user.getUserInfo(), user.getGrantedRoles(), user.isEnabled(), user.isExpired());
 			
 			response = Response.ok().build();
-		
+		} catch (InvalidRoleException e) {
+			response = Response.status(Status.NOT_ACCEPTABLE).entity(toJson(e)).build();		
 		} catch (UserNotFoundException e) {
 			response = Response.status(Status.NOT_FOUND).entity(toJson(e)).build();	
 
@@ -404,19 +467,23 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 		
 	}
 	
-	@Path("/admin/users/{username}/enabled")
+	@Path("/admin/users/{id}/enabled")
 	@PATCH 
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
-	public Response switchUserStatus(@PathParam("username") String username){
+	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER, Authority.CLIENT})
+	public Response switchUserStatus(@Context SecurityContext securityContext, @PathParam("id") Long id){
 		Response response = null;
 		
 		try {
-	
-			UserDTO user = new UserDTO(gvUsersManager.switchUserStatus(username));
+			UserDTO user = new UserDTO(gvUsersManager.getUser(id));			
+			checkSecurityContraint(securityContext, user);
+			
+			user = new UserDTO(gvUsersManager.switchUserStatus(user.getUsername()));
 								
 			response = Response.ok(toJson(user)).build();
-	
+		
+		} catch (InvalidRoleException e) {
+			response = Response.status(Status.NOT_ACCEPTABLE).entity(toJson(e)).build();	
 		} catch (UserNotFoundException e) {
 			response = Response.status(Status.NOT_FOUND).entity(toJson(e)).build();
 		} catch (Exception e) {
@@ -428,18 +495,23 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 		
 	}
 	
-	@Path("/admin/users/{username}/password")
+	@Path("/admin/users/{id}/password")
 	@PATCH 
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
-	public Response resetUserPassword(@PathParam("username") String username) {
+	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER, Authority.CLIENT})
+	public Response resetUserPassword(@Context SecurityContext securityContext, @PathParam("id") Long id) {
 		Response response = null;
 		
 		try {
-			UserDTO user = new UserDTO(gvUsersManager.resetUserPassword(username, username));
+			UserDTO user = new UserDTO(gvUsersManager.getUser(id));			
+			checkSecurityContraint(securityContext, user);
+			
+			user = new UserDTO(gvUsersManager.resetUserPassword(user.getUsername(), user.getUsername()));
 			
 			response = Response.ok(toJson(user)).build();
-			
+		
+		} catch (InvalidRoleException e) {
+			response = Response.status(Status.NOT_ACCEPTABLE).entity(toJson(e)).build();			
 		} catch (UserNotFoundException e) {
 			response = Response.status(Status.NOT_FOUND).entity(toJson(e)).build();
 		} catch (Exception e) {
@@ -451,19 +523,23 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 		
 	}
 	
-	@Path("/admin/users/{username}")
+	@Path("/admin/users/{id}")
 	@DELETE
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed(Authority.ADMINISTRATOR)
-	public Response deleteUser(@PathParam("username") String username) {
+	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER, Authority.CLIENT})
+	public Response deleteUser(@Context SecurityContext securityContext, @PathParam("id") Long id) {
 		Response response = null;
 		
 		try {
-		
-			gvUsersManager.deleteUser(username);			
+			UserDTO user = new UserDTO(gvUsersManager.getUser(id));		
+			
+			checkSecurityContraint(securityContext, user);
+			gvUsersManager.deleteUser(user.getUsername());			
 					
 			response = Response.accepted().build();
-		
+			
+		} catch (InvalidRoleException e) {
+			response = Response.status(Status.NOT_ACCEPTABLE).entity(toJson(e)).build();		
 		} catch (Exception e) {
 			LOG.error("GVAPI_Exception - Delete user",e);
 			response = Response.status(Status.SERVICE_UNAVAILABLE).entity(toJson(e)).build();
@@ -471,6 +547,35 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 		
 		return response;
 		
+	}
+	
+	private void checkSecurityContraint(SecurityContext securityContext, UserDTO user) throws InvalidRoleException  {
+		
+		if (securityContext.isUserInRole(Authority.MANAGER) && user.getGrantedRoles().stream().anyMatch(r-> Authority.ADMINISTRATOR.equals(r.getName()) || System.entries.contains(r.getName()) )) {
+			/*
+			 * manager cant manage administrator
+			 */
+			throw new InvalidRoleException(Authority.ADMINISTRATOR);
+			
+		} else if (securityContext.isUserInRole(Authority.CLIENT)) {
+			/*
+			 * client can only manage application user
+			 */
+			Optional<String> authorityRole = user.getGrantedRoles().stream()
+			                      .filter(r -> Authority.entries.contains(r.getName()) || System.entries.contains(r.getName()))
+			                      .map(Role::getName)
+			                      .findFirst();
+			
+			if (authorityRole.isPresent()) {
+				throw new InvalidRoleException(authorityRole.get()); 
+			}
+			
+			if (user.getGrantedRoles().stream().noneMatch(r-> Authority.NOT_AUTHORATIVE.equals(r.getName()))){
+				Role application = new Role(Authority.NOT_AUTHORATIVE, "GV ESB Workflow user");
+				user.getGrantedRoles().add(application);
+				
+			}
+		}
 	}
 	
 

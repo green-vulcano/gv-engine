@@ -30,7 +30,7 @@ import it.greenvulcano.gvesb.iam.domain.User;
  * Business interface to deal with {@link User} entity
  * 
  */
-public interface UserRepository extends Repository<User, Integer> {
+public interface UserRepository extends Repository<User, Long> {
 	
 	enum Parameter {
 		username, fullname, email, expired, creationTime, updateTime, passwordTime, enabled, role;

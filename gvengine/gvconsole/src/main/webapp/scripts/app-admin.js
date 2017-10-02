@@ -122,7 +122,7 @@ angular.module('gvconsole')
 }]);
 
 angular.module('gvconsole')
-.controller('UserFormController',['AdminService' , '$scope', '$routeParams', '$location', '$rootScope', function(AdminService, $scope, $routeParams, $location, $rootScope){
+.controller('UserFormController',['AdminService' , '$scope', '$routeParams', '$location', function(AdminService, $scope, $routeParams, $location){
 
 		$scope.userDataStatus = "loading";
 		this.alerts = [];
@@ -142,7 +142,7 @@ angular.module('gvconsole')
 			$scope.newUser = true;
 			$scope.userDataStatus = "ready";
 		} else {
-			AdminService.getUser($rootScope.user)
+			AdminService.getUser($routeParams.userId)
 			.then(function(response) {
 				 		instance.user = response.data;
 				 		$scope.userDataStatus = "ready";
@@ -189,7 +189,7 @@ angular.module('gvconsole')
 		this.saveUser =  function(){
 			$scope.userDataStatus = "saving";
 
-			var save = ($scope.newUser) ? AdminService.createUser(instance.user) : AdminService.updateUser(instance.user.username, instance.user);
+			var save = ($scope.newUser) ? AdminService.createUser(instance.user) : AdminService.updateUser(instance.user.id, instance.user);
 
 			save.then(function(response) {
 
@@ -209,7 +209,7 @@ angular.module('gvconsole')
 
 		this.switchUserStatus =  function(){
 			$scope.userDataStatus = "saving";
-			AdminService.switchUserEnablement(instance.user.username)
+			AdminService.switchUserEnablement(instance.user.id)
 					.then(function(response) {
 				 		instance.user = response.data;
 				 		instance.alerts.push({type: 'success', msg: 'User status switched'});
@@ -238,7 +238,7 @@ angular.module('gvconsole')
 
 		this.resetUserPassword =  function() {
 			$scope.userDataStatus = "saving";
-			AdminService.resetUserPassword(instance.user.username)
+			AdminService.resetUserPassword(instance.user.id)
 					.then(function(response) {
 				 		instance.user = response.data;
 				 		instance.alerts.push({type: 'success', msg: 'User password has been resetted'});
@@ -265,7 +265,7 @@ angular.module('gvconsole')
 
 		this.deleteUser =  function() {
 			$scope.userDataStatus = "saving";
-			AdminService.deleteUser(instance.user.username)
+			AdminService.deleteUser(instance.user.id)
 					.then(function(response) {
 				 		instance.user = response.data;
 				 		instance.alerts.push({type: 'success', msg: 'User deleted'});

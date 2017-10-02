@@ -38,7 +38,7 @@ import it.greenvulcano.gvesb.iam.repository.UserRepository;
  * expects injection of a {@link SessionFactory}  
  * 
  */
-public class UserRepositoryHibernate extends RepositoryHibernate<User, Integer> implements UserRepository {
+public class UserRepositoryHibernate extends RepositoryHibernate<User, Long> implements UserRepository {
 	
 	public UserRepositoryHibernate() {
 		super(User.class);
@@ -87,12 +87,12 @@ public class UserRepositoryHibernate extends RepositoryHibernate<User, Integer> 
 	
 	private QueryHelper buildQueryHelper(boolean countOnly, Map<Parameter, Object> parameters, LinkedHashMap<Parameter, Order> order){
 		
-		QueryHelper helper = countOnly ? new QueryHelper("select count(u.id) from User u ") : new QueryHelper("from User u ") ;
+		QueryHelper helper = countOnly ? new QueryHelper("select count(u.id) from User u ") : new QueryHelper("select distinct u from User u ") ;
 		
 		if (parameters!=null) {			
 			Optional<Object> role = Optional.ofNullable(parameters.get(Parameter.role));			
 			if (role.isPresent()) {
-				helper.getQuery().append("join u.roles role where role.name = :_role ");
+				helper.getQuery().append("join u.roles r where r.name = :_role ");
 				helper.getParams().put("_role", role.get().toString());
 			} else {
 				helper.getQuery().append("where u.id is not null ");
