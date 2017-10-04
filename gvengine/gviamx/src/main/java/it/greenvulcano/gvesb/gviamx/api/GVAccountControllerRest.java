@@ -20,6 +20,8 @@
 package it.greenvulcano.gvesb.gviamx.api;
 
 import java.util.Optional;
+
+import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -87,7 +89,7 @@ public class GVAccountControllerRest {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER, Authority.CLIENT})
-	public Response checkResgistrationStatus(@QueryParam("check") String email) {
+	public Response checkRegistrationStatus(@QueryParam("check") String email) {
 			
 		JSONObject status = new JSONObject();
 		if (email != null &&  email.matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$")) {
@@ -122,26 +124,35 @@ public class GVAccountControllerRest {
 	
 	@Path("/signup")
 	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER, Authority.CLIENT})
-	public Response submitSignUpRequest(String request) {
+	@Consumes(MediaType.APPLICATION_JSON)	
+	public Response submitSignUpRequest(String request, @QueryParam("plain") boolean plain) {
 		Response response = null;
 		
 		try {
-			JSONObject jsonData = new JSONObject(request);
-			String password = jsonData.optString("password", "") ;
 						
-		    if (!password.matches(User.PASSWORD_PATTERN)) {
-		    	throw new InvalidPasswordException(password);
-		    }
+			JSONObject jsonData = new JSONObject(request);
+			Optional<String> password = Optional.ofNullable(jsonData.optString("password", null)) ;
+						
+		    if (password.isPresent()) {
+		    	
+		    	if (password.get().matches(User.PASSWORD_PATTERN)) {
+		    		jsonData.put("password", CryptoHelper.encrypt(CryptoHelper.DEFAULT_KEY_ID, password.get(), true ));
+		    		
+		    		if (plain) {
+		    			jsonData.put("plain", password.get());
+		    		}
+		    		
+		    	} else {
+		    		throw new InvalidPasswordException(password.get());
+		    	}		    	
+		    }			
 			
-			jsonData.put("password", CryptoHelper.encrypt(CryptoHelper.DEFAULT_KEY_ID, password, true ));
-			signupManager.createSignUpRequest(jsonData.optString("email"), password, jsonData.toString().getBytes());
+			signupManager.createSignUpRequest(jsonData.optString("email"), jsonData.toString().getBytes());
 		
 			response = Response.ok().build();
 		} catch (InvalidPasswordException e) {
 			LOG.warn("Error processing signup request", e);
-			response = Response.status(Status.FORBIDDEN).entity(e.getMessage()).build();			
+			response = Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();			
 		} catch (JSONException jsonException) {
 			LOG.warn("Error processing signup request", jsonException);
 			response = Response.status(Status.BAD_REQUEST).entity("Invalid json").build();
@@ -166,9 +177,8 @@ public class GVAccountControllerRest {
 	
 	@Path("/signup")
 	@PUT
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER, Authority.CLIENT})
-	public Response confirmSignUpRequest(@Context SecurityContext securityContext, @FormParam("email")String email, @FormParam("token")String token){
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)	
+	public Response confirmSignUpRequest(@Context SecurityContext securityContext, @FormParam("email")String email, @FormParam("token")String token, @FormParam("password") String clearPassword) {
 				
 		Response response = null;
 		
@@ -177,16 +187,19 @@ public class GVAccountControllerRest {
 			Optional.ofNullable(email).orElseThrow(()->new IllegalArgumentException("Required parameter: email"));
 			Optional.ofNullable(token).orElseThrow(()->new IllegalArgumentException("Required parameter: token"));
 						
-			SignUpRequest signupRequest = signupManager.retrieveSignUpRequest(email, token);			
+			SignUpRequest signupRequest = signupManager.retrieveSignUpRequest(email, token);
+						
+			String password = Optional.ofNullable(clearPassword).orElseGet(()->{
+				try {
+					return CryptoHelper.decrypt(CryptoHelper.DEFAULT_KEY_ID, (String) signupRequest.getActionData().get("password"), false);
+				} catch (CryptoHelperException|CryptoUtilsException cryptoException) {
+					LOG.error("Invalid password stored in action data", cryptoException);
+				}
+				return "";
+			});
 			
-			String password = CryptoHelper.decrypt(CryptoHelper.DEFAULT_KEY_ID, (String) signupRequest.getActionData().get("password"), false) ;
-			
-			User user = signupManager.getUsersManager().createUser(email, password);		
-			
-			if (securityContext.isUserInRole(Authority.CLIENT) && user.getRoles().stream().noneMatch(r-> Authority.NOT_AUTHORATIVE.equals(r.getName()))){
-				signupManager.getUsersManager().addRole(email, Authority.NOT_AUTHORATIVE);				
-			}
-			
+			User user = signupManager.getUsersManager().createUser(email, password);			
+						
 			user.setUserInfo(new UserInfo());
 			user.getUserInfo().setEmail(email);
 			
@@ -202,7 +215,8 @@ public class GVAccountControllerRest {
 			}
 							
 			signupManager.getUsersManager().updateUser(email, user.getUserInfo(), user.getRoles(), true, false);
-						
+			signupManager.getUsersManager().addRole(email, Authority.NOT_AUTHORATIVE);
+			
 			signupManager.consumeSignUpRequest(signupRequest);
 			response = Response.ok().build();
 		} catch (IllegalArgumentException|SecurityException e) {
@@ -225,8 +239,7 @@ public class GVAccountControllerRest {
 	
 	@Path("/restore")
 	@POST
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER, Authority.CLIENT})
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)	
 	public Response submitResetPasswordRequest(@FormParam("email") String email){
 		Response response = null;
 		try {
@@ -248,8 +261,7 @@ public class GVAccountControllerRest {
 	
 	@Path("/restore")
 	@PUT
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER, Authority.CLIENT})
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)	
 	public Response consumeResetPasswordRequest(@FormParam("email")String email, @FormParam("token")String token, @FormParam("password")String password) {
 		
 		Response response = null;
@@ -284,14 +296,14 @@ public class GVAccountControllerRest {
 	@Path("/update")
 	@POST
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER, Authority.CLIENT})
-	public Response submitChangeEmailRequest(@FormParam("email")String email, @FormParam("new_email")String newEmail){
+	@PermitAll
+	public Response submitChangeEmailRequest(@Context SecurityContext securityContext, @FormParam("email")String email, @FormParam("new_email")String newEmail){
 		Response response = null;
 		
 		try {
 			Optional.ofNullable(email).orElseThrow(()->new IllegalArgumentException("Required parameter: email"));
-			Optional.ofNullable(newEmail).orElseThrow(()->new IllegalArgumentException("Required parameter: new_email"));
-				
+			Optional.ofNullable(newEmail).orElseThrow(()->new IllegalArgumentException("Required parameter: new_email"));		
+			
 			emailChangeManager.createEmailChangeRequest(email, newEmail);
 			response = Response.ok().build();						
 			
@@ -310,29 +322,39 @@ public class GVAccountControllerRest {
 	@Path("/update")
 	@PUT
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER, Authority.CLIENT})
-	public Response consumeChangeEmailRequest(@FormParam("email")String email, @FormParam("token")String token) {
+	@PermitAll
+	public Response consumeChangeEmailRequest(@Context SecurityContext securityContext, @FormParam("email")String email, @FormParam("token")String token) {
 		Response response = null;
 		
 		try {
 			
 			Optional.ofNullable(email).orElseThrow(() -> new IllegalArgumentException("Required parameter: email"));
-			Optional.ofNullable(token).orElseThrow(()->new IllegalArgumentException("Required parameter: token"));	
+			Optional.ofNullable(token).orElseThrow(()->new IllegalArgumentException("Required parameter: token"));		
 			
-			EmailChangeRequest request = emailChangeManager.retrieveEmailChangeRequest(email, token);		
-			emailChangeManager.getUsersManager().updateUsername(request.getUser().getUsername(), email);
-							
-			try {
-				UserInfo userInfo = request.getUser().getUserInfo();
-				userInfo.setEmail(email);
-				emailChangeManager.getUsersManager().updateUser(email, userInfo, request.getUser().getRoles(), request.getUser().isEnabled(), request.getUser().isExpired());
-			} catch (Exception e) {
-				LOG.warn("Fail to update userInfo", e);
+			
+			EmailChangeRequest request = emailChangeManager.retrieveEmailChangeRequest(email, token);
+						
+			if (email.equals(securityContext.getUserPrincipal().getName()) //  Any user can change its own email 
+			     || securityContext.isUserInRole(Authority.ADMINISTRATOR) //Administrator can change email to all
+				 || (securityContext.isUserInRole(Authority.MANAGER) && request.getUser().getRoles().stream().map(Role::getName).noneMatch(Authority.ADMINISTRATOR::equals)) // Manager cannot change email to administrator
+				 || (securityContext.isUserInRole(Authority.CLIENT) && request.getUser().getRoles().stream().map(Role::getName).anyMatch(Authority.NOT_AUTHORATIVE::equals))){ // Client can change email only to apllication user
+				
+			
+				emailChangeManager.getUsersManager().updateUsername(request.getUser().getUsername(), email);
+								
+				try {
+					UserInfo userInfo = request.getUser().getUserInfo();
+					userInfo.setEmail(email);
+					emailChangeManager.getUsersManager().updateUser(email, userInfo, request.getUser().getRoles(), request.getUser().isEnabled(), request.getUser().isExpired());
+				} catch (Exception e) {
+					LOG.warn("Fail to update userInfo", e);
+				}
+				
+				emailChangeManager.consumeEmailChangeRequest(request);
+				response = Response.ok().build();
+			} else {
+				response = Response.status(Status.FORBIDDEN).build();
 			}
-			
-			emailChangeManager.consumeEmailChangeRequest(request);
-			response = Response.ok().build();
-			
 		} catch (UserNotFoundException|SecurityException e) {
 			LOG.warn("Error performing username update", e);
 			response = Response.status(Status.NOT_FOUND).entity("No matching account found").build();	
@@ -353,7 +375,7 @@ public class GVAccountControllerRest {
 		
 		try {
 			SecurityContext securityContext = JAXRSUtils.getCurrentMessage().get(SecurityContext.class);
-			if (   (securityContext.isUserInRole(Authority.CLIENT) && Authority.entries.contains(role)) 
+			if ((securityContext.isUserInRole(Authority.CLIENT) && Authority.entries.contains(role)) 
 				|| (securityContext.isUserInRole(Authority.MANAGER) && Authority.ADMINISTRATOR.equals(role))) {
 				
 				throw new WebApplicationException(Response.status(Response.Status.FORBIDDEN).entity(String.format("Invalid role %s", role)).build());
@@ -374,12 +396,12 @@ public class GVAccountControllerRest {
 	@Path("/grant")
 	@DELETE
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
+	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER, Authority.CLIENT})
 	public void revokeRole(@FormParam("username")String username, @FormParam("role")String role) {
 		
 		try {
 			SecurityContext securityContext = JAXRSUtils.getCurrentMessage().get(SecurityContext.class);
-			if (   (securityContext.isUserInRole(Authority.CLIENT) && (Authority.entries.contains(role) || Authority.NOT_AUTHORATIVE.equals(role)) ) 
+			if ((securityContext.isUserInRole(Authority.CLIENT) && (Authority.entries.contains(role) || Authority.NOT_AUTHORATIVE.equals(role))) 
 				|| (securityContext.isUserInRole(Authority.MANAGER) && Authority.ADMINISTRATOR.equals(role))) {
 				throw new WebApplicationException(Response.status(Response.Status.FORBIDDEN).entity(String.format("Invalid role %s", role)).build());
 			}

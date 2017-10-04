@@ -86,7 +86,7 @@ public class SignUpManager {
 		this.expireTime = expireTime;
 	}	
 	
-	public void createSignUpRequest(String email, String password, byte[] request) throws UserExistException {		
+	public void createSignUpRequest(String email, byte[] request) throws UserExistException {		
 		
 		if (email == null ||  !email.matches(UserActionRequest.EMAIL_PATTERN)) {
 			throw new IllegalArgumentException("Invalid email: "+email);

@@ -118,7 +118,7 @@
   <bean id="cors-filter" class="org.apache.cxf.rs.security.cors.CrossOriginResourceSharingFilter"/> 
   
   <bean id="authorizationInterceptor" class="org.apache.cxf.interceptor.security.SecureAnnotationsInterceptor">
-  		<property name="allowAnonymousUsers" value="false" />
+  		<property name="allowAnonymousUsers" value="true" />
   		<property name="checkConfiguredRolesOnly" value="false" />
   		<property name="securedObject" ref="accountController"/>
   </bean>

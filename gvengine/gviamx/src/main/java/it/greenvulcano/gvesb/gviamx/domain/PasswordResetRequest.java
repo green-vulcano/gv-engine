@@ -34,7 +34,7 @@ import it.greenvulcano.gvesb.iam.domain.User;
 public class PasswordResetRequest extends UserActionRequest implements Serializable{
 	private static final long serialVersionUID = 1L;
 			
-	@ManyToOne(optional=false, fetch=FetchType.EAGER)
+	@ManyToOne(optional=true, fetch=FetchType.EAGER)
 	@JoinColumn(name="user_id", nullable=true)
 	private User user;			
 	

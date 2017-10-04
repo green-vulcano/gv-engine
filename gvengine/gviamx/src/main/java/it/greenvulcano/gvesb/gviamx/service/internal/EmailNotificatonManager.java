@@ -90,7 +90,7 @@ public class EmailNotificatonManager implements NotificationManager {
 			mailSender.send(message);
 			LOG.debug("Email sent successfully for " + event	+ " request with id "+userActionRequest.getId());
 		} catch (MessagingException|IOException e) {
-			LOG.error("Fail to send email for " +event + " reset with id "+userActionRequest.getId(),e);
+			LOG.error("Fail to send email for " +event + " request with id "+userActionRequest.getId(),e);
 		} 		
 		
 	}
