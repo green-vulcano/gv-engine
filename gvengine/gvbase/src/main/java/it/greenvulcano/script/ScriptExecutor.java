@@ -40,7 +40,8 @@ public abstract class ScriptExecutor
 {
     private static Logger                logger          = org.slf4j.LoggerFactory.getLogger(ScriptExecutor.class);
 
-    protected static ScriptEngineManager engManager      = new ScriptEngineManager(ClassLoader.getSystemClassLoader());
+    protected static ScriptEngineManager globalScriptEngineManager      = new ScriptEngineManager(ClassLoader.getSystemClassLoader());
+    protected static ScriptEngineManager localSriptEngineManager      = new ScriptEngineManager(ScriptExecutor.class.getClassLoader());
 
     protected String                     lang            = null;
     protected String                     scriptName      = null;
@@ -201,7 +202,7 @@ public abstract class ScriptExecutor
      */
     public static Object execute(String lang, String script, Map<String, Object> bindings, String bcName) throws GVScriptException {
         try {
-            ScriptEngine engine = engManager.getEngineByName(lang);
+            ScriptEngine engine = globalScriptEngineManager.getEngineByName(lang);
             if (engine == null) {
                 throw new GVScriptException("ScriptEngine[" + lang + "] not found!");
             }

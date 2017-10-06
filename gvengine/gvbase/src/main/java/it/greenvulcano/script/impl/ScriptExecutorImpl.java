@@ -27,6 +27,7 @@ import it.greenvulcano.script.util.ScriptCache;
 import it.greenvulcano.util.metadata.PropertiesHandler;
 
 import java.util.Map;
+import java.util.Optional;
 
 import javax.script.Bindings;
 import javax.script.Compilable;
@@ -85,7 +86,7 @@ public class ScriptExecutorImpl extends ScriptExecutor
                 throw new GVScriptException("Empty configured script!");
             }
 
-            engine = engManager.getEngineByName(lang);
+            engine = Optional.ofNullable(globalScriptEngineManager.getEngineByName(lang)).orElseGet(()->localSriptEngineManager.getEngineByName(lang));
             if (engine == null) {
                 throw new GVScriptException("ScriptEngine[" + lang + "] not found!");
             }
@@ -150,7 +151,7 @@ public class ScriptExecutorImpl extends ScriptExecutor
                 throw new GVScriptException("Empty configured script!");
             }
 
-            engine = engManager.getEngineByName(this.lang);
+            engine = globalScriptEngineManager.getEngineByName(this.lang);
             if (engine == null) {
                 throw new GVScriptException("ScriptEngine[" + this.lang + "] not found!");
             }
