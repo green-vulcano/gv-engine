@@ -83,8 +83,13 @@
     <dependency>
 		<groupId>org.json</groupId>
 		<artifactId>json</artifactId>
-		<version>20151123</version>
+		<version>20160810</version>
 		<scope>provided</scope>
+	</dependency>
+	<dependency>
+	    <groupId>org.webjars</groupId>
+	    <artifactId>swagger-ui</artifactId>
+	    <version>3.2.2</version>
 	</dependency>
   </dependencies>
 
@@ -100,7 +105,8 @@
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Export-Package>
-            	it.greenvulcano.gvesb.api.security
+            	it.greenvulcano.gvesb.api.security,
+            	it.greenvulcano.gvesb.api.docs
             </Export-Package>
             <Import-Package>
               org.osgi.framework,
@@ -149,6 +155,8 @@
               com.fasterxml.jackson.databind,
               com.fasterxml.jackson.annotation
             </Import-Package>
+            <Embed-Dependency>*;scope=compile;type=jar</Embed-Dependency>
+			<Embed-Transitive>false</Embed-Transitive>
             <DynamicImport-Package>it.greenvulcano.*</DynamicImport-Package>
           </instructions>
         </configuration>

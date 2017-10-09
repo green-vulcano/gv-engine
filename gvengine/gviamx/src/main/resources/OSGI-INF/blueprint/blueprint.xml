@@ -127,18 +127,18 @@
     <property name="interceptor" ref="authorizationInterceptor"/>
   </bean>
   
-  <bean id="swaggerSpecProvider" class="it.greenvulcano.gvesb.gviamx.api.SwaggerSpecProvider"/>
-  			
+  <bean id="swaggerController" class="it.greenvulcano.gvesb.api.docs.SwaggerController"/>
+   			
   <jaxrs:server address="/gviamx" id="gviamx">
        <jaxrs:serviceBeans>            
           <ref component-id="accountController" />
-          <ref component-id="swaggerSpecProvider" />                   
+          <ref component-id="swaggerController" />                   
        </jaxrs:serviceBeans> 
        <jaxrs:providers>
           <ref component-id="gvAuthenticationFilter"/>
           <ref component-id="authorizationFilter"/>                         
        	  <ref component-id="cors-filter" />
-       </jaxrs:providers>       
+       </jaxrs:providers> 
   </jaxrs:server>
 
 </blueprint>

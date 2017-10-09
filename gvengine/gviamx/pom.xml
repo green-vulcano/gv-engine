@@ -122,8 +122,6 @@
 		  <version>0.9.2</version>
 		</dependency>
 
-		<!-- ***** TEST ***** -->
-
 	</dependencies>
 
     <build>
@@ -167,6 +165,7 @@
                         	it.greenvulcano.gvesb.iam.domain,
                         	it.greenvulcano.gvesb.iam.modules,                        	
               				it.greenvulcano.gvesb.api.security,
+              				it.greenvulcano.gvesb.api.docs,
                         	it.greenvulcano.util.crypto                        	
                         </Import-Package>
                         <Embed-Dependency>*;scope=compile;type=jar</Embed-Dependency>
