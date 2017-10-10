@@ -7,7 +7,7 @@ angular.module('gvconsole', ['ngCookies','ngRoute','angular-quartz-cron', 'ui.bo
 	    $routeProvider.
 	      when('/login', {
 	        templateUrl: 'topics/auth/login.html'
-	      }).
+	        }).
     		when('/config', {
     			templateUrl: 'topics/config/console.html'
     		}).
@@ -20,21 +20,27 @@ angular.module('gvconsole', ['ngCookies','ngRoute','angular-quartz-cron', 'ui.bo
     		when('/users', {
     			templateUrl: 'topics/users/list.html'
     		}).
-        when('/users/:userId', {
+            when('/users/:userId', {
           templateUrl: 'topics/users/form.html'
-        }).
-				when('/myprofile', {
+            }).
+			when('/myprofile', {
           templateUrl: 'topics/profile/myprofile.html'
-        }).
-				when('/monitoring', {
-					templateUrl: 'topics/monitoring/monitoring.html'
-				}).
-				when('/testing', {
-					templateUrl: 'topics/flow/test.html'
-				}).
-          otherwise({
-    	        redirectTo: '/myprofile'
-    	  });
+            }).
+			when('/monitoring', {
+				templateUrl: 'topics/monitoring/monitoring.html'
+			}).
+			when('/testing', {
+				templateUrl: 'topics/flow/test.html'
+			}).
+            when('/properties', {
+				templateUrl: 'topics/properties/properties.html'
+			}).
+			when('/properties/modify', {
+				templateUrl: 'topics/properties/modify.html'
+			}).
+            otherwise({
+	            redirectTo: '/myprofile'
+	        });
 }])
 .run(['$rootScope', '$location', '$cookieStore', '$http',
     function ($rootScope, $location, $cookieStore, $http) {

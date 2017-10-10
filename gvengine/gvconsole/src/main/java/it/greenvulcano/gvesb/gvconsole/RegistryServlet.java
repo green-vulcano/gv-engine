@@ -26,7 +26,8 @@ public class RegistryServlet extends HttpServlet {
 			"gvscheduler : basePath + '/gvscheduler',"+
 			"gvconfig : basePath + '/gvconfig',"+
 			"gvesb : basePath + '/gvesb',"+
-			"gvmonitoring : basePath + '/gvmonitoring'"+
+			"gvmonitoring : basePath + '/gvmonitoring',"+
+			"gvproperties : basePath + '/gvproperties'" +
 		"}"+
 	"}";
 			

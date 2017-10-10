@@ -1,0 +1,13 @@
+<div class="container-fluid">
+<div class="side-body">
+  <div data-ng-controller = "PropertiesController as ctrl">
+   <h1>File Properties</h1>
+	<div data-ng-repeat="alert in ctrl.alerts" class="alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
+	<textarea id="areaProperties" class="form-control" ng-model="propertiesFile" rows="25" readonly></textarea>
+	<div>
+    <a id="btnProp" href="#/properties/modify" onClick="slide();" class="btn btn-warning pull-right">Modify
+    </a>
+	</div>
+  </div>
+</div>
+</div>
