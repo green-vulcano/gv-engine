@@ -88,7 +88,8 @@
 		
 		<bundle start-level="80">mvn:com.fasterxml.jackson.core/jackson-core/2.7.4</bundle>
 		<bundle start-level="81">mvn:com.fasterxml.jackson.core/jackson-annotations/2.7.4</bundle>
-		<bundle start-level="82">mvn:com.fasterxml.jackson.core/jackson-databind/2.7.4</bundle>		
+		<bundle start-level="82">mvn:com.fasterxml.jackson.core/jackson-databind/2.7.4</bundle>
+		<bundle start-level="83">mvn:com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/2.7.4</bundle>			
 		
 		<feature prerequisite="true">shell</feature>
 		<feature prerequisite="true">war</feature>
