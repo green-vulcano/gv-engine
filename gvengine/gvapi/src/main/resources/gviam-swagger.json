@@ -1,0 +1,616 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "Manage users",
+    "version": "4.0.0-SNAPSHOT",
+    "title": "GV IAM"
+  },
+  "basePath": "/cxf/gviam",
+  "tags": [
+    {
+      "name": "admin"
+    },
+    {
+      "name": "authenticate"
+    },
+    {
+      "name": "oauth2"
+    },
+    {
+      "name": "password"
+    }
+  ],
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/admin/roles": {
+      "get": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Get all roles",
+        "operationId": "getRoles",
+        "security": [
+          {
+            "gviam": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of all roles",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/role"
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable"
+          }
+        }
+      }
+    },
+    "/admin/users": {
+      "get": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Get all users",
+        "operationId": "getUsers",
+        "security": [
+          {
+            "gviam": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Get all users",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/user"
+              }
+            }
+          },
+          "416": {
+            "description": "Requested Range Not Satisfiable"
+          },
+          "503": {
+            "description": "Service unavailable"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Create a new user",
+        "operationId": "createUser",
+        "security": [
+          {
+            "gviam": []
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "user informations",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/user"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "User created"
+          },
+          "406": {
+            "description": "Not Acceptable"
+          },
+          "409": {
+            "description": "Conflict"
+          }
+        }
+      }
+    },
+    "/admin/users/{userId}": {
+      "get": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Get user by id",
+        "operationId": "getUser",
+        "security": [
+          {
+            "gviam": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "Unique user id",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "get user",
+            "schema": {
+              "$ref": "#/definitions/user"
+            }
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Update user by id",
+        "operationId": "editUser",
+        "security": [
+          {
+            "gviam": []
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "Unique Id of user",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "user information",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/user"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "406": {
+            "description": "Invalid username"
+          },
+          "503": {
+            "description": "Service unavailable"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Delete user by id",
+        "operationId": "deleteUser",
+        "security": [
+          {
+            "gviam": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "user Id",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Accepted"
+          },
+          "503": {
+            "description": "Service unavailable, user not found"
+          }
+        }
+      }
+    },
+    "/admin/users/{userId}/enabled": {
+      "patch": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Enable an user",
+        "operationId": "switchUserStatus",
+        "security": [
+          {
+            "gviam": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "user Id",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get user enabled",
+            "schema": {
+              "$ref": "#/definitions/user"
+            }
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "406": {
+            "description": "Invalid username"
+          },
+          "503": {
+            "description": "Service unavailable"
+          }
+        }
+      }
+    },
+    "/admin/users/{userId}/password": {
+      "patch": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Reset user password",
+        "operationId": "resetUserPassword",
+        "security": [
+          {
+            "gviam": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "user Id",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "406": {
+            "description": "Invalid username"
+          },
+          "503": {
+            "description": "Service unavailable"
+          }
+        }
+      }
+    },
+    "/oauth2/access_token": {
+      "post": {
+        "tags": [
+          "oauth2"
+        ],
+        "summary": "Create access token",
+        "operationId": "createAccessToken",
+        "security": [
+          {
+            "gviam": []
+          }
+        ],
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "grant_type",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "username",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "password",
+            "in": "formData",
+            "required": true,
+            "type": "string",
+            "format": "password"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "token_type": {
+                  "type": "string",
+                  "example": "Bearer"
+                },
+                "access_token": {
+                  "type": "string",
+                  "example": "xxxx"
+                },
+                "refresh_token": {
+                  "type": "string",
+                  "example": "xxxx"
+                },
+                "expires_in": {
+                  "type": "integer",
+                  "example": "milliseconds"
+                },
+                "issue_date": {
+                  "type": "string",
+                  "format": "dateTime",
+                  "example": "2017-01-30T12:00:35.0+02:00"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/oauth2/refresh_token": {
+      "post": {
+        "tags": [
+          "oauth2"
+        ],
+        "summary": "Refresh token",
+        "operationId": "refreshAccessToken",
+        "security": [
+          {
+            "gviam": []
+          }
+        ],
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "grant_type",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "access_token",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "refresh_token",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "token_type": {
+                  "type": "string",
+                  "example": "Bearer"
+                },
+                "access_token": {
+                  "type": "string",
+                  "example": "xxxx"
+                },
+                "refresh_token": {
+                  "type": "string",
+                  "example": "xxxx"
+                },
+                "expires_in": {
+                  "type": "integer",
+                  "example": "milliseconds"
+                },
+                "issue_date": {
+                  "type": "string",
+                  "format": "dateTime",
+                  "example": "2017-01-30T12:00:35.0+02:00"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/password": {
+      "post": {
+        "tags": [
+          "password"
+        ],
+        "summary": "Change password",
+        "operationId": "changePassword",
+        "security": [
+          {
+            "gviam": []
+          }
+        ],
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "new_password",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No content"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/authenticate": {
+      "post": {
+        "tags": [
+          "authenticate"
+        ],
+        "summary": "Authenticate",
+        "operationId": "authenticate",
+        "security": [
+          {
+            "gviam": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Return the user who does login",
+            "schema": {
+              "$ref": "#/definitions/user"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "role": {
+      "type": "object",
+      "properties": {
+        "role": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "name": {
+              "type": "string",
+              "example": "manager"
+            },
+            "description": {
+              "type": "string",
+              "example": "Created by GV"
+            }
+          }
+        }
+      }
+    },
+    "user": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "username": {
+          "type": "string",
+          "example": "nome.cognome"
+        },
+        "expired": {
+          "type": "boolean"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "userInfo": {
+          "type": "object",
+          "properties": {
+            "fullname": {
+              "type": "string",
+              "example": "nome cognome"
+            },
+            "email": {
+              "type": "string",
+              "example": "email@dominio.com"
+            }
+          }
+        },
+        "roles": {
+          "$ref": "#/definitions/role"
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "gviam": {
+      "type": "basic"
+    }
+  }
+}

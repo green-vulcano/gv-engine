@@ -45,11 +45,16 @@
 	
 	<bean id="gviamAuthorizationFilter" class="org.apache.cxf.jaxrs.security.SimpleAuthorizingFilter">	   
 	   <property name="interceptor" ref="gviamAuthorizationInterceptor"/>
+	</bean>
+	
+	<bean id="gviam-swaggerController" class="it.greenvulcano.gvesb.api.docs.SwaggerController">
+		<argument value="gviam-swagger.json"/>
 	</bean>	
 			
 	<jaxrs:server address="/gviam" id="gviamapi">
         <jaxrs:serviceBeans>            
-           	<ref component-id="securityController" />           	
+           	<ref component-id="securityController" />
+           	<ref component-id="gviam-swaggerController" />           	
         </jaxrs:serviceBeans> 
         <jaxrs:providers>
 	       	<ref component-id="gvAuthenticationFilter"/>
