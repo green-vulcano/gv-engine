@@ -142,7 +142,7 @@ angular.module('gvconsole')
 	        		   method: 'PATCH',
 	        		   url: Endpoints.gviam + '/authenticate',
 	        		   headers: {
-	        			   Authorization: 'GV_RENEW ' + token,
+	        			   'x-renew-password': token,
 	        			   Accept: 'application/json'
 	        		   }
 	           };

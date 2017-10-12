@@ -110,11 +110,11 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 		
 		try {
 			
-			String authorization = Optional.ofNullable(headers.getHeaderString(HttpHeaders.AUTHORIZATION)).orElse("");
-	        String[] parts = authorization.split(" ");
-	        if (parts.length == 2 && "GV_RENEW".equals(parts[0])) {	
+			Optional<String> authorization = Optional.ofNullable(headers.getHeaderString("x-renew-password"));
+	        
+	        if (authorization.isPresent()) {	
 	        	
-	        	String[] credentials = new String(Base64.getDecoder().decode(parts[1])).split(":");
+	        	String[] credentials = new String(Base64.getDecoder().decode(authorization.get())).split(":");
 
 				UserDTO currentUser = new UserDTO(gvUsersManager.changeUserPassword(credentials[0], credentials[1], credentials[2]));
 				
@@ -122,9 +122,12 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 	        } else {
 	        	throw new SecurityException();
 	        }
+		} catch (PasswordMissmatchException e) {
+			response = Response.status(Status.BAD_REQUEST).entity(toJson(e)).build();
+			        
 		} catch (Exception e) {
 			LOG.error("GVAPI_Exception - Change password",e);
-			response = Response.status(Status.UNAUTHORIZED).header("WWW-Authenticate", "GV_RENEW").build();
+			response = Response.status(Status.UNAUTHORIZED).header("WWW-Authenticate", "x-renew-password").build();
 		}
 			
 		return response;
@@ -421,10 +424,10 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 			checkSecurityContraint(securityContext, user);
 			
 			String defaultPassword = user.getUsername();			
-			gvUsersManager.createUser(user.getUsername(), defaultPassword);
+			Long id = gvUsersManager.createUser(user.getUsername(), defaultPassword).getId();
 			gvUsersManager.updateUser(user.getUsername(), user.getUserInfo(), user.getGrantedRoles(), user.isEnabled(), true);
 
-			response = Response.created(URI.create("/admin/users/"+user.getUsername())).build();
+			response = Response.created(URI.create("/admin/users/"+id)).build();
 			
 		} catch (InvalidUsernameException|InvalidPasswordException|InvalidRoleException e) {
 			response = Response.status(Status.NOT_ACCEPTABLE).entity(toJson(e)).build();		

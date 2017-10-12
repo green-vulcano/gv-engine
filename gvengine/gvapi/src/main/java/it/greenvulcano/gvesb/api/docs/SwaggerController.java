@@ -116,17 +116,18 @@ public class SwaggerController {
 	
 	@GET
     @Path("api-docs")
-    public Response getIndex() {		
-		return getResource(null);
+    public Response getIndex(@Context UriInfo uriInfo) {		
+		return getResource(uriInfo, null);
 	}
 	
 	@GET
     @Path("api-docs/{resource:.*}")
-    public Response getResource(@PathParam("resource") String resourcePath) {
+    public Response getResource(@Context UriInfo uriInfo, @PathParam("resource") String resourcePath) {
 		
 		
-		if (resourcePath==null || resourcePath.trim().isEmpty() || resourcePath.trim().equals("/")) {        
-			return Response.temporaryRedirect(URI.create("./api-docs/index.html?url=../swagger.json")).build();           
+		if (resourcePath==null || resourcePath.trim().isEmpty() || resourcePath.trim().equals("/")) {
+			String basePath = uriInfo.getBaseUri().toString();
+			return Response.temporaryRedirect(URI.create("./api-docs/index.html?url="+basePath+"/swagger.json" )).build();           
         }
        
         if (resourcePath.startsWith("/")) {
