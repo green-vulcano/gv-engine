@@ -165,7 +165,7 @@ angular.module('gvconsole')
 			 		});
 		}
 
-		
+
 
 		this.addRole = function(){
 
@@ -180,7 +180,7 @@ angular.module('gvconsole')
 				delete instance.newrole;
 			}
 		}
-		
+
 
 		this.removeRole = function(key){
 			delete instance.user.roles[key];

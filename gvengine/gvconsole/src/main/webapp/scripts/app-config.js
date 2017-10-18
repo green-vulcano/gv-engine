@@ -170,3 +170,14 @@ angular.module('gvconsole')
 
 
 }]);
+angular.element(document).ready(function(){
+     angular.element(window).scroll(function () {
+            if (angular.element(this).scrollTop() > 50) {
+                angular.element('#back-to-top').fadeIn();
+            } else {
+                angular.element('#back-to-top').fadeOut();
+            }
+        });
+
+
+});
