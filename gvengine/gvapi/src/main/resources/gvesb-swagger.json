@@ -1,0 +1,282 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "Service and operations",
+    "version": "4.0.0-SNAPSHOT",
+    "title": "GV ESB"
+  },
+  "basePath": "/cxf/gvesb",
+  "tags": [
+    {
+      "name": "service"
+    }
+  ],
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "tags": [
+          "service"
+        ],
+        "summary": "get services",
+        "description": "get all services within the greenvulcano configuration on your machine",
+        "operationId": "getServices",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of all services",
+            "schema": {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "#/definitions/service"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{service}": {
+      "get": {
+        "tags": [
+          "service"
+        ],
+        "summary": "get a service",
+        "description": "get the service with serviceID passed like paramether",
+        "operationId": "getOperations",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "service",
+            "description": "Service id",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return the service with service id passed",
+            "schema": {
+              "$ref": "#/definitions/service"
+            }
+          },
+          "404": {
+            "description": "Service not found"
+          }
+        }
+      }
+    },
+    "/{service}/{operation}": {
+      "delete": {
+        "tags": [
+          "service"
+        ],
+        "summary": "delete a operation",
+        "description": "delete the operation passed like a parameter inside the service passed like other patameter",
+        "operationId": "drop",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "service",
+            "description": "Service id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "operation",
+            "description": "Operation id",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "service"
+        ],
+        "summary": "get a operation",
+        "description": "get the operation passed like a parameter inside the service passed like other patameter",
+        "operationId": "query",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "service",
+            "description": "Service id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "operation",
+            "description": "Operation id",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "service"
+        ],
+        "summary": "post a operation",
+        "description": "post the operation passed like a parameter inside the service passed like other patameter",
+        "operationId": "execute",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "service",
+            "description": "Service id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "operation",
+            "description": "Operation id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "in": "body",
+            "name": "data",
+            "description": "payload need to pass to operation",
+            "required": false,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "string": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "service"
+        ],
+        "summary": "put a operation",
+        "description": "put the operation passed like a parameter inside the service passed like other patameter",
+        "operationId": "modify",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "service",
+            "description": "Service id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "operation",
+            "description": "Operation id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "in": "body",
+            "name": "data",
+            "description": "payload need to pass to operation",
+            "required": false,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "string": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "service": {
+      "type": "object",
+      "properties": {
+        "idService": {
+          "type": "string"
+        },
+        "groupName": {
+          "type": "string"
+        },
+        "statisticsEnabled": {
+          "type": "boolean"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "operations": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/operation"
+          }
+        }
+      }
+    },
+    "operation": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "successes": {
+          "type": "integer"
+        },
+        "failures": {
+          "type": "integer"
+        }
+      }
+    }
+  }
+}

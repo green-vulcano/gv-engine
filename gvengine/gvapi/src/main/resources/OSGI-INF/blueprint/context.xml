@@ -18,10 +18,15 @@
 	<bean id="cors-filter" class="org.apache.cxf.rs.security.cors.CrossOriginResourceSharingFilter"/>
 
 	<bean id="servicesController" class="it.greenvulcano.gvesb.api.controller.GvServicesControllerRest"/>
+	
+	<bean id="gvesb-swaggerController" class="it.greenvulcano.gvesb.api.docs.SwaggerController">
+		<argument value="gvesb-swagger.json"/>
+	</bean>
 			
 	<jaxrs:server address="/gvesb" id="gvesbapi">
         <jaxrs:serviceBeans>            
-           <ref component-id="servicesController" />           
+           <ref component-id="servicesController" /> 
+           <ref component-id="gvesb-swaggerController" />      
         </jaxrs:serviceBeans> 
         <jaxrs:providers>
 	       <ref component-id="gvAuthenticationFilter"/>
@@ -106,8 +111,7 @@
 		
 		<jaxws:inInterceptors>
 			<ref component-id="gvAuthenticationInterceptor"/>
-		</jaxws:inInterceptors>
-		
+		</jaxws:inInterceptors>    
 	</jaxws:endpoint>
 	        
 </blueprint>

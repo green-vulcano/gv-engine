@@ -217,7 +217,7 @@ thead {
   height: 100%;
   background-color: #fff;
   border-right: 0.07em solid #e7e7e7;
-  overflow: overlay;
+  overflow: auto;
 }
 .side-menu .navbar {
   border: inherit;
@@ -278,7 +278,6 @@ thead {
     border-right: 0;
     overflow: unset;
     z-index: 2;
-
   }
   .side-menu .brand-name-wrapper .navbar-brand {
     display: inline-block;

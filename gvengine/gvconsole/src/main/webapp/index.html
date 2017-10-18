@@ -23,7 +23,28 @@
       <script type="text/javascript" src="libs/js/XMLDisplay.js"></script>
 
       <link rel="stylesheet" href="libs/css/app.custom.css"/>
+<<<<<<< HEAD
+      <!-- API Registry function to use when webapp run out of API container 
+      <script type="text/javascript">
+         function getEndpoints() {
+           var basePath = 'http://localhost:8181/cxf';
 
+           return {
+                  gviam : basePath +'/gviam',
+                  gvscheduler : basePath + '/gvscheduler',
+                  gvconfig : basePath + '/gvconfig',
+                  gvesb : basePath + '/gvesb',
+                  gvmonitoring : basePath + '/gvmonitoring',
+                  gvproperties : basePath + '/gvproperties'
+                }
+         }
+      </script> --> 
+
+
+      <!-- API Registry servlet to use when webapp run inside the same container of API -->
+=======
+
+>>>>>>> ce0d154c42127f9705882e726500d1ad9923494d
       <script type="text/javascript" src="registry"></script> 
       <script type="text/javascript" src="scripts/app.custom.js"></script>
       <script type="text/javascript" src="scripts/app-auth.js"></script>
@@ -67,7 +88,7 @@
 		                  <li data-ng-class="{ active: routeIsIn('/users')}" data-ng-show="globals.currentUser.isAdministrator" ><a id="optionMenu" href="#/users" onClick="slideButtonMenu();"><i class="fa fa-user-circle" aria-hidden="true"></i> Users</a></li>
 		                  <li data-ng-class="{ active: routeIsIn('/schedule')}" data-ng-show="globals.currentUser.isAdministrator||globals.currentUser.isSchedulerManager"><a id="optionMenu" href="#/schedule" onClick="slideButtonMenu();"><i class="fa fa-calendar-plus-o" aria-hidden="true"></i> Scheduling</a></li>
 		                  <li data-ng-class="{ active: routeIsIn('/config')}" data-ng-show="globals.currentUser.isAdministrator||globals.currentUser.isConfigManager"><a id="optionMenu" href="#/config" onClick="slideButtonMenu();"><i class="fa fa-cogs" aria-hidden="true"></i> Configuration</a></li>
-                      <li data-ng-class="{ active: routeIsIn('/properties')}" data-ng-show="globals.currentUser.isAdministrator||globals.currentUser.isConfigManager"><a id="optionMenu" href="#/properties" onClick="slideButtonMenu();"><i class="fa fa-product-hunt" aria-hidden="true"></i> Properties</a></li>
+                      	  <li data-ng-class="{ active: routeIsIn('/properties')}" data-ng-show="globals.currentUser.isAdministrator||globals.currentUser.isConfigManager"><a id="optionMenu" href="#/properties" onClick="slideButtonMenu();"><i class="fa fa-product-hunt" aria-hidden="true"></i> Properties</a></li>
 		                  <li data-ng-class="{ active: routeIsIn('/testing')}" data-ng-show="globals.currentUser.isAdministrator||globals.currentUser.isConfigManager"><a id="optionMenu" href="#/testing" onClick="slideButtonMenu();"><i class="fa fa-code" aria-hidden="true"></i> Testing</a></li>
 		                  <li data-ng-class="{ active: routeIsIn('/monitoring')}"><a id="optionMenu" href="#/monitoring" onClick="gototab(); slideButtonMenu();"><i class="fa fa-area-chart" aria-hidden="true"></i> Monitoring</a></li>
 		                  <li class="sidebar_user" data-ng-class="{ active: routeIsIn('/myprofile')}"><a id="optionMenu" href="#/myprofile" onClick="slideButtonMenu();"><i class="fa fa-user-o" aria-hidden="true"></i> Profile</a></li>
