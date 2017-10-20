@@ -57,9 +57,9 @@ public class JSONPropertiesHandler implements PropertyHandler {
         	 try {
              	
      	        if (o instanceof String) {
-     	        	if (o.toString().startsWith("{")) {
+     	        	if (o.toString().trim().startsWith("{")) {
      	        		jsonObject = new JSONObject(o.toString());	
-     	        	} else if (o.toString().startsWith("[")){     	        		
+     	        	} else if (o.toString().trim().startsWith("[")){     	        		
      	        		jsonObject = new JSONObject("{ \"array\":"+o.toString()+"}");
      	        	} else {
      	        		jsonObject = new JSONObject("{ \"value\":\""+o.toString()+"\"}");

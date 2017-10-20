@@ -173,5 +173,15 @@ public class GVESBPropertyHandlerTestCase extends BaseTestCase
         assertEquals("it works", output);
         
         
+        gvBuffer1.setObject("				"
+        		+ "\t\n{\"type\":\"json\",\"nested\":"
+        		+ "		{\"value\":\"it works\"}"
+        		+ "}\n\n\r");
+        
+        input = "json{{type}}";
+        output = PropertiesHandler.expand(input, null, gvBuffer1.getObject(), null);
+
+        assertEquals("json", output);
+        
     }
 }
