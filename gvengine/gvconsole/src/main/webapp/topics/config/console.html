@@ -6,7 +6,7 @@
    <div id="fadeout" data-ng-repeat="alert in ctrl.alerts" class="fadeout alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
    <!-- FadeOut Function -->
       <form id="deployForm" name="deployForm" class="form-horizontal"
-         data-ng-submit="ctrl.deployConfiguration()">
+         data-ng-submit="ctrl.addConfiguration()">
         <fieldset id="myFieldset">
          <div class="panel panel-default">
             <div class="panel-heading clearfix">
@@ -62,7 +62,7 @@
          <table id="users" class="table table-hover">
            <thead>
              <tr>
-               <th>Configuration</th>
+               <th>Id</th>
                <th>Date</th>
                <th class="text-right">Action</th>
              </tr>
@@ -70,29 +70,17 @@
            <tbody>
 
 
-             <tr data-ng-repeat="configInfo in ctrl">
-               <td>{{ctrl.configInfo.id}}</td>
-               <td>{{ctrl.configInfo.time | date : 'd MMMM yyyy H:mm:ss'}}</td>
+             <tr data-ng-repeat="newConfig in configHistory">
+               <td>{{newConfig.id}}</td>
+               <td>{{newConfig.time | date : 'd MMMM yyyy H:mm:ss'}}</td>
                <td class="text-right">
-                 <button data-ng-click="" onClick="slide();" type="button" class="btn btn-success" data-toggle="modal" data-target="#deployModal"><i class="fa fa-bolt"></i> Deploy</button>
-                 <button data-ng-click="" onClick="slide();" type="button" class="btn btn-danger" data-toggle="modal" data-target="#myModal"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+                 <button onClick="slide();" type="button" class="btn btn-success" data-ng-click="go('/config/deploy/' + newConfig.id)"><i class="fa fa-bolt"></i> Deploy</button>
+                 <button onClick="slide();" type="button" class="btn btn-danger" data-toggle="modal" data-target="#myModal"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
                  <div id="myModal" class="modal fadeout">
                    <div class="modal-content">
                      <h4> Are you sure to delete this Configuration ? </h4>
                      <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button>
                      <button type="button" class="btn btn-danger" data-ng-click="ctrl.delete()"><i class="fa fa-trash" aria-hidden="true"></i> Confirm</button>
-                   </div>
-                 </div>
-                 <div id="deployModal" class="modal fadeout col-md-12">
-                   <div class="modal-content" ng-repeat="(id,file) in filesName">
-                     <h4> Deploy action </h4>
-                     <!-- <div id="{{id}}">
-                       <pre class="col-md-12 text-left" id="{{file}}"> </pre>
-                     </div> -->
-
-                     <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button>
-                     <button type="button" class="btn btn-success"><i class="fa fa-bolt"></i> Deploy</button>
-                   </div>
                    </div>
                  </div>
                </td>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+			<title>Excel To HTML using codebeautify.org</title>
+		</head>
+		<body>
+			<div class="container-fluid">
+				<div class="side-body">
+					<h1>Deploy action</h1>
+					<div class="row" data-ng-controller="ConfigDeployController as ctrl" data-ng-init="">
+						<div class="container">
+							<div class="row">
+								<div class="panel panel-default" style="overflow-x:auto;">
+									<div class="panel-heading">
+									   Deploy steps
+									</div>
+									<section>
+										<div class="wizard">
+											<div class="panel-body clearfix">
+												<div class="wizard-inner">
+													<ul class="nav nav-tabs col-sm-12" role="tablist">
+														<div class="connecting-line"></div>
+														<li role="presentation" class="col-sm-4" data-ng-class="{'active': step == 0, 'disable': step != 0 }">
+															<a data-toggle="tab" aria-controls="step1" role="tab" title="Step 1" data-target="#step1" style="pointer-events: none;">
+																<span class="round-tab">
+																	<i class="glyphicon glyphicon-open-file"></i>
+																</span>
+															</a>
+														</li>
+														<li role="presentation" class="col-sm-4" data-ng-class="{'active': step == 01, 'disable': step != 01 }">
+															<a data-toggle="tab" aria-controls="step2" role="tab" title="Step 2" data-target="#step2" style="pointer-events: none;">
+																<span class="round-tab">
+																	<i class="glyphicon glyphicon-tasks"></i>
+																</span>
+															</a>
+														</li>
+														<li role="presentation" class="col-sm-4" data-ng-class="{'active': step == 011, 'disable': step != 011 }">
+															<a data-toggle="tab" aria-controls="complete" role="tab" data-target="#complete" style="pointer-events: none;">
+																<span class="round-tab">
+																	<i class="glyphicon glyphicon-ok"></i>
+																</span>
+															</a>
+														</li>
+													</ul>
+												</div>
+												<form role="form">
+													<div class="tab-content">
+														<div class="tab-pane active" role="tabpanel" id="step1">
+															<h3>GV Core Compare</h3>
+															<div class="col-sm-12"> 
+																<p>Current GVCore</p>
+																<p>New GVCore</p>
+																<pre style="display:inline" class="col-sm-6">{{currentGVCore}}</pre>
+																<pre style="display:inline" class="col-sm-6">{{currentGVCore}}</pre>
+															</div>
+															<button type="button" id="stepValue" value="1" class="btn btn-primary pull-right" data-toggle="tab" data-target="#step2" data-ng-click="changeStep()">Next</button>
+															<div>
+																<a href="#/config" type="button" class="btn btn-danger pull-left">Cancel</a>
+															</div>
+														</div>
+														
+														<div class="tab-pane" role="tabpanel" id="step2">
+															<h3>Properties File</h3>
+															<div class="col-sm-12"> 
+																<p>Keys</p>
+																<p>Values</p>
+																<pre style="display:inline" class="col-sm-6">{{}}</pre>
+																<pre style="display:inline" class="col-sm-6">{{}}</pre>
+															</div>
+															<button type="button" id="stepValue" value="1" class="btn btn-primary pull-right" data-toggle="tab" data-target="#complete"  data-ng-click="changeStep()">Next</button>
+															<!-- <div class="col-sm-1"><button type="button" class="btn btn-default pull-left" data-toggle="tab" data-target="#step1" data-ng-click="backStep()">Back</button></div> -->
+															<a href="#/config" type="button" class="btn btn-danger pull-left">Cancel</a>
+														</div>
+														
+														<div class="tab-pane" role="tabpanel" id="complete">
+															<h3>Are you sure to change current configuration "{{currentConfigId}}" with configuration "{{newConfigId}}"?</h3>
+															<a href="#/config" type="button" class="btn btn-success pull-right" data-toggle="tab" data-ng-click="changeStep()">Proceed</a>
+															<!-- <div class="col-sm-1"><button type="button" class="btn btn-default pull-left" data-toggle="tab" data-target="#step2" data-ng-click="backStep()">Back</button></div> -->
+															<a href="#/config" type="button" class="btn btn-danger pull-left">Cancel</a>
+														</div>
+													</div>
+												</form>
+											</div>
+										</div>
+									</section>
+									<h1>Prova</h1>
+									<p>Actual config: {{currentConfigId}}</p>
+									<p>New config: {{newConfigId}}</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</body>
+	</html>

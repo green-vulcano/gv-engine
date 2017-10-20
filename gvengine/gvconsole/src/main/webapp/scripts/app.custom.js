@@ -11,6 +11,9 @@ angular.module('gvconsole', ['ngCookies','ngRoute','angular-quartz-cron', 'ui.bo
     		when('/config', {
     			templateUrl: 'topics/config/console.html'
     		}).
+    		when('/config/deploy/:newConfigId', {
+    			templateUrl: 'topics/config/deploy.html'
+    		}).
     		when('/schedule', {
     			templateUrl: 'topics/schedule/list.html'
     		}).
