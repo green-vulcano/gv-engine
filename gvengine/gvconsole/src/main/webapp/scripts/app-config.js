@@ -24,7 +24,7 @@ angular.module('gvconsole')
 		} inutile? */
 
 		this.getConfigInfo = function() {
-			return $http.get(Endpoints.gvconfig+'/deploy')
+			return $http.get(Endpoints.gvconfig + '/deploy')
 		}
 
 		this.deploy = function(config, id){
@@ -46,24 +46,24 @@ angular.module('gvconsole')
 		}
 
 	    this.getConfigHistory = function(){
-	      return $http.get(Endpoints.gvconfig + '/configuration');
+	      return $http.get(Endpoints.gvconfig + '/configuration/');
 	    }
 	    
 	    this.getConfigFiles = function(){
 	      return $http.get(Endpoints.gvconfig + '/configuration');
 	     }
 	    
-	    this.getConfigFile = function(fileName){
+	    /*this.getConfigFile = function(fileName){
 		  return $http.get(Endpoints.gvconfig + '/configuration/' + fileName);
 		 }
 	    
 	    this.addConfigFile = function(fileName){
 	      return $http.post(Endpoints.gvconfig + '/configuration/' + fileName,{headers: {'Content-Type':'application/json'} });
-	    }
+	    }*/
 	
 	    //nome da cambiare!
 	    this.getGVCore = function(id){
-	      return $http.get(Endpoints.gvconfig + '/configuration/' + id + 'GVCore.xml');	
+	      return $http.get(Endpoints.gvconfig + '/configuration/' + id + '/GVCore.xml');	
 	    }
 	    
 	    /*
@@ -99,15 +99,14 @@ angular.module('gvconsole')
 		console.log("$scope.newConfig " + $scope.newConfig);
 	}*/
 	
-	/*
-	 ConfigService.getConfigHistory(response).then(function(){
-	 $scope.configHistory = response.data;
-	 },function(response){
-	 console.log("error: " + error);
-	 };
+	var instance = this;
+	this.history = [];
 	
-	
-	*/
+	ConfigService.getConfigHistory().then(function(response){
+		instance.history = response.data;
+		},function(response){
+		console.log("error: " + error);
+		});
 	
 	this.addConfiguration = function(){
 		
@@ -227,42 +226,29 @@ angular.module('gvconsole')
 	
 	ConfigService.getConfigInfo()
 		.then(function(response){
-			$scope.currentConfigId = response.data.id;		
+			
+		ConfigService.getGVCore(response.data.id).then(
+			       function(response){
+			        $scope.currentGVCore = response.data;
+			        console.log("currentGVCore: " + response.data);
+			     },function(response){
+			        console.log("error: " + response.data);
+			     });
+		
 		},function(response){
 			console.log("error: " + reponse.data);
 		});
 	
 	
 	
-	//
 	
-	ConfigService.getConfigFile('GVCore.xml').then(
-       function(response){
-        $scope.currentGVCore = response.data;
-     },function(response){
-    	 console.log("error: " + response.data);
-     });
-	
-	
-	//
-	
-	
-	
-	
-	
-	/*ConfigService.getGVCore($scope.newConfigId)
+	ConfigService.getGVCore($scope.newConfigId)
 		.then(function(response){
 			$scope.newGVCore = response.data;
+			console.log("newGVCore: " + response.data);
 		},function(response){
 			//gestione errore
 		});
-	
-	ConfigService.getGVCore($scope.currentConfigId)
-		.then(function(response){
-			$scope.currentGVCore = response.data;
-		},function(response){
-			//gestione errore
-		});	*/
 	
 	$scope.step = 0;
 

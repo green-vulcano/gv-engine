@@ -70,11 +70,11 @@
            <tbody>
 
 
-             <tr data-ng-repeat="newConfig in configHistory">
-               <td>{{newConfig.id}}</td>
-               <td>{{newConfig.time | date : 'd MMMM yyyy H:mm:ss'}}</td>
+             <tr data-ng-repeat="config in ctrl.history">
+               <td>{{config.id}}</td>
+               <td>{{config.time | date : 'd MMMM yyyy H:mm:ss'}}</td>
                <td class="text-right">
-                 <button onClick="slide();" type="button" class="btn btn-success" data-ng-click="go('/config/deploy/' + newConfig.id)"><i class="fa fa-bolt"></i> Deploy</button>
+                 <button onClick="slide();" type="button" class="btn btn-success" data-ng-click="go('/config/deploy/' + config.id)"><i class="fa fa-bolt"></i> Deploy</button>
                  <button onClick="slide();" type="button" class="btn btn-danger" data-toggle="modal" data-target="#myModal"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
                  <div id="myModal" class="modal fadeout">
                    <div class="modal-content">
