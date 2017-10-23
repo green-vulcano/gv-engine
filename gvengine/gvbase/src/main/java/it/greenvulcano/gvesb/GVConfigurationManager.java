@@ -19,13 +19,14 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.zip.ZipInputStream;
-
-import org.w3c.dom.Document;
 
 import it.greenvulcano.configuration.XMLConfigException;
 
@@ -50,14 +51,22 @@ public interface GVConfigurationManager {
 		
 	}
 	
-	byte[] exportConfiguration() throws XMLConfigException;
+	String getCurrentConfigurationName();
 	
-	void deployConfiguration(ZipInputStream configurationArchive, Path destination) throws XMLConfigException, IllegalStateException;
+	byte[] export(String name) throws IOException, FileNotFoundException;
 	
-	void updateConfiguration(Document xmlConfiguration) throws XMLConfigException;
+	Set<File> getHistory() throws IOException;
+	
+	void install(String name, ZipInputStream archive) throws IOException;
+	
+	byte[] extract(String name, String entry);
+	
+	void delete(String name) throws IOException, FileNotFoundException;
+	
+	void deploy(String name) throws XMLConfigException, FileNotFoundException;	
 	
 	void reload() throws XMLConfigException;
-	
+		
 	public static interface DeployListener {
 		
 		void onDeploy(Path destination);

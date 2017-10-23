@@ -21,12 +21,15 @@ package it.greenvulcano.gvesb.api.controller;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.nio.file.Paths;
+import java.io.IOException;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipInputStream;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -50,7 +53,8 @@ import it.greenvulcano.configuration.XMLConfig;
 import it.greenvulcano.configuration.XMLConfigException;
 import it.greenvulcano.gvesb.GVConfigurationManager;
 import it.greenvulcano.gvesb.GVConfigurationManager.Authority;
-
+import it.greenvulcano.util.xml.XMLUtils;
+import it.greenvulcano.util.xml.XMLUtilsException;
 
 @CrossOriginResourceSharing(allowAllOrigins=true, allowCredentials=true, exposeHeaders={"Content-type", "Content-Range", "X-Auth-Status"})
 public class GvConfigurationControllerRest {
@@ -62,6 +66,146 @@ public class GvConfigurationControllerRest {
 		this.gvConfigurationManager = gvConfigurationManager;
 	 }
 	 
+	 
+	 @GET
+	 @Path("/configuration/")
+	 @RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
+	 public Response getConfigurationHistory(){
+		
+		 JSONArray history = new JSONArray();
+		
+		 try {		 
+		
+			 gvConfigurationManager.getHistory().stream().map(f-> {
+				 JSONObject configEntry = new JSONObject();
+				 configEntry.put("id", f.getName().split("\\.(?=[^\\.]+$)")[0]);
+				 configEntry.put("time", f.lastModified());
+				 
+				 return configEntry; 
+			 }).forEach(history::put);
+		 } catch (IOException e) {
+			 LOG.error("Failed to retrieve configuration history",e);
+			 throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build());
+			 
+		 }
+		 
+		 
+		 return Response.ok(history.toString()).build();
+	 }
+	 
+	 @POST
+	 @Path("/configuration/{configId}")
+	 @Consumes(MediaType.MULTIPART_FORM_DATA)
+	 @RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
+	 public void installConfiguration(@PathParam("configId") String id,
+			            @Multipart(value="gvconfiguration") Attachment config) {
+		 
+		 switch(config.getHeader("Content-Type")) {
+		 
+		 case "application/zip":
+		 case "application/x-zip-compressed":
+		 			 		 
+			 try {
+							 
+				 ZipInputStream compressedConfig = new ZipInputStream(config.getDataHandler().getInputStream());
+				 gvConfigurationManager.install(id, compressedConfig);
+				 
+				 
+			 } catch (IllegalStateException e) {
+				 LOG.error("Failed to install configuraton, operation already in progress",e);
+				 throw new WebApplicationException(Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(e.getMessage()).build());
+			 
+			 } catch (Exception e) {
+				LOG.error("Failed to install configuraton, something bad appened",e); 						
+				throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build());
+				
+			 }
+			 
+			 break;
+		 
+		 default:
+			 throw new WebApplicationException(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
+			 
+		 }
+		 
+		 
+	 }	 
+	 
+	 @DELETE
+	 @Path("/configuration/{configId}")
+	 @Consumes(MediaType.MULTIPART_FORM_DATA)
+	 @RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
+	 public void deleteConfiguration (@PathParam("configId") String id) {
+	 	try {
+	 		gvConfigurationManager.delete(id);
+	 	} catch (Exception e) {
+			LOG.error("Failed to delete configuraton, something bad appened",e); 						
+			throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build());
+			
+		}
+	 }
+	 
+	 @GET
+	 @Path("/configuration/{configId}/GVCore.xml")
+	 @Produces(MediaType.APPLICATION_XML)
+	 @RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
+	 public Document getArchivedConfig(@PathParam("configId") String id){
+		 		 
+		 Document document = null;
+		 
+			try {
+				 byte[] gvcore = gvConfigurationManager.extract(id, "GVCore.xml");
+				 document =  XMLUtils.parseDOM_S(gvcore, false, false, false);;
+			} catch (XMLUtilsException e) {
+				if (e.getCause() instanceof FileNotFoundException) {
+					throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity("<error><![CDATA[File not found: "+id+"/GVCore.xml]]></error>").build());
+				}
+				
+				LOG.error("File to retrieve GVCore.xml in "+id, e);			
+				throw new WebApplicationException(Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("<error><![CDATA["+e.getMessage()+"]]></error>").build());
+			}
+			 
+			if (Objects.isNull(document)) throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity("<error><![CDATA[File not found: "+id+"/GVCore.xml]]></error>").build());
+			
+			return document;
+		 
+	 }
+	 
+	 @GET
+	 @Path("/configuration/{configId}/properties")
+	 @Produces(MediaType.APPLICATION_JSON)
+	 @RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
+	 public Response getArchivedConfigProperties(@PathParam("configId") String id) {
+		 Response response = null;
+		 
+		 
+		 try {
+			 byte[] gvcore = gvConfigurationManager.extract(id, "GVCore.xml");
+			 if (gvcore!=null && gvcore.length>0) {
+				 
+				 
+				 JSONArray properties = new JSONArray();
+				 
+				 String xml = new String(gvcore, "UTF-8");
+				 
+				 String pattern = "xmlp\\{\\{([-a-zA-Z0-9._]+)\\}\\}";
+				 Pattern p = Pattern.compile(pattern);
+				 Matcher m = p.matcher(xml);
+					
+				 while(m.find()) {
+					properties.put(m.group(1));
+				 }
+				 
+				 response = Response.ok(properties.toString()).build();
+			 }
+		 } catch (Exception e) {
+			response = Response.status(Response.Status.NOT_FOUND).build();
+		 }
+		 
+		 
+		 return response;
+	 }
+	 	 
 	
 	 @GET
 	 @Path("/deploy")
@@ -84,26 +228,20 @@ public class GvConfigurationControllerRest {
 	 }
 	 
 	 @GET
-	 @Path("/deploy/{configId}")
+	 @Path("/deploy/export")
 	 @Produces(MediaType.APPLICATION_OCTET_STREAM)
 	 @RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
-	 public Response exportConfiguration(@PathParam("configId") String id) {
-		 File currentConfig = new File(XMLConfig.getBaseConfigPath());
-		 
-		 if (currentConfig.exists() && currentConfig.getName().equals(id) ){
-			 try {
-				 
-				return Response.ok(gvConfigurationManager.exportConfiguration())
-							   .header("Content-Disposition", "attachment; filename="+id+".zip")
-							   .build();
-				 
-			 } catch (XMLConfigException e) {
-				 LOG.error("Export failed",e); 
-				 throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build());
-			 }				 
-		 } else {
-			 return Response.status(Status.NOT_FOUND).build();
-		 }		 
+	 public Response exportConfiguration() {
+		 try {
+			String currentConfig = gvConfigurationManager.getCurrentConfigurationName();
+			return Response.ok(gvConfigurationManager.export(currentConfig))
+						   .header("Content-Disposition", "attachment; filename="+currentConfig+".zip")
+						   .build();
+			 
+		 } catch (IOException e) {
+			 LOG.error("Export failed",e); 
+			 throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build());
+		 }	 
 		 
 	 }
 	 
@@ -111,24 +249,11 @@ public class GvConfigurationControllerRest {
 	 @Path("/deploy/{configId}")
 	 @Consumes(MediaType.MULTIPART_FORM_DATA)
 	 @RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
-	 public void deploy(@PathParam("configId") String id,
-			            @Multipart(value="gvconfiguration") Attachment config) {
-		 
-		 switch(config.getHeader("Content-Type")) {
-		 
-		 case "application/zip":
-		 case "application/x-zip-compressed":
-		 
-		 LOG.debug("Deploying configuration with id "+id);
-		 
-		 File currentConfig = new File(XMLConfig.getBaseConfigPath());			        
-		 String baseDir = currentConfig.getParent();
-		 
+	 public void deploy(@PathParam("configId") String id) {
+		 				 		 		 
 		 try {
 						 
-			 ZipInputStream compressedConfig = new ZipInputStream(config.getDataHandler().getInputStream());
-			 gvConfigurationManager.deployConfiguration(compressedConfig, Paths.get(baseDir, id));
-			 gvConfigurationManager.reload();			 
+			 gvConfigurationManager.deploy(id);			 	 
 			 
 		 } catch (IllegalStateException e) {
 			 LOG.error("Deploy failed, a deploy is already in progress",e);
@@ -138,20 +263,11 @@ public class GvConfigurationControllerRest {
 			LOG.error("Deploy failed, something bad appened",e); 						
 			throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build());
 			
-		 }
-		 
-		 	break;
-		 
-		 default:
-			 throw new WebApplicationException(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
-			 
-		 }
-		 
-		 
+		 }		 
 	 }
 	 
 	 @GET
-	 @Path("/configuration")
+	 @Path("/deploy/xml")
 	 @Produces(MediaType.APPLICATION_JSON)
 	 @RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
 	 public Response getConfigurationFileList() {		 	 
@@ -161,7 +277,7 @@ public class GvConfigurationControllerRest {
 	 }
 	 
 	 @GET
-	 @Path("/configuration/{name}")
+	 @Path("/deploy/xml/{name}")
 	 @Produces(MediaType.APPLICATION_XML)
 	 @RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
 	 public Document getConfigurationFile(@PathParam("name") String name){

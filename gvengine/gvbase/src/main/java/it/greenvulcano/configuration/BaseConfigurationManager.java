@@ -19,8 +19,8 @@
  *******************************************************************************/
 package it.greenvulcano.configuration;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
@@ -32,28 +32,21 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-import java.util.zip.ZipOutputStream;
-
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
 import org.apache.karaf.config.core.ConfigRepository;
+import org.osgi.framework.InvalidSyntaxException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
 
 import it.greenvulcano.gvesb.GVConfigurationManager;
 
@@ -76,165 +69,198 @@ public class BaseConfigurationManager implements GVConfigurationManager {
 			this.deployListeners.addAll(deployListeners);
 		}
 	}
-
-	@Override
-	public void updateConfiguration(Document xmlConfiguration) throws XMLConfigException {
-		String fileName = xmlConfiguration.getDocumentElement().getTagName().concat(".xml");
-		
-		LOG.debug("BaseConfigurationManager - Updating config file "+fileName);
-		
-		File xmlConfigurationFile =  new File(XMLConfig.getBaseConfigPath(), fileName);
-		
-		try {
-			LOG.debug("BaseConfigurationManager - Writing "+fileName);
-			writeXMLtoFile(xmlConfiguration, xmlConfigurationFile);
-		} catch (IOException ioException) {
-			throw new XMLConfigException("Failed to update "+xmlConfigurationFile, ioException);
-		
-		}
-		
-		LOG.debug("BaseConfigurationManager - Reloading "+fileName);
-		XMLConfig.reload(fileName);
-
-	}
 	
-	private void writeXMLtoFile(Document xmlConfiguration, File xmlConfigurationFile) throws IOException {
-		try {
-			if(!xmlConfigurationFile.exists()) {
-				xmlConfigurationFile.createNewFile();
-			}
-			
-			Transformer transformer = TransformerFactory.newInstance().newTransformer();
-		    transformer.setOutputProperty(OutputKeys.INDENT, "yes"); 
-		    DOMSource source = new DOMSource(xmlConfiguration);
-		    StreamResult file = new StreamResult(Files.newOutputStream(xmlConfigurationFile.toPath(), StandardOpenOption.TRUNCATE_EXISTING));
-		    transformer.transform(source, file);
-		} catch (TransformerException transformerException) {
-			throw new IOException(transformerException);
-		}
+	@Override
+	public String getCurrentConfigurationName() {
+		Path current = Paths.get(XMLConfig.getBaseConfigPath());
+		
+		return  current.getFileName().toString();
 	}
 
 	@Override
 	public void reload() throws XMLConfigException {
 		XMLConfig.reloadAll();
 		
-	}
+	}	
 
 	@Override
-	public void deployConfiguration(ZipInputStream configurationArchive, Path destination) throws XMLConfigException, IllegalStateException {
-		if (LOCK.tryLock()) {		
-			try {												
-				
-				String configPath = destination.toString();
-				LOG.debug("Deploy started on path "+configPath);
-				ZipEntry zipEntry = null;
-				
-				if (Files.notExists(destination)){
-					Files.createDirectories(destination);
-				}
-				
-				while ((zipEntry=configurationArchive.getNextEntry())!=null) {
-					
-					Path entryPath = Paths.get(configPath, zipEntry.getName());
-									
-					LOG.debug("Adding resource: "+entryPath);
-					if (zipEntry.isDirectory()) {
-						entryPath.toFile().mkdirs();
-					} else {
-						
-						Path parent  = entryPath.getParent();
-						if(!Files.exists(parent)){
-							Files.createDirectories(parent);
-						}
-						
-						Files.copy(configurationArchive, entryPath, StandardCopyOption.REPLACE_EXISTING);					
-					}
-					
-				}
-				
-				if (configPath.equals(XMLConfig.getBaseConfigPath())) {
-					LOG.debug("Config merged in path: "+configPath);
-				} else {
-				
-					@SuppressWarnings("unchecked")
-					Dictionary<String, Object> gvesbCfg = Optional.of(configRepository.getConfigProperties(XMLConfig.CONFIG_PID))
-																  .orElse(new Hashtable<>());
-					
-					gvesbCfg.put(XMLConfig.CONFIG_KEY_HOME, configPath);
-					configRepository.update(XMLConfig.CONFIG_PID, gvesbCfg);
-					
-					//**** Deleting old config dir
-					LOG.debug("Removing old config: "+XMLConfig.getBaseConfigPath());
-					try {
-						 File currentConfig = new File(XMLConfig.getBaseConfigPath());
-						 
-						 Files.walk(currentConfig.toPath(), FileVisitOption.FOLLOW_LINKS)
-							  .sorted(Comparator.reverseOrder())
-							  .map(java.nio.file.Path::toFile)
-							  .forEach(File::delete);
-					} catch (IOException e) {
-						 LOG.error("Failed to delete old configuration",e); 
-					}
-					 				
-					XMLConfig.setBaseConfigPath(configPath);
-				}
-				
-				LOG.debug("Deploy complete");
-				deployListeners.forEach(l-> l.onDeploy(destination));
-								
-			} catch (Exception e) {
-				
-				if (Objects.nonNull(destination) && Files.exists(destination)) {
-					LOG.error("Deploy failed, rollback to previous configuration",e);
-					try {												 
-						 Files.walk(destination, FileVisitOption.FOLLOW_LINKS)
-							  .sorted(Comparator.reverseOrder())
-							  .map(java.nio.file.Path::toFile)
-							  .forEach(File::delete);
-					} catch (IOException rollbackException) {
-						 LOG.error("Failed to delete old configuration",e); 
-					}
-				} else {
-					LOG.error("Deploy failed",e);
-				}
-				
-				throw new XMLConfigException("Deploy failed", e);
-			} finally {
-				LOCK.unlock();
-			}
+	public byte[] export(String name) throws IOException, FileNotFoundException{
+		
+		Path configurationPath = getConfigurationPath(name);
+		
+		if (Files.exists(configurationPath) && !Files.isDirectory(configurationPath)) {
+			return Files.readAllBytes(configurationPath);
 		} else {
-			throw new IllegalStateException("A deploy is already in progress");
+			throw new FileNotFoundException(configurationPath.toString());
 		}
 	}
 
 	@Override
-	public byte[] exportConfiguration() throws XMLConfigException{
-		
-		Path configPath = Paths.get(XMLConfig.getBaseConfigPath());
-		
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-				
-		try (final ZipOutputStream zipExport = new ZipOutputStream(output)) {
+	public Set<File> getHistory() throws IOException {
+		Path history = getHistoryPath();
+		if (Files.exists(history)) {
 			
-			Predicate<Path> isSamePath = p-> p.getFileName().equals(configPath.getFileName());
-			
-			for (Path path : Files.walk(configPath)
-								  .filter(isSamePath.negate())
-								  .collect(Collectors.toList())) {
-			
-				ZipEntry entry = new ZipEntry(configPath.relativize(path).toString());
-							
-				if (Files.isRegularFile(path)) {
-					zipExport.putNextEntry(entry);
-					zipExport.write(Files.readAllBytes(path));	
+			Path currentConfigArchive = getConfigurationPath(getCurrentConfigurationName());
+			Predicate<Path> currentConfig = p -> {
+				try {
+					return Files.isSameFile(p, currentConfigArchive);
+				} catch (IOException e) {
+					return false;
 				}
-			}			
+			};
 			
-		} catch (IOException e) {
-			throw new XMLConfigException("Fail to export configuration",e);
-		}		
+			return Files.list(history).filter(currentConfig.negate()).map(Path::toFile).collect(Collectors.toSet());			
+		}
 		
-		return output.toByteArray();
+		return new LinkedHashSet<>();
+	}
+
+	@Override
+	public void install(String name, ZipInputStream archive) throws IOException {
+		
+		Path configurationPath = getConfigurationPath(name);
+		Files.copy(archive, configurationPath, StandardCopyOption.REPLACE_EXISTING);		
+	}
+
+	@Override
+	public void delete(String name) throws IOException, FileNotFoundException {
+		Path configurationPath = getConfigurationPath(name);
+		if (!Files.deleteIfExists(configurationPath)) {
+			throw new FileNotFoundException(configurationPath.toString());
+		}
+	}
+	
+	@Override
+	public byte[] extract(String name, String entry) {
+		
+		Path configurationArchivePath = getConfigurationPath(name);
+		
+		try (ZipInputStream configurationArchive = new ZipInputStream(Files.newInputStream(configurationArchivePath, StandardOpenOption.READ))) {												
+					
+			ZipEntry zipEntry = null;
+			while ((zipEntry=configurationArchive.getNextEntry())!=null) {
+				
+				if (zipEntry.getName().equals(entry)) {
+					byte[] entryData = new byte[Long.valueOf(zipEntry.getSize()).intValue()];
+					configurationArchive.read(entryData);
+					return entryData;
+				}
+			}
+		} catch (Exception e) {
+			LOG.error("Failed to extract entry "+entry+ " from archive "+configurationArchivePath, e);
+		}
+		
+		return new byte[]{};
+	}
+
+	@Override
+	public void deploy(String name) throws XMLConfigException, FileNotFoundException {
+		
+		Path configurationArchivePath = getConfigurationPath(name);
+				
+		Path current = Paths.get(XMLConfig.getBaseConfigPath());		
+		Path staging = current.getParent().resolve("deploy");
+		Path destination = current.getParent().resolve(name);
+		
+		if (LOCK.tryLock()) {
+			
+			if (Files.exists(configurationArchivePath) && !Files.isDirectory(configurationArchivePath)) {	
+			
+				try {												
+					
+					ZipInputStream configurationArchive = new ZipInputStream(Files.newInputStream(configurationArchivePath, StandardOpenOption.READ));
+					
+				
+					LOG.debug("Starting deploy of configuration "+name);
+					ZipEntry zipEntry = null;
+					
+					
+					Files.copy(current, staging, StandardCopyOption.REPLACE_EXISTING);
+					Files.createDirectories(staging);
+					
+					LOG.debug("Staging new config "+name);
+					
+					while ((zipEntry=configurationArchive.getNextEntry())!=null) {
+						
+						Path entryPath = staging.resolve(zipEntry.getName());
+										
+						LOG.debug("Adding resource: "+entryPath);
+						if (zipEntry.isDirectory()) {
+							entryPath.toFile().mkdirs();
+						} else {
+							
+							Path parent  = entryPath.getParent();
+							if(!Files.exists(parent)){
+								Files.createDirectories(parent);
+							}
+							
+							Files.copy(configurationArchive, entryPath, StandardCopyOption.REPLACE_EXISTING);					
+						}
+						
+					}													
+									
+					//**** Deleting old config dir
+					LOG.debug("Removing old config: "+current);
+					Files.walk(current, FileVisitOption.FOLLOW_LINKS)
+						 .sorted(Comparator.reverseOrder())
+						 .map(java.nio.file.Path::toFile)
+						 .forEach(File::delete);
+					
+					LOG.debug("Deploy new config "+name + " in path " + destination);
+					Files.move(staging, destination, StandardCopyOption.ATOMIC_MOVE);
+					
+					setXMLConfigBasePath(destination.toString());				
+					LOG.debug("Deploy complete");
+					deployListeners.forEach(l-> l.onDeploy(destination));
+									
+				} catch (Exception e) {
+					
+					if (Objects.nonNull(staging) && Files.exists(staging)) {
+						LOG.error("Deploy failed, rollback to previous configuration",e);
+						try {												 
+							 Files.walk(staging, FileVisitOption.FOLLOW_LINKS)
+								  .sorted(Comparator.reverseOrder())
+								  .map(java.nio.file.Path::toFile)
+								  .forEach(File::delete);
+							 
+							 setXMLConfigBasePath(current.toString());	
+						} catch (IOException | InvalidSyntaxException rollbackException) {
+							 LOG.error("Failed to delete old configuration",e); 
+						}
+					} else {
+						LOG.error("Deploy failed",e);
+					}
+					
+					throw new XMLConfigException("Deploy failed", e);
+				} finally {
+					LOCK.unlock();
+				}
+			} else {
+				throw new FileNotFoundException(configurationArchivePath.toString());
+			}
+		} else {
+			throw new IllegalStateException("A deploy is already in progress");
+		}
+		
+	}
+	
+	private void setXMLConfigBasePath(String path) throws IOException, InvalidSyntaxException{
+		@SuppressWarnings("unchecked")
+		Dictionary<String, Object> gvesbCfg = Optional.of(configRepository.getConfigProperties(XMLConfig.CONFIG_PID))
+													  .orElse(new Hashtable<>());
+		
+		gvesbCfg.put(XMLConfig.CONFIG_KEY_HOME, path);
+		configRepository.update(XMLConfig.CONFIG_PID, gvesbCfg);
+							 				
+		XMLConfig.setBaseConfigPath(path);
+	}
+	
+	private Path getConfigurationPath(String name) {
+		return getHistoryPath().resolve(name.concat(".zip"));
+	}
+	
+	private Path getHistoryPath(){
+		return Paths.get(XMLConfig.getBaseConfigPath()).getParent().resolve("history");
 	}
 
 }
