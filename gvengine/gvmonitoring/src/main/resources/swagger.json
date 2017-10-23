@@ -1,0 +1,206 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "System monitoring",
+    "version": "4.0.0-SNAPSHOT",
+    "title": "GV Monitoring"
+  },
+  "basePath": "/cxf/gvmonitoring/monitoring",
+  "tags": [
+    {
+      "name": "system"
+    }
+  ],
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/classes": {
+      "get": {
+        "tags": [
+          "system"
+        ],
+        "summary": "get information about classes.",
+        "description": "get the object which contains informations about loaded and unloaded classes with a timestamp.",
+        "operationId": "getClasses",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Object ClassesStatus",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "totalLoadedClasses": {
+                  "type": "integer",
+                  "description": "get the number of all classes",
+                  "example": 14446
+                },
+                "loadedClasses": {
+                  "type": "integer",
+                  "description": "get the number of loaded classes",
+                  "example": 14350
+                },
+                "unLoadedClasses": {
+                  "type": "integer",
+                  "description": "get the number of unloaded classes",
+                  "example": 96
+                },
+                "time": {
+                  "$ref": "#/definitions/time"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden. Try to authenticate yourself"
+          }
+        }
+      }
+    },
+    "/cpu": {
+      "get": {
+        "tags": [
+          "system"
+        ],
+        "summary": "get information about cpu.",
+        "description": "Returns the system load average and returns the number of processors available to the Java virtual machine with a timestamp.",
+        "operationId": "readCPUStatus",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Object ClassesStatus",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "usage": {
+                  "type": "number",
+                  "format": "float",
+                  "example": 0.31
+                },
+                "count": {
+                  "type": "integer",
+                  "description": "number of cores",
+                  "example": 4
+                },
+                "time": {
+                  "$ref": "#/definitions/time"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden. Try to authenticate yourself"
+          }
+        }
+      }
+    },
+    "/memory": {
+      "get": {
+        "tags": [
+          "system"
+        ],
+        "summary": "get information about memory of Java Virtual Machine.",
+        "description": "get the maximum amount of memory that the Java virtual machine will attempt to use, the total amount of memory in the Java virtual machine, the amount of free memory in the Java Virtual Machine. All of this expressed in byte, with a timestamp.",
+        "operationId": "readMemoryStatus",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Object MemoryStatus",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "maxMemory": {
+                  "type": "integer",
+                  "example": 477626368
+                },
+                "totalMemory": {
+                  "type": "integer",
+                  "example": 268435456
+                },
+                "freeMemory": {
+                  "type": "integer",
+                  "example": 187333288
+                },
+                "time": {
+                  "$ref": "#/definitions/time"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden. Try to authenticate yourself"
+          }
+        }
+      }
+    },
+    "/threads": {
+      "get": {
+        "tags": [
+          "system"
+        ],
+        "summary": "get information about threads.",
+        "description": "Get the current number of live threads, the current number of live daemon threads, the peak live thread count since the Java virtual machine started or peak was reset with a timestamp.",
+        "operationId": "getThreads",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Object ThreadsStatus",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "totalThreads": {
+                  "type": "integer",
+                  "example": 101
+                },
+                "daemonThreads": {
+                  "type": "integer",
+                  "example": 75
+                },
+                "peakThreads": {
+                  "type": "integer",
+                  "example": 126
+                },
+                "time": {
+                  "$ref": "#/definitions/time"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden. Try to authenticate yourself"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "time": {
+      "type": "object",
+      "properties": {
+        "epochSecond": {
+          "type": "integer",
+          "description": "Are the seconds from 01/01/1970",
+          "example": 1508423753
+        },
+        "nano": {
+          "type": "integer",
+          "description": "nanoseconds",
+          "example": 824000000
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "gviam": {
+      "type": "basic"
+    }
+  }
+}

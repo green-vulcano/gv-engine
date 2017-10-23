@@ -36,10 +36,13 @@
 	 <bean id="gvAuthenticationInterceptor" class="it.greenvulcano.gvesb.api.security.GVSecurityInterceptor">        
         <property name="gvSecurityModulesReferences" ref="securityModulesReferences"/>   
     </bean>
+    
+    <bean id="swaggerController" class="it.greenvulcano.gvesb.api.docs.SwaggerController"/>
 
      <jaxrs:server address="/gvmonitoring" id="gvmonitoringapi">
         <jaxrs:serviceBeans>
             <ref component-id="gvMonitoring"/>
+            <ref component-id="swaggerController" /> 
         </jaxrs:serviceBeans>
 				<jaxrs:providers>
 					<ref component-id="gvAuthenticationFilter"/>
