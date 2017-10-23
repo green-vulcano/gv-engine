@@ -19,7 +19,6 @@
  *******************************************************************************/
 package it.greenvulcano;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -32,6 +31,7 @@ import java.util.Optional;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import javax.crypto.SecretKey;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
@@ -48,6 +48,12 @@ import it.greenvulcano.configuration.jmx.XMLConfigProxy;
 import it.greenvulcano.jmx.JMXEntryPoint;
 import it.greenvulcano.jmx.impl.KarafJMXEntryPoint;
 import it.greenvulcano.util.crypto.CryptoHelper;
+import it.greenvulcano.util.crypto.CryptoUtils;
+import it.greenvulcano.util.crypto.CryptoUtilsException;
+import it.greenvulcano.util.crypto.KeyID;
+import it.greenvulcano.util.crypto.KeyStoreID;
+import it.greenvulcano.util.crypto.KeyStoreUtils;
+import it.greenvulcano.util.crypto.KeyStoreUtilsException;
 
 public class Activator implements BundleActivator {
 
@@ -73,20 +79,21 @@ public class Activator implements BundleActivator {
 													.orElse("org.apache.xalan.processor.TransformerFactoryImpl"));							
 		        
               
-        String home = getConfigEntry(configurationAdmin, XMLConfig.CONFIG_KEY_HOME).orElse("GreenV" + File.separator + XMLConfig.DEFAULT_FOLDER);
+        String home = getConfigEntry(configurationAdmin, XMLConfig.CONFIG_KEY_HOME).orElse(XMLConfig.DEFAULT_FOLDER);
                 		
 		try {
 			
 			Path configPath = Paths.get(home);
 						
 			if(Files.notExists(configPath)) {
-												
+				LOG.debug("Deploying default config in " + configPath.getParent());
+				
 				ZipInputStream defaultConfig = new ZipInputStream(getClass().getClassLoader().getResourceAsStream("config.zip"));
 				ZipEntry zipEntry = null;
 				
 				while ((zipEntry=defaultConfig.getNextEntry())!=null) {
 					
-					Path entryPath = Paths.get(home, zipEntry.getName());
+					Path entryPath = configPath.getParent().resolve(zipEntry.getName());
 					
 					if (zipEntry.isDirectory()) {
 						Files.createDirectories(entryPath);
@@ -97,8 +104,9 @@ public class Activator implements BundleActivator {
 				}
 				
 				
+				createRootKeystore(configPath);				
 			} 
-						
+			
 			String config = configPath.toAbsolutePath().toString();						
 			XMLConfig.setBaseConfigPath(config);
 			
@@ -123,6 +131,23 @@ public class Activator implements BundleActivator {
 		} catch(Throwable wtf) {
 			LOG.error("Failed to initalize CryptoHelper configuration ", wtf);
 		}	
+	}
+
+	private void createRootKeystore(Path configPath) throws CryptoUtilsException, KeyStoreUtilsException {
+		Path keystorePath = configPath.resolve("keystores");
+		
+		KeyStoreID defaultKeyStoreID = new KeyStoreID(CryptoHelper.DEFAULT_KEYSTORE_ID, 
+				   KeyStoreUtils.DEFAULT_KEYSTORE_TYPE, 
+				   CryptoHelper.DEFAULT_KEY_STORE_NAME, 
+				   CryptoHelper.SECRET_KEY_STORE_PWD,										   
+				   KeyStoreUtils.DEFAULT_KEYSTORE_PROVIDER);
+
+		KeyID defaultKeyid = new KeyID(CryptoHelper.DEFAULT_KEY_ID, CryptoUtils.TRIPLE_DES_TYPE, defaultKeyStoreID, CryptoHelper.SECRET_KEY_NAME, CryptoHelper.SECRET_KEY_PWD);
+
+		SecretKey secretKey = CryptoUtils.generateSecretKey(CryptoUtils.TRIPLE_DES_TYPE, CryptoHelper.SECRET_KEY_PWD.getBytes());
+
+		KeyStoreUtils.writeKey(keystorePath.toAbsolutePath().toString(), defaultKeyid, secretKey, null);
+		
 	}
 
 	@Override

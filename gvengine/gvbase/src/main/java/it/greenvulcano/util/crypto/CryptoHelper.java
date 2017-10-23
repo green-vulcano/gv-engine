@@ -435,6 +435,9 @@ public final class CryptoHelper implements ConfigurationListener {
                 
             	String path =  XMLConfig.get(CRYPTO_HELPER_FILE, DEFAULT_KEY_STORE_FOLDER, "");          	
             	Path keystoreFolder= Paths.get(PropertiesHandler.expand(path));
+            	if (!keystoreFolder.isAbsolute()) {
+            		keystoreFolder = Paths.get(XMLConfig.getBaseConfigPath()).resolve(keystoreFolder);
+            	}
             	keystorePath =  Files.isDirectory(keystoreFolder) ? keystoreFolder.toString() : keystoreFolder.getParent().toString();
             			
             	// must be set first because is used by KeyID(Node)

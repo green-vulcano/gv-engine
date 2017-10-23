@@ -19,6 +19,10 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb.osgi.commands;
 
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.zip.ZipInputStream;
+
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
@@ -31,10 +35,13 @@ import it.greenvulcano.gvesb.GVConfigurationManager;
 
 @Command(scope = "gvesb", name = "deploy", description = "Deploy a configuration zip package")
 @Service
-public class GVDeployConfiguration implements Action {
+public class GVInstallConfiguration implements Action {
 	
 	@Argument(index=0, name = "id", description = "The id of configuration to deploy", required = true, multiValued = false)
 	String id = null;
+	
+	@Argument(index=1, name = "file", description = "The configuration archive full path  (Example: /home/dir/config.zip) ", required = true, multiValued = false)
+	String baseFile = null;
 	
 	private final Logger LOG = LoggerFactory.getLogger(getClass());
 	
@@ -51,17 +58,20 @@ public class GVDeployConfiguration implements Action {
 		
 		try {			
 			
-			LOG.debug("Deploying configuration with id " + id);
+			LOG.debug("Installing configuration with id " + id);
+						
+			InputStream file = new FileInputStream(baseFile);
+			ZipInputStream zipFile = new ZipInputStream(file);
 			
-			System.out.println("Deploying configuration with id " + id + " ...");
+			System.out.println("Installing configuration with id " + id + " ...");
 			
-			configurationManager.deploy(id);
+			configurationManager.install(id, zipFile); 
 			configurationManager.reload();
-			message = "Deploy complete";		
+			message = "Installation complete";		
 		} catch (Exception exception) {
 			System.err.println(exception.getMessage());
-			LOG.error("GVDeployConfiguration - Deploy configuration failed", exception);
-			message = "Deploy failed";
+			LOG.error("GVDeployConfiguration - Installation configuration failed", exception);
+			message = "Installation failed";
 		}
 		
 		return message;
