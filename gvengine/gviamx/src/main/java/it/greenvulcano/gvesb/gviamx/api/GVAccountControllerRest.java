@@ -40,9 +40,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 
-import org.apache.cxf.jaxrs.utils.JAXRSUtils;
 import org.apache.cxf.rs.security.cors.CrossOriginResourceSharing;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -96,7 +94,7 @@ public class GVAccountControllerRest {
 			
 		JSONObject status = new JSONObject();
 		if (email != null &&  email.matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$")) {
-			status.put("email", email);
+			status.put("email", email.trim());
 		} else {
 			return Response.status(Status.BAD_REQUEST).entity("Missing or invalid value for parameter 'check' ").build();
 			
@@ -187,19 +185,21 @@ public class GVAccountControllerRest {
 		
 		try {
 			
-			Optional.ofNullable(email).orElseThrow(()->new IllegalArgumentException("Required parameter: email"));
-			Optional.ofNullable(token).orElseThrow(()->new IllegalArgumentException("Required parameter: token"));
+			email = Optional.ofNullable(email).orElseThrow(()->new IllegalArgumentException("Required parameter: email")).trim();
+			token = Optional.ofNullable(token).orElseThrow(()->new IllegalArgumentException("Required parameter: token")).trim();
 						
 			SignUpRequest signupRequest = signupManager.retrieveSignUpRequest(email, token);
 						
 			String password = Optional.ofNullable(clearPassword).orElseGet(()->{
 				try {
 					return CryptoHelper.decrypt(CryptoHelper.DEFAULT_KEY_ID, (String) signupRequest.getActionData().get("password"), false);
-				} catch (CryptoHelperException|CryptoUtilsException cryptoException) {
+				} catch (Exception cryptoException) {
 					LOG.error("Invalid password stored in action data", cryptoException);
 				}
 				return "";
 			});
+			
+			if (!password.matches(User.PASSWORD_PATTERN)) throw new InvalidPasswordException(password);
 			
 			User user = signupManager.getUsersManager().createUser(email, password);			
 						
@@ -247,7 +247,9 @@ public class GVAccountControllerRest {
 		Response response = null;
 		try {
 			
-			passwordResetManager.createPasswordResetRequest(Optional.ofNullable(email).orElseThrow(()->new IllegalArgumentException("Required parameter: email")));
+			Optional.ofNullable(email).orElseThrow(()->new IllegalArgumentException("Required parameter: email"));
+						
+			passwordResetManager.createPasswordResetRequest(email.trim());
 			response = Response.accepted().build();
 			
 		} catch (UserNotFoundException e) {
@@ -269,9 +271,9 @@ public class GVAccountControllerRest {
 		
 		Response response = null;
 		try {
-			Optional.ofNullable(email).orElseThrow(()->new IllegalArgumentException("Required parameter: email"));
-			Optional.ofNullable(token).orElseThrow(()->new IllegalArgumentException("Required parameter: token"));
-			Optional.ofNullable(password).orElseThrow(()->new IllegalArgumentException("Required parameter: password"));
+			email = Optional.ofNullable(email).orElseThrow(()->new IllegalArgumentException("Required parameter: email")).trim();
+			token = Optional.ofNullable(token).orElseThrow(()->new IllegalArgumentException("Required parameter: token")).trim();
+			password = Optional.ofNullable(password).orElseThrow(()->new IllegalArgumentException("Required parameter: password")).trim();
 			
 			PasswordResetRequest passwordResetRequest =  passwordResetManager.retrievePasswordResetRequest(email,token);
 			
@@ -309,8 +311,8 @@ public class GVAccountControllerRest {
 			}
 			
 			
-			Optional.ofNullable(email).orElseThrow(()->new IllegalArgumentException("Required parameter: email"));
-			Optional.ofNullable(newEmail).orElseThrow(()->new IllegalArgumentException("Required parameter: new_email"));		
+			email = Optional.ofNullable(email).orElseThrow(()->new IllegalArgumentException("Required parameter: email")).trim();
+			newEmail = Optional.ofNullable(newEmail).orElseThrow(()->new IllegalArgumentException("Required parameter: new_email")).trim();		
 			
 			emailChangeManager.createEmailChangeRequest(email, newEmail);
 			response = Response.ok().build();						
@@ -340,8 +342,8 @@ public class GVAccountControllerRest {
 				throw new  SecurityException();
 			}
 			
-			Optional.ofNullable(email).orElseThrow(() -> new IllegalArgumentException("Required parameter: email"));
-			Optional.ofNullable(token).orElseThrow(()->new IllegalArgumentException("Required parameter: token"));		
+			email = Optional.ofNullable(email).orElseThrow(()->new IllegalArgumentException("Required parameter: email")).trim();
+			token = Optional.ofNullable(token).orElseThrow(()->new IllegalArgumentException("Required parameter: token")).trim();	
 			
 			
 			EmailChangeRequest request = emailChangeManager.retrieveEmailChangeRequest(email, token);
@@ -385,10 +387,13 @@ public class GVAccountControllerRest {
 	@POST
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER, Authority.CLIENT})
-	public void grantRole(@FormParam("email")String username, @FormParam("role")String role) {
+	public void grantRole(@Context SecurityContext securityContext, @FormParam("email")String username, @FormParam("role")String role) {
 		
 		try {
-			SecurityContext securityContext = JAXRSUtils.getCurrentMessage().get(SecurityContext.class);
+			
+			username = Optional.ofNullable(username).orElseThrow(()->new IllegalArgumentException("Required parameter: username")).trim();
+			role = Optional.ofNullable(role).orElseThrow(()->new IllegalArgumentException("Required parameter: role")).trim();
+			
 			if ((securityContext.isUserInRole(Authority.CLIENT) && Authority.entries.contains(role)) 
 				|| (securityContext.isUserInRole(Authority.MANAGER) && Authority.ADMINISTRATOR.equals(role))) {
 				
@@ -404,17 +409,22 @@ public class GVAccountControllerRest {
 		} catch (UserNotFoundException e) {
 			LOG.warn("Error performing grant role", e);
 			throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity(String.format("User %s not found",username)).build());
-		}
+		}  catch (IllegalArgumentException e) {
+			
+			throw new WebApplicationException(Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build());		
+		} 
 	}
 	
 	@Path("/grant")
 	@DELETE
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER, Authority.CLIENT})
-	public void revokeRole(@FormParam("email")String username, @FormParam("role")String role) {
+	public void revokeRole(@Context SecurityContext securityContext, @FormParam("email")String username, @FormParam("role")String role) {
 		
 		try {
-			SecurityContext securityContext = JAXRSUtils.getCurrentMessage().get(SecurityContext.class);
+			username = Optional.ofNullable(username).orElseThrow(()->new IllegalArgumentException("Required parameter: username")).trim();
+			role = Optional.ofNullable(role).orElseThrow(()->new IllegalArgumentException("Required parameter: role")).trim();
+			
 			if ((securityContext.isUserInRole(Authority.CLIENT) && (Authority.entries.contains(role) || Authority.NOT_AUTHORATIVE.equals(role))) 
 				|| (securityContext.isUserInRole(Authority.MANAGER) && Authority.ADMINISTRATOR.equals(role))) {
 				throw new WebApplicationException(Response.status(Response.Status.FORBIDDEN).entity(String.format("Invalid role %s", role)).build());
@@ -429,7 +439,10 @@ public class GVAccountControllerRest {
 		} catch (UserNotFoundException e) {
 			LOG.warn("Error performing revoke role", e);
 			throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity(String.format("User %s not found",username)).build());
-		}
+		} catch (IllegalArgumentException e) {
+			
+			throw new WebApplicationException(Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build());		
+		} 
 	}
 	
 	private void checkSecurityContraint(SecurityContext securityContext, User user) throws InvalidRoleException  {
