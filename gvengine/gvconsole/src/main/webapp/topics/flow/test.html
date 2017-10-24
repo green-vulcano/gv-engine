@@ -1,14 +1,16 @@
 <div class="container-fluid">
    <div class="side-body">
-      <div class="container" data-ng-controller="FlowController as ctrl">
-        <div class="row page-header">
            <h1>Flow testing</h1>
-        </div>
-           <div class="row" >
-              <div id="formLeft" class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+            <div class="row" data-ng-controller="FlowController as ctrl">
+              <div class="panel panel-default" style="overflow-x:auto;">
+                <div class="panel-heading">
+                  <i class="fa fa-forward" aria-hidden="true"></i> Test
+                </div>
+                <div class="panel panel-body container-fluid">
+                <form id="prova2">
                  <div class="form-group clearfix">
-                    <label id="labelLeft" class="control-label optionForm col-sm-4">Operation</label>
-                    <div class="col-sm-8">
+                    <label id="labelLeft" class="control-label optionForm col-sm-2">Operation</label>
+                    <div class="col-sm-4">
                        <select id="flow" name="flow"
                           class="form-control" ng-model="flow"
                           ng-options="entry.operation group by entry.service for entry in operations"
@@ -24,48 +26,58 @@
                     </div>
                  </div>
                  <hr>
-              </div>
 
-              <div id="formLeft" class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+
                  <div class="form-group clearfix">
-                    <label id="labelLeft" class="control-label optionForm col-sm-4">Body</label>
-                    <div class="col-xs-12">
+                    <label id="labelLeft" class="control-label optionForm col-sm-2">Body</label>
+                    <div class="col-sm-9">
                        <textarea id="noTab" class="form-control" rows="5" ng-model="service.object"></textarea>
                     </div>
                  </div>
-                 <label class="control-label optionForm col-sm-4">Properties</label>
+
+
                  <br></br>
                  <div class="form-group clearfix">
-                    <div class="col-sm-5"><input type="text" class="form-control" ng-model="key" placeholder="key"></div>
-                    <div class="col-sm-6"><input type="text" class="form-control" ng-model="value" placeholder="value"></div>
+                    <label id="labelLeft" class="control-label optionForm col-sm-2">Credentials</label>
+                    <div class="col-sm-4"><input type="text" class="form-control" ng-model="username" placeholder="username"></div>
+                    <div class="col-sm-5"><input type="password" class="form-control" ng-model="password" placeholder="password"></div>
+                 </div>
+
+                 <br></br>
+                 <div class="form-group clearfix">
+                   <label class="control-label optionForm col-sm-2">Properties</label>
+                    <div class="col-sm-4"><input type="text" class="form-control" ng-model="key" placeholder="key"></div>
+                    <div class="col-sm-4"><input type="text" class="form-control" ng-model="value" placeholder="value"></div>
                     <button class="btn btn-default" id="fabuttonplus" ng-click="addParameter()"><i class="fa fa-plus"></i></button>
                  </div>
                  <div ng-repeat="(key,param) in service.properties">
                     <div class="form-group clearfix">
-                       <div class="col-sm-5"><strong>{{key}}</strong></div>
-                       <div class="col-sm-6">{{param}}</div>
-                       <a class="close" ng-click="removeParameter(key)">×</a>
+                       <div class="col-sm-offset-2 col-sm-4"><strong>{{key}}</strong></div>
+                       <div class="col-sm-4">{{param}}</div>
+                       <div class="col-sm-1"><a class="close pull-left" ng-click="removeParameter(key)">×</a></div>
                     </div>
                  </div>
-                 <label id="labelLeft" class="control-label optionForm col-sm-4">Credentials</label>
-                 <br></br>
-                 <div class="form-group clearfix">
-                    <div class="col-sm-5"><input type="text" class="form-control" ng-model="username" placeholder="username"></div>
-                    <div class="col-sm-6"><input type="password" class="form-control" ng-model="password" placeholder="password"></div>
-                 </div>
+
+
+               </div>
+             </form>
+                 <div id="panelPagination" class="panel-footer">
+               <div class="row">
                  <div class="form-group">
-                    <div id="btnspace" class="col-sm-offset-4 col-sm-8">
-                       <button type="button" class="btn btn-danger" type="reset" value="Reset">Cancel</button>
-                       <button type="submit" class="btn btn-success" data-ng-click="run()">Run</button>
+                    <div id="btnspace" >
+                       <button type="button" class="btn btn-danger pull-left" type="reset" value="Reset" onclick="resetFunction();">
+                         <i class="fa fa-ban" aria-hidden="true"></i> Cancel</button>
+                       <button type="submit" class="btn btn-primary pull-right" data-ng-click="run()">
+                         <i class="fa fa-play-circle" aria-hidden="true"></i> Run</button>
                     </div>
                  </div>
-                 </form>
+               </div>
+             </div>
+                </div>
                  <div class="row">
                     <h2>Output</h2>
                     <textarea id="outputArea" class="form-control" rows="10" cols="50" readonly>{{output}}</textarea>
                  </div>
-              </div>
-           </div>
+
       </div>
    </div>
-</div>

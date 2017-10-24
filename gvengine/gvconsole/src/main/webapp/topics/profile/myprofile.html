@@ -4,42 +4,85 @@
 			<span id="profileName">{{globals.currentUser.username}}</span>!
 		</h1>
 		<div data-ng-repeat="alert in ctrl.alerts" class="fadeout2 alert alert-{{alert.type}}" role="alert" data-ng-class="{'off': error==true}">{{alert.msg}}</div>
-		<hr>
-			<h3>Your roles are:</h3>
-			<div id="rolesP">
-				<p data-ng-repeat="role in globals.currentUser.roles">{{role.name}}</p>
-			</div>
-			<div>
-				<h3>If you want to change password click the button below</h3>
-				<button type="button" class="btn btn-primary" id="myBtn">Change Password</button>
-				<div id="myModal" class="modal fadeout">
-					<div class="modal-content">
-						<form name="renewForm" data-ng-submit="changePassword()">
-							<h4>Set new password</h4>
-							<div data-ng-repeat="alert in ctrl.alerts" class="fadeout2 alert alert-{{alert.type}}" role="alert" data-ng-class="{'off': error==false}">{{alert.msg}}</div>
-							<div id="setNewPassword" class="input-group">
-								<span class="input-group-addon">
-									<i class="fa fa-key fa-fw"></i>
-								</span>
-								<input class="form-control" type="password" placeholder="Old Password" name="j_password" data-ng-model="oldPassword" required>
-								</div>
-								<div id="setNewPassword" class="input-group">
-									<span class="input-group-addon">
-										<i class="fa fa-key fa-fw"></i>
-									</span>
-									<input class="form-control" type="password" placeholder="New Password" data-ng-model="newPassword" name="new_password" pattern="(?=^.{4,28}$)^[a-zA-Z0-9._@&$#!?-]+$" required>
-									</div>
-									<span class="help-block small">
-                         Length: min 4, max 28
-										<br> Valid chars: a-z A-Z 0-9 &#46; &#95; &#64; &amp; &#36; &#35; &#33; &#63; &#45; (no white space)
 
-										</span>
-										<button type="button" class="btn exite">Back</button>
-										<button type="submit" id="prova" class="btn btn-success" data-ng-disabled="renewForm.new_password.$invalid">Confirm</button>
-									</form>
+						<!-- Prova Style -->
+						<div class="panel panel-default" style="overflow-x:auto; font-size:15px">
+							<div class="panel-heading">
+								<i class="fa fa-user" aria-hidden="true"></i> Profile
+							</div>
+							<div class="panel panel-body container-fluid">
+								<div class="col-sm-12">
+									<label id="labelLeft" class="control-label optionForm col-sm-2">Username:</label>
+									<p class="col-sm-2">{{globals.currentUser.username}}</p>
+								</div>
+								<div class="col-sm-12">
+									<label id="labelLeft" class="control-label optionForm col-sm-2">Full Name:</label>
+									<p class="col-sm-2">{{globals.currentUser.userInfo.fullname}}</p>
+								</div>
+								<div class="col-sm-12">
+									<label id="labelLeft" class="control-label optionForm col-sm-2">E-Mail:</label>
+									<p class="col-sm-2">{{globals.currentUser.userInfo.email}}</p>
 								</div>
 							</div>
-							<script type="text/javascript" src="scripts/delete_wind.js"></script>
+							<table id="users" class="table table-hover">
+		            <thead>
+		              <tr>
+		                <th>Role Name</th>
+		                <th>Description</th>
+		              </tr>
+		            </thead>
+		            <tbody>
+
+
+		              <tr data-ng-repeat="role in globals.currentUser.roles">
+		                <td style="color:#961e24">{{role.name}}</td>
+		                <td style="color:#238650">{{role.description}}</td>
+		              </tr>
+
+
+		            </tbody>
+		          </table>
+							<div class="panel-footer clearfix" style="text-align: center;">
+								<a onClick="slide();" class="btn btn-warning pull-right">Modify</a>
+								<button type="button" class="btn btn-primary pull-right" style="margin-right:10px" id="myBtn">Change Password</button>
 						</div>
+
+					</div>
+
+						<!-- Prova Style -->
+						<div class="col-md-12">
+							<div id="myModal" class="modal fadeout">
+								<div class="modal-content">
+									<form name="renewForm" data-ng-submit="changePassword()">
+										<h4>Set new password</h4>
+										<div data-ng-repeat="alert in ctrl.alerts" class="fadeout2 alert alert-{{alert.type}}" role="alert" data-ng-class="{'off': error==false}">{{alert.msg}}</div>
+										<div id="setNewPassword" class="input-group">
+											<span class="input-group-addon">
+												<i class="fa fa-key fa-fw"></i>
+											</span>
+											<input class="form-control" type="password" placeholder="Old Password" name="j_password" data-ng-model="oldPassword" required>
+											</div>
+											<div id="setNewPassword" class="input-group">
+												<span class="input-group-addon">
+													<i class="fa fa-key fa-fw"></i>
+												</span>
+												<input class="form-control" type="password" placeholder="New Password" data-ng-model="newPassword" name="new_password" pattern="(?=^.{4,28}$)^[a-zA-Z0-9._@&$#!?-]+$" required>
+												</div>
+												<span class="help-block small">
+			                         Length: min 4, max 28
+													<br> Valid chars: a-z A-Z 0-9 &#46; &#95; &#64; &amp; &#36; &#35; &#33; &#63; &#45; (no white space)
+
+													</span>
+													<button type="button" class="btn exite">Back</button>
+													<button type="submit" id="prova" class="btn btn-success" data-ng-disabled="renewForm.new_password.$invalid">Confirm</button>
+												</form>
+											</div>
+										</div>
+
+
+
+
+										<script type="text/javascript" src="scripts/delete_wind.js"></script>
+									</div>
 					</div>
 				</div>

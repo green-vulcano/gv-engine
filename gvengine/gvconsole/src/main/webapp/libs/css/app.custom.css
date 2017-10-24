@@ -2,11 +2,57 @@ html {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 1.5em;
 }
+.positioninline {
+  display: inline-block;
+}
+#btnProp{
+  margin-top: 10px;
+}
+#areaProperties {
+  height: 900px;
+}
+.back-to-top {
+    color: #000;
+    cursor: pointer;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display:none;
+}
+.back-to-top:hover{
+    color: #737373;
+}
 body {
   background-color: #efefef;
   line-height: 1.42857143;
-  margin-bottom: 5%;
+  background: -webkit-linear-gradient(left, #efefef , rgb(255, 255, 255));
+  background: -o-linear-gradient(right, #efefef , rgb(255, 255, 255));
+  background: -moz-linear-gradient(right, #efefef , rgb(255, 255, 255));
+  background: linear-gradient(to right, #efefef , rgb(255, 255, 255));
 }
+.fieldset-xmlconfig
+	{
+		border: 1px solid #000 !important;
+		margin: 10px;
+		xmin-width: 0;
+		padding: 10px;
+		position: relative;
+		border-radius:4px;
+		background-color:#f5f5f5;
+		padding-left:10px!important;
+	}
+legend
+		{
+			font-size:14px;
+			font-weight:bold;
+			margin-bottom: 0px;
+			width: 35%;
+      color: #fff;
+			border: 1px solid #000;
+			border-radius: 4px;
+			padding: 5px 5px 5px 10px;
+			background-color: #4982ad;
+		}
 .name{
  vertical-align: middle;
 }
@@ -23,6 +69,7 @@ body {
 }
 .modal-backdrop {
   position: relative;
+  display: none;
 }
 .padding-box{
   margin-bottom: 18px;
@@ -98,17 +145,16 @@ body {
 .input-group-btn {
     z-index: 0;
 }
-#panelPagination {
-  color: #fff;
-  background-color: #238650;
-  font-size: 1.05em;
-}
 #setNewPassword {
   margin-bottom: 1.25em;
 }
 #buttonInfo{
   text-align: var(3.12px);
+  margin-bottom: 10px;
 
+}
+#demo {
+  text-align: left;
 }
 #newrole {
     z-index: 0;
@@ -136,9 +182,6 @@ body {
 #panelHead {
   line-height: 2.12em;
   vertical-align: middle;
-}
-#actionTable {
-  width: 10%;
 }
 
 #addTableButton {
@@ -170,6 +213,17 @@ body {
 }
 /******* End Nav-bar Style *******/
 
+.rotate{
+    -moz-transition: all 0.3s linear;
+    -webkit-transition: all 0.3s linear;
+    transition: all 0.3s linear;
+}
+
+.rotate.down{
+    -moz-transform:rotate(180deg);
+    -webkit-transform:rotate(180deg);
+    transform:rotate(180deg);
+}
 
 /******* Start Nav-bar Option Style *******/
 #optionMenu {
@@ -190,11 +244,26 @@ thead {
 }
 .panel-default {
     border-color: #e7e7e7;
+    border-radius: 6px;
 }
 .panel-default>.panel-heading {
     color: #fff;
     background-color: #238650;
     font-size: 1.12em;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    background: -webkit-linear-gradient(left, #238650 , rgba(35, 134, 80, 0.56));
+    background: -o-linear-gradient(right, #238650 , rgba(35, 134, 80, 0.56));
+    background: -moz-linear-gradient(right, #238650 , rgba(35, 134, 80, 0.56));
+    background: linear-gradient(to right, #238650 , rgba(35, 134, 80, 0.56));
+}
+.panel-default>.panel-footer {
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+  background: -webkit-linear-gradient(left, #efefef , rgb(255, 255, 255));
+  background: -o-linear-gradient(right, #efefef , rgb(255, 255, 255));
+  background: -moz-linear-gradient(right, #efefef , rgb(255, 255, 255));
+  background: linear-gradient(to right, #efefef , rgb(255, 255, 255));
 }
 /******* End Panel Style *******/
 
@@ -278,6 +347,7 @@ thead {
     border-right: 0;
     overflow: unset;
     z-index: 2;
+
   }
   .side-menu .brand-name-wrapper .navbar-brand {
     display: inline-block;
@@ -470,7 +540,7 @@ thead {
     text-align: center;
     padding: 20px;
     border: 1px solid #888;
-    width: 40%;
+    width: 50%;
 }
 
 /******* End Delete Confirm Window Style ******/
@@ -518,3 +588,134 @@ thead {
 	vertical-align:middle;
 }
 /********* END XML Viewer *********/
+    .wizard .nav-tabs {
+        position: relative;
+        margin-bottom: 0;
+        border-bottom-color: #e0e0e0;
+    }
+
+    .wizard > div.wizard-inner {
+        position: relative;
+    }
+
+.connecting-line {
+    height: 2px;
+    background: #e0e0e0;
+    position: absolute;
+    width: 70%;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    top: 50%;
+    z-index: 1;
+}
+
+.wizard .nav-tabs > li.active > a, .wizard .nav-tabs > li.active > a:hover, .wizard .nav-tabs > li.active > a:focus {
+    color: #555555;
+    cursor: default;
+    border: 0;
+    border-bottom-color: transparent;
+}
+
+span.round-tab {
+    width: 70px;
+    height: 70px;
+    line-height: 70px;
+    display: inline-block;
+    border-radius: 100px;
+    background: #fff;
+    border: 2px solid #e0e0e0;
+    z-index: 2;
+    position: absolute;
+    left: 0;
+    text-align: center;
+    font-size: 25px;
+}
+span.round-tab i{
+    color:#555555;
+}
+.wizard li.active span.round-tab {
+    background: #fff;
+    border: 2px solid #288954;
+
+}
+.wizard li.active span.round-tab i{
+    color: #288954;
+}
+
+span.round-tab:hover {
+    color: #333;
+    border: 2px solid #333;
+}
+
+
+.wizard li:after {
+    content: " ";
+    position: absolute;
+    left: 46%;
+    opacity: 0;
+    margin: 0 auto;
+    bottom: 0px;
+    border: 5px solid transparent;
+    border-bottom-color: #288954;
+    transition: 0.1s ease-in-out;
+}
+
+.wizard li.active:after {
+    content: " ";
+    position: absolute;
+    left: 46%;
+    opacity: 1;
+    margin: 0 auto;
+    bottom: 0px;
+    border: 10px solid transparent;
+    border-bottom-color: #288954;
+}
+
+.wizard .nav-tabs > li a {
+    width: 70px;
+    height: 70px;
+    margin: 20px auto;
+    border-radius: 100%;
+    padding: 0;
+}
+
+    .wizard .nav-tabs > li a:hover {
+        background: transparent;
+    }
+
+.wizard .tab-pane {
+    position: relative;
+    padding-top: 50px;
+}
+
+.wizard h3 {
+    margin-top: 0;
+}
+
+@media( max-width : 585px ) {
+
+    .wizard {
+        width: 90%;
+        height: auto !important;
+    }
+
+    span.round-tab {
+        font-size: 16px;
+        width: 50px;
+        height: 50px;
+        line-height: 50px;
+    }
+
+    .wizard .nav-tabs > li a {
+        width: 50px;
+        height: 50px;
+        line-height: 50px;
+    }
+
+    .wizard li.active:after {
+        content: " ";
+        position: absolute;
+        left: 35%;
+    }
+}

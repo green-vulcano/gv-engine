@@ -2,10 +2,10 @@
 <div class="side-body">
    <h1>Scheduling</h1>
    <div class="row" data-ng-controller="ScheduleListController as ctrl">
-      <div data-ng-repeat="alert in ctrl.alerts" class="alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
+      <div id="fadeout" data-ng-repeat="alert in ctrl.alerts" class="fadeout alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
       <div class="panel panel-default">
          <div id="panelHead" class="panel-heading">
-            <i class="fa fa-calendar-check-o"></i>Schedule Found: {{ctrl.list.length}}
+            <i class="fa fa-calendar-check-o"></i> Schedule Found: {{ctrl.list.length}}
             <a href="#/schedule/add" onClick="slide();" class="btn btn-primary pull-right" data-ng-class="{'btn btn-primary pull-right disabled': dataNa == true || auth != true}">
             <i class="fa fa-calendar-plus-o"></i> Add New Schedule
             </a>
@@ -39,8 +39,8 @@
                    <div id="myModal" class="modal fadeout">
                      <div class="modal-content">
                        <h4> Are you sure to delete this schedule ? </h4>
-                       <button type="button" class="btn" data-dismiss="modal">Back</button>
-                       <button type="button" class="btn btn-success" data-ng-click="ctrl.delete(id)">Confirm</button>
+                       <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button>
+                       <button type="button" class="btn btn-danger" data-ng-click="ctrl.delete(id)"><i class="fa fa-trash" aria-hidden="true"></i> Confirm</button>
                      </div>
                    </div>
                   </td>

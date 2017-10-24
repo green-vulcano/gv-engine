@@ -1,16 +1,22 @@
 <div class="container-fluid">
 <div class="side-body">
   <div data-ng-controller = "PropertiesController">
-   <h1>Modify File Properties</h1>
+   <h1>File Properties</h1>
+<div class="panel panel-default">
+   <div class="panel-heading clearfix">
+      <i class="fa fa-file-code-o" aria-hidden="true"></i> File Viewer
+   </div>
+       <div class="panel-body">
+      <textarea id="areaProperties" class="form-control col-md-10" rows="25" >{{propertiesFile}}</textarea>
+    </div>
 
-	<textarea id="areaProperties" ng-model="propertiesFile" class="form-control" rows="25"></textarea>
-
-	<div>
-    <a id="btnProp" href="#/properties" onClick="slide();" ng-click="save()" class="btn btn-success pull-right">Save
+	<div class="panel-footer clearfix">
+    <a href="#/properties" onClick="slide();" ng-click="save();" class="btn btn-success pull-right">Save
     </a>
-    <a id="btnProp" href="#/properties" onClick="slide();" class="btn btn-danger pull-left">Back
+    <a href="#/properties" onClick="slide();" class="btn btn-danger pull-left">Back
     </a>
 	</div>
   </div>
+</div>
 </div>
 </div>

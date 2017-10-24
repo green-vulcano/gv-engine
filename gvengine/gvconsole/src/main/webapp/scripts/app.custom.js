@@ -7,9 +7,12 @@ angular.module('gvconsole', ['ngCookies','ngRoute','angular-quartz-cron', 'ui.bo
 	    $routeProvider.
 	      when('/login', {
 	        templateUrl: 'topics/auth/login.html'
-	        }).
+	      }).
     		when('/config', {
     			templateUrl: 'topics/config/console.html'
+    		}).
+    		when('/config/deploy/:newConfigId', {
+    			templateUrl: 'topics/config/deploy.html'
     		}).
     		when('/schedule', {
     			templateUrl: 'topics/schedule/list.html'
@@ -20,30 +23,112 @@ angular.module('gvconsole', ['ngCookies','ngRoute','angular-quartz-cron', 'ui.bo
     		when('/users', {
     			templateUrl: 'topics/users/list.html'
     		}).
-            when('/users/:userId', {
+        when('/users/:userId', {
           templateUrl: 'topics/users/form.html'
-            }).
-			when('/myprofile', {
+        }).
+				when('/myprofile', {
           templateUrl: 'topics/profile/myprofile.html'
-            }).
-			when('/monitoring', {
-				templateUrl: 'topics/monitoring/monitoring.html'
-			}).
-			when('/testing', {
-				templateUrl: 'topics/flow/test.html'
-			}).
-            when('/properties', {
-				templateUrl: 'topics/properties/properties.html'
-			}).
-			when('/properties/modify', {
-				templateUrl: 'topics/properties/modify.html'
-			}).
-            otherwise({
-	            redirectTo: '/myprofile'
-	        });
+        }).
+				when('/monitoring', {
+					templateUrl: 'topics/monitoring/monitoring.html'
+				}).
+				when('/dashboard', {
+					templateUrl: 'topics/dashboard/dashboard.html'
+				}).
+				when('/testing', {
+					templateUrl: 'topics/flow/test.html'
+				}).
+				when('/properties', {
+					templateUrl: 'topics/properties/prop.html'
+				}).
+				when('/properties/modify', {
+					templateUrl: 'topics/properties/modify.html'
+				}).
+				when('/xmlconfig', {
+					templateUrl: 'topics/xml/config.html'
+				}).
+          otherwise({
+    	        redirectTo: '/myprofile'
+    	  });
 }])
 .run(['$rootScope', '$location', '$cookieStore', '$http',
     function ($rootScope, $location, $cookieStore, $http) {
+
+			(function ($) {
+			    $.fn.floatLabels = function (options) {
+
+			        // Settings
+			        var self = this;
+			        var settings = $.extend({}, options);
+
+
+			        // Event Handlers
+			        function registerEventHandlers() {
+			            self.on('input keyup change', 'input, textarea', function () {
+			                actions.swapLabels(this);
+			            });
+			        }
+
+
+			        // Actions
+			        var actions = {
+			            initialize: function() {
+			                self.each(function () {
+			                    var $this = $(this);
+			                    var $label = $this.children('label');
+			                    var $field = $this.find('input,textarea').first();
+
+			                    if ($this.children().first().is('label')) {
+			                        $this.children().first().remove();
+			                        $this.append($label);
+			                    }
+
+			                    var placeholderText = ($field.attr('placeholder') && $field.attr('placeholder') != $label.text()) ? $field.attr('placeholder') : $label.text();
+
+			                    $label.data('placeholder-text', placeholderText);
+			                    $label.data('original-text', $label.text());
+
+			                    if ($field.val() == '') {
+			                        $field.addClass('empty')
+			                    }
+			                });
+			            },
+			            swapLabels: function (field) {
+			                var $field = $(field);
+			                var $label = $(field).siblings('label').first();
+			                var isEmpty = Boolean($field.val());
+
+			                if (isEmpty) {
+			                    $field.removeClass('empty');
+			                    $label.text($label.data('original-text'));
+			                }
+			                else {
+			                    $field.addClass('empty');
+			                    $label.text($label.data('placeholder-text'));
+			                }
+			            }
+			        }
+
+
+			        // Initialization
+			        function init() {
+			            registerEventHandlers();
+
+			            actions.initialize();
+			            self.each(function () {
+			                actions.swapLabels($(this).find('input,textarea').first());
+			            });
+			        }
+			        init();
+
+
+			        return this;
+			    };
+
+			    $(function () {
+			        $('.float-label-control').floatLabels();
+			    });
+			})(jQuery);
       // keep user logged in after page refresh
       $rootScope.globals = $cookieStore.get('globals') || {};
       if ($rootScope.globals.currentUser) {
@@ -59,6 +144,10 @@ angular.module('gvconsole', ['ngCookies','ngRoute','angular-quartz-cron', 'ui.bo
 
       $rootScope.go = function(path) {
 		    $location.path(path);
+	  };
+
+      $rootScope.getUser = function(username){
+		  	$rootScope.user = username;
 	  };
 
       $rootScope.routeIsIn = function(route){
@@ -77,10 +166,22 @@ angular.element(document).ready(function() {
       angular.element('.side-body').toggleClass('body-slide-in');
   });
 });
+function resetFunction() {
+document.getElementById("prova2").reset();
+};
 function slideButtonMenu(){
 	var width = angular.element(window).width();
 	if(width <= 768){
       angular.element('.navbar-nav').toggleClass('slide-in');
       angular.element('.side-body').toggleClass('body-slide-in');
 		};
+};
+function topFunction() {
+angular.element('#back-to-top').click(function () {
+		angular.element('#back-to-top').tooltip('hide');
+		angular.element('body,html').animate({
+				scrollTop: 0
+		}, 800);
+		return false;
+});
 };

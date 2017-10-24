@@ -43,6 +43,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
+import org.apache.commons.io.IOUtils;
 import org.apache.karaf.config.core.ConfigRepository;
 import org.osgi.framework.InvalidSyntaxException;
 import org.slf4j.Logger;
@@ -142,7 +144,7 @@ public class BaseConfigurationManager implements GVConfigurationManager {
 				
 				if (zipEntry.getName().equals(entry)) {
 					byte[] entryData = new byte[Long.valueOf(zipEntry.getSize()).intValue()];
-					configurationArchive.read(entryData);
+					IOUtils.readFully(configurationArchive, entryData);
 					return entryData;
 				}
 			}

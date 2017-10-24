@@ -1,6 +1,7 @@
-<div class="container" data-ng-controller="LoginController">
+<div>
+<div class="container" data-ng-controller="LoginController" >
    <div class="row">
-      <div class="col-md-6 col-md-offset-3 text-center m-t-xl">
+      <div class="col-md-6 col-md-offset-3 text-center m-t-xl" >
          <img id="loginLogo" src="assets/logo.png" />
          <h3>Web interface for development</h3>
          <form name="loginForm" class="form" data-ng-submit="login()" role="form" data-ng-hide="expired" style="margin-top: 64px">
@@ -35,10 +36,10 @@
                   data-ng-disabled="renewForm.new_password.$invalid || dataLoading">Confirm</button>
             </div>
          </form>
+            <div id="error-message" class="alert alert-danger" role="alert"
+               data-ng-show="error">{{errorMessage}}</div>
       </div>
-      <div class="col-sm-6 col-sm-offset-3 " style="margin-top: 32px">
-         <div id="error-message" class="alert alert-danger" role="alert"
-            data-ng-show="error">{{errorMessage}}</div>
-      </div>
+
    </div>
+</div>
 </div>

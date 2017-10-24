@@ -22,6 +22,7 @@ package it.greenvulcano.gvesb.api.controller;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -155,7 +156,7 @@ public class GvConfigurationControllerRest {
 		 
 			try {
 				 byte[] gvcore = gvConfigurationManager.extract(id, "GVCore.xml");
-				 document =  XMLUtils.parseDOM_S(gvcore, false, false, false);;
+				 document =  XMLUtils.parseDOM_S(gvcore, false, false, false);
 			} catch (XMLUtilsException e) {
 				if (e.getCause() instanceof FileNotFoundException) {
 					throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity("<error><![CDATA[File not found: "+id+"/GVCore.xml]]></error>").build());
@@ -195,7 +196,6 @@ public class GvConfigurationControllerRest {
 				 while(m.find()) {
 					properties.put(m.group(1));
 				 }
-				 
 				 response = Response.ok(properties.toString()).build();
 			 }
 		 } catch (Exception e) {

@@ -39,6 +39,7 @@ angular.module('gvconsole')
 angular.module('gvconsole')
 .controller('FlowController', [ 'Base64', 'ConfigService', 'FlowService', '$scope', function(Base64, ConfigService, FlowService, $scope){
 
+		
     $scope.operations = [];
     $scope.service = {};
 

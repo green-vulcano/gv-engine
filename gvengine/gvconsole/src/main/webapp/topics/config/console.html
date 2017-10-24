@@ -6,13 +6,11 @@
    <div id="fadeout" data-ng-repeat="alert in ctrl.alerts" class="fadeout alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
    <!-- FadeOut Function -->
       <form id="deployForm" name="deployForm" class="form-horizontal"
-         data-ng-submit="ctrl.deployConfiguration()">
+         data-ng-submit="ctrl.addConfiguration()">
         <fieldset id="myFieldset">
          <div class="panel panel-default">
             <div class="panel-heading clearfix">
-               <h4 class="panel-title pull-left" style="line-height: 34px; vertical-align: middle">
                   <i class="fa fa-sitemap fa-rotate-270"></i> New configuration
-               </h4>
             </div>
             <div class="panel-body">
                <div class="form-group">
@@ -36,7 +34,7 @@
                   <button type="submit" class="btn btn-success"
                      data-ng-hide="downloadInProgress"
                      data-ng-disabled="deployForm.$invalid || !(ctrl.deploy.configfile)">
-                  <i class="fa fa-bolt"></i> Deploy</button>
+                  <i class="fa fa-plus"></i> Add</button>
                </div>
             </div>
          </div>
@@ -44,9 +42,7 @@
       </form>
       <div class="panel panel-default">
          <div class="panel-heading clearfix">
-            <h4 class="panel-title pull-left" style="line-height: 34px; vertical-align: middle">
-               <i class="fa fa-sitemap fa-rotate-270"></i> Current
-            </h4>
+               <i class="fa fa-sitemap fa-rotate-270"></i> Current/Configuration list
          </div>
          <div class="panel-body">
             <div class="col-sm-8 col-sm-offset-2">
@@ -56,27 +52,56 @@
                </h2>
             </div>
          </div>
-         <div class="panel-footer clearfix" style="text-align: center">
+         <div class="panel-footer clearfix" style="text-align: center; border-bottom: 1px solid #ddd;border-radius:0px">
             <div class="pull-right">
                <img data-ng-show="exportInProgress"
                   src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
                <a id="export" data-ng-hide="exportInProgress" ng-click="ctrl.exportConfig()" class="btn btn-primary"><i class="fa fa-download"></i> Export</a>
             </div>
          </div>
+         <table id="users" class="table table-hover">
+           <thead>
+             <tr>
+               <th>Id</th>
+               <th>Date</th>
+               <th class="text-right">Action</th>
+             </tr>
+           </thead>
+           <tbody>
+
+
+             <tr data-ng-repeat="config in ctrl.history">
+               <td>{{config.id}}</td>
+               <td>{{config.time | date : 'd MMMM yyyy H:mm:ss'}}</td>
+               <td class="text-right">
+                 <button onClick="slide();" type="button" class="btn btn-success" data-ng-click="go('/config/deploy/' + config.id)"><i class="fa fa-bolt"></i> Deploy</button>
+                 <button onClick="slide();" type="button" class="btn btn-danger" data-toggle="modal" data-target="#myModal"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+                 <div id="myModal" class="modal fadeout">
+                   <div class="modal-content">
+                     <h4> Are you sure to delete {{config.id}} ? </h4>
+                     <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button>
+                     <button type="button" class="btn btn-danger" data-ng-click="ctrl.delete()"><i class="fa fa-trash" aria-hidden="true"></i> Confirm</button>
+                   </div>
+                 </div>
+               </td>
+             </tr>
+
+
+           </tbody>
+         </table>
       </div>
-      <div class="panel panel-default">
-        <div class="panel-heading clearfix">
-          <h4 class="panel-title pull-left" style="line-height: 34px; vertical-align: middle" data-toggle="collapse">
-             <i class="fa fa-sitemap fa-rotate-270"></i> Configuration files
-          </h4>
+      <div class="panel panel-default" >
+        <div id="panelHead" class="panel-heading">
+            <i class="fa fa-sitemap fa-rotate-270"></i> Configuration files
+          <button ng-repeat="(id,file) in filesName" id="xml-button" type="button" class="btn btn-primary pull-right" data-toggle="collapse" data-target="#{{id}}" style="margin-right:5px">{{file}}</button>
         </div>
-          <div ng-repeat="(id,file) in filesName">
-            <button type="button" class="btn btn-success" data-toggle="collapse" data-target="#{{id}}">{{file}}</button>
+          <div class="positioninline pnael-body" ng-repeat="(id,file) in filesName">
              <div id="{{id}}" class="collapse">
-               <pre id="{{file}}"> </pre>
+               <span class="col-md-10" id="{{file}}" style="overflow: auto;"> </span>
              </div>
           </div>
       </div>
+      <a id="back-to-top" onclick="topFunction()" class="back-to-top" role="button" data-placement="left"><span class="fa fa-chevron-up fa-2x"></span></a>
    </div>
 </div>
 </div>

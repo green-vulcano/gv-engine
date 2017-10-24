@@ -24,7 +24,7 @@ angular.module('gvconsole')
 		}
 
 		this.getConfigInfo = function() {
-			return $http.get(Endpoints.gvconfig+'/deploy')
+			return $http.get(Endpoints.gvconfig + '/deploy')
 		}
 
 		this.deploy = function(config, id){
@@ -45,32 +45,68 @@ angular.module('gvconsole')
 			});
 		}
 
-    this.getConfigFiles = function(){
-      return $http.get(Endpoints.gvconfig + '/configuration');
-    }
-
-    this.getConfigFile = function(fileName){
-      return $http.get(Endpoints.gvconfig + '/configuration/' + fileName);
-    }
+	    this.getConfigHistory = function(){
+	      return $http.get(Endpoints.gvconfig + '/configuration/');
+	    }
+	    
+	    this.getConfigFiles = function(){
+	      return $http.get(Endpoints.gvconfig + '/configuration');
+	     }
+	    
+	    /*this.getConfigFile = function(fileName){
+		  return $http.get(Endpoints.gvconfig + '/configuration/' + fileName);
+		 }
+	    
+	    this.addConfigFile = function(fileName){
+	      return $http.post(Endpoints.gvconfig + '/configuration/' + fileName,{headers: {'Content-Type':'application/json'} });
+	    }*/
+	
+	    this.getGVCore = function(id){
+	      return $http.get(Endpoints.gvconfig + '/configuration/' + id + '/GVCore.xml');	
+	    }
+	    
+	    this.getProperties = function(id){
+	      return $http.get(Endpoints.gvconfig + '/configuration/' + id + '/properties');
+	    }
 
  }]);
 
 angular.module('gvconsole')
-.controller('ConfigController',['ConfigService' ,'$scope', '$rootScope', '$location', function(ConfigService, $scope, $rootScope, $location){
+.controller('ConfigController',['ConfigService' ,'$scope', '$rootScope', '$location', '$routeParams', function(ConfigService, $scope, $rootScope, $location, $routeParams){
 
   if($rootScope.globals.currentUser.isAdministrator || $rootScope.globals.currentUser.isConfigManager){
-    document.getElementById("myFieldset").disabled = false;
+    angular.element("myFieldset").disabled = false;
   }
 
+  	$scope.newDeploy = null;
+  
 	var instance = this;
 
 	this.alerts = [];
 
-	this.services = {};
+	//this.services = {}; inutile?
 
 	this.configInfo = {};
 
 	this.deploy = {};
+	
+	$scope.configHistory = [{"id":"id1", "time":"time1"},{"id":"id2","time":"time2"}]; // questo poi toglierlo e richiamare l'api
+	
+	var instance = this;
+	this.history = [];
+	
+	ConfigService.getConfigHistory().then(function(response){
+		instance.history = response.data;
+		},function(response){
+		console.log("error: " + error);
+		});
+	
+	this.addConfiguration = function(){
+		
+		ConfigService.addConfigFile(instance.deploy.id);
+		//aggiungere avviso "alert" per "aggiunta avvenuta con successo" tramite il response?
+		
+	}	
 
 	this.deployConfiguration = function (){
 
@@ -156,17 +192,72 @@ angular.module('gvconsole')
 			});
 
 	}
- //XML Viewer
-  ConfigService.getConfigFiles().then(
-    function(response){
-      $scope.filesName = response.data;
-      angular.forEach($scope.filesName,function(value,key){
-        ConfigService.getConfigFile(value).then(
-          function(response){
-            LoadXMLString(value, response.data);
-          });
-      })
-  });
-
 
 }]);
+
+angular.module('gvconsole')
+.controller('ConfigDeployController',['ConfigService','$routeParams','$scope',function(ConfigService, $routeParams, $scope){
+	
+	$scope.newConfigId = $routeParams.newConfigId;
+	
+	ConfigService.getConfigInfo()
+		.then(function(response){
+			
+		ConfigService.getGVCore(response.data.id).then(
+			       function(response){
+			        $scope.currentGVCore = response.data;
+			     },function(response){
+			        console.log("error: " + response.data);
+			     });
+		
+		},function(response){
+			console.log("error: " + reponse.data);
+	});
+	
+	ConfigService.getGVCore($scope.newConfigId)
+		.then(function(response){
+			$scope.newGVCore = response.data;
+		},function(response){
+			console.log("error: " + response.data);
+	});
+	
+	$scope.step = 0;
+
+	  $scope.changeStep = function()  {
+	    if ($scope.step != 0111 && $scope.step !=011 && $scope.step !=01) {
+	      $scope.step = 0
+	    }
+	    $scope.step = $scope.step + angular.element("#stepValue").val();
+	  }
+
+	  $scope.backStep = function()  {
+	    if ($scope.step == 01) {
+	      $scope.step = 0;
+	    } else {$scope.step = 01;}
+	  }
+	  
+	ConfigService.getProperties($scope.newConfigId)
+		.then(function(response){
+		console.log("id: " + $scope.newConfigId);
+		console.log("data: " + response.data);
+		$scope.keys = response.data;
+		},function(response){
+			console.log("error: " + response.data);
+		});	
+	
+}]);
+
+
+
+angular.element(document).ready(function(){
+     angular.element(window).scroll(function () {
+            if (angular.element(this).scrollTop() > 50) {
+                angular.element('#back-to-top').fadeIn();
+            } else {
+                angular.element('#back-to-top').fadeOut();
+            }
+        });
+
+
+});
+

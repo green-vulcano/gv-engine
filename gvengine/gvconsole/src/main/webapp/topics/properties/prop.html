@@ -1,0 +1,37 @@
+<div class="container-fluid">
+<div class="side-body">
+  <div data-ng-controller = "PropertiesController as ctrl">
+   <h1>File Properties</h1>
+   <div id="fadeout" data-ng-repeat="alert in ctrl.alerts" class="fadeout alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
+
+   <div class="panel panel-default">
+      <div class="panel-heading clearfix">
+         <i class="fa fa-list" aria-hidden="true"></i> Value Search
+      </div>
+          <div class="panel-body">
+            <label id="labelLeft" class="control-label optionForm col-sm-1">Key </label>
+            <div class="col-sm-3"><input type="text" class="form-control" ng-model="key" placeholder="Key"></div>
+            <label id="labelLeft" class="control-label optionForm col-sm-1 col-sm-offset-1">Value </label>
+            <div class="col-sm-5"><input type="text" class="form-control" value="{{value}}" disabled></div>
+       </div>
+       <div class="panel-footer clearfix">
+       <a ng-click="matchKey();" class="btn btn-primary pull-right"><i class="fa fa-search" aria-hidden="true"></i> Match</a>
+     </div>
+   </div>
+   <div class="panel panel-default">
+      <div class="panel-heading clearfix">
+         <i class="fa fa-file-code-o" aria-hidden="true"></i> File Viewer
+      </div>
+          <div class="panel-body">
+         <textarea id="areaProperties" class="form-control col-md-10" ng-model="propertiesFile" rows="25" readonly>{{propertiesFile}}</textarea>
+       </div>
+	<div class="panel-footer clearfix">
+    <a href="#/properties/modify" onClick="slide();" class="btn btn-warning pull-right">Modify
+    </a>
+	</div>
+</div>
+
+</div>
+  </div>
+</div>
+</div>
