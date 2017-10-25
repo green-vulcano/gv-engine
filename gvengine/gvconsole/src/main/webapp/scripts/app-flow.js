@@ -71,12 +71,9 @@ angular.module('gvconsole')
 
     $scope.run = function(){
 
-				console.log('username: ' + $scope.username);
-
 	      var auth;
 	      if($scope.username && $scope.password){
 	        auth = 'Basic ' +  Base64.encode($scope.username + ':' + $scope.password);
-					console.log('entrata');
 	      }
 
 

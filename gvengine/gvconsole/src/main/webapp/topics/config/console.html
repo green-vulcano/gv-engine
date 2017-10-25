@@ -6,7 +6,7 @@
    <div id="fadeout" data-ng-repeat="alert in ctrl.alerts" class="fadeout alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
    <!-- FadeOut Function -->
       <form id="deployForm" name="deployForm" class="form-horizontal"
-         data-ng-submit="ctrl.addConfiguration()">
+         data-ng-submit="ctrl.addConfig()">
         <fieldset id="myFieldset">
          <div class="panel panel-default">
             <div class="panel-heading clearfix">
@@ -75,12 +75,12 @@
                <td>{{config.time | date : 'd MMMM yyyy H:mm:ss'}}</td>
                <td class="text-right">
                  <button onClick="slide();" type="button" class="btn btn-success" data-ng-click="go('/config/deploy/' + config.id)"><i class="fa fa-bolt"></i> Deploy</button>
-                 <button onClick="slide();" type="button" class="btn btn-danger" data-toggle="modal" data-target="#myModal"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
-                 <div id="myModal" class="modal fadeout">
+                 <button onClick="slide();" type="button" class="btn btn-danger" data-toggle="modal" data-target="#myModal{{$index}}"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+                 <div id="myModal{{$index}}" class="modal fadeout">
                    <div class="modal-content">
                      <h4> Are you sure to delete {{config.id}} ? </h4>
                      <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button>
-                     <button type="button" class="btn btn-danger" data-ng-click="ctrl.delete()"><i class="fa fa-trash" aria-hidden="true"></i> Confirm</button>
+                     <button type="button" class="btn btn-danger" data-dismiss="modal" data-ng-click="ctrl.deleteConfig(config.id)"><i class="fa fa-trash" aria-hidden="true"></i> Confirm</button>
                    </div>
                  </div>
                </td>

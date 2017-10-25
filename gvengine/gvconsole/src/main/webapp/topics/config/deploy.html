@@ -59,8 +59,7 @@
 																<a href="#/config" type="button" class="btn btn-danger pull-left">Cancel</a>
 															</div>
 														</div>
-																												
-																<div class="tab-pane" role="tabpanel" id="step2">
+														<div class="tab-pane" role="tabpanel" id="step2">
 															<h2 style="text-align:center; margin:20px">Properties File</h2>
 
 															<div class="col-sm-12">
@@ -74,7 +73,7 @@
 											            <tbody>
 											              <tr data-ng-repeat="key in keys">
 											                <td>{{key}}</td>
-											                <td><input type="text" class="form-control">{{}}</input></td>
+											                <td><input type="text" class="form-control">{{}}</td>
 											              </tr>
 											            </tbody>
 											          </table>
@@ -84,11 +83,9 @@
 															<!-- <div class="col-sm-1"><button type="button" class="btn btn-default pull-left" data-toggle="tab" data-target="#step1" data-ng-click="backStep()">Back</button></div> -->
 															<a href="#/config" type="button" class="btn btn-danger pull-left">Cancel</a>
 														</div>
-														
-														
-														
+
 														<div class="tab-pane" role="tabpanel" id="complete">
-															<h3>Are you sure to change current configuration "{{currentConfigId}}" with configuration "{{newConfigId}}"?</h3>
+															<h3 style="text-align:center">Are you sure to change current configuration <span style="color:red">"{{currentConfigId}}"</span> <p>with configuration <span style="color:red">"{{newConfigId}}"</span>?</p></h3>
 															<a href="#/config" type="button" class="btn btn-success pull-right" data-toggle="tab" data-ng-click="changeStep()">Proceed</a>
 															<!-- <div class="col-sm-1"><button type="button" class="btn btn-default pull-left" data-toggle="tab" data-target="#step2" data-ng-click="backStep()">Back</button></div> -->
 															<a href="#/config" type="button" class="btn btn-danger pull-left">Cancel</a>

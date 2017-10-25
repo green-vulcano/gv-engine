@@ -61,6 +61,7 @@ angular.module('gvconsole')
 	      return $http.post(Endpoints.gvconfig + '/configuration/' + fileName,{headers: {'Content-Type':'application/json'} });
 	    }*/
 	
+	    
 	    this.getGVCore = function(id){
 	      return $http.get(Endpoints.gvconfig + '/configuration/' + id + '/GVCore.xml');	
 	    }
@@ -68,6 +69,21 @@ angular.module('gvconsole')
 	    this.getProperties = function(id){
 	      return $http.get(Endpoints.gvconfig + '/configuration/' + id + '/properties');
 	    }
+	    
+	    this.deleteConfig = function(id){
+	      return $http.delete(Endpoints.gvconfig + '/configuration/' + id, {headers: {'Content-Type': 'multipart/form-data'}});
+	    }
+	    
+	    this.addConfig = function(id,config){
+	    	var fd = new FormData();
+	        fd.append('gvconfiguration', config);
+
+	        return $http.post(Endpoints.gvconfig+'/configuration/'+id, fd, {
+	            transformRequest: angular.identity,
+	            headers: {'Content-Type': 'multipart/form-data'}
+	        });
+	    }   
+	    
 
  }]);
 
@@ -90,21 +106,28 @@ angular.module('gvconsole')
 
 	this.deploy = {};
 	
-	$scope.configHistory = [{"id":"id1", "time":"time1"},{"id":"id2","time":"time2"}]; // questo poi toglierlo e richiamare l'api
-	
 	var instance = this;
 	this.history = [];
 	
 	ConfigService.getConfigHistory().then(function(response){
 		instance.history = response.data;
+		console.log("history: " + response.data);
 		},function(response){
 		console.log("error: " + error);
 		});
 	
-	this.addConfiguration = function(){
+	this.addConfig = function(){
+		ConfigService.addConfig(instance.deploy.id,instance.deploy.configfile)
+			.then(function(response){
+			},function(response){
+				console.log("error: " + response.data);
+			});
 		
-		ConfigService.addConfigFile(instance.deploy.id);
-		//aggiungere avviso "alert" per "aggiunta avvenuta con successo" tramite il response?
+		ConfigService.getConfigHistory().then(function(response){
+			instance.history = response.data;
+			},function(response){
+			console.log("error: " + error);
+			});
 		
 	}	
 
@@ -190,10 +213,19 @@ angular.module('gvconsole')
 				$scope.exportInProgress = false;
 				instance.alerts.push({type: 'danger', msg: 'Configuration export failed'});
 			});
-
-	}
+		}
+	
+	this.deleteConfig = function(id){
+		ConfigService.deleteConfig(id)
+			.then(function(response){
+				instance.alerts.push({type: 'success', msg: 'Configuration deleted successfully'});
+			},function(response){
+				console.log("error: " + response.data);
+			})
+	};
 
 }]);
+
 
 angular.module('gvconsole')
 .controller('ConfigDeployController',['ConfigService','$routeParams','$scope',function(ConfigService, $routeParams, $scope){
@@ -238,15 +270,12 @@ angular.module('gvconsole')
 	  
 	ConfigService.getProperties($scope.newConfigId)
 		.then(function(response){
-		console.log("id: " + $scope.newConfigId);
-		console.log("data: " + response.data);
 		$scope.keys = response.data;
 		},function(response){
 			console.log("error: " + response.data);
-		});	
+		});
 	
 }]);
-
 
 
 angular.element(document).ready(function(){
