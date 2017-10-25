@@ -22,8 +22,9 @@ package it.greenvulcano.gvesb.api.controller;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipInputStream;
@@ -33,6 +34,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -227,6 +229,18 @@ public class GvConfigurationControllerRest {
 		 
 	 }
 	 
+	 @PUT
+	 @Path("/deploy")
+	 @RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
+	 public void reloadConfiguraiton(){
+		 try {
+			gvConfigurationManager.reload();
+		} catch (XMLConfigException e) {
+			 LOG.error("Export failed",e); 
+			 throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build());
+		}
+	 }
+	 
 	 @GET
 	 @Path("/deploy/export")
 	 @Produces(MediaType.APPLICATION_OCTET_STREAM)
@@ -291,7 +305,7 @@ public class GvConfigurationControllerRest {
 				throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity("<error><![CDATA[File not found: "+name+"]]></error>").build());
 			}
 			
-			LOG.error("File to retrieve configuration file "+name,e);			
+			LOG.error("Failed to retrieve configuration file "+name,e);			
 			throw new WebApplicationException(Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("<error><![CDATA["+e.getMessage()+"]]></error>").build());
 		}
 		 
@@ -300,6 +314,119 @@ public class GvConfigurationControllerRest {
 		return document;
 		 
 	 }
-	
+	 
+	 @GET
+	 @Path("/property")
+	 @Produces(MediaType.APPLICATION_JSON)
+	 @RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
+	 public Response getConfigProperties(){
+		 
+		 Response response = null;
+		 
+		 try {
+			 Properties configProperties = gvConfigurationManager.getXMLConfigProperties();
+			 
+			 JSONObject configJson = new JSONObject();			 
+			 configProperties.keySet().stream().map(Object::toString).forEach(k->configJson.put(k, configProperties.getProperty(k)));
+			 
+			 response = Response.ok(configJson.toString()).build();
+		
+		 } catch (FileNotFoundException e) {
+			 response = Response.status(Response.Status.NOT_FOUND).build();
+		 } catch (Exception e) {
+			 LOG.error("Failed to retrieve XMLConfigProperties ",e);
+			 response = Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
+		 }
+		 
+		 return response;
+		 
+	 }
+	 
+	 @GET
+	 @Path("/property/{key}")
+	 @Produces(MediaType.TEXT_PLAIN)
+	 @RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
+	 public String getConfigProperty(@PathParam("key") String key){
+		 	 
+		 try {
+			 Properties configProperties = gvConfigurationManager.getXMLConfigProperties();
+			 		 
+			 return Optional.ofNullable(configProperties.getProperty(key))
+					        .orElseThrow(()-> new WebApplicationException(Response.status(Response.Status.NOT_FOUND).build()) );
+		 
+		 } catch (FileNotFoundException e) {
+			 throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).build());
+			 
+		 } catch (Exception e) {
+			 LOG.error("Failed to retrieve XMLConfigProperties ",e);
+			 throw new WebApplicationException(Response.status(Response.Status.SERVICE_UNAVAILABLE).build());
+		 }
+		
+	 }
+	 
+	 @PUT
+	 @Path("/property")
+	 @Consumes(MediaType.APPLICATION_JSON)
+	 @RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
+	 public void setProperties(String properties) {
+		 try {
+			 JSONObject configJson = new JSONObject(properties);
+			 Properties configProperties = new Properties();
+			 
+			 configProperties.putAll(configJson.toMap());
+			 
+			 //configJson.keySet().stream().filter(k-> !configJson.isNull(k)).forEach(k -> configProperties.put(k, configJson.get(k)));
+			 
+			 gvConfigurationManager.saveXMLConfigProperties(configProperties);
+		 } catch (Exception e) {
+			 LOG.error("Failed to update XMLConfigProperties ",e);
+			 throw new WebApplicationException(Response.status(Response.Status.SERVICE_UNAVAILABLE).build());
+		}
+	 }
+	 
+	 @PUT
+	 @Path("/property/{key}")
+	 @Consumes(MediaType.TEXT_PLAIN)
+	 @RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
+	 public void setProperty(@PathParam("key")String key, String value) {
+		 
+		 
+		 try {
+			
+			 Properties configProperties;
+			 try {
+				 configProperties = gvConfigurationManager.getXMLConfigProperties();
+			 } catch (FileNotFoundException e) {
+				 configProperties = new Properties();
+			 }
+			
+			 configProperties.put(key, value);
+			 
+			 gvConfigurationManager.saveXMLConfigProperties(configProperties);
+		 } catch (Exception e) {
+			 LOG.error("Failed to update XMLConfigProperties ",e);
+			 throw new WebApplicationException(Response.status(Response.Status.SERVICE_UNAVAILABLE).build());
+		}
+	 }
+	 
+	 @DELETE
+	 @Path("/property/{key}")	
+	 @RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
+	 public void deleteProperty(@PathParam("key")String key) {		 
+		 
+		 try {
+			
+			 Properties configProperties = gvConfigurationManager.getXMLConfigProperties();			 			
+			 configProperties.remove(key);			 
+			 
+			 gvConfigurationManager.saveXMLConfigProperties(configProperties);
+			 
+		 } catch (FileNotFoundException e) {
+			 throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).build());
+		 } catch (Exception e) {
+			 LOG.error("Failed to update XMLConfigProperties ",e);
+			 throw new WebApplicationException(Response.status(Response.Status.SERVICE_UNAVAILABLE).build());
+		}
+	 }	
 
 }

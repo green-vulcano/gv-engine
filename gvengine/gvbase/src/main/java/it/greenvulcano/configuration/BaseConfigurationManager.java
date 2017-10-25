@@ -22,6 +22,7 @@ package it.greenvulcano.configuration;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -37,6 +38,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
@@ -153,6 +155,35 @@ public class BaseConfigurationManager implements GVConfigurationManager {
 		}
 		
 		return new byte[]{};
+	}
+	
+	@Override
+	public Properties getXMLConfigProperties() throws FileNotFoundException, IOException {
+			
+		Path xmlConfigPath = Paths.get(XMLConfig.getBaseConfigPath(), "XMLConfig.properties");
+		
+		if (Files.exists(xmlConfigPath)) {
+			Properties properties = new Properties();
+			properties.load(Files.newInputStream(xmlConfigPath, StandardOpenOption.READ));
+			return properties;
+		} else {
+			throw new FileNotFoundException("XMLConfig.properties");
+		}	
+    	
+    }
+	  
+	@Override
+	public synchronized void saveXMLConfigProperties(Properties xmlConfigProperties) throws IOException {
+			
+		if (xmlConfigProperties!=null) {
+			
+			try (OutputStream xmlConfigPropertiesOutputStream = Files.newOutputStream(Paths.get(XMLConfig.getBaseConfigPath(), "XMLConfig.properties"), 
+					                                                                  StandardOpenOption.WRITE, 
+					                                                                  StandardOpenOption.CREATE,
+					                                                                  StandardOpenOption.TRUNCATE_EXISTING)) {
+				xmlConfigProperties.store(xmlConfigPropertiesOutputStream, null);
+			}			
+		}		
 	}
 
 	@Override

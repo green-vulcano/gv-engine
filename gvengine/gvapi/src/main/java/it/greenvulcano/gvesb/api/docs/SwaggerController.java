@@ -21,6 +21,7 @@ package it.greenvulcano.gvesb.api.docs;
 
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import javax.ws.rs.GET;
@@ -85,13 +86,17 @@ public class SwaggerController {
 		return jsonSpecs;
 	}
 	
+	private String getBasePath(UriInfo uriInfo){
+		return Paths.get(uriInfo.getAbsolutePath().toString()).getParent().toString();
+	}
+	
 	@GET 
 	@Path("swagger.json")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getJSON(@Context UriInfo uriInfo) {
 		
 		try {
-			String basePath = uriInfo.getBaseUri().getPath().toString();			
+			String basePath = getBasePath(uriInfo);			
 			return Response.ok(OBJECT_MAPPER.writeValueAsString(getSpecs(basePath))).build();
 		} catch (Exception e) {
 			LOG.error("Failed to retrieve swager.json", e);
@@ -106,7 +111,7 @@ public class SwaggerController {
 	public Response getYAML(@Context UriInfo uriInfo) {
 		
 		try  {
-			String basePath = uriInfo.getBaseUri().getPath().toString();			
+			String basePath = getBasePath(uriInfo);			
 			return Response.ok(YAML_MAPPER.writeValueAsString(getSpecs(basePath))).build();
 		} catch (Exception e) {
 			LOG.error("Failed to retrieve swager.json", e);
@@ -126,7 +131,7 @@ public class SwaggerController {
 		
 		
 		if (resourcePath==null || resourcePath.trim().isEmpty() || resourcePath.trim().equals("/")) {
-			String basePath = uriInfo.getBaseUri().toString();
+			String basePath = getBasePath(uriInfo);
 			return Response.temporaryRedirect(URI.create("./api-docs/index.html?url="+basePath+"/swagger.json" )).build();           
         }
        

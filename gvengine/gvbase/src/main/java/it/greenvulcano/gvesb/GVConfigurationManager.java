@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.Properties;
 import java.util.Set;
 import java.util.zip.ZipInputStream;
 
@@ -66,6 +67,10 @@ public interface GVConfigurationManager {
 	void deploy(String name) throws XMLConfigException, FileNotFoundException;	
 	
 	void reload() throws XMLConfigException;
+	
+	Properties getXMLConfigProperties() throws FileNotFoundException, IOException;
+	
+	void saveXMLConfigProperties(Properties xmlConfigProperties) throws IOException;
 		
 	public static interface DeployListener {
 		
