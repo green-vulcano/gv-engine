@@ -58,14 +58,14 @@ public class JSONPropertiesHandler implements PropertyHandler {
              	
      	        if (o instanceof String) {
      	        	if (o.toString().trim().startsWith("{")) {
-     	        		jsonObject = new JSONObject(o.toString());	
+     	        		jsonObject = new JSONObject(o.toString().trim());	
      	        	} else if (o.toString().trim().startsWith("[")){     	        		
-     	        		jsonObject = new JSONObject("{ \"array\":"+o.toString()+"}");
+     	        		jsonObject = new JSONObject("{ \"array\":"+o.toString().trim()+"}");
      	        	} else {
-     	        		jsonObject = new JSONObject("{ \"value\":\""+o.toString()+"\"}");
+     	        		jsonObject = new JSONObject("{ \"value\":\""+o.toString().trim()+"\"}");
      	        	}
      	        } else if (o instanceof JSONArray)  {
-    	        	jsonObject = new JSONObject("{ \"array\":"+o.toString()+"}");
+    	        	jsonObject = new JSONObject("{ \"array\":"+o.toString().trim()+"}");
     	        	    	             	        	
      	        } else if (o instanceof JSONObject)  {
      	        	jsonObject = JSONObject.class.cast(o);
