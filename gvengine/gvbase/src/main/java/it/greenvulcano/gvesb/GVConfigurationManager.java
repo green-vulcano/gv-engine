@@ -27,8 +27,6 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Properties;
 import java.util.Set;
-import java.util.zip.ZipInputStream;
-
 import it.greenvulcano.configuration.XMLConfigException;
 
 public interface GVConfigurationManager {
@@ -58,7 +56,7 @@ public interface GVConfigurationManager {
 	
 	Set<File> getHistory() throws IOException;
 	
-	void install(String name, ZipInputStream archive) throws IOException;
+	void install(String name, byte[] archive) throws IOException;
 	
 	byte[] extract(String name, String entry);
 	
