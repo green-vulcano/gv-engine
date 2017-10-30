@@ -97,8 +97,7 @@ public class GvConfigurationControllerRest {
 	 }
 	 
 	 @POST
-	 @Path("/configuration/{configId}")
-	 @Consumes(MediaType.MULTIPART_FORM_DATA)
+	 @Path("/configuration/{configId}")	
 	 @RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
 	 public void installConfiguration(@PathParam("configId") String id,
 			            @Multipart(value="gvconfiguration") Attachment config) {

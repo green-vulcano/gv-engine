@@ -20,23 +20,14 @@
 package it.greenvulcano.gvesb.osgi.commands;
 
 import org.apache.karaf.shell.api.action.Action;
-import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import it.greenvulcano.gvesb.GVConfigurationManager;
 
-@Command(scope = "gvesb", name = "deploy", description = "Deploy a configuration zip package")
+@Command(scope = "gvesb", name = "configurations", description = "List of current deployable configurations")
 @Service
 public class GVDeployConfiguration implements Action {
-	
-	@Argument(index=0, name = "id", description = "The id of configuration to deploy", required = true, multiValued = false)
-	String id = null;
-	
-	private final Logger LOG = LoggerFactory.getLogger(getClass());
 	
 	@Reference
 	private GVConfigurationManager configurationManager;
@@ -51,17 +42,10 @@ public class GVDeployConfiguration implements Action {
 		
 		try {			
 			
-			LOG.debug("Deploying configuration with id " + id);
+			configurationManager.getHistory().stream().forEach(System.out::println);
 			
-			System.out.println("Deploying configuration with id " + id + " ...");
-			
-			configurationManager.deploy(id);
-			configurationManager.reload();
-			message = "Deploy complete";		
 		} catch (Exception exception) {
 			System.err.println(exception.getMessage());
-			LOG.error("GVDeployConfiguration - Deploy configuration failed", exception);
-			message = "Deploy failed";
 		}
 		
 		return message;
