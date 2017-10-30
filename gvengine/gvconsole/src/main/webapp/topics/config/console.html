@@ -68,8 +68,6 @@
              </tr>
            </thead>
            <tbody>
-
-
              <tr data-ng-repeat="config in ctrl.history">
                <td>{{config.id}}</td>
                <td>{{config.time | date : 'd MMMM yyyy H:mm:ss'}}</td>
@@ -87,7 +85,7 @@
              </tr>
            </tbody>
          </table>
-         <div ng-hide="ctrl.history.length">No items found</div>
+         <div style="margin:10px" class="alert alert-warning" data-ng-hide="ctrl.history.length">No previously configuration found!</div>
       </div>
       <div class="panel panel-default" >
         <div id="panelHead" class="panel-heading">

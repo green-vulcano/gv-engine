@@ -22,11 +22,7 @@ package it.greenvulcano.gvesb.api.controller;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-<<<<<<< HEAD
-=======
 import java.io.InputStream;
-import java.util.NoSuchElementException;
->>>>>>> a79187ab132e932db985d9cff30a0f88335d12d1
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
