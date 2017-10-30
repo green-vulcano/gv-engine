@@ -22,14 +22,13 @@ package it.greenvulcano.gvesb.api.controller;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.zip.ZipInputStream;
-
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -44,6 +43,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.apache.cxf.rs.security.cors.CrossOriginResourceSharing;
@@ -109,11 +109,9 @@ public class GvConfigurationControllerRest {
 		 case "application/zip":
 		 case "application/x-zip-compressed":
 		 			 		 
-			 try {
-							 
-				 ZipInputStream compressedConfig = new ZipInputStream(config.getDataHandler().getInputStream());
-				 gvConfigurationManager.install(id, compressedConfig);
+			 try (InputStream inputData = config.getDataHandler().getInputStream()){							 
 				 
+				 gvConfigurationManager.install(id, IOUtils.toByteArray(inputData));				 
 				 
 			 } catch (IllegalStateException e) {
 				 LOG.error("Failed to install configuraton, operation already in progress",e);

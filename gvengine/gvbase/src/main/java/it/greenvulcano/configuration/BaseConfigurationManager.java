@@ -19,6 +19,7 @@
  *******************************************************************************/
 package it.greenvulcano.configuration;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -120,10 +121,20 @@ public class BaseConfigurationManager implements GVConfigurationManager {
 	}
 
 	@Override
-	public void install(String name, ZipInputStream archive) throws IOException {
+	public void install(String name, byte[] archive) throws IOException {
 		
-		Path configurationPath = getConfigurationPath(name);
-		Files.copy(archive, configurationPath, StandardCopyOption.REPLACE_EXISTING);		
+		Path configurationPath = getConfigurationPath(name);				
+		try (ZipInputStream zipArchive = new ZipInputStream( new ByteArrayInputStream(archive))){
+			if (zipArchive.getNextEntry()!=null) {
+				Files.write(configurationPath, archive, StandardOpenOption.WRITE, 
+									                     StandardOpenOption.CREATE,
+									                     StandardOpenOption.TRUNCATE_EXISTING);
+			} else {
+				throw new IOException("Empty or invalid zip archive");
+			}
+			
+		}
+				
 	}
 
 	@Override
