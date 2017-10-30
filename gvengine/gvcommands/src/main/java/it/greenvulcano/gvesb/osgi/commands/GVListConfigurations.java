@@ -19,9 +19,6 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb.osgi.commands;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
@@ -32,15 +29,12 @@ import org.slf4j.LoggerFactory;
 
 import it.greenvulcano.gvesb.GVConfigurationManager;
 
-@Command(scope = "gvesb", name = "install", description = "Install a configuration zip package")
+@Command(scope = "gvesb", name = "deploy", description = "Deploy a configuration zip package")
 @Service
-public class GVInstallConfiguration implements Action {
+public class GVListConfigurations implements Action {
 	
-	@Argument(index=0, name = "id", description = "The id of configuration to install", required = true, multiValued = false)
+	@Argument(index=0, name = "id", description = "The id of configuration to deploy", required = true, multiValued = false)
 	String id = null;
-	
-	@Argument(index=1, name = "file", description = "The configuration archive full path  (Example: /home/dir/config.zip) ", required = true, multiValued = false)
-	String baseFile = null;
 	
 	private final Logger LOG = LoggerFactory.getLogger(getClass());
 	
@@ -57,20 +51,17 @@ public class GVInstallConfiguration implements Action {
 		
 		try {			
 			
-			LOG.debug("Installing configuration with id " + id);
-					
-			Path configPath = Paths.get(baseFile);			
-			byte[] config = Files.readAllBytes(configPath);
+			LOG.debug("Deploying configuration with id " + id);
 			
-			System.out.println("Installing configuration with id " + id + " ...");
+			System.out.println("Deploying configuration with id " + id + " ...");
 			
-			configurationManager.install(id, config); 
+			configurationManager.deploy(id);
 			configurationManager.reload();
-			message = "Installation complete";		
+			message = "Deploy complete";		
 		} catch (Exception exception) {
 			System.err.println(exception.getMessage());
-			LOG.error("GVDeployConfiguration - Installation configuration failed", exception);
-			message = "Installation failed";
+			LOG.error("GVDeployConfiguration - Deploy configuration failed", exception);
+			message = "Deploy failed";
 		}
 		
 		return message;

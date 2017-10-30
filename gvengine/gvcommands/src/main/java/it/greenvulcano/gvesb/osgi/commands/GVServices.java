@@ -31,11 +31,11 @@ import org.w3c.dom.NodeList;
 
 import it.greenvulcano.configuration.XMLConfig;
 
-@Command(scope = "gvesb", name = "services", description = "It allows to retrieve services")
+@Command(scope = "gvesb", name = "services", description = "Services list in current configurations")
 @Service
 public class GVServices implements Action {
 	
-	@Argument(index=0, name = "service", description = "It allows to retrieve a single service",
+	@Argument(index=0, name = "service", description = "A single service name to show info about",
 			required = false, multiValued = false)
 	String service = null;
 	

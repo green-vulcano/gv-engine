@@ -30,11 +30,11 @@ import org.w3c.dom.NodeList;
 
 import it.greenvulcano.configuration.XMLConfig;
 
-@Command(scope = "gvesb", name = "systems", description = "It provides the list of systems")
+@Command(scope = "gvesb", name = "systems", description = "Systems list in current configuration")
 @Service
 public class GVSystems implements Action {
 	
-	@Argument(index=0, name = "system", description = "It allows to retrieve a single system",
+	@Argument(index=0, name = "system", description = "A single system id to show info about",
 			required = false, multiValued = false)
 	String system = null;
 	

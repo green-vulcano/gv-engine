@@ -216,11 +216,19 @@ public class BaseConfigurationManager implements GVConfigurationManager {
 					
 				
 					LOG.debug("Starting deploy of configuration "+name);
-					ZipEntry zipEntry = null;
+					ZipEntry zipEntry = null;				
 					
-					
-					Files.copy(current, staging, StandardCopyOption.REPLACE_EXISTING);
-					Files.createDirectories(staging);
+					for (Path cfgFile : Files.walk(current).collect(Collectors.toSet())){
+						
+						if (!Files.isDirectory(cfgFile)) {
+							
+							Path target =  staging.resolve(current.relativize(cfgFile));							
+							Files.createDirectories(target);
+							
+							Files.copy(cfgFile, target, StandardCopyOption.REPLACE_EXISTING );
+						}
+						
+					}				
 					
 					LOG.debug("Staging new config "+name);
 					
