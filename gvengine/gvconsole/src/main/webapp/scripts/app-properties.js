@@ -2,7 +2,7 @@ angular.module('gvconsole')
 .service('PropertiesService',['ENDPOINTS','$http', function(Endpoints, $http){
 
 	this.getProperties = function(){
-		return $http.get(Endpoints.gvproperties + '/properties');
+		return $http.get(Endpoints.gvconfig + '/property');
 	}
 
 	this.saveProperties = function(content){

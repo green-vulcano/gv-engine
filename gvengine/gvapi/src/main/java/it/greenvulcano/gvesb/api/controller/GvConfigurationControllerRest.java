@@ -357,7 +357,7 @@ public class GvConfigurationControllerRest {
 		 } catch (FileNotFoundException e) {
 			 throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).build());
 			 
-		 } catch (Exception e) {
+		 } catch (IOException e) {
 			 LOG.error("Failed to retrieve XMLConfigProperties ",e);
 			 throw new WebApplicationException(Response.status(Response.Status.SERVICE_UNAVAILABLE).build());
 		 }

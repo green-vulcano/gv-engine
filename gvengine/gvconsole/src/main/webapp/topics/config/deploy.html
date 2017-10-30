@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html>
 	<head>
 		<meta charset="UTF-8">
@@ -9,7 +8,7 @@
 				<div class="side-body">
 					<h1>Deploy action</h1>
 					<div class="row" data-ng-controller="ConfigDeployController as ctrl" data-ng-init="">
-						<div class="container">
+						<div class="container col-sm-12">
 							<div class="row">
 								<div class="panel panel-default" style="overflow-x:auto;">
 									<div class="panel-heading">
@@ -44,54 +43,68 @@
 														</li>
 													</ul>
 												</div>
-												<form role="form">
 													<div class="tab-content">
 														<div class="tab-pane active" role="tabpanel" id="step1">
-															<h3>GV Core Compare</h3>
-															<div class="col-sm-12"> 
-																<p>Current GVCore</p>
-																<p>New GVCore</p>
-																<pre style="display:inline" class="col-sm-6">{{currentGVCore}}</pre>
-																<pre style="display:inline" class="col-sm-6">{{newGVCore}}</pre>
-															</div>
-															<button type="button" id="stepValue" value="1" class="btn btn-primary pull-right" data-toggle="tab" data-target="#step2" data-ng-click="changeStep()">Next</button>
-															<div>
-																<a href="#/config" type="button" class="btn btn-danger pull-left">Cancel</a>
+															<h2 style="text-align:center;margin-bottom:40px">GV Core Compare</h2>
+
+																<div class="col-sm-6">
+																	<div class="panel panel-default">
+																	<div id="GVCorePanel" class="panel-heading">Current GVCore</div>
+																	<div class="panel-body"><pre style="height:1000px;">{{currentGVCore}}</pre></div>
+																	</div>
+																</div>
+																<div class="col-sm-6">
+																	<div class="panel panel-default">
+																	<div id="GVCorePanel" class="panel-heading">New GVCore</div>
+																	<div class="panel-body"><pre style="height:1000px;">{{newGVCore}}</pre></div>
+																	</div>
+																</div>
+																<div class="col-sm-6">
+																	<a href="#/config" type="button" class="btn btn-danger pull-left">Cancel</a>
+																</div>
+															<div class="col-sm-6">
+																<button type="button" id="stepValue" value="1" class="btn btn-primary pull-right" data-toggle="tab" data-target="#step2" data-ng-click="changeStep()">Next</button>
 															</div>
 														</div>
+
 														<div class="tab-pane" role="tabpanel" id="step2">
+														<form role="form" name="propertiesForm" data-ng-submit="propertiesForm.$valid" novalidate>
 															<h2 style="text-align:center; margin:20px">Properties File</h2>
+															<div style="text-align: center;" class="alert alert-warning" data-ng-show="!propertiesForm.$valid" role="alert">All properties must be completed for proced to deploy with this configuration!</div>
 
 															<div class="col-sm-12">
 																<table class="table table-hover">
 											            <thead>
 											              <tr>
-											                <th>Key</th>
-											                <th>Value</th>
+											                <th><div class="col-sm-4">Key</div></th>
+											                <th><div class="col-sm-6">Value</div></th>
 											              </tr>
 											            </thead>
 											            <tbody>
-											              <tr data-ng-repeat="key in keys">
-											                <td>{{key}}</td>
-											                <td><input type="text" class="form-control">{{}}</td>
+											              <tr data-ng-repeat="(key,value) in ctrl.properties">
+											                <td><div class="col-sm-4">{{key}}</div></td>
+											                <td><div class="col-sm-6"><input type="text" class="form-control" data-ng-model="value" name="value" required></div></td>
 											              </tr>
 											            </tbody>
 											          </table>
 															</div>
-
-															<button type="button" id="stepValue" value="1" class="btn btn-primary pull-right" data-toggle="tab" data-target="#complete"  data-ng-click="changeStep()">Next</button>
-															<!-- <div class="col-sm-1"><button type="button" class="btn btn-default pull-left" data-toggle="tab" data-target="#step1" data-ng-click="backStep()">Back</button></div> -->
-															<a href="#/config" type="button" class="btn btn-danger pull-left">Cancel</a>
+															<div class="col-sm-6">
+																<a href="#/config" type="button" class="btn btn-danger pull-left">Cancel</a>
+															</div>
+															<div class="col-sm-6">
+																<button type="submit" data-ng-show="propertiesForm.$valid"  id="stepValue" value="1" class="btn btn-primary pull-right" data-toggle="tab" data-target="#complete"  data-ng-click="changeStep()">Next</button>
+																<button type="submit" data-ng-show="!propertiesForm.$valid"  id="stepValue" value="1" class="btn btn-primary pull-right" data-toggle="tab" data-target="#complete"  data-ng-click="changeStep()" disabled>Next</button>
+															</div>
+															</form>
 														</div>
 
 														<div class="tab-pane" role="tabpanel" id="complete">
 															<h3 style="text-align:center">Are you sure to change current configuration <span style="color:red">"{{currentConfigId}}"</span> <p>with configuration <span style="color:red">"{{newConfigId}}"</span>?</p></h3>
-															<a href="#/config" type="button" class="btn btn-success pull-right" data-toggle="tab" data-ng-click="changeStep()">Proceed</a>
-															<!-- <div class="col-sm-1"><button type="button" class="btn btn-default pull-left" data-toggle="tab" data-target="#step2" data-ng-click="backStep()">Back</button></div> -->
-															<a href="#/config" type="button" class="btn btn-danger pull-left">Cancel</a>
+															<div class="col-sm-6"><a href="#/config" type="button" class="btn btn-danger pull-left">Cancel</a></div>
+															<div class="col-sm-6"><a href="#/config" type="button" class="btn btn-success pull-right" data-ng-click="ctrl.deploy()">Proceed</a></div>
 														</div>
 													</div>
-												</form>
+
 											</div>
 										</div>
 									</section>

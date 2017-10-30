@@ -2,13 +2,74 @@
 <div class="side-body">
   <div data-ng-controller = "PropertiesController as ctrl">
    <h1>File Properties</h1>
-	<div data-ng-repeat="alert in ctrl.alerts" class="alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
-	<textarea id="areaProperties" class="form-control" ng-model="propertiesFile" rows="25" readonly></textarea>
-	<p>{{ctrl.prova}}</p>
-	<div>
-    <a id="btnProp" href="#/properties/modify" onClick="slide();" class="btn btn-warning pull-right">Modify
+   <div id="fadeout" data-ng-repeat="alert in ctrl.alerts" class="fadeout alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
+
+   <div class="panel panel-default">
+      <div class="panel-heading clearfix">
+         <i class="fa fa-list" aria-hidden="true"></i> Value Search
+      </div>
+          <div class="panel-body">
+            <label id="labelLeft" class="control-label optionForm col-sm-1">Key </label>
+            <div class="col-sm-4"><input type="text" class="form-control" data-ng-model="key" placeholder="Key"></div>
+            <label id="labelLeft" class="control-label optionForm col-sm-1 col-sm-offset-1">Value </label>
+            <div class="col-sm-4"><input type="text" class="form-control" value="{{value}}" disabled></div>
+       </div>
+       <div class="panel-footer clearfix">
+       <a data-ng-click="matchKey();" class="btn btn-primary pull-right"><i class="fa fa-search" aria-hidden="true"></i> Match</a>
+     </div>
+   </div>
+
+    <section>
+				<div class="tab-content">
+					<div class="tab-pane active" role="tabpanel" id="fileViewer">
+						<div class="panel panel-default">
+      <div id="panelHead" class="panel-heading clearfix">
+         <i class="fa fa-file-code-o" aria-hidden="true"></i> File Viewer
+         <button type="button" id="stepValue" value="1" class="btn btn-default pull-right" data-toggle="tab" data-target="#listViewer" data-ng-click="changeStep()"><i class="fa fa-list" aria-hidden="true"></i></button>
+      </div>
+          <div class="panel-body">
+         <textarea id="areaProperties" class="form-control col-md-10" data-ng-model="propertiesFile" rows="25" readonly>{{propertiesFile}}</textarea>
+       </div>
+	<div class="panel-footer clearfix">
+    <a href="#/properties/modify" onClick="slide();" class="btn btn-warning pull-right">Modify
     </a>
 	</div>
-  </div>
 </div>
+					</div>
+
+
+					<div class="tab-pane" role="tabpanel" id="listViewer">
+            <div class="panel panel-default">
+            <div id="panelHead" class="panel-heading clearfix">
+               <i class="fa fa-list" aria-hidden="true"></i> List Viewer
+               <button type="button" id="stepValue" value="1" class="btn btn-default pull-right" data-toggle="tab" data-target="#fileViewer" data-ng-click="changeStep()"><i class="fa fa-file-code-o" aria-hidden="true"></i></button>
+            </div>
+							<div>
+								<table class="table table-hover col-sm-12">
+			            <thead>
+			              <tr>
+			                <th><div class="col-sm-6">Key</div></th>
+			                <th><div class="col-sm-6">Value</div></th>
+			              </tr>
+			            </thead>
+			            <tbody>
+			              <tr data-ng-repeat="(key,value) in ctrl.properties">
+			                <td><div class="col-sm-6">{{key}}</div></td>
+			                <td><div class="col-sm-6"><input type="text" class="form-control" data-ng-model="value" required></div></td>
+			              </tr>
+			            </tbody>
+			          </table>
+
+
+
+					</div>
+        </div>
+
+		</div>
+	</div>
+
+</section>
+
+</div>
+  </div>
 </div>

@@ -23,33 +23,33 @@ angular.module('gvconsole', ['ngCookies','ngRoute','angular-quartz-cron', 'ui.bo
     		when('/users', {
     			templateUrl: 'topics/users/list.html'
     		}).
-        when('/users/:userId', {
-          templateUrl: 'topics/users/form.html'
-        }).
-				when('/myprofile', {
-          templateUrl: 'topics/profile/myprofile.html'
-        }).
-				when('/monitoring', {
-					templateUrl: 'topics/monitoring/monitoring.html'
-				}).
-				when('/dashboard', {
-					templateUrl: 'topics/dashboard/dashboard.html'
-				}).
-				when('/testing', {
-					templateUrl: 'topics/flow/test.html'
-				}).
-				when('/properties', {
-					templateUrl: 'topics/properties/prop.html'
-				}).
-				when('/properties/modify', {
-					templateUrl: 'topics/properties/modify.html'
-				}).
-				when('/xmlconfig', {
-					templateUrl: 'topics/xml/config.html'
-				}).
-          otherwise({
-    	        redirectTo: '/myprofile'
-    	  });
+	        when('/users/:userId', {
+	          templateUrl: 'topics/users/form.html'
+	        }).
+					when('/myprofile', {
+	          templateUrl: 'topics/profile/myprofile.html'
+	        }).
+			when('/monitoring', {
+				templateUrl: 'topics/monitoring/monitoring.html'
+			}).
+			when('/dashboard', {
+				templateUrl: 'topics/dashboard/dashboard.html'
+			}).
+			when('/testing', {
+				templateUrl: 'topics/flow/test.html'
+			}).
+			when('/properties', {
+				templateUrl: 'topics/properties/properties.html'
+			}).
+			when('/properties/modify', {
+				templateUrl: 'topics/properties/modify.html'
+			}).
+			when('/xmlconfig', {
+				templateUrl: 'topics/xml/config.html'
+			}).
+	          otherwise({
+	    	        redirectTo: '/myprofile'
+	    	  });
 }])
 .run(['$rootScope', '$location', '$cookieStore', '$http',
     function ($rootScope, $location, $cookieStore, $http) {

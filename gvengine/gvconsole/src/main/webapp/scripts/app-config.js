@@ -26,21 +26,15 @@ angular.module('gvconsole')
 		this.getConfigInfo = function() {
 			return $http.get(Endpoints.gvconfig + '/deploy')
 		}
+		
+		this.deploy = function(id){
+			return $http.post(Endpoints.gvconfig + '/deploy/' + id);
+		}
 
-		this.deploy = function(config, id){
-	        var fd = new FormData();
-	        fd.append('gvconfiguration', config);
-
-	        return $http.post(Endpoints.gvconfig+'/deploy/'+id, fd, {
-	            transformRequest: angular.identity,
-	            headers: {'Content-Type': 'multipart/form-data'}
-	        });
-	    }
-
-		this.getConfig = function(id) {
+		this.getConfig = function() {
 			return $http({
 				method: 'GET',
-			    url: Endpoints.gvconfig + '/deploy/' + id,
+			    url: Endpoints.gvconfig + '/deploy/export',
 		        responseType: 'arraybuffer'
 			});
 		}
@@ -53,21 +47,29 @@ angular.module('gvconsole')
 	      return $http.get(Endpoints.gvconfig + '/configuration');
 	     }
 	    
-	    /*this.getConfigFile = function(fileName){
+	    this.getConfigFile = function(fileName){
 		  return $http.get(Endpoints.gvconfig + '/configuration/' + fileName);
 		 }
-	    
-	    this.addConfigFile = function(fileName){
-	      return $http.post(Endpoints.gvconfig + '/configuration/' + fileName,{headers: {'Content-Type':'application/json'} });
-	    }*/
 	
 	    
 	    this.getGVCore = function(id){
 	      return $http.get(Endpoints.gvconfig + '/configuration/' + id + '/GVCore.xml');	
 	    }
 	    
-	    this.getProperties = function(id){
-	      return $http.get(Endpoints.gvconfig + '/configuration/' + id + '/properties');
+	    this.getGVCoreProperties = function(id){
+		  return $http.get(Endpoints.gvconfig + '/configuration/' + id + '/properties');	
+		}
+	    
+	    this.getProperties = function(){
+	      return $http.get(Endpoints.gvconfig + '/property');
+	    }
+	    
+	    this.getPropertyValue = function(key){
+	      return $http.get(Endpoints.gvconfig + '/property/' + key);
+	    }
+	    
+	    this.setProperties = function(properties){
+	    	return $http.put(Endpoints.gvconfig + '/property',properties,{headers:{'Content-Type':'application/json'}});
 	    }
 	    
 	    this.deleteConfig = function(id){
@@ -82,7 +84,15 @@ angular.module('gvconsole')
 	            transformRequest: angular.identity,
 	            headers: {'Content-Type': 'multipart/form-data'}
 	        });
-	    }   
+	    }
+	    
+	    this.getXMLFiles = function(){
+	    	return $http.get(Endpoints.gvconfig + '/deploy/xml');
+	    }
+	    
+	    this.getXMLFile = function(name){
+	    	return $http.get(Endpoints.gvconfig + '/deploy/xml/' + name);
+	    }
 	    
 
  }]);
@@ -111,9 +121,8 @@ angular.module('gvconsole')
 	
 	ConfigService.getConfigHistory().then(function(response){
 		instance.history = response.data;
-		console.log("history: " + response.data);
 		},function(response){
-		console.log("error: " + error);
+		console.log("error: " + response.data);
 		});
 	
 	this.addConfig = function(){
@@ -181,9 +190,9 @@ angular.module('gvconsole')
 
 	}
 
-	this.exportConfig = function (name) {
+	this.exportConfig = function () {
 		$scope.exportInProgress = true;
-		ConfigService.getConfig(instance.configInfo.id)
+		ConfigService.getConfig()
 			.then( function(response) {
 
 				var linkElement = document.createElement('a');
@@ -204,6 +213,7 @@ angular.module('gvconsole')
 
 				} catch (ex) {
 					instance.alerts.push({type: 'danger', msg: 'Configuration export failed'});
+					setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
 					console.log(ex);
 
 				}
@@ -212,6 +222,7 @@ angular.module('gvconsole')
 			}, function (responses) {
 				$scope.exportInProgress = false;
 				instance.alerts.push({type: 'danger', msg: 'Configuration export failed'});
+				setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
 			});
 		}
 	
@@ -219,10 +230,20 @@ angular.module('gvconsole')
 		ConfigService.deleteConfig(id)
 			.then(function(response){
 				instance.alerts.push({type: 'success', msg: 'Configuration deleted successfully'});
+				setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
 			},function(response){
 				console.log("error: " + response.data);
 			})
 	};
+	
+	ConfigService.getXMLFiles().then(function(response){
+		$scope.filesName = response.data;
+		angular.forEach($scope.filesName,function(value,key){
+			ConfigService.getXMLFile(value).then(function(response){
+				LoadXMLString(value, response.data);
+			});
+		});
+	});
 
 }]);
 
@@ -232,9 +253,11 @@ angular.module('gvconsole')
 	
 	$scope.newConfigId = $routeParams.newConfigId;
 	
+	var instance = this;
+	
 	ConfigService.getConfigInfo()
 		.then(function(response){
-			
+		$scope.currentConfigId = response.data.id;	
 		ConfigService.getGVCore(response.data.id).then(
 			       function(response){
 			        $scope.currentGVCore = response.data;
@@ -268,25 +291,39 @@ angular.module('gvconsole')
 	    } else {$scope.step = 01;}
 	  }
 	  
-	ConfigService.getProperties($scope.newConfigId)
-		.then(function(response){
-		$scope.keys = response.data;
+	  this.properties = {};
+	  this.propertiesKeys = [];
+	 
+	 ConfigService.getGVCoreProperties($scope.newConfigId).then(function(response){
+			instance.propertiesKeys = response.data;
+			ConfigService.getProperties().then(function(response){
+				angular.forEach(instance.propertiesKeys,function(value){
+					if(response.data[value]){
+						instance.properties[value] = response.data[value];
+					}else{
+						instance.properties[value] = null;
+					}
+				})
+			})
+	 });
+	 
+	this.deploy = function(){
+		ConfigService.deploy($scope.newConfigId).then(function(response){
+			console.log("deploy successo");
+			console.log("instance.properties.keys: " + Object.keys(instance.properties));
+			console.log("instance.properties.values: " + Object.values(instance.properties));
+			ConfigService.setProperties(instance.properties).then(function(response){
+				console.log("salvataggio properties avvenuto");
+			},function(response){
+				console.log("salvataggio properties errore");
+			});
+			
 		},function(response){
-			console.log("error: " + response.data);
-		});
+			console.log("deploy error");
+		})
+		
+		
+	};
 	
 }]);
-
-
-angular.element(document).ready(function(){
-     angular.element(window).scroll(function () {
-            if (angular.element(this).scrollTop() > 50) {
-                angular.element('#back-to-top').fadeIn();
-            } else {
-                angular.element('#back-to-top').fadeOut();
-            }
-        });
-
-
-});
 

@@ -1,10 +1,10 @@
 <div class="container-fluid">
   <div class="side-body">
-
+	<div class="container row" data-ng-controller="UserFormController as ctrl">
     		<h1 data-ng-hide="newUser">GVESB User: {{ctrl.user.username}}</h1>
     		<h1 data-ng-show="newUser">GVESB New user </h1>
 
-      <div class="container row" data-ng-controller="UserFormController as ctrl">
+      
     		<div  data-ng-switch="userDataStatus">
 
     			<div data-ng-repeat="alert in ctrl.alerts" class="fadeout alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
@@ -25,9 +25,10 @@
                   <i class="fa fa-list" aria-hidden="true"></i>
                     User Form
                 </div>
+                <form name="userForm" class="form-horizontal" data-ng-switch-when="ready"
+                    data-ng-submit="userForm.$valid && ctrl.saveUser()" novalidate>
                 <div class="panel-body container-fluid">
-                  <form name="userForm" class="form-horizontal" data-ng-switch-when="ready"
-            					data-ng-submit="userForm.$valid && ctrl.saveUser()" novalidate>
+
     			  <div data-ng-show="newUser" class="form-group" data-ng-class="{ 'has-error':  userForm.submitted && userForm.username.$invalid }">
     			    <label id="labelLeft" for="username" class="col-sm-3 control-label">Username</label>
     			    <div class="col-sm-6">
@@ -140,7 +141,7 @@
     			  </div>
 
 
-    			</form>
+
     		</div>
         <div id="panelPagination" class="panel-footer">
           <div class="row">
@@ -152,21 +153,20 @@
               <button type="button" class="btn btn-info" data-ng-click="ctrl.switchUserStatus()"><i data-ng-class="{'fa fa-ban': ctrl.user.enabled == true, 'fa fa-check': ctrl.user.enabled == false}" aria-hidden="true"></i> {{ctrl.user.enabled?'Disable':'Enable'}}</button>
               <button type="button" class="btn btn-warning"  data-ng-hide="ctrl.user.expired" data-ng-click="ctrl.resetUserPassword()"><i class="fa fa-refresh" aria-hidden="true"></i> Reset</button>
               <!-- DELETE CONFIRM WINDOW -->
-              <button type="button" class="btn btn-danger" style="margin-right: 3px;" id="myBtn"><i class="fa fa-trash" aria-hidden="true"></i> Delete</button>
-              <div id="myModal" class="modal fadeout" style="color: #000;">
+              <button type="button" data-toggle="modal" data-target="#myModal" data-backdrop="static" data-keyboard="false" class="btn btn-danger" style="margin-right: 3px;" id="myBtn"><i class="fa fa-trash" aria-hidden="true"></i> Delete</button>
+              <div id="myModal" class="modal fadeout">
                 <div class="modal-content">
-              <h4>Are you sure to delete this user?</h4>
-              <button type="button" class="btn btn-default exite"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button>
-              <button type="button" data-ng-click="ctrl.deleteUser()" class="btn btn-danger"><i class="fa fa-trash" aria-hidden="true"></i> Confirm</button>
-
-            </div>
-          </div>
-          <script type="text/javascript" src="scripts/delete_wind.js"></script>
+                  <h4 style="margin-bottom:30px"> Are you sure to delete <span style="color:red">{{ctrl.user.username}}</span> ? </h4>
+                  <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button>
+                  <button type="button" class="btn btn-danger" data-ng-click="ctrl.delete(id)"><i class="fa fa-trash" aria-hidden="true"></i> Confirm</button>
+                </div>
+              </div>
 
             </div>
 
       </div>
     </div>
+        </form>
       </div>
     </div>
     	</div>

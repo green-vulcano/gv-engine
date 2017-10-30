@@ -8,13 +8,18 @@
 
   <div class="row">
     <button class="clearButton btn btn-danger pull-right" value="Refresh Page" onClick="window.location.reload()"><i class="fa fa-refresh" aria-hidden="true"></i> Clean Filters</button>
-  <div id="searchBarUser" class="col-xs-8 col-xs-offset-2">
-
-
-       <div class="input-group">
-               <span class="input-group-addon" style="border-top-left-radius:6px; border-bottom-left-radius:6px"><i class="fa fa fa-search" aria-hidden="true"></i></span>
-               <input type="text" ng-model="query" class="form-control" name="x" placeholder="Search in the table..." style="border-top-right-radius:6px; border-bottom-right-radius:6px">
-           </div>
+  <div id="searchBarUser" class="col-xs-8">
+          <form>
+            <div class="col-xs-3"  style="padding-left:0px">
+              <select id="search_param" class="form-control">
+                         <option value="username">Username</option>
+                         <option value="fullname">Full Name</option>
+                         <option value="email">Email</option>
+                     </select>
+            </div>
+           <div class="col-xs-6"><input id="SearchTabValue" type="text" class="form-control" name="x" placeholder="Search in the table..."></div>
+           <div class="col-xs-1"><button class="btn btn-default" type="button" data-ng-click="SearchTab();"><i class="fa fa fa-search" aria-hidden="true"></i></button></div>
+         </form>
        </div>
      </div>
 
@@ -34,10 +39,10 @@
           </tr>
         </thead>
         <tbody>
-          <tr data-ng-repeat="user in ctrl.list | orderBy : orderby | filter : query">
+          <tr data-ng-repeat="user in ctrl.list | orderBy : orderby | filter : { username : queryUsername} | filter: { fullname : queryFullname} | filter: { email : queryEmail}">
             <td>{{user.username}}</td>
-            <td>{{user.userInfo.fullname}}</td>
-            <td>{{user.userInfo.email}}</td>
+            <td ng-init="user.fullname = user.userInfo.fullname">{{user.fullname}}</td>
+            <td ng-init="user.email = user.userInfo.email">{{user.email}}</td>
             <td class="col-sm-4">
               <ul class="list-inline">
                 <li	data-ng-repeat="(k,role) in user.roles">
@@ -61,7 +66,7 @@
     <div id="panelPagination"  class="panel-footer">
   <div class="row">
     <div class="col col-xs-8" style="float: right;">
-        <ul class="pagination pull-right" style="margin: 3px;"></ul>
+        <ul class="pagination pull-right" style="margin: 3px;">
         <ul uib-pagination total-items="totalItems" ng-model="currentPage" items-per-page="viewby" max-size="maxSize" class="pagination-sm" boundary-link-numbers="true" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" style="margin: 0;"></ul>
     </div>
     View <select id="selctNum" ng-model="viewby" class="form-control"><option>3</option><option>5</option><option>10</option><option>20</option><option>30</option><option>40</option><option>50</option></select> users at once.

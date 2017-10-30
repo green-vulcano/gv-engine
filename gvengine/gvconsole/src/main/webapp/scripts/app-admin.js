@@ -118,6 +118,24 @@ angular.module('gvconsole')
     }
 
       };
+      
+      $scope.SearchTab = function () {
+          $scope.columSearch = document.getElementById('search_param').value;
+          if ($scope.columSearch == 'username'){
+            $scope.queryUsername = document.getElementById('SearchTabValue').value;
+            $scope.queryFullname = undefined;
+            $scope.queryEmail = undefined;
+          }else { if ($scope.columSearch == 'fullname') {
+            $scope.queryFullname = document.getElementById('SearchTabValue').value;
+            $scope.queryUsername = undefined;
+            $scope.queryEmail = undefined;
+          }else{
+            $scope.queryEmail = document.getElementById('SearchTabValue').value;
+            $scope.queryFullname = undefined;
+            $scope.queryUsername = undefined;}
+        }
+        
+      };
 
 }]);
 
