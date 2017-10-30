@@ -22,7 +22,6 @@ package it.greenvulcano.gvesb.api.controller;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
@@ -353,11 +352,8 @@ public class GvConfigurationControllerRest {
 			 Properties configProperties = gvConfigurationManager.getXMLConfigProperties();
 			 		 
 			 return Optional.ofNullable(configProperties.getProperty(key))
-					        .orElseThrow(NoSuchElementException::new );
+					        .orElseThrow(()-> new WebApplicationException(Response.status(Response.Status.NOT_FOUND).build()) );
 		 
-		 } catch (NoSuchElementException e) {
-			 throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).build());
-			 
 		 } catch (FileNotFoundException e) {
 			 throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).build());
 			 
@@ -421,12 +417,9 @@ public class GvConfigurationControllerRest {
 		 try {
 			
 			 Properties configProperties = gvConfigurationManager.getXMLConfigProperties();			 			
-			 Optional.ofNullable(configProperties.remove(key)).orElseThrow(NoSuchElementException::new);			 
+			 configProperties.remove(key);			 
 			 
 			 gvConfigurationManager.saveXMLConfigProperties(configProperties);
-		 
-		 } catch (NoSuchElementException e) {
-			 throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).build());
 			 
 		 } catch (FileNotFoundException e) {
 			 throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).build());

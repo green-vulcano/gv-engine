@@ -18,7 +18,6 @@ angular.module('gvconsole')
 angular.module('gvconsole')
  .service('ConfigService', ['ENDPOINTS', '$http', function(Endpoints, $http){
 
-
 		this.getServices = function(){
 			 return $http.get(Endpoints.gvesb);
 		}
@@ -121,52 +120,26 @@ angular.module('gvconsole')
 	
 	ConfigService.getConfigHistory().then(function(response){
 		instance.history = response.data;
+		console.log(Object.keys(response.data));
 		},function(response){
-		console.log("error: " + response.data);
+		console.log("error getConfigHistory: " + response.data);
 		});
 	
 	this.addConfig = function(){
 		ConfigService.addConfig(instance.deploy.id,instance.deploy.configfile)
 			.then(function(response){
+				instance.alerts.push({type: 'success', msg: 'Configuration deployed successfully'});
+				setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
 			},function(response){
-				console.log("error: " + response.data);
+				console.log("error addConfig: " + response.data);
 			});
 		
 		ConfigService.getConfigHistory().then(function(response){
 			instance.history = response.data;
 			},function(response){
-			console.log("error: " + error);
+			console.log("error getConfigHistory after addConfig: " + error);
 			});
 		
-	}	
-
-	this.deployConfiguration = function (){
-
-		$scope.deployInProgress = true;
-
-		ConfigService.deploy(instance.deploy.configfile, instance.deploy.id)
-		.then(function(response) {
-			$scope.deployInProgress = false;
-			instance.deploy = {};
-			instance.loadConfigInfo();
-			instance.alerts.push({type: 'success', msg: 'Configuration deployed successfully'});
-      setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
-		}, function(response){
-			switch (response.status) {
-
-			case 401: case 403:
-				$location.path('login');
-				break;
-
-			default:
-				$scope.deployInProgress = false;
-				instance.alerts.push({type: 'danger', msg: 'Configuration deploy failed'});
-        setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
-				break;
-			}
-
-		});
-
 	}
 
 	this.loadConfigInfo = function() {
@@ -232,8 +205,14 @@ angular.module('gvconsole')
 				instance.alerts.push({type: 'success', msg: 'Configuration deleted successfully'});
 				setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
 			},function(response){
-				console.log("error: " + response.data);
+				console.log("error delete config: " + response.data);
 			})
+			
+			ConfigService.getConfigHistory().then(function(response){
+				instance.history = response.data;
+				},function(response){
+				console.log("error get config history after delete: " + error);
+				});
 	};
 	
 	ConfigService.getXMLFiles().then(function(response){
@@ -243,6 +222,8 @@ angular.module('gvconsole')
 				LoadXMLString(value, response.data);
 			});
 		});
+	},function(response){
+		console.log("error getXMLFiles: " + response.data);
 	});
 
 }]);
@@ -252,6 +233,8 @@ angular.module('gvconsole')
 .controller('ConfigDeployController',['ConfigService','$routeParams','$scope',function(ConfigService, $routeParams, $scope){
 	
 	$scope.newConfigId = $routeParams.newConfigId;
+	
+	this.alerts = [];
 	
 	var instance = this;
 	
