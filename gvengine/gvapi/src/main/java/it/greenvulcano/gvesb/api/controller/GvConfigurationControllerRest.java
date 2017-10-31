@@ -29,6 +29,8 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -104,10 +106,12 @@ public class GvConfigurationControllerRest {
 	 public void installConfiguration(@PathParam("configId") String id,
 			            @Multipart(value="gvconfiguration") Attachment config) {
 		 
-		 switch(config.getHeader("Content-Type")) {
+		 MediaType contentType = Optional.ofNullable(config.getContentType()).orElse(MediaType.APPLICATION_OCTET_STREAM_TYPE);
+			 
+		 switch(contentType.getSubtype()) {
 		 
-		 case "application/zip":
-		 case "application/x-zip-compressed":
+		 case "zip":
+		 case "x-zip-compressed":
 		 			 		 
 			 try (InputStream inputData = config.getDataHandler().getInputStream()){							 
 				 
