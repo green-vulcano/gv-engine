@@ -19,7 +19,7 @@ angular.module('gvconsole')
  .service('ConfigService', ['ENDPOINTS', '$http', function(Endpoints, $http){
 
 		this.getServices = function(){
-			 return $http.get(Endpoints.gvesb);
+			return $http.get(Endpoints.gvesb);
 		}
 
 		this.getConfigInfo = function() {
@@ -39,31 +39,23 @@ angular.module('gvconsole')
 		}
 
 	    this.getConfigHistory = function(){
-	      return $http.get(Endpoints.gvconfig + '/configuration/');
+	    	return $http.get(Endpoints.gvconfig + '/configuration');
 	    }
 
-	    this.getConfigFiles = function(){
-	      return $http.get(Endpoints.gvconfig + '/configuration');
-	     }
-
-	    this.getConfigFile = function(fileName){
-		  return $http.get(Endpoints.gvconfig + '/configuration/' + fileName);
-		 }
-
 	    this.getGVCore = function(id){
-	      return $http.get(Endpoints.gvconfig + '/configuration/' + id + '/GVCore.xml');
+	    	return $http.get(Endpoints.gvconfig + '/configuration/' + id + '/GVCore.xml');
 	    }
 
 	    this.getGVCoreProperties = function(id){
-		  return $http.get(Endpoints.gvconfig + '/configuration/' + id + '/properties');
+	    	return $http.get(Endpoints.gvconfig + '/configuration/' + id + '/properties');
 		}
 
 	    this.getProperties = function(){
-	      return $http.get(Endpoints.gvconfig + '/property');
+	    	return $http.get(Endpoints.gvconfig + '/property');
 	    }
 
 	    this.getPropertyValue = function(key){
-	      return $http.get(Endpoints.gvconfig + '/property/' + key);
+	    	return $http.get(Endpoints.gvconfig + '/property/' + key);
 	    }
 
 	    this.setProperties = function(properties){
@@ -71,10 +63,13 @@ angular.module('gvconsole')
 	    }
 
 	    this.deleteConfig = function(id){
-	      return $http.delete(Endpoints.gvconfig + '/configuration/' + id, {headers: {'Content-Type': 'multipart/form-data'}});
+	    	return $http.delete(Endpoints.gvconfig + '/configuration/' + id, {headers: {'Content-Type': 'multipart/form-data'}});
 	    }
 
 	    this.addConfig = function(id,config){
+	    	
+	    	//return $http.post(Endpoints.gvconfig + '/configuration/' + id,{headers:{'Content-Type': 'multipart/form-data'}});
+	    	
 	    	var fd = new FormData();
 	        fd.append('gvconfiguration', config);
 
@@ -237,16 +232,15 @@ angular.module('gvconsole')
 
 	ConfigService.getConfigInfo()
 		.then(function(response){
-		$scope.currentConfigId = response.data.id;
-		ConfigService.getGVCore(response.data.id).then(
-			       function(response){
-			        $scope.currentGVCore = response.data;
-			     },function(response){
-			        console.log("error: " + response.data);
-			     });
-
-		},function(response){
-			console.log("error: " + reponse.data);
+			$scope.currentConfigId = response.data.id;
+			},function(response){
+				console.log("error get currentConfigId: " + reponse.data);
+	});
+	
+	ConfigService.getXMLFile("GVCore.xml").then(function(response){
+		$scope.currentGVCore = response.data;
+	},function(response){
+		console.log("error retrieve GVCore of current configuration");
 	});
 
 	ConfigService.getGVCore($scope.newConfigId)
@@ -273,6 +267,7 @@ angular.module('gvconsole')
 
 	  this.properties = {};
 	  this.propertiesKeys = [];
+	  this.propertiesValue = [];
 
 	 ConfigService.getGVCoreProperties($scope.newConfigId).then(function(response){
 			instance.propertiesKeys = response.data;
@@ -290,20 +285,23 @@ angular.module('gvconsole')
 	this.deploy = function(){
 		ConfigService.deploy($scope.newConfigId).then(function(response){
 			console.log("deploy success");
-			console.log("instance.properties.keys: " + Object.keys(instance.properties));
-			console.log("instance.properties.values: " + Object.values(instance.properties));
-			/*
+			
 			ConfigService.setProperties(instance.properties).then(function(response){
 				console.log("salvataggio properties avvenuto");
 			},function(response){
 				console.log("salvataggio properties errore");
-			});*/
+			});
 
 		},function(response){
 			console.log("deploy error");
 		})
-
-
+		
+		ConfigService.getConfigHistory().then(function(response){
+			instance.history = response.data;
+			},function(response){
+			console.log("error getConfigHistory in saveProperties: " + response.data);
+			});
+		
 	};
 
 }]);

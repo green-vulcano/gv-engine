@@ -83,7 +83,7 @@
 											            <tbody>
 											              <tr data-ng-repeat="(key,value) in ctrl.properties">
 											                <td><div class="col-sm-4">{{key}}</div></td>
-											                <td><div class="col-sm-6"><input type="text" class="form-control" data-ng-model="value" name="value" required></div></td>
+											                <td><div class="col-sm-6"><input type="text" class="form-control" data-ng-model="ctrl.properties[key]" name="value" required></div></td>
 											              </tr>
 											            </tbody>
 											          </table>
