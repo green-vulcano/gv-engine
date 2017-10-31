@@ -98,6 +98,7 @@ public class GvConfigurationControllerRest {
 	 
 	 @POST
 	 @Path("/configuration/{configId}")	
+	 @Consumes(MediaType.MULTIPART_FORM_DATA)
 	 @RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
 	 public void installConfiguration(@PathParam("configId") String id,
 			            @Multipart(value="gvconfiguration") Attachment config) {
@@ -132,8 +133,7 @@ public class GvConfigurationControllerRest {
 	 }	 
 	 
 	 @DELETE
-	 @Path("/configuration/{configId}")
-	 @Consumes(MediaType.MULTIPART_FORM_DATA)
+	 @Path("/configuration/{configId}")	
 	 @RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
 	 public void deleteConfiguration (@PathParam("configId") String id) {
 	 	try {
@@ -258,7 +258,6 @@ public class GvConfigurationControllerRest {
 	 
 	 @POST
 	 @Path("/deploy/{configId}")
-	 @Consumes(MediaType.MULTIPART_FORM_DATA)
 	 @RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
 	 public void deploy(@PathParam("configId") String id) {
 		 				 		 		 
