@@ -1,8 +1,15 @@
 angular.module('gvconsole')
  .service('AdminService', ['ENDPOINTS', '$http', function(Endpoints, $http){
 
-		this.getAllUsers = function(range){
-			 return $http.get(Endpoints.gviam + '/admin/users', {headers: {'Range':'users ' + range}});
+		this.getAllUsers = function(range,search,order){
+			 //return $http.get(Endpoints.gviam + '/admin/users' + search, {params:{"order":order}},{headers: {'Range':'users ' + range}});
+			 var request = {
+					 method: 'GET',
+					 url: Endpoints.gviam + '/admin/users' + search,
+					 params: {"order":order},
+					 headers: {'Range':'users ' + range}
+			 }
+			 return $http(request);
 		}
 
 		this.getUser = function(id){
@@ -38,6 +45,8 @@ angular.module('gvconsole')
 angular.module('gvconsole')
 .controller('UsersListController',['AdminService','$rootScope', '$scope', '$location', function(AdminService,$rootScope, $scope, $location){
 
+	
+	
 	var instance = this;
   for( prop in $rootScope.globals.currentUser.roles){
     if($rootScope.globals.currentUser.isAdministrator){
@@ -53,27 +62,32 @@ angular.module('gvconsole')
 	this.alerts = [];
 
 	this.list = [];
+	
+	$scope.search = "";
+	$scope.order = "username";
 
-  $scope.$watchGroup(["currentPage","viewby"], function(newValue) {
-
-    if($scope.selected ) {
-      angular.element('#selctNum option:eq(3)').prop('selected', true);
-      $scope.selected = false;
-    }
-    angular.element("#selctNum option[value='? number:10 ?']").remove();
+  $scope.$watchGroup(["currentPage","viewby","search","order","reverse"], function(newValue) {
+	  
+	  if($scope.selected) {
+	      angular.element('#search_param option:eq(0)').prop('selected', true);
+	      angular.element('#selctNum option:eq(3)').prop('selected', true);
+	      angular.element("#selctNum option[value='? number:10 ?']").remove();
+	      angular.element("#search_param option[value='? undefined:undefined ?']").remove();
+	      $scope.selected = false;
+	    }
 
     $scope.min = (newValue[0] * newValue[1]) - newValue[1];
     $scope.max = (newValue[0] * newValue[1]);
 
     $scope.range = $scope.min + '-' + $scope.max;
-
-    AdminService.getAllUsers($scope.range).then(
+    	
+    	AdminService.getAllUsers($scope.range,$scope.search,$scope.order).then(
+    
   				function(response){
 
             instance.alerts = [];
             instance.list = response.data;
             $scope.totalItems = (response.headers('Content-Range').split('/'))[1];
-
             },
   				function(response){
   					switch (response.status) {
@@ -84,7 +98,7 @@ angular.module('gvconsole')
 
   							default:
   								instance.alerts.push({type: 'danger', msg: 'Data not available'});
-                  $scope.dataNa=true;
+  								$scope.dataNa=true;
   								break;
   					}
   			$scope.loadStatus = "error";
@@ -93,48 +107,29 @@ angular.module('gvconsole')
     });
 
     $scope.maxSize = $scope.totalItems/3;
-
-    $scope.order = function(by){
-
-      for(count in instance.list){
-        if(instance.list[count].userInfo.email == "" || instance.list[count].userInfo.email == null){
-          instance.list[count].userInfo.email = undefined;
-        }
-
-        if(instance.list[count].userInfo.fullname == "" || instance.list[count].userInfo.fullname == null){
-          instance.list[count].userInfo.fullname = undefined;
-        }
-
-      };
-
-      $scope.orderby = by;
-
-      if($scope.orderby == $scope.reverse){
-        $scope.orderby = '-' + $scope.orderby;
-        $scope.reverse = $scope.orderby;
-      }else{
-
-      $scope.reverse = $scope.orderby;
+    
+   $scope.search_order = function(){
+    	
+    	if($scope.search_input != undefined && $scope.search_input != ""){
+    		$scope.search = "?" + $scope.search_select + "=" + $scope.search_input;
+    	}else{
+    		$scope.search = "";
+    	}
     }
+    
+    
 
-      };
-      
-      $scope.SearchTab = function () {
-          $scope.columSearch = document.getElementById('search_param').value;
-          if ($scope.columSearch == 'username'){
-            $scope.queryUsername = document.getElementById('SearchTabValue').value;
-            $scope.queryFullname = undefined;
-            $scope.queryEmail = undefined;
-          }else { if ($scope.columSearch == 'fullname') {
-            $scope.queryFullname = document.getElementById('SearchTabValue').value;
-            $scope.queryUsername = undefined;
-            $scope.queryEmail = undefined;
+    $scope.orderFunction = function(by){
+    	$scope.order = by;
+    	
+    	if($scope.order == $scope.reverse){
+            $scope.order = $scope.order + ":reverse";
+            console.log("$scope.order: " + $scope.order);
+            $scope.reverse = $scope.order;
           }else{
-            $scope.queryEmail = document.getElementById('SearchTabValue').value;
-            $scope.queryFullname = undefined;
-            $scope.queryUsername = undefined;}
+          $scope.reverse = $scope.order;
         }
-        
+
       };
 
 }]);

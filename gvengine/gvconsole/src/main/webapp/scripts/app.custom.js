@@ -23,12 +23,12 @@ angular.module('gvconsole', ['ngCookies','ngRoute','angular-quartz-cron', 'ui.bo
     		when('/users', {
     			templateUrl: 'topics/users/list.html'
     		}).
-	        when('/users/:userId', {
-	          templateUrl: 'topics/users/form.html'
-	        }).
-					when('/myprofile', {
-	          templateUrl: 'topics/profile/myprofile.html'
-	        }).
+    		when('/users/:userId', {
+    			templateUrl: 'topics/users/form.html'
+    		}).
+			when('/myprofile', {
+				templateUrl: 'topics/profile/myprofile.html'
+			}).
 			when('/monitoring', {
 				templateUrl: 'topics/monitoring/monitoring.html'
 			}).
@@ -41,15 +41,12 @@ angular.module('gvconsole', ['ngCookies','ngRoute','angular-quartz-cron', 'ui.bo
 			when('/properties', {
 				templateUrl: 'topics/properties/properties.html'
 			}).
-			when('/properties/modify', {
-				templateUrl: 'topics/properties/modify.html'
-			}).
 			when('/xmlconfig', {
 				templateUrl: 'topics/xml/config.html'
 			}).
-	          otherwise({
-	    	        redirectTo: '/myprofile'
-	    	  });
+			otherwise({
+    	        redirectTo: '/myprofile'
+			});
 }])
 .run(['$rootScope', '$location', '$cookieStore', '$http',
     function ($rootScope, $location, $cookieStore, $http) {
@@ -169,19 +166,16 @@ angular.element(document).ready(function() {
 function resetFunction() {
 document.getElementById("prova2").reset();
 };
+function resetFunctionDeploy() {
+document.getElementById("deployForm").reset();
+};
+function resetFunctionPassword() {
+document.getElementById("passwordForm").reset();
+};
 function slideButtonMenu(){
 	var width = angular.element(window).width();
 	if(width <= 768){
       angular.element('.navbar-nav').toggleClass('slide-in');
       angular.element('.side-body').toggleClass('body-slide-in');
 		};
-};
-function topFunction() {
-angular.element('#back-to-top').click(function () {
-		angular.element('#back-to-top').tooltip('hide');
-		angular.element('body,html').animate({
-				scrollTop: 0
-		}, 800);
-		return false;
-});
 };

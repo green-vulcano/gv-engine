@@ -30,7 +30,7 @@ angular.module('gvconsole')
 			return $http.post(Endpoints.gvconfig + '/deploy/' + id);
 		}
 
-		this.getConfig = function() {
+		this.exportConfig = function() {
 			return $http({
 				method: 'GET',
 			    url: Endpoints.gvconfig + '/deploy/export',
@@ -63,13 +63,10 @@ angular.module('gvconsole')
 	    }
 
 	    this.deleteConfig = function(id){
-	    	return $http.delete(Endpoints.gvconfig + '/configuration/' + id, {headers: {'Content-Type': 'multipart/form-data'}});
+	    	return $http.delete(Endpoints.gvconfig + '/configuration/' + id);
 	    }
 
 	    this.addConfig = function(id,config){
-	    	
-	    	//return $http.post(Endpoints.gvconfig + '/configuration/' + id,{headers:{'Content-Type': 'multipart/form-data'}});
-	    	
 	    	var fd = new FormData();
 	        fd.append('gvconfiguration', config);
 
@@ -102,8 +99,7 @@ angular.module('gvconsole')
 	var instance = this;
 
 	this.alerts = [];
-
-	//this.services = {}; inutile?
+  this.alertsAdd = [];
 
 	this.configInfo = {};
 
@@ -116,14 +112,14 @@ angular.module('gvconsole')
     ConfigService.getConfigHistory().then(function(response){
   		instance.history = response.data;
   		},function(response){
-  		console.log("error getConfigHistory: " + response.data);
+  			instance.alerts.push({type: 'danger', msg: 'Config history not available'});
   		});
   };
 
 	ConfigService.getConfigHistory().then(function(response){
 		instance.history = response.data;
 		},function(response){
-		console.log("error getConfigHistory: " + response.data);
+		   instance.alerts.push({type: 'danger', msg: 'Config history not available'});
 		});
 
 	this.addConfig = function(){
@@ -131,9 +127,12 @@ angular.module('gvconsole')
 			.then(function(response){
 				instance.alerts.push({type: 'success', msg: 'Configuration added successfully'});
 				setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
+        angular.element(".fadeout2").modal('hide');
         instance.loadList();
 			},function(response){
-				console.log("error addConfig: " + response.data);
+				instance.alerts.push({type: 'danger', msg: 'Configuration added failed'});
+        setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
+       angular.element(".fadeout2").modal('hide');
 			});
 
 	}
@@ -161,7 +160,7 @@ angular.module('gvconsole')
 
 	this.exportConfig = function () {
 		$scope.exportInProgress = true;
-		ConfigService.getConfig()
+		ConfigService.exportConfig()
 			.then( function(response) {
 
 				var linkElement = document.createElement('a');
@@ -202,7 +201,8 @@ angular.module('gvconsole')
 				setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
         instance.loadList();
 			},function(response){
-				console.log("error delete config: " + response.data);
+				instance.alerts.push({type: 'danger', msg: 'Configuration deleted failed'});
+        setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
 			})
 
 	};
@@ -215,8 +215,10 @@ angular.module('gvconsole')
 			});
 		});
 	},function(response){
-		console.log("error getXMLFiles: " + response.data);
+		instance.alerts.push({type: 'danger', msg: 'XML File not available'});
 	});
+
+
 
 }]);
 
@@ -227,6 +229,7 @@ angular.module('gvconsole')
 	$scope.newConfigId = $routeParams.newConfigId;
 
 	this.alerts = [];
+  this.alertsAdd = [];
 
 	var instance = this;
 
@@ -234,20 +237,20 @@ angular.module('gvconsole')
 		.then(function(response){
 			$scope.currentConfigId = response.data.id;
 			},function(response){
-				console.log("error get currentConfigId: " + reponse.data);
+				instance.alerts.push({type: 'danger', msg: 'Configuration Info not available'});
 	});
-	
+
 	ConfigService.getXMLFile("GVCore.xml").then(function(response){
 		$scope.currentGVCore = response.data;
 	},function(response){
-		console.log("error retrieve GVCore of current configuration");
+		instance.alerts.push({type: 'danger', msg: 'XML File not available'});
 	});
 
 	ConfigService.getGVCore($scope.newConfigId)
 		.then(function(response){
 			$scope.newGVCore = response.data;
 		},function(response){
-			console.log("error: " + response.data);
+			instance.alerts.push({type: 'danger', msg: 'GV Core not available'});
 	});
 
 	$scope.step = 0;
@@ -267,7 +270,6 @@ angular.module('gvconsole')
 
 	  this.properties = {};
 	  this.propertiesKeys = [];
-	  this.propertiesValue = [];
 
 	 ConfigService.getGVCoreProperties($scope.newConfigId).then(function(response){
 			instance.propertiesKeys = response.data;
@@ -284,24 +286,21 @@ angular.module('gvconsole')
 
 	this.deploy = function(){
 		ConfigService.deploy($scope.newConfigId).then(function(response){
-			console.log("deploy success");
-			
 			ConfigService.setProperties(instance.properties).then(function(response){
-				console.log("salvataggio properties avvenuto");
 			},function(response){
-				console.log("salvataggio properties errore");
+				instance.alerts.push({type: 'danger', msg: 'Properties could not be saved'});
 			});
 
 		},function(response){
-			console.log("deploy error");
+			instance.alerts.push({type: 'danger', msg: 'Configuration deployments could not be made'});
 		})
-		
+
 		ConfigService.getConfigHistory().then(function(response){
 			instance.history = response.data;
 			},function(response){
-			console.log("error getConfigHistory in saveProperties: " + response.data);
+			     instance.alerts.push({type: 'danger', msg: 'Config history not available'});
 			});
-		
+
 	};
 
 }]);

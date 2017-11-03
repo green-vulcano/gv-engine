@@ -301,7 +301,7 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 		
 		Response response = null;
 		
-		try {			
+		try {
 			SearchResult result = gvUsersManager.searchUsers(criteria);
 			if (offset > result.getTotalCount()) {
 				throw new IndexOutOfBoundsException("*/"+result.getTotalCount());

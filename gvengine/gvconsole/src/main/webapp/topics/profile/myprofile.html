@@ -24,7 +24,8 @@
 									<p class="col-sm-2">{{globals.currentUser.userInfo.email}}</p>
 								</div>
 							</div>
-							<table id="users" class="table table-hover">
+		          
+		          <table id="users" class="table table-hover">
 		            <thead>
 		              <tr>
 		                <th>Role Name</th>
@@ -32,28 +33,23 @@
 		              </tr>
 		            </thead>
 		            <tbody>
-
-
-		              <tr data-ng-repeat="role in globals.currentUser.roles">
+					  <tr data-ng-repeat="role in roles">
 		                <td style="color:#961e24">{{role.name}}</td>
 		                <td style="color:#238650">{{role.description}}</td>
 		              </tr>
-
-
-		            </tbody>
+					</tbody>
 		          </table>
 							<div class="panel-footer clearfix" style="text-align: center;">
-								<a onClick="slide();" class="btn btn-warning pull-right">Modify</a>
-								<button type="button" class="btn btn-primary pull-right" style="margin-right:10px" id="myBtn">Change Password</button>
+								<button type="button" onClick="resetFunctionPassword();" class="btn btn-primary pull-right" data-toggle="modal" data-target="#passwordModal{{$index}}">Change Password</button>
 						</div>
 
 					</div>
 
 						<!-- Prova Style -->
 						<div class="col-md-12">
-							<div id="myModal" class="modal fadeout">
+							<div id="passwordModal" class="modal fadeoutModal">
 								<div class="modal-content">
-									<form name="renewForm" data-ng-submit="changePassword()">
+									<form id="passwordForm" name="renewForm" data-ng-submit="changePassword()">
 										<h4>Set new password</h4>
 										<div data-ng-repeat="alert in ctrl.alerts" class="fadeout2 alert alert-{{alert.type}}" role="alert" data-ng-class="{'off': error==false}">{{alert.msg}}</div>
 										<div id="setNewPassword" class="input-group">
@@ -73,7 +69,7 @@
 													<br> Valid chars: a-z A-Z 0-9 &#46; &#95; &#64; &amp; &#36; &#35; &#33; &#63; &#45; (no white space)
 
 													</span>
-													<button type="button" class="btn exite">Back</button>
+													<button type="button" class="btn" data-dismiss="modal">Back</button>
 													<button type="submit" id="prova" class="btn btn-success" data-ng-disabled="renewForm.new_password.$invalid">Confirm</button>
 												</form>
 											</div>
@@ -82,7 +78,6 @@
 
 
 
-										<script type="text/javascript" src="scripts/delete_wind.js"></script>
 									</div>
 					</div>
 				</div>

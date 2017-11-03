@@ -1,4 +1,3 @@
-
 angular.module('gvconsole')
 .factory('profileService',['$rootScope','ENDPOINTS','$http','Base64','$cookieStore',
 function ($rootScope,Endpoints,$http,Base64,$cookieStore) {
@@ -34,6 +33,10 @@ function ($rootScope,Endpoints,$http,Base64,$cookieStore) {
     });
 
  };
+ 
+ service.getUser = function(id){
+		return $http.get(Endpoints.gviam + '/admin/users/' + id);
+	};
 
 return service;
 
@@ -49,28 +52,37 @@ angular.module('gvconsole')
 
 
   $scope.changePassword = function(){
-  profileService.changePassword($rootScope.globals.currentUser.username, $scope.oldPassword, $scope.newPassword,
-  function(status){
-
-  switch (status) {
-        case 204:
-            instance.alerts.length = 0;
-            $scope.error = false;
-            instance.alerts.push({type: 'success', msg: 'Change Password success!'});
-            $scope.errorMessage = 'Password changed';
-            setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 0000);
-            setTimeout(function(){ angular.element(".fadeout2").fadeOut(); }, 3000);
-            break;
-
-        case 401:
-            instance.alerts.length = 0;
-            $scope.error = true;
-            instance.alerts.push({type: 'danger', msg: 'Authentication failed, please check old password.'});
-            setTimeout(function(){ angular.element(".fadeout2").fadeOut(); }, 3000);
-            break;
-      };
-
-});
-};
+	  profileService.changePassword($rootScope.globals.currentUser.username, $scope.oldPassword, $scope.newPassword,
+	  function(status){
+	
+	  switch (status) {
+	        case 204:
+	            instance.alerts.length = 0;
+	            $scope.error = false;
+	            instance.alerts.push({type: 'success', msg: 'Change Password success!'});
+	            $scope.errorMessage = 'Password changed';
+	            angular.element(".fadeoutModal").modal('hide');
+	            setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 0000);
+	            setTimeout(function(){ angular.element(".fadeout2").fadeOut(); }, 3000);
+	            break;
+	
+	        case 401:
+	            instance.alerts.length = 0;
+	            $scope.error = true;
+	            instance.alerts.push({type: 'danger', msg: 'Authentication failed, please check old password.'});
+	            setTimeout(function(){ angular.element(".fadeout2").fadeOut(); }, 3000);
+	            break;
+	      };
+	
+	  });
+  };
+  
+  
+  
+  profileService.getUser($rootScope.globals.currentUser.id).then(function(response){
+	  $scope.roles = response.data.roles;
+  },function(response){
+	  console.log("error: " + response.data);
+  })
 
 }]);

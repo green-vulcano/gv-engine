@@ -87,7 +87,8 @@ public class SwaggerController {
 	}
 	
 	private String getBasePath(UriInfo uriInfo){
-		return Paths.get(uriInfo.getAbsolutePath().toString()).getParent().toString();
+		
+		return uriInfo.getBaseUri().getPath();
 	}
 	
 	@GET 

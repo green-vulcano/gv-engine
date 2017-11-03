@@ -11,14 +11,14 @@
   <div id="searchBarUser" class="col-xs-8">
           <form>
             <div class="col-xs-3"  style="padding-left:0px">
-              <select id="search_param" class="form-control">
-                         <option value="username">Username</option>
-                         <option value="fullname">Full Name</option>
-                         <option value="email">Email</option>
+              <select id="search_param" data-ng-model="search_select" data-ng-init="search_select='username'" class="form-control">
+                         <option>username</option>
+                         <option>Full Name</option>
+                         <option>Email</option>
                      </select>
             </div>
-           <div class="col-xs-6"><input id="SearchTabValue" type="text" class="form-control" name="x" placeholder="Search in the table..."></div>
-           <div class="col-xs-1"><button class="btn btn-default" type="button" data-ng-click="SearchTab();"><i class="fa fa fa-search" aria-hidden="true"></i></button></div>
+           <div class="col-xs-6"><input id="SearchTabValue" data-ng-model="search_input" type="text" class="form-control" name="x" placeholder="Search in the table..."></div>
+           <div class="col-xs-1"><button class="btn btn-default" type="submit" data-ng-click="search_order()"><i class="fa fa fa-search" aria-hidden="true"></i></button></div>
          </form>
        </div>
      </div>
@@ -30,19 +30,19 @@
       <table id="users" class="table table-hover">
         <thead>
           <tr>
-            <th data-ng-click="order('username')" class="handPointer noselect">Users <i aria-hidden="true" data-ng-class="{'fa fa-sort': orderby != 'username' && orderby != '-'+'username', 'fa fa-sort-asc': orderby == 'username', 'fa fa-sort-desc': orderby == '-'+'username'}"></i></th>
-            <th data-ng-click="order('userInfo.fullname')" class="handPointer noselect">Full Name <i aria-hidden="true" data-ng-class="{'fa fa-sort': orderby != 'userInfo.fullname' && orderby != '-'+'userInfo.fullname', 'fa fa-sort-asc': orderby == 'userInfo.fullname', 'fa fa-sort-desc': orderby == '-'+'userInfo.fullname'}"></i></th>
-            <th data-ng-click="order('userInfo.email')" class="handPointer noselect">E-Mail <i aria-hidden="true" data-ng-class="{'fa fa-sort': orderby != 'userInfo.email' && orderby != '-'+'userInfo.email', 'fa fa-sort-asc': orderby == 'userInfo.email', 'fa fa-sort-desc': orderby == '-'+'userInfo.email'}"></i></th>
+            <th data-ng-click="orderFunction('username')" class="handPointer noselect">Users <i aria-hidden="true" data-ng-class="{'fa fa-sort': order != 'username' && order != '-'+'username', 'fa fa-sort-asc': order == 'username', 'fa fa-sort-desc': order == 'username:reverse'}"></i></th>
+            <th data-ng-click="orderFunction('Full Name')" class="handPointer noselect">Full Name <i aria-hidden="true" data-ng-class="{'fa fa-sort': order != 'Full Name' && order != 'Full Name:reverse', 'fa fa-sort-asc': order == 'Full Name', 'fa fa-sort-desc': order == 'Full Name:reverse'}"></i></th>
+            <th data-ng-click="orderFunction('Email')" class="handPointer noselect">E-Mail <i aria-hidden="true" data-ng-class="{'fa fa-sort': order != 'Email' && order != 'Email:reverse', 'fa fa-sort-asc': order == 'Email', 'fa fa-sort-desc': order == 'Email:reverse'}"></i></th>
             <th>Roles</th>
             <th>Status</th>
             <th>Action</th>
           </tr>
         </thead>
         <tbody>
-          <tr data-ng-repeat="user in ctrl.list | orderBy : orderby | filter : { username : queryUsername} | filter: { fullname : queryFullname} | filter: { email : queryEmail}">
+          <tr data-ng-repeat="user in ctrl.list">
             <td>{{user.username}}</td>
-            <td ng-init="user.fullname = user.userInfo.fullname">{{user.fullname}}</td>
-            <td ng-init="user.email = user.userInfo.email">{{user.email}}</td>
+            <td data-ng-init="user.fullname = user.userInfo.fullname">{{user.fullname}}</td>
+            <td data-ng-init="user.email = user.userInfo.email">{{user.email}}</td>
             <td class="col-sm-4">
               <ul class="list-inline">
                 <li	data-ng-repeat="(k,role) in user.roles">
@@ -69,7 +69,7 @@
         <ul class="pagination pull-right" style="margin: 3px;">
         <ul uib-pagination total-items="totalItems" ng-model="currentPage" items-per-page="viewby" max-size="maxSize" class="pagination-sm" boundary-link-numbers="true" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" style="margin: 0;"></ul>
     </div>
-    View <select id="selctNum" ng-model="viewby" class="form-control"><option>3</option><option>5</option><option>10</option><option>20</option><option>30</option><option>40</option><option>50</option></select> users at once.
+    View <select id="selctNum" data-ng-model="viewby" class="form-control"><option>3</option><option>5</option><option>10</option><option>20</option><option>30</option><option>40</option><option>50</option></select> users at once.
   </div>
 </div>
   </div>

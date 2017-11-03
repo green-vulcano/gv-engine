@@ -5,44 +5,9 @@
    <!-- FadeOut Function -->
    <div id="fadeout" data-ng-repeat="alert in ctrl.alerts" class="fadeout alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
    <!-- FadeOut Function -->
-      <form id="deployForm" name="deployForm" class="form-horizontal"
-         data-ng-submit="ctrl.addConfig()">
-        <fieldset id="myFieldset">
-         <div class="panel panel-default">
-            <div class="panel-heading clearfix">
-                  <i class="fa fa-sitemap fa-rotate-270"></i> New configuration
-            </div>
-            <div class="panel-body">
-               <div class="form-group">
-                  <div class="col-sm-8 col-sm-offset-2">
-                     <input id="configid" name="configid" type="text" class="form-control"
-                        placeholder="Configuration ID" pattern="(?=^.{1,64}$)^[a-zA-Z0-9._-]+$"
-                        data-ng-maxlength="64" data-ng-model="ctrl.deploy.id" required>
-                  </div>
-               </div>
-               <div class="form-group">
-                  <div class="col-sm-8 col-sm-offset-2">
-                     <input id="configfile" name="configfile" type="file"
-                        accept="application/zip" file-model="ctrl.deploy.configfile" required>
-                  </div>
-               </div>
-            </div>
-            <div class="panel-footer clearfix" style="text-align: center">
-               <div class="pull-right">
-                  <img data-ng-show="downloadInProgress"
-                     src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
-                  <button type="submit" class="btn btn-success"
-                     data-ng-hide="downloadInProgress"
-                     data-ng-disabled="deployForm.$invalid || !(ctrl.deploy.configfile)">
-                  <i class="fa fa-plus"></i> Add</button>
-               </div>
-            </div>
-         </div>
-       </fieldset>
-      </form>
       <div class="panel panel-default">
          <div class="panel-heading clearfix">
-               <i class="fa fa-sitemap fa-rotate-270"></i> Current/Configuration list
+               <i class="fa fa-sitemap fa-rotate-270"></i> Current Configuration
          </div>
          <div class="panel-body">
             <div class="col-sm-8 col-sm-offset-2">
@@ -73,8 +38,8 @@
                <td>{{config.time | date : 'd MMMM yyyy H:mm:ss'}}</td>
                <td class="text-right">
                  <button onClick="slide();" type="button" class="btn btn-success" data-ng-click="go('/config/deploy/' + config.id)"><i class="fa fa-bolt"></i> Deploy</button>
-                 <button onClick="slide();" type="button" class="btn btn-danger" data-toggle="modal" data-target="#myModal{{$index}}"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
-                 <div id="myModal{{$index}}" class="modal fadeout">
+                 <button onClick="slide();" type="button" class="btn btn-danger" data-toggle="modal" data-target="#myModal{{$index}}" data-dismiss="modal"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+                 <div id="myModal{{$index}}" class="modal">
                    <div class="modal-content">
                      <h4> Are you sure to delete {{config.id}} ? </h4>
                      <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button>
@@ -85,6 +50,41 @@
              </tr>
            </tbody>
          </table>
+              <div id="addModal{{$index}}" class="modal fadeout2">
+                <div class="modal-content">
+                  <h3> Add new Configuration</h3>
+
+                  <form id="deployForm" name="deployForm" class="form-horizontal"
+                     data-ng-submit="ctrl.addConfig()" >
+                    <fieldset id="myFieldset">
+
+                           <div class="form-group">
+                              <div class="col-sm-8 col-sm-offset-2">
+                                 <input id="configid" name="configid" type="text" class="form-control"
+                                    placeholder="Configuration ID" pattern="(?=^.{1,64}$)^[a-zA-Z0-9._-]+$"
+                                    data-ng-maxlength="64" data-ng-model="ctrl.deploy.id" required>
+                              </div>
+                           </div>
+                           <div class="form-group">
+                              <div class="col-sm-8 col-sm-offset-2">
+                                 <input id="configfile" name="configfile" type="file"
+                                    accept="application/zip" file-model="ctrl.deploy.configfile" required>
+                              </div>
+                           </div>
+                              <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button>
+                              <button type="submit" class="btn btn-success"
+                                 data-ng-hide="downloadInProgress"
+                                 data-ng-disabled="deployForm.$invalid || !(ctrl.deploy.configfile)">
+                              <i class="fa fa-plus"></i> Add</button>
+                   </fieldset>
+                 </form>
+                </div>
+              </div>
+              <div class="panel-footer clearfix" style="text-align: center; border-bottom: 1px solid #ddd;border-radius:0px">
+                <button onClick="resetFunctionDeploy();" type="button" class="btn btn-warning pull-right" data-toggle="modal" data-target="#addModal{{$index}}"><i class="fa fa-plus"></i></button>
+
+              </div>
+         </div>
          <div style="margin:10px" class="alert alert-warning" data-ng-hide="ctrl.history.length">No previously configuration found!</div>
       </div>
       <div class="panel panel-default" >
