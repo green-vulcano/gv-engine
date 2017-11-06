@@ -21,9 +21,9 @@ package it.greenvulcano.gvesb.api.docs;
 
 import java.io.IOException;
 import java.net.URI;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Path;

@@ -127,9 +127,30 @@ public class UserRepositoryHibernate extends RepositoryHibernate<User, Long> imp
 			});
 		}
 	
+		order.remove(Parameter.role);
 		if (order!=null && !order.isEmpty()) {			
-			String orderBy = order.entrySet().stream()					               
-					               .map(e -> e.getKey().name()+ " " +Optional.ofNullable(e.getValue()).orElse(Order.desc).name())
+			String orderBy = order.entrySet().stream()				                  
+					               .map(e -> {
+					            	   
+					            	   String field;
+					            	   switch (e.getKey()) {
+											case email:										
+												field = "userInfo.email";
+											    break;
+											    
+											case fullname:
+												field = "userInfo.email";
+												break;
+								
+										    default:
+										    	field = e.getKey().name();
+										    	break;
+										    	
+											}
+					            	   
+					            	   return field+ " " +Optional.ofNullable(e.getValue()).orElse(Order.desc).name();
+					            	
+					                })
 					               .collect(Collectors.joining(",", "order by ", ""));
 			helper.getQuery().append(orderBy);
 		}
