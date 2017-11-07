@@ -105,7 +105,7 @@ public class UserRepositoryHibernate extends RepositoryHibernate<User, Long> imp
 			});
 			
 			Optional.ofNullable((String)parameters.get(Parameter.fullname)).ifPresent(fullname-> {
-				helper.getQuery().append("and u.userInfo.fullName like :_fullname ");
+				helper.getQuery().append("and u.userInfo.fullname like :_fullname ");
 				if (fullname!=null) fullname = fullname.replaceAll("\\*","%");
 				helper.getParams().put("_fullname", fullname);
 			});
@@ -135,15 +135,15 @@ public class UserRepositoryHibernate extends RepositoryHibernate<User, Long> imp
 					            	   String field;
 					            	   switch (e.getKey()) {
 											case email:										
-												field = "userInfo.email";
+												field = "u.userInfo.email";
 											    break;
 											    
 											case fullname:
-												field = "userInfo.email";
+												field = "u.userInfo.fullname";
 												break;
 								
 										    default:
-										    	field = e.getKey().name();
+										    	field = "u."+e.getKey().name();
 										    	break;
 										    	
 											}
