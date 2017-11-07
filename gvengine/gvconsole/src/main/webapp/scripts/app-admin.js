@@ -9,11 +9,11 @@ angular.module('gvconsole')
 	        if (params.email && params.email.trim().length>0) querystring+="email="+params.email + "&";
 	        if (params.role && params.role.trim().length>0) querystring+="role="+params.role + "&";
 	        if (params.enabled != undefined) querystring+="enabled="+params.enabled + "&";
-	        if (params.expired != undefined) querystring+="expired="+params.expired;
+	        if (params.expired != undefined) querystring+="expired="+params.expired + "&";
 	        
 			querystring+="order="+order;
 			
-			return $http.get(Endpoints.gviam + '/admin/users' + querystring, {params:{"order":order},headers: {'Range':'users ' + range}});
+			return $http.get(Endpoints.gviam + '/admin/users' + querystring,{headers: {'Range':'users ' + range}});
 		}
 
 		this.getUser = function(id){

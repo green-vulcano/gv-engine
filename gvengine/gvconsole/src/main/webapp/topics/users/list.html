@@ -32,9 +32,11 @@
             <th><input type="text" placeholder="Full name" data-ng-model="fullname"></th>
             <th><input type="text" placeholder="E-mail" data-ng-model="email"></th>
             <th><input type="text" placeholder="Roles" data-ng-model="role"></th>
-            <th class="col-sm-7 noselect" style="font-size: 18px; color: #bdbdbd;">
-              <div class="handPointer"><i data-ng-click="changeEnabledStatus()" data-ng-class="{'handPointer fa fa-check': enabled == undefined, 'text-success fa fa-check' : enabled == true, 'text-danger fa fa-ban' : enabled == false}"></i></div>
-              <div class="handPointer"><i data-ng-click="changeExpiredStatus()" data-ng-class="{'fa fa-key': expired == undefined, 'text-warning fa fa-key' : expired == true, 'fa fa-key text-success' : expired == false}"></i></div>
+            <th class="noselect inline-list" style="font-size: 19px; color: #bdbdbd;">
+              <div style="display: inline-flex">
+              <div class="handPointer"><i class="pull-left" data-ng-click="changeEnabledStatus()" data-ng-class="{'handPointer fa fa-check': enabled == undefined, 'text-success fa fa-check' : enabled == true, 'text-danger fa fa-ban' : enabled == false}"></i></div>
+              <div class="handPointer"><i class="pull-right" data-ng-click="changeExpiredStatus()" data-ng-class="{'fa fa-key': expired == undefined, 'text-warning fa fa-key' : expired == true,'text-success fa fa-key' : expired == false}"></i></div>
+            </div>
             </th>
             <th class="text-right"><button class="btn btn-default" type="submit" data-ng-click="search_order()"><i class="fa fa fa-search" aria-hidden="true"></i></button></th>
           </tr>
