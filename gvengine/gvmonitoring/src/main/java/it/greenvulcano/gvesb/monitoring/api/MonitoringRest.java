@@ -48,7 +48,7 @@ public class MonitoringRest {
 		this.systemMonitor = systemMonitor;
 	}
 	
-	@Path("/monitoring/memory")
+	@Path("/memory")
 	@Produces(MediaType.APPLICATION_JSON)
 	@GET
 	public Response readMemoryStatus() throws JsonProcessingException{
@@ -60,7 +60,7 @@ public class MonitoringRest {
 		return response; 
 	}	
 	
-	@Path("/monitoring/cpu")
+	@Path("/cpu")
 	@Produces(MediaType.APPLICATION_JSON)
 	@GET
 	public Response readCPUStatus() throws Exception,JsonProcessingException{
@@ -73,7 +73,7 @@ public class MonitoringRest {
 	}
 	
 	
-	@Path("/monitoring/classes")
+	@Path("/classes")
 	@Produces(MediaType.APPLICATION_JSON)
 	@GET
 	public Response getClasses() throws JsonProcessingException{
@@ -86,7 +86,7 @@ public class MonitoringRest {
 	}
 	
 	
-	@Path("/monitoring/threads")
+	@Path("/threads")
 	@Produces(MediaType.APPLICATION_JSON)
 	@GET
 	public Response getThreads() throws JsonProcessingException{

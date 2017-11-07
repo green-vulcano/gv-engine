@@ -1,19 +1,19 @@
 angular.module('gvconsole')
 .service('MonitoringServices', ['ENDPOINTS', '$http', function(Endpoints, $http){
   this.getMemory = function(){
-    return $http.get(Endpoints.gvmonitoring + "/monitoring/memory");
+    return $http.get(Endpoints.gvmonitoring + "/memory");
   }
 
   this.getClasses = function(){
-    return $http.get(Endpoints.gvmonitoring + "/monitoring/classes");
+    return $http.get(Endpoints.gvmonitoring + "/classes");
   }
 
   this.getThreads = function(){
-    return $http.get(Endpoints.gvmonitoring + "/monitoring/threads");
+    return $http.get(Endpoints.gvmonitoring + "/threads");
   }
 
   this.getCPU = function(){
-    return $http.get(Endpoints.gvmonitoring + "/monitoring/cpu");
+    return $http.get(Endpoints.gvmonitoring + "/cpu");
   }
 
 }]);

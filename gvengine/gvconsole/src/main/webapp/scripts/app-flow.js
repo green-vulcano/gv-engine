@@ -88,7 +88,7 @@ angular.module('gvconsole')
 
 				      });
 
-			 $scope.username = false;
+			 //$scope.username = false;
     }
 
     angular.element("textarea").keydown(function(e) {

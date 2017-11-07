@@ -50,6 +50,7 @@
              </tr>
            </tbody>
          </table>
+         <div style="margin:10px" class="alert alert-warning" data-ng-hide="ctrl.history.length">No previously configuration found!</div>
               <div id="addModal{{$index}}" class="modal fadeout2">
                 <div class="modal-content">
                   <h3> Add new Configuration</h3>
@@ -85,19 +86,17 @@
 
               </div>
          </div>
-         <div style="margin:10px" class="alert alert-warning" data-ng-hide="ctrl.history.length">No previously configuration found!</div>
-      </div>
       <div class="panel panel-default" >
         <div id="panelHead" class="panel-heading">
             <i class="fa fa-sitemap fa-rotate-270"></i> Configuration files
-          <button data-ng-repeat="(id,file) in filesName" id="xml-button" type="button" class="btn btn-primary pull-right" data-toggle="collapse" data-target="#{{id}}" style="margin-right:5px">{{file}}</button>
+          <button data-ng-repeat="(id,file) in filesName" type="button" class="btn btn-primary pull-right" data-toggle="collapse" data-target="#{{id}}" style="margin-right:5px">{{file}}</button>
         </div>
-          <div class="positioninline pnael-body" data-ng-repeat="(id,file) in filesName">
+          <div class="positioninline panel-body" data-ng-repeat="(id,file) in filesName">
              <div id="{{id}}" class="collapse">
                <span class="col-md-10" id="{{file}}" style="overflow: auto;"> </span>
              </div>
           </div>
-      </div>
-     </div>
+      </div>      
+    </div>  
 </div>
 </div>

@@ -5,10 +5,10 @@
     "version": "4.0.0-SNAPSHOT",
     "title": "GV Monitoring"
   },
-  "basePath": "/cxf/gvmonitoring/monitoring",
+  "basePath": "/cxf/gvmonitoring",
   "tags": [
     {
-      "name": "system"
+      "name": "monitoring system"
     }
   ],
   "schemes": [

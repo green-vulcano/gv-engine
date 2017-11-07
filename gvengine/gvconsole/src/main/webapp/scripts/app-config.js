@@ -99,7 +99,6 @@ angular.module('gvconsole')
 	var instance = this;
 
 	this.alerts = [];
-  this.alertsAdd = [];
 
 	this.configInfo = {};
 
@@ -229,7 +228,6 @@ angular.module('gvconsole')
 	$scope.newConfigId = $routeParams.newConfigId;
 
 	this.alerts = [];
-  this.alertsAdd = [];
 
 	var instance = this;
 
