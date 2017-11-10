@@ -1,0 +1,227 @@
+<div class="container-fluid">
+  <div class="side-body">
+  <h1> Configuration XML </h1>
+
+    <div class="row" data-ng-controller="Settings">
+
+<!-- **************************************************** -->
+
+      <div class="panel panel-default" style="overflow-x:auto;">
+        <div id="panelHead"  class="panel-heading Clickable" data-toggle="collapse" data-target="#content1"><i class="fa fa-code"></i> GVPolicy
+          <i id="changeIcon" aria-hidden="true" class="fa fa-chevron-down fa-2x pull-right"></i>
+        </div>
+        <div class="pannel-body container-fluid collapse" id="content1">
+          <br>
+          <label class="control-label optionForm col-sm-1">Roles:</label>
+          <div class="form-group clearfix">
+             <div class="col-sm-3"><input type="text" class="form-control" data-ng-model="key" placeholder="Role name ..."></div>
+             <div class="col-sm-3"><input type="text" class="form-control" data-ng-model="value" placeholder="Description ..."></div>
+             <button class="btn btn-default" id="fabuttonplus" data-ng-click="addParameter()"><i class="fa fa-plus"></i></button>
+          </div>
+          <div data-ng-repeat="(key,param) in service.properties">
+             <div class="form-group clearfix">
+                <div class="col-sm-5"><strong>{{key}}</strong></div>
+                <div class="col-sm-6">{{param}}</div>
+                <a class="close" data-ng-click="removeParameter(key)">×</a>
+             </div>
+          </div>
+        </div>
+      </div>
+
+<!-- **************************************************** -->
+
+      <div class="panel panel-default" style="overflow-x:auto;">
+        <div id="panelHead"  class="panel-heading Clickable" data-toggle="collapse" data-target="#content2"><i class="fa fa-code"></i> GVCryptoHelper
+          <i aria-hidden="true" class="fa fa-chevron-down  fa-2x pull-right"></i>
+        </div>
+        <div class="pannel-body container-fluid collapse" id="content2">
+          <br>
+          <div class="form-group clearfix">
+             <div class="col-sm-3"><label class="control-label optionForm">Type:</label>
+             <input type="text" class="form-control"  placeholder="Module" disabled></div>
+             <div class="col-sm-3"><label class="control-label optionForm">Name:</label>
+             <input type="text" class="form-control"  placeholder="CRYPTO_HELPER" disabled></div>
+          </div>
+          <div class="form-group clearfix">
+            <fieldset class="col-md-11 fieldset-xmlconfig">
+              <legend>Key_Store_ID</legend>
+              <div class="panel panel-default">
+						    <div class="panel-body">
+							     <div class="form-group clearfix">
+                        <div class="col-sm-3"><label class="control-label optionForm">ID:</label>
+                        <input type="text" class="form-control"  placeholder="ID ..."></div>
+                        <div class="col-sm-3"><label class="control-label optionForm">Key_Store_Type:</label>
+                          <select class="form-control" >
+                            <option value="" selected>JCEKS - default</option>
+                            <option value="">JKS</option>
+                            <option value="">PKCS12</option>
+                          </select>
+                        </div>
+                        <div class="col-sm-3"><label class="control-label optionForm">Key_Store_PRV:</label>
+                             <select class="form-control" >
+                               <option value="" selected>SunJCE - default</option>
+                               <option value="">SUN</option>
+                               <option value="">BC</option>
+                             </select>
+                           </div>
+                         </div>
+                           <div class="form-group clearfix">
+                           <div class="col-sm-3"><label class="control-label optionForm">Key_Store_PDW:</label>
+                              <input type="password" class="form-control"  placeholder="Password ..."></div>
+                   </div>
+                   <button class="btn btn-default pull-right" id="fabuttonplus" ng-click="addParameter()"><i class="fa fa-plus"></i></button>
+						    </div>
+					    </div>
+            </fieldset>
+        </div>
+
+
+<!-- INSERIRE QUI -->
+
+
+
+        <div class="form-group clearfix">
+          <fieldset class="col-md-11 fieldset-xmlconfig">
+            <legend>Key_ID</legend>
+            <div class="panel panel-default">
+              <div class="panel-body">
+                 <div class="form-group clearfix">
+                        <div class="col-sm-3"><label class="control-label optionForm">ID:</label>
+                        <input type="text" class="form-control"  placeholder="ID ..."></div>
+                        <div class="col-sm-3"><label class="control-label optionForm">Key_Type:</label>
+                          <select class="form-control" >
+                            <option value="">3DES</option>
+                            <option value="">DES</option>
+                            <option value="">RSA</option>
+                          </select>
+                        </div>
+                        <div class="col-sm-3"><label class="control-label optionForm col-sm-2">Key_Store_ID:</label>
+                        <input type="text" class="form-control"  placeholder="ID ..."></div>
+                 </div>
+                 <div class="form-group clearfix">
+                        <div class="col-sm-3"><label class="control-label optionForm">Key_PDW:</label>
+                        <input type="password" class="form-control"  placeholder="Password ..."></div>
+                 </div>
+                 <button class="btn btn-default pull-right" id="fabuttonplus" ng-click="addParameter()"><i class="fa fa-plus"></i></button>
+              </div>
+            </div>
+          </fieldset>
+      </div>
+      <!-- INSERIRE QUI -->
+        </div>
+      </div>
+
+<!-- **************************************************** -->
+
+      <div class="panel panel-default" style="overflow-x:auto;">
+        <div id="panelHead"  class="panel-heading Clickable" data-toggle="collapse" data-target="#content3"><i class="fa fa-code"></i> GVPoolManager
+          <i aria-hidden="true" class="fa fa-chevron-down  fa-2x pull-right"></i>
+        </div>
+        <div class="pannel-body container-fluid collapse" id="content3">
+          <br>
+          <div class="form-group clearfix">
+             <div class="col-sm-3"><label class="control-label optionForm">Type:</label>
+             <input type="text" class="form-control"  placeholder="Module" disabled></div>
+             <div class="col-sm-3"><label class="control-label optionForm">Name:</label>
+             <input type="text" class="form-control"  placeholder="POOL_MANAGER" disabled></div>
+          </div>
+          <div class="form-group clearfix">
+            <fieldset class="col-md-11 fieldset-xmlconfig">
+              <legend>GreenVulcanoPool</legend>
+              <div class="panel panel-default">
+                <div class="panel-body">
+                   <div class="form-group clearfix">
+                        <div class="col-sm-3"><label class="control-label optionForm">subsystem:</label>
+                        <input type="text" class="form-control"  placeholder="Subsystem..."></div>
+                        <div class="col-sm-3"><label class="control-label optionForm">initial-size:</label>
+                        <input type="text" class="form-control"  placeholder="N. Int>0 ..."></div>
+                        <div class="col-sm-3"><label class="control-label optionForm">maximum-size:</label>
+                        <input type="text" class="form-control"  placeholder="N. Int>0 ..."></div>
+                        <div class="col-sm-3"><label class="control-label optionForm">maximum-creation:</label>
+                        <input type="text" class="form-control"  placeholder="N. Int>0 ..."></div>
+                        </div>
+                        <div class="form-group clearfix">
+                          <div class="col-sm-3"><label class="control-label optionForm">default-timeout:</label>
+                          <input type="text" class="form-control"  placeholder="N. Int 0<&&>10/ms ..."></div>
+                          <div class="col-sm-3"><label class="control-label optionForm">shrink-timeout:</label>
+                          <input type="text" class="form-control"  placeholder="N. Int 0<&&>10/ms ..."></div>
+                        </div>
+                   <button class="btn btn-default pull-right" id="fabuttonplus" ng-click="addParameter()"><i class="fa fa-plus"></i></button>
+                </div>
+              </div>
+            </fieldset>
+        </div>
+              <!-- INSERIRE QUI -->
+        </div>
+      </div>
+
+<!-- **************************************************** -->
+
+      <div class="panel panel-default" style="overflow-x:auto;">
+        <div id="panelHead"  class="panel-heading Clickable"  data-toggle="collapse" data-target="#content4"><i class="fa fa-code"></i> GVBufferDump
+          <i aria-hidden="true" class="fa fa-chevron-down  fa-2x pull-right"></i>
+        </div>
+        <div class="pannel-body container-fluid collapse" id="content4">
+          <br>
+          <div class="form-group clearfix">
+             <div class="col-sm-3"><label class="control-label optionForm">Type:</label>
+             <input type="text" class="form-control"  placeholder="Module" disabled></div>
+             <div class="col-sm-3"><label class="control-label optionForm">Name:</label>
+             <input type="text" class="form-control"  placeholder="BUFFER_DUMP" disabled></div>
+             <div class="col-sm-3"><label class="control-label optionForm">LOG-DUMP-SIZE:</label>
+             <input type="text" class="form-control"  placeholder="N. Int >-1/byte ..."></div>
+          </div>
+          <div class="form-group clearfix">
+            <fieldset class="col-md-11 fieldset-xmlconfig">
+              <legend>ServiceDump</legend>
+              <div class="panel panel-default">
+                <div class="panel-body">
+                   <div class="form-group clearfix">
+                        <div class="col-sm-3"><label class="control-label optionForm">ID-Service:</label>
+                        <input type="text" class="form-control"  placeholder="ID ..."></div>
+                        <div class="col-sm-3"><label class="control-label optionForm">log-dump-size:</label>
+                        <input type="text" class="form-control"  placeholder="N. Int >-1/byte ..."></div>
+                        <fieldset class="col-md-11 fieldset-xmlconfig">
+                          <legend>ClientDump</legend>
+                          <div class="panel panel-default">
+                            <div class="panel-body">
+                               <div class="form-group clearfix">
+                                    <div class="col-sm-3"><label class="control-label optionForm">ID-System:</label>
+                                    <input type="text" class="form-control"  placeholder="ID ..."></div>
+                                    <div class="col-sm-3"><label class="control-label optionForm">log-dump-size:</label>
+                                    <input type="text" class="form-control"  placeholder="N. Int >-1/byte ..."></div>
+                                  </div>
+                               <button class="btn btn-default pull-right" id="fabuttonplus" ng-click="addParameter()"><i class="fa fa-plus"></i></button>
+                            </div>
+                          </div>
+                        </fieldset>
+                      </div>
+                   <button class="btn btn-default pull-right" id="fabuttonplus" ng-click="addParameter()"><i class="fa fa-plus"></i></button>
+                </div>
+              </div>
+            </fieldset>
+        </div>
+        </div>
+      </div>
+
+<!-- **************************************************** -->
+
+      <div class="panel panel-default" style="overflow-x:auto;">
+        <div id="panelHead"  class="panel-heading Clickable"  data-toggle="collapse" data-target="#content5"><i class="fa fa-code"></i> GVStatisticConfig
+          <i aria-hidden="true" class="fa fa-chevron-down fa-2x pull-right"></i>
+        </div>
+        <div class="pannel-body container-fluid collapse" id="content5">
+          PROVA
+        </div>
+      </div>
+
+      <div>
+        <a id="btnProp" href="" onClick="slide();" class="btn btn-success pull-right">Send
+        </a>
+        <a id="btnProp"  onClick="window.location.reload(); slide();" class="btn btn-danger pull-left">Cancel
+        </a>
+    	</div>
+
+    </div>
+  </div>
+</div>

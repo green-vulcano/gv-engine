@@ -156,8 +156,7 @@ public class BaseConfigurationManager implements GVConfigurationManager {
 			while ((zipEntry=configurationArchive.getNextEntry())!=null) {
 				
 				if (zipEntry.getName().equals(entry)) {
-					byte[] entryData = new byte[Long.valueOf(zipEntry.getSize()).intValue()];
-					IOUtils.readFully(configurationArchive, entryData);
+					byte[] entryData = IOUtils.toByteArray(configurationArchive);
 					return entryData;
 				}
 			}

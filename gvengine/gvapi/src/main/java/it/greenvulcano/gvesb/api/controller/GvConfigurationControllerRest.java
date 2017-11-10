@@ -28,6 +28,7 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -56,8 +57,6 @@ import it.greenvulcano.configuration.XMLConfig;
 import it.greenvulcano.configuration.XMLConfigException;
 import it.greenvulcano.gvesb.GVConfigurationManager;
 import it.greenvulcano.gvesb.GVConfigurationManager.Authority;
-import it.greenvulcano.util.xml.XMLUtils;
-import it.greenvulcano.util.xml.XMLUtilsException;
 
 @CrossOriginResourceSharing(allowAllOrigins=true, allowCredentials=true, exposeHeaders={"Content-type", "Content-Range", "X-Auth-Status"})
 public class GvConfigurationControllerRest {
@@ -151,14 +150,13 @@ public class GvConfigurationControllerRest {
 	 @Path("/configuration/{configId}/GVCore.xml")
 	 @Produces(MediaType.APPLICATION_XML)
 	 @RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
-	 public Document getArchivedConfig(@PathParam("configId") String id){
+	 public Response getArchivedConfig(@PathParam("configId") String id){
 		 		 
-		 Document document = null;
 		 
 			try {
 				 byte[] gvcore = gvConfigurationManager.extract(id, "GVCore.xml");
-				 document =  XMLUtils.parseDOM_S(gvcore, false, false, false);
-			} catch (XMLUtilsException e) {
+				 return Response.ok(gvcore).build();
+			} catch (Exception e) {
 				if (e.getCause() instanceof FileNotFoundException) {
 					throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity("<error><![CDATA[File not found: "+id+"/GVCore.xml]]></error>").build());
 				}
@@ -166,10 +164,6 @@ public class GvConfigurationControllerRest {
 				LOG.error("File to retrieve GVCore.xml in "+id, e);			
 				throw new WebApplicationException(Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("<error><![CDATA["+e.getMessage()+"]]></error>").build());
 			}
-			 
-			if (Objects.isNull(document)) throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity("<error><![CDATA[File not found: "+id+"/GVCore.xml]]></error>").build());
-			
-			return document;
 		 
 	 }
 	 

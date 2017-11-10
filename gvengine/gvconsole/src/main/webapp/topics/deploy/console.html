@@ -1,7 +1,7 @@
 <div class="container-fluid">
 <div class="side-body">
    <h1>Configuration</h1>
-   <div class="row" data-ng-controller="ConfigController as ctrl" data-ng-init="ctrl.loadConfigInfo()">
+   <div class="row" data-ng-controller="DeployController as ctrl" data-ng-init="ctrl.loadConfigInfo()">
    <!-- FadeOut Function -->
    <div id="fadeout" data-ng-repeat="alert in ctrl.alerts" class="fadeout alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
    <!-- FadeOut Function -->
@@ -37,7 +37,7 @@
                <td>{{config.id}}</td>
                <td>{{config.time | date : 'd MMMM yyyy H:mm:ss'}}</td>
                <td class="text-right">
-                 <button onClick="slide();" type="button" class="btn btn-success" data-ng-click="go('/config/deploy/' + config.id)"><i class="fa fa-bolt"></i> Deploy</button>
+                 <button onClick="slide();" type="button" class="btn btn-success" data-ng-click="go('/deploy/' + config.id)"><i class="fa fa-bolt"></i> Deploy</button>
                  <button onClick="slide();" type="button" class="btn btn-danger" data-toggle="modal" data-target="#myModal{{$index}}" data-dismiss="modal"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
                  <div id="myModal{{$index}}" class="modal">
                    <div class="modal-content">

@@ -8,11 +8,11 @@ angular.module('gvconsole', ['ngCookies','ngRoute','angular-quartz-cron', 'ui.bo
 	      when('/login', {
 	        templateUrl: 'topics/auth/login.html'
 	      }).
-    		when('/config', {
-    			templateUrl: 'topics/config/console.html'
+    		when('/deploy', {
+    			templateUrl: 'topics/deploy/console.html'
     		}).
-    		when('/config/deploy/:newConfigId', {
-    			templateUrl: 'topics/config/deploy.html'
+    		when('/deploy/:newConfigId', {
+    			templateUrl: 'topics/deploy/deploy.html'
     		}).
     		when('/schedule', {
     			templateUrl: 'topics/schedule/list.html'
@@ -41,8 +41,8 @@ angular.module('gvconsole', ['ngCookies','ngRoute','angular-quartz-cron', 'ui.bo
 			when('/properties', {
 				templateUrl: 'topics/properties/properties.html'
 			}).
-			when('/xmlconfig', {
-				templateUrl: 'topics/xml/config.html'
+			when('/settings', {
+				templateUrl: 'topics/settings/config.html'
 			}).
 			otherwise({
     	        redirectTo: '/myprofile'
