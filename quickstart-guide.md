@@ -25,7 +25,7 @@ To show GreenVulcano features only:
 gvadmin@root()> feature:list | grep Green
 ```
 
-At the end of this process a folder it will be created at **<karaf_home>/Greenv**, which contains an empty GreenVulcano configuration. It is possibile to reference a different GreenVulcano configuration, simply by inserting the following line in the file **<karaf_home>/etc/it.greenvulcano.gvesb.cfg**
+At the end of this process a folder will be created at **<karaf_home>/GreenV**, which contains an empty GreenVulcano configuration. It is possibile to reference a different GreenVulcano configuration, simply by inserting the following line in the file **<karaf_home>/etc/it.greenvulcano.gvesb.cfg**
 
 > gv.app.home=<path_to_gv_configuration>
 
