@@ -20,6 +20,15 @@
 package it.greenvulcano.gvesb.api.dto;
 
 import java.util.Objects;
+import java.util.Optional;
+
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Node;
+
+import it.greenvulcano.configuration.XMLConfig;
+import it.greenvulcano.configuration.XMLConfigException;
+import it.greenvulcano.gvesb.core.jmx.OperationInfo;
+import it.greenvulcano.gvesb.core.jmx.ServiceOperationInfo;
 
 public class OperationDTO {
 
@@ -59,6 +68,31 @@ public class OperationDTO {
 	
 	public long getFailures() {
 		return failures;
+	}
+	
+	public static Optional<OperationDTO> buildOperationFromConfig(Node config, Optional<ServiceOperationInfo> serviceOperationInfo) {
+		try {
+			
+			String operationName = XMLConfig.get(config, "@forward-name", XMLConfig.get(config, "@name") );
+			
+			OperationDTO operation = null;			
+			
+			try {
+				OperationInfo operationInfo = serviceOperationInfo.get().getOperationInfo(operationName, false) ;
+				operation = new OperationDTO(operationInfo.getOperation(), operationInfo.getOperationActivation(), operationInfo.getTotalSuccess(), operationInfo.getTotalFailure());
+								
+			} catch (Exception e) {
+				operation = new OperationDTO( operationName,  XMLConfig.get(config, "@operation-activation").equals("on")) ;
+			}											
+			
+			return Optional.of(operation);
+			
+		} catch (NullPointerException|XMLConfigException xmlConfigException){
+			LoggerFactory.getLogger(OperationDTO.class).error("Error reading operation configuration", xmlConfigException);
+		}
+		
+		return Optional.empty();
+		
 	}
 	
 }
