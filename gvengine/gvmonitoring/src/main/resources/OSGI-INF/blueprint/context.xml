@@ -26,7 +26,7 @@
 	 </bean>
 
 	 <bean id="gvAuthorizationInterceptor" class="org.apache.cxf.interceptor.security.SecureAnnotationsInterceptor">
-		<property name="allowAnonymousUsers" value="false" />
+		<property name="allowAnonymousUsers" value="true" />
 		<property name="checkConfiguredRolesOnly" value="false"/>
 		<property name="securedObject" ref="gvMonitoring"/>
  	 </bean>
@@ -39,16 +39,16 @@
     
     <bean id="swaggerController" class="it.greenvulcano.gvesb.api.docs.SwaggerController"/>
 
-     <jaxrs:server address="/gvmonitoring" id="gvmonitoringapi">
+     <jaxrs:server address="/gvmonitoring" id="gvmonitoring">
         <jaxrs:serviceBeans>
             <ref component-id="gvMonitoring"/>
             <ref component-id="swaggerController" /> 
         </jaxrs:serviceBeans>
-				<jaxrs:providers>
-					<ref component-id="gvAuthenticationFilter"/>
-					<ref component-id="gvAuthorizationFilter"/>
-					<ref component-id="cors-filter"/>
-			</jaxrs:providers>
+		<jaxrs:providers>
+			<ref component-id="gvAuthenticationFilter"/>
+			<ref component-id="gvAuthorizationFilter"/>
+			<ref component-id="cors-filter"/>
+		</jaxrs:providers>
      </jaxrs:server>
 
 </blueprint>

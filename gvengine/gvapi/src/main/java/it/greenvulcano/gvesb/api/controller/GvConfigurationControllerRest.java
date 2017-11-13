@@ -30,8 +30,11 @@ import java.util.Properties;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+<<<<<<< HEAD
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+=======
+>>>>>>> 0cc6bf4cf7ecb9063274a1d16b6fd05269a8af09
 
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
@@ -65,9 +68,12 @@ import it.greenvulcano.configuration.XMLConfig;
 import it.greenvulcano.configuration.XMLConfigException;
 import it.greenvulcano.gvesb.GVConfigurationManager;
 import it.greenvulcano.gvesb.GVConfigurationManager.Authority;
+<<<<<<< HEAD
 import it.greenvulcano.gvesb.api.dto.ServiceDTO;
 import it.greenvulcano.util.xml.XMLUtils;
 import it.greenvulcano.util.xml.XMLUtilsException;
+=======
+>>>>>>> 0cc6bf4cf7ecb9063274a1d16b6fd05269a8af09
 
 @CrossOriginResourceSharing(allowAllOrigins=true, allowCredentials=true, exposeHeaders={"Content-type", "Content-Range", "X-Auth-Status"})
 public class GvConfigurationControllerRest extends BaseControllerRest {
@@ -166,14 +172,13 @@ public class GvConfigurationControllerRest extends BaseControllerRest {
 	 @Path("/configuration/{configId}/GVCore.xml")
 	 @Produces(MediaType.APPLICATION_XML)
 	 @RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
-	 public Document getArchivedConfig(@PathParam("configId") String id){
+	 public Response getArchivedConfig(@PathParam("configId") String id){
 		 		 
-		 Document document = null;
 		 
 			try {
 				 byte[] gvcore = gvConfigurationManager.extract(id, "GVCore.xml");
-				 document =  XMLUtils.parseDOM_S(gvcore, false, false, false);
-			} catch (XMLUtilsException e) {
+				 return Response.ok(gvcore).build();
+			} catch (Exception e) {
 				if (e.getCause() instanceof FileNotFoundException) {
 					throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity("<error><![CDATA[File not found: "+id+"/GVCore.xml]]></error>").build());
 				}
@@ -181,10 +186,6 @@ public class GvConfigurationControllerRest extends BaseControllerRest {
 				LOG.error("File to retrieve GVCore.xml in "+id, e);			
 				throw new WebApplicationException(Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("<error><![CDATA["+e.getMessage()+"]]></error>").build());
 			}
-			 
-			if (Objects.isNull(document)) throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity("<error><![CDATA[File not found: "+id+"/GVCore.xml]]></error>").build());
-			
-			return document;
 		 
 	 }
 	 

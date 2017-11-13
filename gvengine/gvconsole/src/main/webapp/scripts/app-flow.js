@@ -33,17 +33,21 @@ angular.module('gvconsole')
 	     return $http(request);
 
 	}
+	
+	this.getServices = function(){
+		return $http.get(Endpoints.gvesb);
+	}
 
 }]);
 
 angular.module('gvconsole')
-.controller('FlowController', [ 'Base64', 'ConfigService', 'FlowService', '$scope', function(Base64, ConfigService, FlowService, $scope){
+.controller('FlowController', [ 'Base64', 'FlowService', '$scope', function(Base64, FlowService, $scope){
 
 		
     $scope.operations = [];
     $scope.service = {};
 
-    ConfigService.getServices().then(
+    FlowService.getServices().then(
     function(response) {
       angular.forEach(response.data, function(service, sName) {
         angular.forEach(service.operations, function(operation, oName) {
@@ -88,7 +92,7 @@ angular.module('gvconsole')
 
 				      });
 
-			 $scope.username = false;
+			 //$scope.username = false;
     }
 
     angular.element("textarea").keydown(function(e) {

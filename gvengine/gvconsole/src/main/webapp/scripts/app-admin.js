@@ -1,15 +1,19 @@
 angular.module('gvconsole')
  .service('AdminService', ['ENDPOINTS', '$http', function(Endpoints, $http){
 
-		this.getAllUsers = function(range,search,order){
-			 //return $http.get(Endpoints.gviam + '/admin/users' + search, {params:{"order":order}},{headers: {'Range':'users ' + range}});
-			 var request = {
-					 method: 'GET',
-					 url: Endpoints.gviam + '/admin/users' + search,
-					 params: {"order":order},
-					 headers: {'Range':'users ' + range}
-			 }
-			 return $http(request);
+		this.getAllUsers = function(range,params,order){
+			
+			var querystring = "?";
+			if (params.username && params.username.trim().length>0) querystring+="username="+params.username + "&";
+	        if (params.fullname && params.fullname.trim().length>0) querystring+="fullname="+params.fullname + "&";
+	        if (params.email && params.email.trim().length>0) querystring+="email="+params.email + "&";
+	        if (params.role && params.role.trim().length>0) querystring+="role="+params.role + "&";
+	        if (params.enabled != undefined) querystring+="enabled="+params.enabled + "&";
+	        if (params.expired != undefined) querystring+="expired="+params.expired + "&";
+	        
+			querystring+="order="+order;
+			
+			return $http.get(Endpoints.gviam + '/admin/users' + querystring,{headers: {'Range':'users ' + range}});
 		}
 
 		this.getUser = function(id){
@@ -45,7 +49,7 @@ angular.module('gvconsole')
 angular.module('gvconsole')
 .controller('UsersListController',['AdminService','$rootScope', '$scope', '$location', function(AdminService,$rootScope, $scope, $location){
 
-	
+	$scope.searchClick = true;
 	
 	var instance = this;
   for( prop in $rootScope.globals.currentUser.roles){
@@ -63,10 +67,10 @@ angular.module('gvconsole')
 
 	this.list = [];
 	
-	$scope.search = "";
 	$scope.order = "username";
+	$scope.params = "";
 
-  $scope.$watchGroup(["currentPage","viewby","search","order","reverse"], function(newValue) {
+  $scope.$watchGroup(["currentPage","viewby","order","reverse","params"], function(newValue) {
 	  
 	  if($scope.selected) {
 	      angular.element('#search_param option:eq(0)').prop('selected', true);
@@ -81,7 +85,7 @@ angular.module('gvconsole')
 
     $scope.range = $scope.min + '-' + $scope.max;
     	
-    	AdminService.getAllUsers($scope.range,$scope.search,$scope.order).then(
+    	AdminService.getAllUsers($scope.range,$scope.params,$scope.order).then(
     
   				function(response){
 
@@ -108,15 +112,47 @@ angular.module('gvconsole')
 
     $scope.maxSize = $scope.totalItems/3;
     
-   $scope.search_order = function(){
+    $scope.enabled = undefined;
+    $scope.expired = undefined;
+    
+    $scope.changeEnabledStatus = function(){
+    	if ($scope.enabled == undefined) {
+    		$scope.enabled = true;
+        } else if ($scope.enabled) {
+        	$scope.enabled = false;
+        } else {
+        	$scope.enabled = undefined;
+        }
     	
-    	if($scope.search_input != undefined && $scope.search_input != ""){
-    		$scope.search = "?" + $scope.search_select + "=" + $scope.search_input;
-    	}else{
-    		$scope.search = "";
-    	}
     }
     
+    $scope.changeExpiredStatus = function(){
+    	
+    	if ($scope.expired == undefined) {
+    		$scope.expired = true;
+        } else if ($scope.expired) {
+        	$scope.expired = false;
+        } else {
+        	$scope.expired = undefined;
+        }
+    	
+    }
+    
+   $scope.search_order = function(){
+	   
+	   $scope.params = 
+   	{
+   		username: $scope.username,
+   		fullname: $scope.fullname,
+   		email: $scope.email,
+   		role: $scope.role,
+   		enabled: $scope.enabled,
+		expired: $scope.expired
+   	};
+	   
+   }
+    
+   $scope.reverse = "username";
     
 
     $scope.orderFunction = function(by){
@@ -124,7 +160,6 @@ angular.module('gvconsole')
     	
     	if($scope.order == $scope.reverse){
             $scope.order = $scope.order + ":reverse";
-            console.log("$scope.order: " + $scope.order);
             $scope.reverse = $scope.order;
           }else{
           $scope.reverse = $scope.order;

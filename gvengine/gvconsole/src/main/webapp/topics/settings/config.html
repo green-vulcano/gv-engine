@@ -2,7 +2,7 @@
   <div class="side-body">
   <h1> Configuration XML </h1>
 
-    <div class="row" data-ng-controller="XMLController">
+    <div class="row" data-ng-controller="Settings">
 
 <!-- **************************************************** -->
 
@@ -14,15 +14,15 @@
           <br>
           <label class="control-label optionForm col-sm-1">Roles:</label>
           <div class="form-group clearfix">
-             <div class="col-sm-3"><input type="text" class="form-control" ng-model="key" placeholder="Role name ..."></div>
-             <div class="col-sm-3"><input type="text" class="form-control" ng-model="value" placeholder="Description ..."></div>
-             <button class="btn btn-default" id="fabuttonplus" ng-click="addParameter()"><i class="fa fa-plus"></i></button>
+             <div class="col-sm-3"><input type="text" class="form-control" data-ng-model="key" placeholder="Role name ..."></div>
+             <div class="col-sm-3"><input type="text" class="form-control" data-ng-model="value" placeholder="Description ..."></div>
+             <button class="btn btn-default" id="fabuttonplus" data-ng-click="addParameter()"><i class="fa fa-plus"></i></button>
           </div>
-          <div ng-repeat="(key,param) in service.properties">
+          <div data-ng-repeat="(key,param) in service.properties">
              <div class="form-group clearfix">
                 <div class="col-sm-5"><strong>{{key}}</strong></div>
                 <div class="col-sm-6">{{param}}</div>
-                <a class="close" ng-click="removeParameter(key)">×</a>
+                <a class="close" data-ng-click="removeParameter(key)">×</a>
              </div>
           </div>
         </div>

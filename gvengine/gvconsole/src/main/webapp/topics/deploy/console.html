@@ -1,7 +1,7 @@
 <div class="container-fluid">
 <div class="side-body">
    <h1>Configuration</h1>
-   <div class="row" data-ng-controller="ConfigController as ctrl" data-ng-init="ctrl.loadConfigInfo()">
+   <div class="row" data-ng-controller="DeployController as ctrl" data-ng-init="ctrl.loadConfigInfo()">
    <!-- FadeOut Function -->
    <div id="fadeout" data-ng-repeat="alert in ctrl.alerts" class="fadeout alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
    <!-- FadeOut Function -->
@@ -37,7 +37,7 @@
                <td>{{config.id}}</td>
                <td>{{config.time | date : 'd MMMM yyyy H:mm:ss'}}</td>
                <td class="text-right">
-                 <button onClick="slide();" type="button" class="btn btn-success" data-ng-click="go('/config/deploy/' + config.id)"><i class="fa fa-bolt"></i> Deploy</button>
+                 <button onClick="slide();" type="button" class="btn btn-success" data-ng-click="go('/deploy/' + config.id)"><i class="fa fa-bolt"></i> Deploy</button>
                  <button onClick="slide();" type="button" class="btn btn-danger" data-toggle="modal" data-target="#myModal{{$index}}" data-dismiss="modal"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
                  <div id="myModal{{$index}}" class="modal">
                    <div class="modal-content">
@@ -50,6 +50,7 @@
              </tr>
            </tbody>
          </table>
+         <div style="margin:10px" class="alert alert-warning" data-ng-hide="ctrl.history.length">No previously configuration found!</div>
               <div id="addModal{{$index}}" class="modal fadeout2">
                 <div class="modal-content">
                   <h3> Add new Configuration</h3>
@@ -85,19 +86,17 @@
 
               </div>
          </div>
-         <div style="margin:10px" class="alert alert-warning" data-ng-hide="ctrl.history.length">No previously configuration found!</div>
-      </div>
       <div class="panel panel-default" >
         <div id="panelHead" class="panel-heading">
             <i class="fa fa-sitemap fa-rotate-270"></i> Configuration files
-          <button data-ng-repeat="(id,file) in filesName" id="xml-button" type="button" class="btn btn-primary pull-right" data-toggle="collapse" data-target="#{{id}}" style="margin-right:5px">{{file}}</button>
+          <button data-ng-repeat="(id,file) in filesName" type="button" class="btn btn-primary pull-right" data-toggle="collapse" data-target="#{{id}}" style="margin-right:5px">{{file}}</button>
         </div>
-          <div class="positioninline pnael-body" data-ng-repeat="(id,file) in filesName">
+          <div class="positioninline panel-body" data-ng-repeat="(id,file) in filesName">
              <div id="{{id}}" class="collapse">
                <span class="col-md-10" id="{{file}}" style="overflow: auto;"> </span>
              </div>
           </div>
-      </div>
-     </div>
+      </div>      
+    </div>  
 </div>
 </div>
