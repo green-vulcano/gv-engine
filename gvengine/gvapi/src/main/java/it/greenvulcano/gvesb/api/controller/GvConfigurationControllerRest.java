@@ -23,11 +23,18 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+<<<<<<< HEAD
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+=======
+>>>>>>> 0cc6bf4cf7ecb9063274a1d16b6fd05269a8af09
 
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
@@ -42,6 +49,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
@@ -52,14 +60,23 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import it.greenvulcano.configuration.XMLConfig;
 import it.greenvulcano.configuration.XMLConfigException;
 import it.greenvulcano.gvesb.GVConfigurationManager;
 import it.greenvulcano.gvesb.GVConfigurationManager.Authority;
+<<<<<<< HEAD
+import it.greenvulcano.gvesb.api.dto.ServiceDTO;
+import it.greenvulcano.util.xml.XMLUtils;
+import it.greenvulcano.util.xml.XMLUtilsException;
+=======
+>>>>>>> 0cc6bf4cf7ecb9063274a1d16b6fd05269a8af09
 
 @CrossOriginResourceSharing(allowAllOrigins=true, allowCredentials=true, exposeHeaders={"Content-type", "Content-Range", "X-Auth-Status"})
-public class GvConfigurationControllerRest {
+public class GvConfigurationControllerRest extends BaseControllerRest {
 	 private final static Logger LOG = LoggerFactory.getLogger(GvConfigurationControllerRest.class);	
 	
 	 private GVConfigurationManager gvConfigurationManager;
@@ -101,6 +118,11 @@ public class GvConfigurationControllerRest {
 	 @RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
 	 public void installConfiguration(@PathParam("configId") String id,
 			            @Multipart(value="gvconfiguration") Attachment config) {
+		 
+		 File currentConfig = new File(XMLConfig.getBaseConfigPath());
+		 if (id.equals(currentConfig.getName())) {
+			 throw new WebApplicationException(Response.status(Response.Status.CONFLICT).build());
+		 }
 		 
 		 MediaType contentType = Optional.ofNullable(config.getContentType()).orElse(MediaType.APPLICATION_OCTET_STREAM_TYPE);
 			 
@@ -199,6 +221,45 @@ public class GvConfigurationControllerRest {
 		 
 		 
 		 return response;
+	 }
+	 
+	 @GET
+	 @Path("/configuration/{configId}")
+	 @Produces(MediaType.APPLICATION_JSON)
+	 @RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
+	 public Response getArchivedConfigServices(@PathParam("configId") String id) {
+		 
+		 try {
+			 byte[] gvcore = gvConfigurationManager.extract(id, "GVCore.xml");
+			 if (gvcore!=null && gvcore.length>0) {
+				 
+				 String xml = new String(gvcore, "UTF-8");
+				 Document gvcoreDocument  = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse( IOUtils.toInputStream(xml, "UTF-8") );
+				 
+				 NodeList serviceNodes = XMLConfig.getNodeList(gvcoreDocument, "//Service");
+					
+					
+					Map<String, ServiceDTO> services = IntStream.range(0, serviceNodes.getLength())
+									 .mapToObj(serviceNodes::item)
+									 .map(ServiceDTO::buildServiceFromConfig)
+									 .filter(Optional::isPresent)
+									 .map(Optional::get)
+									 .collect(Collectors.toMap(ServiceDTO::getIdService, Function.identity()));
+					
+					LOG.debug("Services found "+serviceNodes.getLength());
+					return Response.ok(toJson(services)).build();
+			 }
+			 
+			 return Response.status(Response.Status.NOT_FOUND).build();
+			 
+		 } catch (XMLConfigException | JsonProcessingException xmlConfigException){
+				LOG.error("Error reading services configuration", xmlConfigException);
+				throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(toJson(xmlConfigException)).build());
+		 } catch (Exception e) {
+			return Response.status(Response.Status.NOT_FOUND).build();
+		 
+		 }		 
+		 
 	 }
 	 	 
 	

@@ -22,6 +22,17 @@ package it.greenvulcano.gvesb.api.dto;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.IntStream;
+
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import it.greenvulcano.configuration.XMLConfig;
+import it.greenvulcano.configuration.XMLConfigException;
+import it.greenvulcano.gvesb.core.jmx.ServiceOperationInfo;
+import it.greenvulcano.gvesb.core.jmx.ServiceOperationInfoManager;
 
 public class ServiceDTO {
 
@@ -99,6 +110,46 @@ public class ServiceDTO {
 	public String toString() {
 		return "Service [idService=" + idService + ", groupName=" + groupName + ", statisticsEnabled="
 				+ statisticsEnabled + ", enabled=" + enabled + "]";
-	}    
+	}
+	
+    public static Optional<ServiceDTO> buildServiceFromConfig(Node config) {
+		
+		
+		
+		try {
+			ServiceDTO service = new ServiceDTO(XMLConfig.get(config, "@id-service"), 
+										  XMLConfig.get(config, "@group-name"), 
+										  XMLConfig.get(config, "@service-activation").equals("on"), 
+										  XMLConfig.get(config, "@statistics").equals("on"));
+						
+			NodeList operationNodes = XMLConfig.getNodeList(config, "./Operation");
+			
+			
+			ServiceOperationInfo serviceInfo = null;
+			try {
+				serviceInfo = ServiceOperationInfoManager.instance().getServiceOperationInfo(service.getIdService(), false);
+			
+			} catch (Exception e) {
+				LoggerFactory.getLogger(ServiceDTO.class).warn("Fail to retrieve ServiceOperationInfo MBean for service "+service, e);
+			}
+			
+			final Optional<ServiceOperationInfo> serviceOperationInfo = Optional.ofNullable(serviceInfo);
+			
+			IntStream.range(0, operationNodes.getLength())
+			  .mapToObj(operationNodes::item)
+			  .map(node -> OperationDTO.buildOperationFromConfig(node,  serviceOperationInfo))
+			  .filter(Optional::isPresent)
+			  .map(Optional::get).forEach( op -> service.getOperations().put(op.getName(), op) );
+			
+			
+						
+			return Optional.of(service);
+		} catch (NullPointerException|XMLConfigException xmlConfigException){
+			LoggerFactory.getLogger(ServiceDTO.class).error("Error reading service configuration", xmlConfigException);
+		}
+		
+		return Optional.empty();
+		
+	}
 
 }
