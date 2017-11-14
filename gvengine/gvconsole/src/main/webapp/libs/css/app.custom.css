@@ -2,12 +2,18 @@ html {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 1.5em;
 }
-.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
-  padding: 8px 15px;
+#crossClose {
+  color: #bdbdbd
+}
+#crossClose:hover {
+  color: #333
 }
 .list-inline>li {
   display: inline-block;
     padding: 5px;
+}
+.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
+  padding: 8px 15px;
 }
 #GVCorePanel {
   background: -webkit-linear-gradient(left, #124667 , rgba(20, 72, 104, 0.29));
@@ -585,12 +591,7 @@ thead {
 	margin-top:10px;
 }
 .Clickable {
-	font-weight:900;
-	font-size:large;
-	color: #800080;
 	cursor:pointer;
-
-	vertical-align:middle;
 }
 /********* END XML Viewer *********/
     .wizard .nav-tabs {

@@ -1,18 +1,30 @@
 angular.module('gvconsole')
- .service('AdminService', ['ENDPOINTS', '$http', function(Endpoints, $http){
+ .service('AdminService', ['ENDPOINTS', '$http', '$rootScope', function(Endpoints, $http, $rootScope){
 
 		this.getAllUsers = function(range,params,order){
 			
-			var querystring = "?";
-			if (params.username && params.username.trim().length>0) querystring+="username="+params.username + "&";
-	        if (params.fullname && params.fullname.trim().length>0) querystring+="fullname="+params.fullname + "&";
-	        if (params.email && params.email.trim().length>0) querystring+="email="+params.email + "&";
-	        if (params.role && params.role.trim().length>0) querystring+="role="+params.role + "&";
-	        if (params.enabled != undefined) querystring+="enabled="+params.enabled + "&";
-	        if (params.expired != undefined) querystring+="expired="+params.expired + "&";
-	        
-			querystring+="order="+order;
+			if($rootScope.querystring == undefined && $rootScope.savedQuerystring != undefined){
 			
+				var querystring = $rootScope.savedQuerystring;
+				range = $rootScope.savedQuery.range;
+			}else{
+				
+			$rootScope.querystring = "?";
+			if (params.username && params.username.trim().length>0) $rootScope.querystring+="username="+params.username + "&";
+	        if (params.fullname && params.fullname.trim().length>0) $rootScope.querystring+="fullname="+params.fullname + "&";
+	        if (params.email && params.email.trim().length>0) $rootScope.querystring+="email="+params.email + "&";
+	        if (params.role && params.role.trim().length>0) $rootScope.querystring+="role="+params.role + "&";
+	        if (params.enabled != undefined) $rootScope.querystring+="enabled="+params.enabled + "&";
+	        if (params.expired != undefined) $rootScope.querystring+="expired="+params.expired + "&";
+
+	        $rootScope.querystring+="order="+order;
+	        
+	        var querystring = $rootScope.querystring
+	        
+			}
+			$rootScope.querystring = querystring;
+			
+
 			return $http.get(Endpoints.gviam + '/admin/users' + querystring,{headers: {'Range':'users ' + range}});
 		}
 
@@ -50,28 +62,55 @@ angular.module('gvconsole')
 .controller('UsersListController',['AdminService','$rootScope', '$scope', '$location', function(AdminService,$rootScope, $scope, $location){
 
 	$scope.searchClick = true;
-	
+
 	var instance = this;
   for( prop in $rootScope.globals.currentUser.roles){
     if($rootScope.globals.currentUser.isAdministrator){
       $scope.auth = true;
     }
   };
-
-  $scope.viewby = 10;
+  
+  if($scope.viewby == undefined && $rootScope.savedQuery ==undefined){
+	  
+	  $scope.viewby = 10;
+	  
+  }else{
+	  $scope.viewby = $rootScope.savedQuery.view;
+  }
+  
   $scope.totalItems = 64;
+  
+  if($scope.currentPage == undefined && $rootScope.savedQuery == undefined){
+	  
   $scope.currentPage = 1;
+  
+  }else{
+	  $scope.currentPage = $rootScope.savedQuery.page;
+  }
+  
+  if($scope.params == undefined && $rootScope.savedQuery == undefined){
+	  $scope.params = "";
+  }else{
+	  $scope.params = $rootScope.savedQuery.params;
+  }
+  
+  
   $scope.selected = true;
 
 	this.alerts = [];
 
 	this.list = [];
-	
+
+	if($scope.order == undefined && $rootScope.savedQuery == undefined){
 	$scope.order = "username";
-	$scope.params = "";
+	}else{
+		$scope.order = $rootScope.savedQuery.order;
+	}
+	
+	
 
   $scope.$watchGroup(["currentPage","viewby","order","reverse","params"], function(newValue) {
-	  
+
 	  if($scope.selected) {
 	      angular.element('#search_param option:eq(0)').prop('selected', true);
 	      angular.element('#selctNum option:eq(3)').prop('selected', true);
@@ -84,9 +123,9 @@ angular.module('gvconsole')
     $scope.max = (newValue[0] * newValue[1]);
 
     $scope.range = $scope.min + '-' + $scope.max;
-    	
+
     	AdminService.getAllUsers($scope.range,$scope.params,$scope.order).then(
-    
+
   				function(response){
 
             instance.alerts = [];
@@ -111,10 +150,10 @@ angular.module('gvconsole')
     });
 
     $scope.maxSize = $scope.totalItems/3;
-    
+
     $scope.enabled = undefined;
     $scope.expired = undefined;
-    
+
     $scope.changeEnabledStatus = function(){
     	if ($scope.enabled == undefined) {
     		$scope.enabled = true;
@@ -123,11 +162,11 @@ angular.module('gvconsole')
         } else {
         	$scope.enabled = undefined;
         }
-    	
+
     }
-    
+
     $scope.changeExpiredStatus = function(){
-    	
+
     	if ($scope.expired == undefined) {
     		$scope.expired = true;
         } else if ($scope.expired) {
@@ -135,12 +174,12 @@ angular.module('gvconsole')
         } else {
         	$scope.expired = undefined;
         }
-    	
+
     }
-    
+
    $scope.search_order = function(){
-	   
-	   $scope.params = 
+
+	   $scope.params =
    	{
    		username: $scope.username,
    		fullname: $scope.fullname,
@@ -149,15 +188,15 @@ angular.module('gvconsole')
    		enabled: $scope.enabled,
 		expired: $scope.expired
    	};
-	   
+
    }
-    
+
    $scope.reverse = "username";
-    
+
 
     $scope.orderFunction = function(by){
     	$scope.order = by;
-    	
+
     	if($scope.order == $scope.reverse){
             $scope.order = $scope.order + ":reverse";
             $scope.reverse = $scope.order;
@@ -165,6 +204,24 @@ angular.module('gvconsole')
           $scope.reverse = $scope.order;
         }
 
+      };
+      
+      $scope.saveQuery = function(){
+    	  $rootScope.savedQuerystring = $rootScope.querystring;
+    	  $rootScope.querystring = undefined;
+    	  /*$rootScope.savedQueryrange = $scope.range;
+    	  $rootScope.savedQuerypage = $scope.currentPage;
+    	  $rootScope.savedQueryview = $scope.viewby;*/
+    	  
+    	  $rootScope.savedQuery = {
+    			  view:$scope.viewby,
+    			  page:$scope.currentPage,
+    			  order:$scope.order,
+    			  params:$scope.params,
+    			  range:$scope.range
+    	  };
+    	  
+    	  console.log("$rootScope.savedQuery: " + $rootScope.savedQuery.page);
       };
 
 }]);

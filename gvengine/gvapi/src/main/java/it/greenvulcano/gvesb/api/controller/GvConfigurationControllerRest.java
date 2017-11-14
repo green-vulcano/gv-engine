@@ -257,8 +257,7 @@ public class GvConfigurationControllerRest {
 	 @RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
 	 public void deploy(@PathParam("configId") String id) {
 		 				 		 		 
-		 try {
-						 
+		 try {		 
 			 gvConfigurationManager.deploy(id);			 	 
 			 
 		 } catch (IllegalStateException e) {
@@ -277,8 +276,7 @@ public class GvConfigurationControllerRest {
 	 @Produces(MediaType.APPLICATION_JSON)
 	 @RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
 	 public Response getConfigurationFileList() {		 	 
-		 JSONArray files = new JSONArray(XMLConfig.getLoadedFiles());	
-		 
+		 JSONArray files = new JSONArray(XMLConfig.getLoadedFiles());
 		 return Response.ok(files.toString()).build();
 	 }
 	 

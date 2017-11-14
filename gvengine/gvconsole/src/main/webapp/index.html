@@ -54,7 +54,7 @@
       <script type="text/javascript" src="scripts/app-properties.js"></script>
       <script type="text/javascript" src="scripts/app-flow.js"></script>
       <script type="text/javascript" src="scripts/app-dashboard.js"></script>
-      <script type="text/javascript" src="scripts/app-config.js"></script>
+      <!-- <script type="text/javascript" src="scripts/app-config.js"></script>  -->
    </head>
    <body data-ng-app="gvconsole">
       <div class="row" data-ng-show="globals.currentUser">
@@ -91,7 +91,7 @@
                       <li data-ng-class="{ active: routeIsIn('/properties')}" data-ng-show="globals.currentUser.isAdministrator||globals.currentUser.isConfigManager"><a id="optionMenu" href="#/properties" onClick="slideButtonMenu();"><i class="fa fa-product-hunt" aria-hidden="true"></i> Properties</a></li>
 		                  <li data-ng-class="{ active: routeIsIn('/testing')}" data-ng-show="globals.currentUser.isAdministrator||globals.currentUser.isConfigManager"><a id="optionMenu" href="#/testing" onClick="slideButtonMenu();"><i class="fa fa-code" aria-hidden="true"></i> Testing</a></li>
 		                  <li data-ng-class="{ active: routeIsIn('/monitoring')}"><a id="optionMenu" href="#/monitoring" onClick="gototab(); slideButtonMenu();"><i class="fa fa-area-chart" aria-hidden="true"></i> Monitoring</a></li>
-                      <li data-ng-class="{ active: routeIsIn('/dashboard')}" data-ng-show="globals.currentUser.isAdministrator||globals.currentUser.isConfigManager"><a id="optionMenu" href="#/dashboard" onClick="slideButtonMenu();"><i class="fa fa-tachometer" aria-hidden="true"></i> Dashboard</a></li>
+                      <li data-ng-class="{ active: routeIsIn('/configuration')}" data-ng-show="globals.currentUser.isAdministrator||globals.currentUser.isConfigManager"><a id="optionMenu" href="#/configuration" onClick="slideButtonMenu();"><i class="fa fa-cogs" aria-hidden="true"></i> Configuration</a></li>
                       <li data-ng-class="{ active: routeIsIn('/settings')}" data-ng-show="globals.currentUser.isAdministrator||globals.currentUser.isConfigManager"><a id="optionMenu" href="#/settings" onClick="slideButtonMenu();"><i class="fa fa-wrench" aria-hidden="true"></i> Settings</a></li>
 		                  <li class="sidebar_user" data-ng-class="{ active: routeIsIn('/myprofile')}"><a id="optionMenu" href="#/myprofile" onClick="slideButtonMenu();"><i class="fa fa-user" aria-hidden="true"></i> My profile</a></li>
 		                  <li><a id="logout" data-ng-click="app.logout()" href="#/login"><i class="fa fa-sign-out" aria-hidden="true"></i> Logout</a></li>

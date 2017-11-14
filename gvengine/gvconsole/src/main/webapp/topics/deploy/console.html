@@ -1,7 +1,7 @@
 <div class="container-fluid">
 <div class="side-body">
-   <h1>Configuration</h1>
-   <div class="row" data-ng-controller="DeployController as ctrl" data-ng-init="ctrl.loadConfigInfo()">
+   <h1>Deploy</h1>
+   <div class="row" data-ng-controller="DeployController as ctrl" data-ng-init="ctrl.loadConfigInfo(); ctrl.loadList(); ctrl.getFiles()">
    <!-- FadeOut Function -->
    <div id="fadeout" data-ng-repeat="alert in ctrl.alerts" class="fadeout alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
    <!-- FadeOut Function -->
@@ -22,6 +22,7 @@
                <img data-ng-show="exportInProgress"
                   src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
                <a id="export" data-ng-hide="exportInProgress" data-ng-click="ctrl.exportConfig()" class="btn btn-primary"><i class="fa fa-download"></i> Export</a>
+               <button type="button" class="btn btn-default" data-ng-click="ctrl.reloadConfig()"><i class="fa fa-refresh" aria-hidden="true"></i></button>
             </div>
          </div>
          <table id="users" class="table table-hover">
@@ -51,10 +52,11 @@
            </tbody>
          </table>
          <div style="margin:10px" class="alert alert-warning" data-ng-hide="ctrl.history.length">No previously configuration found!</div>
+
               <div id="addModal{{$index}}" class="modal fadeout2">
                 <div class="modal-content">
                   <h3> Add new Configuration</h3>
-
+                  <div id="fadeout" data-ng-repeat="alert in ctrl.alertsAdd" class="fadeout alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
                   <form id="deployForm" name="deployForm" class="form-horizontal"
                      data-ng-submit="ctrl.addConfig()" >
                     <fieldset id="myFieldset">
@@ -89,14 +91,14 @@
       <div class="panel panel-default" >
         <div id="panelHead" class="panel-heading">
             <i class="fa fa-sitemap fa-rotate-270"></i> Configuration files
-          <button data-ng-repeat="(id,file) in filesName" type="button" class="btn btn-primary pull-right" data-toggle="collapse" data-target="#{{id}}" style="margin-right:5px">{{file}}</button>
+          <button data-ng-repeat="(id,file) in filesName" id="xml-button" type="button" class="btn btn-primary pull-right" data-toggle="collapse" data-target="#{{id}}" style="margin-right:5px">{{file}}</button>
         </div>
-          <div class="positioninline panel-body" data-ng-repeat="(id,file) in filesName">
+          <div class="positioninline pnael-body" data-ng-repeat="(id,file) in filesName">
              <div id="{{id}}" class="collapse">
                <span class="col-md-10" id="{{file}}" style="overflow: auto;"> </span>
              </div>
           </div>
-      </div>      
-    </div>  
+      </div>
+     </div>
 </div>
 </div>

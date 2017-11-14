@@ -32,8 +32,8 @@ angular.module('gvconsole', ['ngCookies','ngRoute','angular-quartz-cron', 'ui.bo
 			when('/monitoring', {
 				templateUrl: 'topics/monitoring/monitoring.html'
 			}).
-			when('/dashboard', {
-				templateUrl: 'topics/dashboard/dashboard.html'
+			when('/configuration', {
+				templateUrl: 'topics/config/configuration.html'
 			}).
 			when('/testing', {
 				templateUrl: 'topics/flow/test.html'

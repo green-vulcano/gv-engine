@@ -9,13 +9,14 @@
   <div class="row">
 
 
-  <div class="panel panel-default" style="overflow-x:auto;">
-    <div id="panelHead"  class="panel-heading"><i class="fa fa-users"></i> Found: {{totalItems}}<a href="#/users/new" onClick="slide();" class="btn btn-primary pull-right" data-ng-class="{'btn btn-primary pull-right disabled': dataNa == true || auth != true}">
+  <div class="panel panel-default">
+    <div id="panelHead"  class="panel-heading"><i class="fa fa-users"></i> Found: {{totalItems}}<a href="#/users/new" data-ng-click="slide();" class="btn btn-primary pull-right" data-ng-class="{'btn btn-primary pull-right disabled': dataNa == true || auth != true}">
       <i class="fa fa-user-plus"></i>
     </a>
     <button data-ng-click = "searchClick = !searchClick" class="btn btn-default pull-right" style="margin-right:5px"><i class="fa fa fa-search" aria-hidden="true"></i></button>
     </div>
-      <table id="users" class="table table-hover">
+    <div style="overflow-x:auto;">
+      <table id="users" class="table table-hover" style="magin-bottom:0">
         <thead>
             <!-- Normal View -->
           <tr data-ng-show="searchClick">
@@ -61,16 +62,17 @@
               </ul>
             </td>
             <td class="text-right">
-              <button data-ng-click="getUser(user.username); go('/users/'+ user.id)" onClick="slide();" type="button" class="btn btn-warning"><i class="fa fa-pencil" aria-hidden="true"></i></button>
+              <button data-ng-click="saveQuery(); go('/users/'+ user.id)" onClick="slide();" type="button" class="btn btn-warning"><i class="fa fa-pencil" aria-hidden="true"></i></button>
             </td>
           </tr>
         </tbody>
       </table>
+      </div>
     <div id="panelPagination"  class="panel-footer">
   <div class="row">
     <div style="float: right;">
         <ul class="pagination pull-right" style="margin: 3px;">
-        <ul uib-pagination total-items="totalItems" ng-model="currentPage" items-per-page="viewby" max-size="maxSize" class="pagination-sm" boundary-link-numbers="true" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" style="margin: 0;"></ul>
+        <ul uib-pagination total-items="totalItems" data-ng-model="currentPage" items-per-page="viewby" max-size="maxSize" class="pagination-sm" boundary-link-numbers="true" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" style="margin: 0;"></ul>
     </div>
     View <select id="selctNum" data-ng-model="viewby" class="form-control"><option>3</option><option>5</option><option>10</option><option>20</option><option>30</option><option>40</option><option>50</option></select> users at once.
   </div>

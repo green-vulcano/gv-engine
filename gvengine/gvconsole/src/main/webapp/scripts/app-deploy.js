@@ -22,6 +22,10 @@ angular.module('gvconsole')
 			return $http.get(Endpoints.gvesb);
 		}
 
+	    this.reloadConfiguration = function(){
+	      $http.put(Endpoints.gvconfig + '/deploy');
+	    }
+
 		this.getConfigInfo = function() {
 			return $http.get(Endpoints.gvconfig + '/deploy')
 		}
@@ -99,6 +103,7 @@ angular.module('gvconsole')
 	var instance = this;
 
 	this.alerts = [];
+    this.alertsAdd = [];
 
 	this.configInfo = {};
 
@@ -108,21 +113,16 @@ angular.module('gvconsole')
 	this.history = [];
 
   this.loadList = function() {
-    DeployService.getConfigHistory().then(function(response){
+	 DeployService.getConfigHistory().then(function(response){
   		instance.history = response.data;
   		},function(response){
   			instance.alerts.push({type: 'danger', msg: 'Config history not available'});
   		});
   };
 
-	DeployService.getConfigHistory().then(function(response){
-		instance.history = response.data;
-		},function(response){
-		   instance.alerts.push({type: 'danger', msg: 'Config history not available'});
-		});
-
 	this.addConfig = function(){
-		DeployService.addConfig(instance.deploy.id,instance.deploy.configfile)
+    if (instance.configInfo.id != instance.deploy.id) {
+    	DeployService.addConfig(instance.deploy.id,instance.deploy.configfile)
 			.then(function(response){
 				instance.alerts.push({type: 'success', msg: 'Configuration added successfully'});
 				setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
@@ -133,6 +133,10 @@ angular.module('gvconsole')
         setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
        angular.element(".fadeout2").modal('hide');
 			});
+    } else {
+      instance.alertsAdd.push({type: 'danger', msg: 'ID already used for the current configuration'});
+      setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
+    }
 
 	}
 
@@ -193,6 +197,19 @@ angular.module('gvconsole')
 			});
 		}
 
+  this.reloadConfig = function() {
+	  DeployService.reloadConfiguration();
+    instance.alerts.push({type: 'success', msg: 'Reload configuration success'});
+    setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
+    instance.loadConfigInfo();
+    instance.loadList();
+    instance.getFiles();
+    /* function (response) {
+      instance.alerts.push({type: 'danger', msg: 'Reload configuration failed'});
+      setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
+    }) */
+  }
+
 	this.deleteConfig = function(id){
 		DeployService.deleteConfig(id)
 			.then(function(response){
@@ -206,16 +223,21 @@ angular.module('gvconsole')
 
 	};
 
-	DeployService.getXMLFiles().then(function(response){
+  this.getFiles = function() {
+	  DeployService.getXMLFiles().then(function(response){
+		  console.log("files name: " + response.data);
 		$scope.filesName = response.data;
 		angular.forEach($scope.filesName,function(value,key){
 			DeployService.getXMLFile(value).then(function(response){
 				LoadXMLString(value, response.data);
-			});
+			},function(response){
+        instance.alerts.push({type: 'danger', msg: 'XML files not available'});
+      });
 		});
 	},function(response){
-		instance.alerts.push({type: 'danger', msg: 'XML File not available'});
+		instance.alerts.push({type: 'danger', msg: 'XML fileList not available'});
 	});
+  };
 
 
 
@@ -228,6 +250,7 @@ angular.module('gvconsole')
 	$scope.newConfigId = $routeParams.newConfigId;
 
 	this.alerts = [];
+  this.alertsAdd = [];
 
 	var instance = this;
 
@@ -269,7 +292,7 @@ angular.module('gvconsole')
 	  this.properties = {};
 	  this.propertiesKeys = [];
 
-	 DeployService.getGVCoreProperties($scope.newConfigId).then(function(response){
+	  DeployService.getGVCoreProperties($scope.newConfigId).then(function(response){
 			instance.propertiesKeys = response.data;
 			DeployService.getProperties().then(function(response){
 				angular.forEach(instance.propertiesKeys,function(value){
