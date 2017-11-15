@@ -3,6 +3,8 @@ angular.module('gvconsole')
 
 		this.getAllUsers = function(range,params,order){
 			
+			console.log("range: " + range);
+			
 			if($rootScope.querystring == undefined && $rootScope.savedQuerystring != undefined){
 			
 				var querystring = $rootScope.savedQuerystring;
@@ -59,10 +61,10 @@ angular.module('gvconsole')
  }]);
 
 angular.module('gvconsole')
-.controller('UsersListController',['AdminService','$rootScope', '$scope', '$location', function(AdminService,$rootScope, $scope, $location){
+.controller('UsersListController',['AdminService','$rootScope', '$scope', '$location', '$routeParams', function(AdminService,$rootScope, $scope, $location, $routeParams){
 
 	$scope.searchClick = true;
-
+	
 	var instance = this;
   for( prop in $rootScope.globals.currentUser.roles){
     if($rootScope.globals.currentUser.isAdministrator){
@@ -73,6 +75,7 @@ angular.module('gvconsole')
   if($scope.viewby == undefined && $rootScope.savedQuery ==undefined){
 	  
 	  $scope.viewby = 10;
+	  $scope.selected = true;
 	  
   }else{
 	  $scope.viewby = $rootScope.savedQuery.view;
@@ -93,9 +96,6 @@ angular.module('gvconsole')
   }else{
 	  $scope.params = $rootScope.savedQuery.params;
   }
-  
-  
-  $scope.selected = true;
 
 	this.alerts = [];
 
@@ -113,8 +113,8 @@ angular.module('gvconsole')
 
 	  if($scope.selected) {
 	      angular.element('#search_param option:eq(0)').prop('selected', true);
-	      angular.element('#selctNum option:eq(3)').prop('selected', true);
 	      angular.element("#selctNum option[value='? number:10 ?']").remove();
+	      angular.element('#selctNum option:eq(2)').prop('selected', true);
 	      angular.element("#search_param option[value='? undefined:undefined ?']").remove();
 	      $scope.selected = false;
 	    }
@@ -178,6 +178,8 @@ angular.module('gvconsole')
     }
 
    $scope.search_order = function(){
+	   
+	   $scope.currentPage = 1;
 
 	   $scope.params =
    	{

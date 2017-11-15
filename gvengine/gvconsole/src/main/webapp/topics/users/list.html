@@ -16,7 +16,7 @@
     <button data-ng-click = "searchClick = !searchClick" class="btn btn-default pull-right" style="margin-right:5px"><i class="fa fa fa-search" aria-hidden="true"></i></button>
     </div>
     <div style="overflow-x:auto;">
-      <table id="users" class="table table-hover" style="magin-bottom:0">
+      <table id="users" class="table table-hover" style="margin-bottom:0">
         <thead>
             <!-- Normal View -->
           <tr data-ng-show="searchClick">
@@ -28,6 +28,7 @@
             <th class="text-right">Action</th>
           </tr>
             <!-- Search View -->
+          <div class="alert alert-warning" data-ng-hide="searchClick" role="alert" style="margin-bottom: 0px">Add * at the end of the string to search every word with that prefix</div>
           <tr data-ng-hide="searchClick">
             <th><input type="text" placeholder="Users" data-ng-model="username"></th>
             <th><input type="text" placeholder="Full name" data-ng-model="fullname"></th>

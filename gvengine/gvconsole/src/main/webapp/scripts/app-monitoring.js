@@ -326,7 +326,7 @@ angular.module('gvconsole')
       chartServiceThreads.updateGloveChart('SED00211', $scope.peakThreads);
 };
 
-    },1000);
+    },2000);
 
     $interval(function(){
 
@@ -335,7 +335,6 @@ angular.module('gvconsole')
       MonitoringServices.getCPU().then(
           function(response) {
              $scope.cpuUse = response.data.usage;
-
           }, function(response){
                $scope.error = response;
           });
@@ -344,6 +343,6 @@ angular.module('gvconsole')
 
         };
 
-    },3000);
+    },2000);
 
 }]);
