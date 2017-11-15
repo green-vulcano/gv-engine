@@ -24,6 +24,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
@@ -54,9 +55,11 @@ import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.apache.cxf.rs.security.cors.CrossOriginResourceSharing;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.XML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -66,6 +69,10 @@ import it.greenvulcano.configuration.XMLConfigException;
 import it.greenvulcano.gvesb.GVConfigurationManager;
 import it.greenvulcano.gvesb.GVConfigurationManager.Authority;
 import it.greenvulcano.gvesb.api.dto.ServiceDTO;
+<<<<<<< HEAD
+=======
+import it.greenvulcano.util.xml.XMLUtils;
+>>>>>>> 540e76d845034014eb21ff6b7d8d9587f75a6331
 
 @CrossOriginResourceSharing(allowAllOrigins=true, allowCredentials=true, exposeHeaders={"Content-type", "Content-Range", "X-Auth-Status"})
 public class GvConfigurationControllerRest extends BaseControllerRest {
@@ -253,7 +260,82 @@ public class GvConfigurationControllerRest extends BaseControllerRest {
 		 }		 
 		 
 	 }
-	 	 
+	 
+	 @GET
+	 @Path("/configuration/{configId}/{serviceId}")
+	 @Produces(MediaType.APPLICATION_JSON)
+	 @RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
+	 public Response getArchivedConfigServices(@PathParam("configId") String id, @PathParam("serviceId") String service ) {
+		 
+		 try {
+			 byte[] gvcore = gvConfigurationManager.extract(id, "GVCore.xml");
+			 if (gvcore!=null && gvcore.length>0) {
+				 
+				 String xml = new String(gvcore, "UTF-8");
+				 Document gvcoreDocument  = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse( IOUtils.toInputStream(xml, "UTF-8") );
+									
+				 Node serviceNode = Optional.ofNullable(XMLConfig.getNode(gvcoreDocument, "//Service[@id-service='"+service+"']"))
+						   .orElseThrow(NoSuchElementException::new);
+
+				 ServiceDTO svc = ServiceDTO.buildServiceFromConfig(serviceNode).orElseThrow(NoSuchElementException::new);				
+
+				 return Response.ok(toJson(svc)).build();
+			 }
+			 
+			 return Response.status(Response.Status.NOT_FOUND).build();
+		
+		 } catch (NoSuchElementException noSuchElementException) {
+			 throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity("Service not found").build());
+			 
+		 } catch (XMLConfigException | JsonProcessingException xmlConfigException){
+				LOG.error("Error reading services configuration", xmlConfigException);
+				throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(toJson(xmlConfigException)).build());
+		 } catch (Exception e) {
+			return Response.status(Response.Status.NOT_FOUND).build();
+		 
+		 }		 
+	
+		 
+		 
+	 }
+	 
+	 @GET
+	 @Path("/configuration/{configId}/{serviceId}/{operationId}")
+	 @Produces(MediaType.APPLICATION_JSON)
+	 @RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
+	 public Response getArchivedConfigFlows(@PathParam("configId") String id, @PathParam("serviceId") String service, @PathParam("operationId")String operation ) {
+		 
+		 try {
+			 byte[] gvcore = gvConfigurationManager.extract(id, "GVCore.xml");
+			 if (gvcore!=null && gvcore.length>0) {
+				 
+				 String xml = new String(gvcore, "UTF-8");
+				 Document gvcoreDocument  = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse( IOUtils.toInputStream(xml, "UTF-8") );
+									
+				 Node operationNode = Optional.ofNullable(XMLConfig.getNode(gvcoreDocument, "//Service[@id-service='"+service+"']/Operation[@name='"+operation+"']" ))
+	                     .orElseThrow(NoSuchElementException::new);
+
+				 byte[] operationNodeData = XMLUtils.serializeDOMToByteArray_S(operationNode);
+
+				 String response = XML.toJSONObject( new String(operationNodeData), true).toString();	
+
+				 return Response.ok(response).build();
+			 }
+			 
+			 return Response.status(Response.Status.NOT_FOUND).build();
+		
+		 } catch (NoSuchElementException noSuchElementException) {
+			 throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity("Service not found").build());
+			 
+		 } catch (XMLConfigException | JsonProcessingException xmlConfigException){
+				LOG.error("Error reading services configuration", xmlConfigException);
+				throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(toJson(xmlConfigException)).build());
+		 } catch (Exception e) {
+			return Response.status(Response.Status.NOT_FOUND).build();
+		 
+		 }		 
+		 
+	 }
 	
 	 @GET
 	 @Path("/deploy")
