@@ -69,10 +69,7 @@ import it.greenvulcano.configuration.XMLConfigException;
 import it.greenvulcano.gvesb.GVConfigurationManager;
 import it.greenvulcano.gvesb.GVConfigurationManager.Authority;
 import it.greenvulcano.gvesb.api.dto.ServiceDTO;
-<<<<<<< HEAD
-=======
 import it.greenvulcano.util.xml.XMLUtils;
->>>>>>> 540e76d845034014eb21ff6b7d8d9587f75a6331
 
 @CrossOriginResourceSharing(allowAllOrigins=true, allowCredentials=true, exposeHeaders={"Content-type", "Content-Range", "X-Auth-Status"})
 public class GvConfigurationControllerRest extends BaseControllerRest {
