@@ -7,7 +7,7 @@
 			<div class="container-fluid">
 				<div class="side-body">
 					<h1>Deploy action</h1>
-					<div class="row" data-ng-controller="DeployConfigController as ctrl" data-ng-init="">
+					<div class="row" data-ng-controller="DeployConfigController as ctrl">
 						<div class="container col-sm-12">
 							<div class="row">
 								<div class="panel panel-default" style="overflow-x:auto;">
@@ -89,7 +89,7 @@
 											          </table>
 															</div>
 															<div class="col-sm-6">
-																<a href="#/config" type="button" class="btn btn-danger pull-left">Cancel</a>
+																<a href="#/deploy" type="button" class="btn btn-danger pull-left">Cancel</a>
 															</div>
 															<div class="col-sm-6">
 																<button type="submit" data-ng-show="propertiesForm.$valid"  id="stepValue" value="1" class="btn btn-primary pull-right" data-toggle="tab" data-target="#complete"  data-ng-click="changeStep()">Next</button>

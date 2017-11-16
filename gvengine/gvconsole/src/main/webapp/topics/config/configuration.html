@@ -1,6 +1,6 @@
 <div class="container-fluid">
 <div class="side-body">
-  <div data-ng-controller = "">
+  <div data-ng-controller = "ConfigController as ctrl" data-ng-init="init();">
    <h1>Configuration</h1>
 
       <div class="panel panel-default">
@@ -17,86 +17,38 @@
               <div id="Services" class="tab-pane fade in active">
                 <div class="col-sm-6">
                   <div class="panel panel-default" style="margin-top:10px">
-                    <div class="panel-heading" data-toggle="collapse" data-target="#Group1">
-                        <h3 class="panel-title">Groups 1</h3>
+                    <div data-ng-repeat="group in groups">
+                    <div class="panel-heading Clickable" data-toggle="collapse" data-target="#{{group}}" style="border-radius: 0px">
+                        <h3 class="panel-title">{{group}}</h3> <!-- Group -->
                     </div>
-                    <div class="panel-body collapse" style="padding:0px; border-radius: 0px" id="Group1">
+                    <div class="panel-body collapse" style="padding:0px; border-radius: 0px" id="{{group}}">
                       <table class="table table-hover col-sm-12" style="margin: 0px">
                         <tbody>
-                          <tr>
-                            <td>Service 1 </td>
-                          </tr>
-                          <tr>
-                            <td>Service 2 </td>
+                          <tr data-ng-repeat="service in serviceByGroup[group]">
+                            <td data-toggle="collapse" class="Clickable" data-target="#{{service.idService}}">{{service.idService}}</td> <!-- Service -->
                           </tr>
                        </tbody>
                       </table>
                     </div>
-
-                    <div class="panel-heading" data-toggle="collapse" data-target="#Group2" style="border-radius: 0px">
-                        <h3 class="panel-title">Groups 2</h3>
-                    </div>
-                    <div class="panel-body collapse" id="Group2" style="padding:0px;">
-                      <table class="table table-hover col-sm-12" style="margin-bottom: 0px">
-                        <tbody>
-                          <tr>
-                            <td data-toggle="collapse" data-target="#Service1">Service 1</td>
-                          </tr>
-                          <tr>
-                            <td data-toggle="collapse" data-target="#Service2">Service 2 </td>
-                          </tr>
-                       </tbody>
-                      </table>
-                    </div>
-
-                    <div class="panel-heading" data-toggle="collapse" data-target="#Group3" style="border-radius: 0px">
-                        <h3 class="panel-title">Groups 3</h3>
-                    </div>
-                    <div class="panel-body collapse" id="Group3" style="padding:0px;">
-                      <table class="table table-hover col-sm-12" style="margin-bottom: 0px">
-                        <tbody>
-                          <tr>
-                            <td>Service 1 </td>
-                          </tr>
-                          <tr>
-                            <td>Service 2 </td>
-                          </tr>
-                       </tbody>
-                      </table>
-                    </div>
-
+                  </div>
                   </div>
 
 
                 </div>
-                <div class="col-sm-6">
-                    <div id="Service1" class="panel panel-default collapse" style="margin-top:10px">
-                      <div class="panel-body">
-                        <i id="crossClose" class="fa fa-times pull-right" aria-hidden="true" data-toggle="collapse" data-target="#Service1"></i>
-                        <h3>Groups 2/Service 1</h3>
-                          <ul>
-                            <li>Operation 1</li>
-                            <li>Operation 2</li>
-                          </ul>
-                      </div>
-                    </div>
 
-                    <div id="Service2" class="panel panel-default collapse" style="margin-top:10px">
+                <div class="col-sm-6">
+                  <div data-ng-repeat="group in groups">
+                    <div data-ng-repeat="service in serviceByGroup[group]" id="{{service.idService}}" class="panel panel-default collapse" style="margin-top:10px">
                       <div class="panel-body">
-                        <i id="crossClose" class="fa fa-times pull-right" aria-hidden="true" data-toggle="collapse" data-target="#Service2"></i>
-                        <h3>Groups 2/Service 2</h3>
+                        <i id="crossClose" class="fa fa-times pull-right Clickable" aria-hidden="true" data-toggle="collapse" data-target="#{{service.idService}}"></i>
+                        <h3>{{group}}/{{service.idService}}</h3>
                           <ul>
-                            <li>Operation 1</li>
-                            <li>Operation 2</li>
-                            <li>Operation 3</li>
-                            <li>Operation 4</li>
-                            <li>Operation 5</li>
-                            <li>Operation 6</li>
-                            <li>Operation 7</li>
+                            <li data-ng-repeat="operation in service.operations">{{operation.name}}</li>
                           </ul>
                       </div>
                     </div>
-               </div>
+                  </div>
+                  </div>
               </div>
 
                 <div id="Systems" class="tab-pane fade in active">

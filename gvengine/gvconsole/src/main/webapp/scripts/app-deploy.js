@@ -271,6 +271,7 @@ angular.module('gvconsole')
 		.then(function(response){
 			$scope.newGVCore = response.data;
 		},function(response){
+      console.log("ERROR:"+response.data);
 			instance.alerts.push({type: 'danger', msg: 'GV Core not available'});
 	});
 
