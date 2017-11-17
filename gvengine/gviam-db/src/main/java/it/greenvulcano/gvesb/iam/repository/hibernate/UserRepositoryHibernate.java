@@ -21,6 +21,7 @@ package it.greenvulcano.gvesb.iam.repository.hibernate;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -30,7 +31,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 
 import it.greenvulcano.gvesb.iam.domain.User;
-import it.greenvulcano.gvesb.iam.repository.UserRepository;
+import it.greenvulcano.gvesb.iam.domain.jpa.UserJPA;
 
 /**
  * 
@@ -38,32 +39,69 @@ import it.greenvulcano.gvesb.iam.repository.UserRepository;
  * expects injection of a {@link SessionFactory}  
  * 
  */
-public class UserRepositoryHibernate extends RepositoryHibernate<User, Long> implements UserRepository {
+public class UserRepositoryHibernate extends RepositoryHibernate {
 	
-	public UserRepositoryHibernate() {
-		super(User.class);
+	public enum Parameter {
+		username, fullname, email, expired, creationTime, updateTime, passwordTime, enabled, role;
+		
+		public static Parameter get(String v) {
+			try {
+				return valueOf(v);
+			} catch (Exception e) {
+				return null;
+			}
+		}
 	}
 	
-	@Override
+	public enum Order {desc, asc;
+	
+		public static Order get(String v) {
+			try {
+				return valueOf(v);
+			} catch (Exception e) {
+				return null;
+			}
+		}
+	}	
+		
 	public void setSessionFactory(SessionFactory sessionFactory) {	
 		super.setSessionFactory(sessionFactory);
-	}	
-	
-	@Override
+	}
+			
 	public Optional<User> get(String username) {		
-		return Optional.ofNullable((User)getSession().createQuery("from User where username = :uname")
+		return Optional.ofNullable((UserJPA)getSession().createQuery("from UserJPA where username = :uname")
 								  .setParameter("uname", username)
 								  .uniqueResult());
 	}
 	
-	@Override
+	public Optional<User> get(Long key) {		
+		return Optional.ofNullable(getSession().get(UserJPA.class, key));
+	}
+
+	public void add(User entity) {
+		getSession().saveOrUpdate(UserJPA.class.cast(entity));
+		getSession().flush();		
+		
+	}
+
+	@SuppressWarnings("unchecked")
+	public Set<User> getAll() {		
+		List<User> users = getSession().createQuery("from UserJPA").list();
+		return new LinkedHashSet<User>(users);
+	}
+
+	public void remove(User entity) {
+		getSession().delete(UserJPA.class.cast(entity));
+		getSession().flush();
+	}
+	
 	public Set<User> find(Map<Parameter, Object> parameters, LinkedHashMap<Parameter, Order> order, int firstResult, int maxResult) {
 		Set<User> result = new LinkedHashSet<>();
 				
 		QueryHelper helper = buildQueryHelper(false, parameters, order);
 		
 		@SuppressWarnings("unchecked")
-		Query<User> q = getSession().createQuery(helper.getQuery().toString());
+		Query<UserJPA> q = getSession().createQuery(helper.getQuery().toString());
 		helper.getParams().entrySet().forEach(p-> q.setParameter(p.getKey(), p.getValue()));
 		
 		q.setFirstResult(firstResult);
@@ -74,7 +112,6 @@ public class UserRepositoryHibernate extends RepositoryHibernate<User, Long> imp
 		return result;
 	}
 
-	@Override
 	public int count(Map<Parameter, Object> parameters) {		
 		QueryHelper helper = buildQueryHelper(true, parameters, new LinkedHashMap<>());
 		
@@ -85,9 +122,33 @@ public class UserRepositoryHibernate extends RepositoryHibernate<User, Long> imp
 		return q.uniqueResult().intValue();
 	}
 	
+	static class QueryHelper {
+		
+		private final Map<String, Object> params = new LinkedHashMap<>();
+		private final StringBuilder query;
+		
+		public QueryHelper() {
+			query = new StringBuilder();
+		}
+		
+		public QueryHelper(String queryStart) {
+			 query = new StringBuilder(queryStart);
+		}
+
+		public Map<String, Object> getParams() {
+			return params;
+		}
+
+		public StringBuilder getQuery() {
+			return query;
+		}
+		
+		
+	}
+	
 	private QueryHelper buildQueryHelper(boolean countOnly, Map<Parameter, Object> parameters, LinkedHashMap<Parameter, Order> order){
 		
-		QueryHelper helper = countOnly ? new QueryHelper("select count(u.id) from User u ") : new QueryHelper("select distinct u from User u ") ;
+		QueryHelper helper = countOnly ? new QueryHelper("select count(u.id) from UserJPA u ") : new QueryHelper("select distinct u from UserJPA u ") ;
 		
 		if (parameters!=null) {			
 			Optional<Object> role = Optional.ofNullable(parameters.get(Parameter.role));			

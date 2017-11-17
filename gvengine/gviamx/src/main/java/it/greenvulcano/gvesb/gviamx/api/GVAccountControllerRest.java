@@ -203,7 +203,6 @@ public class GVAccountControllerRest {
 			
 			User user = signupManager.getUsersManager().createUser(email, password);			
 						
-			user.setUserInfo(new UserInfo());
 			user.getUserInfo().setEmail(email);
 			
 			try {

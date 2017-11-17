@@ -19,114 +19,21 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb.iam.domain;
 
-import java.io.Serializable;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
 /**
  * 
- * Entity representing an authorative role in a security context
+ * Represent an authorative role in a security context
  * 
  * @author GreenVulcano Technologies
  *
  */
-@Entity
-@Table(name="roles")
-public class Role implements Serializable {
-	private static final long serialVersionUID = 1L;
-	
+public abstract class Role {		
 	public static final String ROLE_PATTERN = "(?=^.{4,28}$)^[a-zA-Z][a-zA-Z0-9._@-]*[a-zA-Z0-9]+$";
-	
-	@Id @GeneratedValue(strategy=GenerationType.AUTO)
-	private Integer id;
-	
-	@Column(nullable=false,length=32, unique=true, updatable=false)
-	private String name;
-	
-	@Column(length=128)
-	private String description;
+			
+	public abstract Integer getId();
+	public abstract String getName();
 
-	public Role(){
-		
-	}
-	
-	public Role(String name, String description) {
-		this.name = name;
-		this.description = description;
-	}	
-	
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((description == null) ? 0 : description.hashCode());
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Role other = (Role) obj;
-		if (description == null) {
-			if (other.description != null)
-				return false;
-		} else if (!description.equals(other.description))
-			return false;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-		return true;
-	}
-
-	@Override
-	public String toString() {
-		return "{\"id\":"+id+",\"name\":\"" + name + "\", \"description\":\"" + description + "\"}";
-	}
-	
-	
+	public abstract void setName(String name);
+	public abstract String getDescription();
+	public abstract void setDescription(String description);
 
 }

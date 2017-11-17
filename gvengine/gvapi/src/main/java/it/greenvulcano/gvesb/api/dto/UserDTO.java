@@ -1,8 +1,10 @@
 package it.greenvulcano.gvesb.api.dto;
 
+import java.util.Collection;
+import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -25,14 +27,112 @@ public class UserDTO {
 					@JsonProperty("username") String username, 
 					@JsonProperty("expired") boolean expired, 
 					@JsonProperty("enabled") boolean enabled,
-					@JsonProperty("userInfo") UserInfo userInfo,
-					@JsonProperty("roles") Map<String, Role> roles) {
-		user = new User();
-		user.setId(id);
-		user.setUsername(username);;
-		user.setExpired(expired);
-		user.setEnabled(enabled);
-		user.setUserInfo(userInfo);
+					@JsonProperty("userInfo") UserInfoDTO userInfo,
+					@JsonProperty("roles") Map<String, RoleDTO> roles) {
+		
+		user = new User() {
+			
+			Long _id = id;
+			String _username = username;
+			boolean _expired = expired;
+			boolean _enabled = enabled;			
+			UserInfo _userInfo = userInfo;
+			Set<Role> _roles = new LinkedHashSet<>();
+			
+			
+			@Override
+			public void setUsername(String username) {
+				this._username = username;
+				
+			}
+			
+			@Override
+			public void setUserInfo(UserInfo userInfo) {
+				this._userInfo = userInfo;
+				
+			}
+			
+			@Override
+			public void setPasswordTime(Date date) {
+								
+			}
+			
+			@Override
+			public void setPassword(String password) {
+							
+			}
+			
+			@Override
+			public void setExpired(boolean expired) {
+				this._expired = expired;				
+			}
+			
+			@Override
+			public void setEnabled(boolean enabled) {
+				this._enabled = enabled;
+				
+			}
+			
+			@Override
+			public boolean isExpired() {				
+				return _expired;
+			}
+			
+			@Override
+			public boolean isEnabled() {				
+				return _enabled;
+			}
+			
+			@Override
+			public String getUsername() {				
+				return _username;
+			}
+			
+			@Override
+			public UserInfo getUserInfo() {				
+				return _userInfo;
+			}
+			
+			@Override
+			public Set<Role> getRoles() {				
+				return _roles;
+			}
+			
+			@Override
+			public String getPassword() {				
+				return null;
+			}
+			
+			@Override
+			public Long getId() {				
+				return _id;
+			}
+
+			@Override
+			public void addRole(Role role) {
+				_roles.add(role);
+				
+			}
+
+			@Override
+			public void addRoles(Collection<Role> roles) {
+				_roles.addAll(roles);
+				
+			}
+
+			@Override
+			public void removeRole(String name) {
+				_roles.stream().filter(r -> r.getName().equals(name)).findAny().ifPresent(_roles::remove);
+				
+			}
+
+			@Override
+			public void clearRoles() {
+				_roles.clear();
+				
+			}
+		};
+		
 		if (roles!=null) user.getRoles().addAll(roles.values());
 	}
 	
@@ -67,7 +167,7 @@ public class UserDTO {
 	}
 
 	public UserInfo getUserInfo() {
-		return Optional.ofNullable(user.getUserInfo()).orElse(new UserInfo()) ;
+		return user.getUserInfo();
 	}	
 
 }

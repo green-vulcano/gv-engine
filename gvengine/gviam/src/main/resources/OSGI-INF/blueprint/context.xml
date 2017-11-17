@@ -2,42 +2,13 @@
 <blueprint  default-activation="eager" 
             xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xmlns:jaas="http://karaf.apache.org/xmlns/jaas/v1.1.0" 
-            xmlns:tx="http://aries.apache.org/xmlns/transactions/v1.0.0"
-            xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"                 			
-			xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
-							   http://aries.apache.org/xmlns/transactions/v1.0.0 http://aries.apache.org/xmlns/transactions/v1.0.0
-							   http://karaf.apache.org/xmlns/jaas/v1.1.0 http://karaf.apache.org/xmlns/jaas/v1.1.0
-							   http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd">
+            xmlns:jaas="http://karaf.apache.org/xmlns/jaas/v1.1.0"                              			
+			xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd							  
+							   http://karaf.apache.org/xmlns/jaas/v1.1.0 http://karaf.apache.org/xmlns/jaas/v1.1.0">
 	
-	<reference id="hibernateSessionFactory" interface="org.hibernate.SessionFactory" activation="eager" availability="mandatory"/>
-	
-	<bean id="userRepositoryHibernate" class="it.greenvulcano.gvesb.iam.repository.hibernate.UserRepositoryHibernate">
-		<property name="sessionFactory" ref="hibernateSessionFactory"/>
-		<tx:transaction method="*" value="Required"/>
-	</bean>
-	
-	<bean id="roleRepositoryHibernate" class="it.greenvulcano.gvesb.iam.repository.hibernate.RoleRepositoryHibernate">
-		<property name="sessionFactory" ref="hibernateSessionFactory"/>
-		<tx:transaction method="*" value="Required"/>
-	</bean>
-	
-	<bean id="credentialsRepositoryHibernate" class="it.greenvulcano.gvesb.iam.repository.hibernate.CredentialsRepositoryHibernate">
-		<property name="sessionFactory" ref="hibernateSessionFactory"/>
-		<tx:transaction method="*" value="Required"/>
-	</bean>
-    
-    <bean id="gvJAASBackingEngineFactory" class="it.greenvulcano.gvesb.iam.jaas.GVBackingEngineFactory">
-    	<property name="userRepository" ref="userRepositoryHibernate"/>
-    	<property name="roleRepository" ref="roleRepositoryHibernate"/>
-    </bean>
-    
-    <service id="GVBackingEngineFactory" ref="gvJAASBackingEngineFactory" interface="org.apache.karaf.jaas.modules.BackingEngineFactory">
-    	<service-properties>
-    		<entry key="name" value="GVBackingEngineFactory"/>
-    	</service-properties>
-    </service>
-       
+	<reference id="gvUsersManager" interface="it.greenvulcano.gvesb.iam.service.UsersManager" activation="eager" availability="mandatory"/>
+	<reference id="gvCredentialsManager" interface="it.greenvulcano.gvesb.iam.service.CredentialsManager" activation="eager" availability="mandatory"/>
+	       
     <jaas:config name="karaf" rank="2">
         <jaas:module name="GVLoginModule" 
         			 className="it.greenvulcano.gvesb.iam.jaas.GVLoginModule" 
@@ -45,28 +16,6 @@
             debug=true          
         </jaas:module>
     </jaas:config>
-
-	<bean id="gvUsersManager" class="it.greenvulcano.gvesb.iam.service.internal.GVUsersManager">
-		<property name="userRepository" ref="userRepositoryHibernate"/>
-    	<property name="roleRepository" ref="roleRepositoryHibernate"/>
-    	<property name="jaasEngineFactory" ref="gvJAASBackingEngineFactory"/>
-	</bean>
-	
-	<service id="usersManager" ref="gvUsersManager" interface="it.greenvulcano.gvesb.iam.service.UsersManager"/>
-		
-	<cm:property-placeholder persistent-id="it.greenvulcano.gvesb.security" update-strategy="none">
-			<cm:default-properties>
-				<cm:property name="token.lifetime" value="43200000" />				
-			</cm:default-properties>
-	</cm:property-placeholder>	
-	
-	<bean id="gvCredentialsManager" class="it.greenvulcano.gvesb.iam.service.internal.GVCredentialsManager">
-		<property name="usersManager" ref="gvUsersManager"/>
-    	<property name="credentialsRepository" ref="credentialsRepositoryHibernate"/>
-    	<property name="tokenLifeTime" value="${token.lifetime}"/>
-	</bean>
-	
-	<service id="credentialsManager" ref="gvCredentialsManager" interface="it.greenvulcano.gvesb.iam.service.CredentialsManager"/>
 	
 	<bean id="gvBasicAuthenticationSecurityModule" class="it.greenvulcano.gvesb.iam.modules.internal.GVBasicAuthenticationSecurityModule">
 		<property name="usersManager" ref="gvUsersManager"/>

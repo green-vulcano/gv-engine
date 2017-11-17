@@ -19,12 +19,15 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb.iam.repository.hibernate;
 
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.hibernate.SessionFactory;
 
 import it.greenvulcano.gvesb.iam.domain.Role;
-import it.greenvulcano.gvesb.iam.repository.RoleRepository;
+import it.greenvulcano.gvesb.iam.domain.jpa.RoleJPA;
 
 /**
  * 
@@ -32,23 +35,38 @@ import it.greenvulcano.gvesb.iam.repository.RoleRepository;
  * expects injection of a {@link SessionFactory}  
  * 
  */
-public class RoleRepositoryHibernate extends RepositoryHibernate<Role, Integer> implements RoleRepository {
-
-	public RoleRepositoryHibernate() {
-		super(Role.class);
-		
-	}
+public class RoleRepositoryHibernate extends RepositoryHibernate {
 	
 	@Override
 	public void setSessionFactory(SessionFactory sessionFactory) {	
 		super.setSessionFactory(sessionFactory);
 	}
 	
-	@Override
 	public Optional<Role> get(String rolename) {		
-		return Optional.ofNullable((Role)getSession().createQuery("from Role where name = :name")
+		return Optional.ofNullable((RoleJPA)getSession().createQuery("from RoleJPA where name = :name")
 								  .setParameter("name", rolename)
 								  .uniqueResult());
+	}
+
+	public Optional<Role> get(Long key) {		
+		return Optional.ofNullable(getSession().get(RoleJPA.class, key));
+	}
+
+	public void add(Role entity) {
+		getSession().saveOrUpdate(RoleJPA.class.cast(entity));
+		getSession().flush();
+		
+	}
+
+	@SuppressWarnings("unchecked")
+	public Set<Role> getAll() {
+		List<Role> roles = getSession().createQuery("from RoleJPA").list();
+		return new LinkedHashSet<Role>(roles);
+	}
+
+	public void remove(Role entity) {
+		getSession().delete(RoleJPA.class.cast(entity));
+		getSession().flush();		
 	}
 
 }

@@ -13,9 +13,9 @@
         <property name="hibernate.transaction.coordinator_class">jta</property>        
         <property name="hibernate.hbm2ddl.auto">update</property>
         
-        <mapping class="it.greenvulcano.gvesb.iam.domain.User"/>
-        <mapping class="it.greenvulcano.gvesb.iam.domain.Role"/>
-        <mapping class="it.greenvulcano.gvesb.iam.domain.Credentials"/>
+        <mapping class="it.greenvulcano.gvesb.iam.domain.jpa.UserJPA"/>
+        <mapping class="it.greenvulcano.gvesb.iam.domain.jpa.RoleJPA"/>
+        <mapping class="it.greenvulcano.gvesb.iam.domain.jpa.CredentialsJPA"/>
         				  
     </session-factory>
  
