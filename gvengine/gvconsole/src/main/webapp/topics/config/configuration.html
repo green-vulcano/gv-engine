@@ -18,14 +18,14 @@
                 <div class="col-sm-6">
                   <div class="panel panel-default" style="margin-top:10px">
                     <div data-ng-repeat="group in groups">
-                    <div class="panel-heading Clickable" data-toggle="collapse" data-target="#{{group}}" style="border-radius: 0px">
-                        <h3 class="panel-title">{{group}}</h3> <!-- Group -->
+                    <div class="panel-heading Clickable serviceHead" data-toggle="collapse" data-target="#{{group}}" style="border-radius: 0px" ng-click="OpenServiceList=!OpenServiceList">
+                        <h3 class="panel-title">{{group}} <i aria-hidden="true" data-ng-class="(OpenServiceList) ? 'fa fa-chevron-up pull-right' : 'fa fa-chevron-down pull-right'"></i></h3> <!-- Group -->
                     </div>
                     <div class="panel-body collapse" style="padding:0px; border-radius: 0px" id="{{group}}">
                       <table class="table table-hover col-sm-12" style="margin: 0px">
                         <tbody>
                           <tr data-ng-repeat="service in serviceByGroup[group]">
-                            <td data-toggle="collapse" class="Clickable" data-target="#{{service.idService}}">{{service.idService}}</td> <!-- Service -->
+                            <td data-toggle="collapse" class="Clickable" data-target="#{{service.idService}}" ng-click="OpenServiceDet=!OpenServiceDet">{{service.idService}} <i aria-hidden="true" data-ng-class="(OpenServiceDet) ? 'fa fa-chevron-left pull-right' : 'fa fa-chevron-right pull-right'"></i></td> <!-- Service -->
                           </tr>
                        </tbody>
                       </table>

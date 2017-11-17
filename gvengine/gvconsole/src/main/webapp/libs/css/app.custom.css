@@ -8,6 +8,18 @@ html {
 #crossClose:hover {
   color: #333
 }
+.serviceHead {
+  color: #fff;
+    background-color: #238650;
+    font-size: 1.12em;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    background: -webkit-linear-gradient(left, #238650 , rgba(35, 134, 80, 0.56));
+    background: -o-linear-gradient(right, #238650 , rgba(35, 134, 80, 0.56));
+    background: -moz-linear-gradient(right, #238650 , rgba(35, 134, 80, 0.56));
+    background: linear-gradient(to right, #238650 , rgba(35, 134, 80, 0.56));
+}
+}
 .list-inline>li {
   display: inline-block;
     padding: 5px;
