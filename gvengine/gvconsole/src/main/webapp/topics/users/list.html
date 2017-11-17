@@ -28,11 +28,8 @@
             <th class="text-right">Action</th>
           </tr>
             <!-- Search View -->
-<<<<<<< HEAD
-          <div class="alert alert-warning" data-ng-hide="searchClick" role="alert" style="margin-bottom: 0px">Add '*' at the end of the string to search every word with that prefix</div>
-=======
-          <div class="alert alert-warning" data-ng-hide="searchClick" role="alert" style="margin-bottom: 0px">Add * at the end of the string to search every word with that prefix</div>
->>>>>>> f01053d7d71e0cd95f193e7eb69755ae980bc2b5
+          <div class="alert alert-warning" data-ng-hide="searchClick" role="alert" style="margin-bottom: 0px; border-radius: 0px">Add '*' at the end of the string to search every word with that prefix <a class="pull-right" href="" data-ng-click = "legendClick = !legendClick">Legend</a></div>
+          <div data-ng-show="legendClick && !searchClick" class="alert alert-info" role="alert" style="margin-bottom: 0px; border-radius: 0px;"><i class="fa fa-check"/>= Filter disable <i class="text-success fa fa-check"/>= Enable User  <i class="text-danger fa fa-ban"/>= Unable User  <i class="fa fa-key"/>= Filter disable  <i class="text-warning fa fa-key"/>= Expaired Password  <i class="text-success fa fa-key"/>= Unexpaired Password</div>
           <tr data-ng-hide="searchClick">
             <th><input type="text" placeholder="Users" data-ng-model="username"></th>
             <th><input type="text" placeholder="Full name" data-ng-model="fullname"></th>

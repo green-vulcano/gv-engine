@@ -1,6 +1,6 @@
 html {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 1.5em;
+  font-size:  24px;
 }
 #crossClose {
   color: #bdbdbd
@@ -11,7 +11,7 @@ html {
 .serviceHead {
   color: #fff;
     background-color: #238650;
-    font-size: 1.12em;
+    font-size: 18px;
     border-top-left-radius: 6px;
     border-top-right-radius: 6px;
     background: -webkit-linear-gradient(left, #238650 , rgba(35, 134, 80, 0.56));
@@ -121,10 +121,10 @@ legend
     background-color: #fff;
 }
 #selctNum{
-  width: 3.5em;
-  height: 1.4em;
+  width: 56px;
+  height: 26px;
   display: inline-block;
-  padding: 0em 0.4em;
+  padding: 0 6px;
 }
 .off{
   display:none;
@@ -150,7 +150,7 @@ legend
 #searchBarUser {
   margin: 0;
   padding: 0;
-  margin-bottom: 1.1em;
+  margin-bottom: 18px;
 }
 .container {
   max-width: 100%;
@@ -160,13 +160,13 @@ legend
   margin-left: auto;
 }
 .form.ng-pristine.ng-invalid.ng-invalid-required.ng-valid-pattern {
-  margin-top:  3.1em;
+  margin-top:  50px;
 }
 .input-group-btn {
     z-index: 0;
 }
 #setNewPassword {
-  margin-bottom: 1.25em;
+  margin-bottom: 20px;
 }
 #buttonInfo{
   text-align: var(3.12px);
@@ -184,44 +184,44 @@ legend
   font-weight: bold;
 }
 #rolesP{
-  font-size: 1.25em;
+  font-size: 20px;
   color: #238650;
-  margin-left: 0.62em;
+  margin-left: 10px;
   font-weight: bold;
-  margin-bottom: 1.25em;
+  margin-bottom: 20px;
 }
 #formLeft {
   text-align: left;
   margin: 0;
-  font-size: 1.29em;
+  font-size: 21px;
   width: 90%;
 }
 #labelLeft{
   text-align: left;
 }
 #panelHead {
-  line-height: 2.12em;
+  line-height: 34px;
   vertical-align: middle;
 }
 
 #addTableButton {
   float: right;
-  font-size: 1.29em;
+  font-size: 21px;
 }
 #loginLogo{
   width: 100%;
-  margin-bottom: 1.25em;
+  margin-bottom: 20px;
 }
 #text {
   display: inherit;
-  font-size: 1.25em;
-  margin-bottom: 0.31em;
+  font-size: 20px;
+  margin-bottom: 5px;
 }
 #setPassword {
     width: 20%;
 }
 #formSetPassword {
-  margin-bottom: 0.62em;
+  margin-bottom: 10px;
 }
 /******* Start Nav-bar Style *******/
 .navbar-default .navbar-toggle {
@@ -269,7 +269,7 @@ thead {
 .panel-default>.panel-heading {
     color: #fff;
     background-color: #238650;
-    font-size: 1.12em;
+    font-size: 18pm;
     border-top-left-radius: 6px;
     border-top-right-radius: 6px;
     background: -webkit-linear-gradient(left, #238650 , rgba(35, 134, 80, 0.56));
@@ -293,7 +293,7 @@ thead {
 }
 
 #gvesb_name{
-  font-size:1.5em;
+  font-size:24px;
   text-align: center;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
@@ -302,10 +302,10 @@ thead {
 /******* Start Side Bar Style ******/
 .side-menu {
   position: fixed;
-  width: 21.4em;
+  width: 342px;
   height: 100%;
   background-color: #fff;
-  border-right: 0.07em solid #e7e7e7;
+  border-right: 1px solid #e7e7e7;
   overflow: auto;
 }
 .side-menu .navbar {
@@ -314,37 +314,35 @@ thead {
 }
 .side-menu .navbar-header {
   width: 100%;
-  border-bottom: 0.07em solid #e7e7e7;
+  border-bottom: 1px solid #e7e7e7;
 }
 .side-menu .navbar-nav .active a {
   background-color: transparent;
   color: #333;
-  margin-right: -0.07em;
-  border-right: 0.2em solid #e7e7e7;
+  margin-right: -1px;
+  border-right: 3px solid #e7e7e7;
 }
 .side-menu .navbar-nav li {
   display: block;
   width: 100%;
-  border-bottom: 0.07em solid #e7e7e7;
+  border-bottom: 1px solid #e7e7e7;
 }
 .side-menu .navbar-nav li a {
-  padding: 1.07em;
-  font-size: 1.43em;
-  height: 2.9em;
+  font-size: 23px;
 }
 .side-menu .navbar-nav li a .glyphicon {
-  padding-right: 0.71em;
+  padding-right: 11px;
 }
 
 .side-menu .brand-name-wrapper {
-  min-height: 3.58em;
+  min-height: 57px;
 }
 .side-menu .brand-name-wrapper .navbar-brand {
   display: block;
 }
 /* Main body section */
 .side-body {
-  margin-left: 22.1em;
+  margin-left: 354px;
 }
 /******* End Side Bar Style ******/
 @media (max-width: 1065px) {
@@ -382,33 +380,33 @@ thead {
     height: 50px;
   }
   #logo{
-    width: 6.25em;
+    width: 100px;
   }
   .navbar-brand {
       padding: 0;
   }
   @-moz-keyframes slidein {
     0% {
-      left: -21.4em;
+      left: -342px;
     }
     100% {
-      left: 0.71em;
+      left: 11px;
     }
   }
   @-webkit-keyframes slidein {
     0% {
-      left: -21.4em;
+      left: -342px;
     }
     100% {
-      left: 0.71em;
+      left: 11px;
     }
   }
   @keyframes slidein {
     0% {
-      left: -21.4em;
+      left: -342px;
     }
     100% {
-      left: 0.71em;
+      left: 11px;
     }
   }
   @-moz-keyframes slideout {
@@ -416,7 +414,7 @@ thead {
       left: 0;
     }
     100% {
-      left: -21.4em;
+      left: -342px;
     }
   }
   @-webkit-keyframes slideout {
@@ -424,7 +422,7 @@ thead {
       left: 0;
     }
     100% {
-      left: -21.4em;
+      left: -342px;
     }
   }
   @keyframes slideout {
@@ -432,7 +430,7 @@ thead {
       left: 0;
     }
     100% {
-      left: -21.4em;
+      left: -342px;
     }
   }
   .side-menu-container > .navbar-nav.slide-in {
@@ -446,11 +444,11 @@ thead {
   }
   .side-menu-container > .navbar-nav {
     position: fixed;
-    left: -21.4em;
-    width: 21.4em;
-    top: 3.07em;
+    left: -342px;
+    width: 342px;
+    top: 49px;
     height: 100%;
-    border-right: 0.07em solid #e7e7e7;
+    border-right: 1px solid #e7e7e7;
     background-color: #ffffff;
     -moz-animation: slideout 300ms forwards;
     -o-animation: slideout 300ms forwards;
@@ -465,7 +463,7 @@ thead {
       left: 0;
     }
     100% {
-      left: 21.4em;
+      left: 342px;
     }
   }
   @-webkit-keyframes bodyslidein {
@@ -473,7 +471,7 @@ thead {
       left: 0;
     }
     100% {
-      left: 21.4em;
+      left: 342px;
     }
   }
   @keyframes bodyslidein {
@@ -481,12 +479,12 @@ thead {
       left: 0;
     }
     100% {
-      left: 21.4em;
+      left: 342px;
     }
   }
   @-moz-keyframes bodyslideout {
     0% {
-      left: 21.4em;
+      left: 342px;
     }
     100% {
       left: 0;
@@ -494,7 +492,7 @@ thead {
   }
   @-webkit-keyframes bodyslideout {
     0% {
-      left: 21.4em;
+      left: 342px;
     }
     100% {
       left: 0;
@@ -502,15 +500,15 @@ thead {
   }
   @keyframes bodyslideout {
     0% {
-      left: 21.4em;
+      left: 342px;
     }
     100% {
       left: 0;
     }
   }
   .side-body {
-    margin-left: 0.3em;
-    margin-top: 5em;
+    margin-left: 5px;
+    margin-top: 80px;
     position: relative;
     -moz-animation: bodyslideout 300ms forwards;
     -o-animation: bodyslideout 300ms forwards;
@@ -528,10 +526,10 @@ thead {
     transform-style: preserve-3d;
   }
   .navbar-toggle {
-    height: 3.6em;
+    height: 58px;
     border: 0;
     float: left;
-    padding: 1.2em;
+    padding: 19px;
     margin: 0;
     border-radius: 0;
     background-color: #f3f3f3;
@@ -539,8 +537,22 @@ thead {
 
 
 }
-
-
+.preXML {
+    display: block;
+    padding: 9.5px;
+    text-align: left;
+    margin: 0 0 10px;
+    font-size: 13px;
+    line-height: 1.42857143;
+    height: 660px;
+    color: #333;
+    word-break: break-all;
+    word-wrap: break-word;
+    background-color: #f5f5f5;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding-top: 10px;
+}
 /******* Start Delete Confirm Window Style ******/
 .modal {
     display: none;
@@ -555,8 +567,27 @@ thead {
     background-color: rgb(0,0,0);
     background-color: rgba(0,0,0,0.4);
 }
-
-
+.modalXML {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4);
+}
+.modal-contentXML {
+    background-color: #fefefe;
+    margin: auto;
+    text-align: center;
+    padding: 20px;
+    padding-top:10px;
+    border: 1px solid #888;
+    width: 80%;
+}
 .modal-content {
     background-color: #fefefe;
     margin: auto;
@@ -643,7 +674,7 @@ span.round-tab {
     border-radius: 100px;
     background: #fff;
     border: 2px solid #e0e0e0;
-    z-index: 2;
+    z-index: 1;
     position: absolute;
     left: 0;
     text-align: center;

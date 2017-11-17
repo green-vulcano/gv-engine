@@ -7,7 +7,7 @@
 			<div class="container-fluid">
 				<div class="side-body">
 					<h1>Deploy action</h1>
-					<div class="row" data-ng-controller="DeployConfigController as ctrl">
+					<div class="row" data-ng-controller="DeployConfigController as ctrl" data-ng-init="">
 						<div class="container col-sm-12">
 							<div class="row">
 								<div class="panel panel-default" style="overflow-x:auto;">
@@ -45,24 +45,64 @@
 												</div>
 													<div class="tab-content">
 														<div class="tab-pane active" role="tabpanel" id="step1">
-															<h2 style="text-align:center;margin-bottom:40px">GV Core Compare</h2>
+															<h2 style="text-align:center;margin-bottom:40px"></h2>
 
-																<div class="col-sm-6">
-																	<div class="panel panel-default">
-																	<div id="GVCorePanel" class="panel-heading">Current GVCore</div>
-																	<div class="panel-body"><pre style="height:1000px;">{{currentGVCore}}</pre></div>
-																	</div>
+																<div class="col-sm-6" style="margin-top:10px">
+																	<h3>Current Configuration:<button class="btn btn-default pull-right" type="button" data-toggle="modal" data-target="#myModalCurrent" data-dismiss="modal"><i class="fa fa-file-code-o" aria-hidden="true"></i></h3>
+																	<div id="myModalCurrent" class="modalXML">
+													                   <div class="modal-contentXML">
+													                   	 <h3>Current GVCore</h3>
+													                     <pre class="preXML">{{currentGVCore}}</pre>
+													                     <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button>
+													                   </div>
+													                 </div>
+												                  <div class="panel panel-default" style="margin-top:10px">
+												                    <div data-ng-repeat="serviceCurrent in servicesCurrent">
+												                    <div class="panel-heading Clickable serviceHead" data-toggle="collapse" data-target="#{{serviceCurrent.idService}}Current" style="border-radius: 0px" ng-click="OpenCurrentServiceList=!OpenCurrentServiceList">
+												                        <h3 class="panel-title">{{serviceCurrent.idService}} <i aria-hidden="true" data-ng-class="(OpenCurrentServiceList) ? 'fa fa-chevron-up pull-right' : 'fa fa-chevron-down pull-right'"></i></h3> <!-- Group -->
+												                    </div>
+												                    <div  class="panel-body collapse" style="padding:0px; border-radius: 0px" id="{{serviceCurrent.idService}}Current">
+												                      <table class="table table-hover col-sm-12" style="margin: 0px">
+												                        <tbody>
+												                           <tr data-ng-repeat="operationCurrent in serviceCurrent.operations">
+												                            <td>{{operationCurrent.name}} </td>
+												                          </tr>
+												                       </tbody>
+												                      </table>
+												                    </div>
+												                  	</div>
+												                  </div>
 																</div>
-																<div class="col-sm-6">
-																	<div class="panel panel-default">
-																	<div id="GVCorePanel" class="panel-heading">New GVCore</div>
-																	<div class="panel-body"><pre style="height:1000px;">{{newGVCore}}</pre></div>
-																	</div>
+
+																<div class="col-sm-6" style="margin-top:10px">
+																<h3>New Configuration: <button class="btn btn-default pull-right" type="button" data-toggle="modal" data-target="#myModalNew" data-dismiss="modal"><i class="fa fa-file-code-o" aria-hidden="true"></i></h3>
+																	<div id="myModalNew" class="modalXML">
+													                   <div class="modal-contentXML">
+													                   	<h3>New GVCore</h3>
+													                     <pre class="preXML">{{newGVCore}}</pre>
+													                     <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button>
+													                   </div>
+													                 </div>
+												                  <div class="panel panel-default" style="margin-top:10px; border-radius:5px">
+												                    <div data-ng-repeat="serviceCurrent in servicesCurrent">
+												                    <div class="panel-heading Clickable serviceHead" data-toggle="collapse" data-target="#{{serviceCurrent.idService}}New" style="border-radius: 0px" ng-click="OpenNewServiceList=!OpenNewServiceList">
+												                        <h3 class="panel-title">{{serviceCurrent.idService}} <i data-ng-class="(OpenNewServiceList) ? 'fa fa-chevron-up pull-right' : 'fa fa-chevron-down pull-right'"></i></h3> <!-- Group -->
+												                    </div>
+												                    <div  class="panel-body collapse" style="padding:0px; border-radius: 0px" id="{{serviceCurrent.idService}}New">
+												                      <table class="table table-hover col-sm-12" style="margin: 0px">
+												                        <tbody>
+												                          <tr data-ng-repeat="operationCurrent in serviceCurrent.operations">
+												                            <td>{{operationCurrent.name}}</td>
+												                          </tr>
+												                       </tbody>
+												                      </table>
+												                    </div>
+												                  	</div>
+												                  </div>
 																</div>
-																<div class="col-sm-6">
+
+																<div class="col-sm-12">
 																	<a href="#/deploy" type="button" class="btn btn-danger pull-left">Cancel</a>
-																</div>
-															<div class="col-sm-6">
 																<button type="button" id="stepValue" value="1" class="btn btn-primary pull-right" data-toggle="tab" data-target="#step2" data-ng-click="changeStep()">Next</button>
 															</div>
 														</div>

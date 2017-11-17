@@ -18,8 +18,16 @@ angular.module('gvconsole')
 angular.module('gvconsole')
  .service('DeployService', ['ENDPOINTS', '$http', function(Endpoints, $http){
 
-		this.getServices = function(){
+		this.getCurrentServices = function(){
 			return $http.get(Endpoints.gvesb);
+		}
+
+		this.getCurrentFlows = function(service,operation){
+			return $http.get(Endpoints.gvesb + '/' + service + '/' + operation + '/flows');
+		}
+
+		this.getNewServices = function(id){
+			return $http.get(Endpoints.gvconfig + '/configuration/' + id);
 		}
 
 	    this.reloadConfiguration = function(){
@@ -112,13 +120,13 @@ angular.module('gvconsole')
 	var instance = this;
 	this.history = [];
 
-  this.loadList = function() {
-	 DeployService.getConfigHistory().then(function(response){
+    this.loadList = function() {
+	  DeployService.getConfigHistory().then(function(response){
   		instance.history = response.data;
   		},function(response){
   			instance.alerts.push({type: 'danger', msg: 'Config history not available'});
   		});
-  };
+    };
 
 	this.addConfig = function(){
     if (instance.configInfo.id != instance.deploy.id) {
@@ -198,16 +206,17 @@ angular.module('gvconsole')
 		}
 
   this.reloadConfig = function() {
-	  DeployService.reloadConfiguration();
-    instance.alerts.push({type: 'success', msg: 'Reload configuration success'});
-    setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
-    instance.loadConfigInfo();
-    instance.loadList();
-    instance.getFiles();
-    /* function (response) {
-      instance.alerts.push({type: 'danger', msg: 'Reload configuration failed'});
-      setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
-    }) */
+	  	  DeployService.reloadConfiguration();
+		  instance.alerts.push({type: 'success', msg: 'Reload configuration success'});
+		  setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
+		  instance.loadConfigInfo();
+		  instance.loadList();
+		  instance.getFiles();
+
+		  /* Aggiungere caso errore da API
+		  instance.alerts.push({type: 'danger', msg: 'Reload configuration failed'});
+	      setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);*/
+
   }
 
 	this.deleteConfig = function(id){
@@ -225,7 +234,6 @@ angular.module('gvconsole')
 
   this.getFiles = function() {
 	  DeployService.getXMLFiles().then(function(response){
-		  console.log("files name: " + response.data);
 		$scope.filesName = response.data;
 		angular.forEach($scope.filesName,function(value,key){
 			DeployService.getXMLFile(value).then(function(response){
@@ -245,12 +253,45 @@ angular.module('gvconsole')
 
 
 angular.module('gvconsole')
-.controller('DeployConfigController',['DeployService','$routeParams','$scope',function(DeployService, $routeParams, $scope){
+.controller('DeployConfigController',['DeployService','$routeParams','$scope', function(DeployService, $routeParams, $scope){
 
 	$scope.newConfigId = $routeParams.newConfigId;
 
 	this.alerts = [];
-  this.alertsAdd = [];
+    this.alertsAdd = [];
+
+    $scope.servicesCurrent = [];
+    $scope.flows = {};
+    $scope.result = {};
+
+    DeployService.getCurrentServices().then(function(response){
+    	angular.forEach(response.data,function(value){
+	    	$scope.servicesCurrent.push(value);
+    	});
+    },function(response){
+    	console.log("error: " + response.data);
+    });
+
+    $scope.serviceByGroupNew = [];
+    $scope.groupsNew = [];
+
+    DeployService.getNewServices($scope.newConfigId).then(function(response){
+  		angular.forEach(response.data,function(value){
+  			if(!$scope.groupsNew.includes(value.groupName)){
+  				$scope.groupsNew.push(value.groupName);
+
+  			}
+  			if(!$scope.serviceByGroupNew.hasOwnProperty(value.groupName)){
+  				$scope.serviceByGroupNew[value.groupName] = [];
+  			}
+
+  			$scope.serviceByGroupNew[value.groupName].push(value);
+  		})
+  	},function(response){
+  		console.log("error: " + response.data);
+  	});
+
+
 
 	var instance = this;
 
@@ -271,7 +312,6 @@ angular.module('gvconsole')
 		.then(function(response){
 			$scope.newGVCore = response.data;
 		},function(response){
-      console.log("ERROR:"+response.data);
 			instance.alerts.push({type: 'danger', msg: 'GV Core not available'});
 	});
 
