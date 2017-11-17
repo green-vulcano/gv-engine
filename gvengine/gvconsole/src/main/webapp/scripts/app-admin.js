@@ -113,8 +113,8 @@ angular.module('gvconsole')
 
 	  if($scope.selected) {
 	      angular.element('#search_param option:eq(0)').prop('selected', true);
-	      angular.element('#selctNum option:eq(3)').prop('selected', true);
 	      angular.element("#selctNum option[value='? number:10 ?']").remove();
+	      angular.element('#selctNum option:eq(2)').prop('selected', true);
 	      angular.element("#search_param option[value='? undefined:undefined ?']").remove();
 	      $scope.selected = false;
 	    }
@@ -178,6 +178,8 @@ angular.module('gvconsole')
     }
 
    $scope.search_order = function(){
+	   
+	   $scope.currentPage = 1;
 
 	   $scope.params =
    	{

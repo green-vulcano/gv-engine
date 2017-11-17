@@ -31,5 +31,4 @@ angular.module('gvconsole')
 	});
 }
 
-
 }]);
