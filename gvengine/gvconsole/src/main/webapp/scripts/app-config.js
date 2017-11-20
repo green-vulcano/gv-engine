@@ -12,6 +12,11 @@ angular.module('gvconsole')
 
 	$scope.serviceByGroup = [];
 	$scope.groups = [];
+	$scope.OpenServiceDet = false;
+
+	$scope.OpenClose = function () {
+		$scope.OpenServiceDet = !$scope.OpenServiceDet;
+	}
 
 	$scope.init = function() {
 		ConfigService.getServices().then(function(response){

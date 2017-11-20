@@ -1,86 +1,91 @@
 <div class="container-fluid">
-  <div class="side-body">
-  <h1> Users </h1>
-
-   <div class="row" data-ng-controller="UsersListController as ctrl">
-
-     <div id="fadeout" data-ng-repeat="alert in ctrl.alerts" class="fadeout alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
-
-  <div class="row">
-
-
-  <div class="panel panel-default">
-    <div id="panelHead"  class="panel-heading"><i class="fa fa-users"></i> Found: {{totalItems}}<a href="#/users/new" data-ng-click="slide();" class="btn btn-primary pull-right" data-ng-class="{'btn btn-primary pull-right disabled': dataNa == true || auth != true}">
-      <i class="fa fa-user-plus"></i>
-    </a>
-    <button data-ng-click = "searchClick = !searchClick" class="btn btn-default pull-right" style="margin-right:5px"><i class="fa fa fa-search" aria-hidden="true"></i></button>
-    </div>
-    <div style="overflow-x:auto;">
-      <table id="users" class="table table-hover" style="margin-bottom:0">
-        <thead>
-            <!-- Normal View -->
-          <tr data-ng-show="searchClick">
-            <th data-ng-click="orderFunction('username')" class="handPointer noselect">Users <i aria-hidden="true" data-ng-class="{'fa fa-sort': order != 'username' && order != '-'+'username', 'fa fa-sort-asc': order == 'username', 'fa fa-sort-desc': order == 'username:reverse'}"></i></th>
-            <th data-ng-click="orderFunction('fullname')" class="handPointer noselect">Full name <i aria-hidden="true" data-ng-class="{'fa fa-sort': order != 'Full Name' && order != 'Full Name:reverse', 'fa fa-sort-asc': order == 'Full Name', 'fa fa-sort-desc': order == 'Full Name:reverse'}"></i></th>
-            <th data-ng-click="orderFunction('email')" class="handPointer noselect">E-Mail <i aria-hidden="true" data-ng-class="{'fa fa-sort': order != 'Email' && order != 'Email:reverse', 'fa fa-sort-asc': order == 'Email', 'fa fa-sort-desc': order == 'Email:reverse'}"></i></th>
-            <th>Roles</th>
-            <th>Status</th>
-            <th class="text-right">Action</th>
-          </tr>
-            <!-- Search View -->
-          <div class="alert alert-warning" data-ng-hide="searchClick" role="alert" style="margin-bottom: 0px; border-radius: 0px">Add '*' at the end of the string to search every word with that prefix <a class="pull-right" href="" data-ng-click = "legendClick = !legendClick">Legend</a></div>
-          <div data-ng-show="legendClick && !searchClick" class="alert alert-info" role="alert" style="margin-bottom: 0px; border-radius: 0px;"><i class="fa fa-check"/>= Filter disable <i class="text-success fa fa-check"/>= Enable User  <i class="text-danger fa fa-ban"/>= Unable User  <i class="fa fa-key"/>= Filter disable  <i class="text-warning fa fa-key"/>= Expaired Password  <i class="text-success fa fa-key"/>= Unexpaired Password</div>
-          <tr data-ng-hide="searchClick">
-            <th><input type="text" placeholder="Users" data-ng-model="username"></th>
-            <th><input type="text" placeholder="Full name" data-ng-model="fullname"></th>
-            <th><input type="text" placeholder="E-mail" data-ng-model="email"></th>
-            <th><input type="text" placeholder="Roles" data-ng-model="role"></th>
-            <th class="noselect inline-list" style="font-size: 19px; color: #bdbdbd;">
-              <div style="display: inline-flex">
-              <div class="handPointer"><i class="pull-left" data-ng-click="changeEnabledStatus()" data-ng-class="{'handPointer fa fa-check': enabled == undefined, 'text-success fa fa-check' : enabled == true, 'text-danger fa fa-ban' : enabled == false}"></i></div>
-              <div class="handPointer"><i class="pull-right" data-ng-click="changeExpiredStatus()" data-ng-class="{'fa fa-key': expired == undefined, 'text-warning fa fa-key' : expired == true,'text-success fa fa-key' : expired == false}"></i></div>
+   <div class="side-body">
+      <h1> Users </h1>
+      <div class="row" data-ng-controller="UsersListController as ctrl">
+         <div id="fadeout" data-ng-repeat="alert in ctrl.alerts" class="fadeout alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
+         <div class="row">
+            <div class="panel panel-default">
+               <div id="panelHead"  class="panel-heading"><i class="fa fa-users"></i> Found: {{totalItems}}<a href="#/users/new" data-ng-click="slide();" class="btn btn-primary pull-right" data-ng-class="{'btn btn-primary pull-right disabled': dataNa == true || auth != true}">
+                  <i class="fa fa-user-plus"></i>
+                  </a>
+                  <button data-ng-click = "searchClick = !searchClick" class="btn btn-default pull-right" style="margin-right:5px"><i class="fa fa fa-search" aria-hidden="true"></i></button>
+               </div>
+               <div style="overflow-x:auto;">
+                  <table id="users" class="table table-hover" style="margin-bottom:0">
+                     <thead>
+                        <!-- Normal View -->
+                        <tr data-ng-show="searchClick">
+                           <th data-ng-click="orderFunction('username')" class="handPointer noselect">Users <i aria-hidden="true" data-ng-class="{'fa fa-sort': order != 'username' && order != '-'+'username', 'fa fa-sort-asc': order == 'username', 'fa fa-sort-desc': order == 'username:reverse'}"></i></th>
+                           <th data-ng-click="orderFunction('fullname')" class="handPointer noselect">Full name <i aria-hidden="true" data-ng-class="{'fa fa-sort': order != 'Full Name' && order != 'Full Name:reverse', 'fa fa-sort-asc': order == 'Full Name', 'fa fa-sort-desc': order == 'Full Name:reverse'}"></i></th>
+                           <th data-ng-click="orderFunction('email')" class="handPointer noselect">E-Mail <i aria-hidden="true" data-ng-class="{'fa fa-sort': order != 'Email' && order != 'Email:reverse', 'fa fa-sort-asc': order == 'Email', 'fa fa-sort-desc': order == 'Email:reverse'}"></i></th>
+                           <th>Roles</th>
+                           <th>Status</th>
+                           <th class="text-right">Action</th>
+                        </tr>
+                        <!-- Search View -->
+                        <div class="alert alert-warning" data-ng-hide="searchClick" role="alert" style="margin-bottom: 0px; border-radius: 0px">Add '*' at the end of the string to search every word with that prefix <a class="pull-right" href="" data-ng-click = "legendClick = !legendClick">Legend</a></div>
+                        <div data-ng-show="legendClick && !searchClick" class="alert alert-info" role="alert" style="margin-bottom: 0px; border-radius: 0px;"><i class="fa fa-check"/>= Filter disable <i class="text-success fa fa-check"/>= Enable User  <i class="text-danger fa fa-ban"/>= Unable User  <i class="fa fa-key"/>= Filter disable  <i class="text-warning fa fa-key"/>= Expaired Password  <i class="text-success fa fa-key"/>= Unexpaired Password</div>
+                        <tr data-ng-hide="searchClick">
+                           <th><input type="text" placeholder="Users" data-ng-model="username"></th>
+                           <th><input type="text" placeholder="Full name" data-ng-model="fullname"></th>
+                           <th><input type="text" placeholder="E-mail" data-ng-model="email"></th>
+                           <th><input type="text" placeholder="Roles" data-ng-model="role"></th>
+                           <th class="noselect inline-list" style="font-size: 19px; color: #bdbdbd;">
+                              <div style="display: inline-flex">
+                                 <div class="handPointer"><i class="pull-left" data-ng-click="changeEnabledStatus()" data-ng-class="{'handPointer fa fa-check': enabled == undefined, 'text-success fa fa-check' : enabled == true, 'text-danger fa fa-ban' : enabled == false}"></i></div>
+                                 <div class="handPointer"><i class="pull-right" data-ng-click="changeExpiredStatus()" data-ng-class="{'fa fa-key': expired == undefined, 'text-warning fa fa-key' : expired == true,'text-success fa fa-key' : expired == false}"></i></div>
+                              </div>
+                           </th>
+                           <th class="text-right"><button class="btn btn-default" type="submit" data-ng-click="search_order()"><i class="fa fa fa-search" aria-hidden="true"></i></button></th>
+                        </tr>
+                     </thead>
+                     <tbody>
+                        <tr data-ng-repeat="user in ctrl.list">
+                           <td>{{user.username}}</td>
+                           <td data-ng-init="user.fullname = user.userInfo.fullname">{{user.fullname}}</td>
+                           <td data-ng-init="user.email = user.userInfo.email">{{user.email}}</td>
+                           <td class="col-sm-4">
+                              <ul class="list-inline">
+                                 <li	data-ng-repeat="(k,role) in user.roles">
+                                    <span class="label label-info">{{role.name}}</span>
+                                 </li>
+                              </ul>
+                           </td>
+                           <td class="col-sm-1">
+                              <ul class="list-inline">
+                                 <li class="text-danger" data-ng-hide="user.enabled"><i class="fa fa-ban"></i> </li>
+                                 <li class="text-success" data-ng-show="user.enabled"><i class="fa fa-check"></i> </li>
+                                 <li class="text-warning" data-ng-show="user.expired"><i class="fa fa-key"></i> </li>
+                              </ul>
+                           </td>
+                           <td class="text-right">
+                              <button data-ng-click="saveQuery(); go('/users/'+ user.id)" onClick="slide();" type="button" class="btn btn-warning"><i class="fa fa-pencil" aria-hidden="true"></i></button>
+                           </td>
+                        </tr>
+                     </tbody>
+                  </table>
+               </div>
+               <div id="panelPagination"  class="panel-footer">
+                  <div class="row">
+                     <div style="float: right;">
+                        <ul class="pagination pull-right" style="margin: 3px;">
+                        <ul uib-pagination total-items="totalItems" data-ng-model="currentPage" items-per-page="viewby" max-size="maxSize" class="pagination-sm" boundary-link-numbers="true" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" style="margin: 0;"></ul>
+                     </div>
+                     View
+                     <select id="selctNum" data-ng-model="viewby" class="form-control">
+                        <option>3</option>
+                        <option>5</option>
+                        <option>10</option>
+                        <option>20</option>
+                        <option>30</option>
+                        <option>40</option>
+                        <option>50</option>
+                     </select>
+                     users at once.
+                  </div>
+               </div>
             </div>
-            </th>
-            <th class="text-right"><button class="btn btn-default" type="submit" data-ng-click="search_order()"><i class="fa fa fa-search" aria-hidden="true"></i></button></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr data-ng-repeat="user in ctrl.list">
-            <td>{{user.username}}</td>
-            <td data-ng-init="user.fullname = user.userInfo.fullname">{{user.fullname}}</td>
-            <td data-ng-init="user.email = user.userInfo.email">{{user.email}}</td>
-            <td class="col-sm-4">
-              <ul class="list-inline">
-                <li	data-ng-repeat="(k,role) in user.roles">
-                  <span class="label label-info">{{role.name}}</span>
-                </li>
-              </ul>
-            </td>
-            <td class="col-sm-1">
-              <ul class="list-inline">
-                <li class="text-danger" data-ng-hide="user.enabled"><i class="fa fa-ban"></i> </li>
-                <li class="text-success" data-ng-show="user.enabled"><i class="fa fa-check"></i> </li>
-                <li class="text-warning" data-ng-show="user.expired"><i class="fa fa-key"></i> </li>
-              </ul>
-            </td>
-            <td class="text-right">
-              <button data-ng-click="saveQuery(); go('/users/'+ user.id)" onClick="slide();" type="button" class="btn btn-warning"><i class="fa fa-pencil" aria-hidden="true"></i></button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+         </div>
       </div>
-    <div id="panelPagination"  class="panel-footer">
-  <div class="row">
-    <div style="float: right;">
-        <ul class="pagination pull-right" style="margin: 3px;">
-        <ul uib-pagination total-items="totalItems" data-ng-model="currentPage" items-per-page="viewby" max-size="maxSize" class="pagination-sm" boundary-link-numbers="true" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" style="margin: 0;"></ul>
-    </div>
-    View <select id="selctNum" data-ng-model="viewby" class="form-control"><option>3</option><option>5</option><option>10</option><option>20</option><option>30</option><option>40</option><option>50</option></select> users at once.
-  </div>
-</div>
-  </div>
-</div>
-</div>
-</div>
+   </div>
 </div>
