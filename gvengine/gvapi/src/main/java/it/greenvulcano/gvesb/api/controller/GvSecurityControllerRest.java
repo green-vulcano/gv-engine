@@ -64,6 +64,8 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 			
 	private UsersManager gvUsersManager;
 	private CredentialsManager gvCredentialsManager;
+	private Role notAuthorativeRole;
+	
 	
 	public void setUsersManager(UsersManager gvSecurityManager) {
 		this.gvUsersManager = gvSecurityManager;
@@ -75,6 +77,12 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 	
 	public void init(){
 		try {
+			
+			notAuthorativeRole = gvUsersManager.getRole(UsersManager.Authority.NOT_AUTHORATIVE);
+			if (notAuthorativeRole==null) {
+				notAuthorativeRole = gvUsersManager.createRole(Authority.NOT_AUTHORATIVE, "GV ESB Workflow user");
+			}
+							
 			gvUsersManager.checkManagementRequirements();
 		} catch (Exception e) {
 			LOG.error("Error creating default user",e);
@@ -573,9 +581,8 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 				throw new InvalidRoleException(authorityRole.get()); 
 			}
 			
-			if (user.getGrantedRoles().stream().noneMatch(r-> Authority.NOT_AUTHORATIVE.equals(r.getName()))){
-				Role application = new Role(Authority.NOT_AUTHORATIVE, "GV ESB Workflow user");
-				user.getGrantedRoles().add(application);
+			if (user.getGrantedRoles().stream().noneMatch(r-> Authority.NOT_AUTHORATIVE.equals(r.getName()))){				
+				user.getGrantedRoles().add(notAuthorativeRole);
 				
 			}
 		}

@@ -9,12 +9,14 @@ import org.apache.commons.codec.digest.DigestUtils;
 
 import it.greenvulcano.gvesb.iam.domain.Credentials;
 import it.greenvulcano.gvesb.iam.domain.User;
+import it.greenvulcano.gvesb.iam.domain.jpa.CredentialsJPA;
+import it.greenvulcano.gvesb.iam.domain.jpa.UserJPA;
 import it.greenvulcano.gvesb.iam.exception.CredentialsExpiredException;
 import it.greenvulcano.gvesb.iam.exception.InvalidCredentialsException;
 import it.greenvulcano.gvesb.iam.exception.PasswordMissmatchException;
 import it.greenvulcano.gvesb.iam.exception.UserExpiredException;
 import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
-import it.greenvulcano.gvesb.iam.repository.CredentialsRepository;
+import it.greenvulcano.gvesb.iam.repository.hibernate.CredentialsRepositoryHibernate;
 import it.greenvulcano.gvesb.iam.service.CredentialsManager;
 import it.greenvulcano.gvesb.iam.service.UsersManager;
 
@@ -25,7 +27,7 @@ public class GVCredentialsManager implements CredentialsManager {
 	private final SecureRandom secureRandom = new SecureRandom();
 		
 	private UsersManager usersManager;
-	private CredentialsRepository credentialsRepository;
+	private CredentialsRepositoryHibernate credentialsRepository;
 	
 	private long tokenLifeTime = 24 * 60 * 60 * 1000;
 	
@@ -33,7 +35,7 @@ public class GVCredentialsManager implements CredentialsManager {
 		this.usersManager = usersManager;
 	}
 	
-	public void setCredentialsRepository(CredentialsRepository credentialsRepository) {
+	public void setCredentialsRepository(CredentialsRepositoryHibernate credentialsRepository) {
 		this.credentialsRepository = credentialsRepository;
 	}
 	
@@ -47,9 +49,9 @@ public class GVCredentialsManager implements CredentialsManager {
 		User client = usersManager.validateUser(clientUsername, clientPassword);
 		User resourceOwner = usersManager.validateUser(username, password);		
 		
-		Credentials credentials = new Credentials();
-		credentials.setClient(client);
-		credentials.setResourceOwner(resourceOwner);
+		CredentialsJPA credentials = new CredentialsJPA();
+		credentials.setClient(UserJPA.class.cast(client));
+		credentials.setResourceOwner(UserJPA.class.cast(resourceOwner));
 		
 		String accessToken = generateToken();
 		
@@ -88,9 +90,9 @@ public class GVCredentialsManager implements CredentialsManager {
 		
 		
 		if (lastCredentials.getRefreshToken().equals(DigestUtils.sha256Hex(refreshToken))) {
-			Credentials credentials = new Credentials();
-			credentials.setClient(lastCredentials.getClient());
-			credentials.setResourceOwner(lastCredentials.getResourceOwner());
+			CredentialsJPA credentials = new CredentialsJPA();
+			credentials.setClient(UserJPA.class.cast(lastCredentials.getClient()));
+			credentials.setResourceOwner(UserJPA.class.cast(lastCredentials.getResourceOwner()));
 			
 			String newAccessToken = generateToken();
 			String newRefreshToken = generateToken();

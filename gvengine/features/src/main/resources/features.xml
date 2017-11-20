@@ -61,7 +61,12 @@
 		<bundle start-level="92">mvn:it.greenvulcano.gvesb/gvcore/${project.version}</bundle>
 	</feature>
 	
-	<feature name="gviam-ds" version="${project.version}" description="GreenVulcano IAM datasource">		
+	<feature name="gviam" version="${project.version}" description="GreenVulcano IAM">
+		<feature>jaas</feature>
+		<bundle start-level="93">mvn:it.greenvulcano.gvesb/gviam/4.0.0-SNAPSHOT</bundle>		
+	</feature>
+	
+	<feature name="gviam-ds" version="${project.version}" description="GreenVulcano IAM DB datasource">		
 		<capability>
             osgi.service;effective:=active;objectClass=org.hibernate.SessionFactory
         </capability>
@@ -70,9 +75,8 @@
 		<configfile finalname="${karaf.etc}/org.ops4j.datasource-gviam.cfg" override="true">mvn:it.greenvulcano.gvesb/${project.artifactId}/${pom.version}/ds/gviam</configfile>
 	</feature>
 	
-	<feature name="gviam" version="${project.version}" description="GreenVulcano IAM">		  
-				
-		<feature>jaas</feature>		
+	<feature name="gviam-db" version="${project.version}" description="GreenVulcano IAM DB">		  
+						
 		<feature>jdbc</feature>
 		<feature>transaction</feature>
 		<feature>jndi</feature>
@@ -81,10 +85,10 @@
 		<feature>pax-jdbc-pool-dbcp2</feature>
 		<feature>gviam-ds</feature>
 		
-		<bundle start-level="90">mvn:it.greenvulcano.gvesb/gviam/4.0.0-SNAPSHOT</bundle>
+		<bundle start-level="95">mvn:it.greenvulcano.gvesb/gviam-db/4.0.0-SNAPSHOT</bundle>
 	</feature>
 	
-	<feature name="gvengine" version="${project.version}" description="GreenVulcano Engine">
+	<feature name="gvengine" version="${project.version}" description="GreenVulcano Engine">		
 		
 		<bundle start-level="80">mvn:com.fasterxml.jackson.core/jackson-core/2.7.9</bundle>
 		<bundle start-level="81">mvn:com.fasterxml.jackson.core/jackson-annotations/2.7.9</bundle>
@@ -98,8 +102,9 @@
 		<feature prerequisite="true">cxf-jaxws</feature>
 				
 		<feature prerequisite="true">gvcore</feature>
-		<feature prerequisite="true">gvvcl-internal</feature>		
-		<feature prerequisite="true">gviam</feature>
+		<feature prerequisite="true">gvvcl-internal</feature>
+		<feature prerequisite="true">gviam</feature>				
+		<feature prerequisite="true">gviam-db</feature>
 
 		<bundle start-level="96">mvn:it.greenvulcano.gvesb/gvapi/${project.version}</bundle>
 		<bundle start-level="99">mvn:it.greenvulcano.gvesb/gvcommands/${project.version}</bundle>

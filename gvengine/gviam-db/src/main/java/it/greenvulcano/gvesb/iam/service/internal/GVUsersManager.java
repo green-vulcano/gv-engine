@@ -19,10 +19,13 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb.iam.service.internal;
 
+import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -32,12 +35,23 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.apache.karaf.jaas.boot.principal.GroupPrincipal;
+import org.apache.karaf.jaas.boot.principal.RolePrincipal;
+import org.apache.karaf.jaas.boot.principal.UserPrincipal;
+import org.apache.karaf.jaas.modules.BackingEngine;
+import org.apache.karaf.jaas.modules.BackingEngineFactory;
+import org.apache.karaf.jaas.modules.Encryption;
+import org.apache.karaf.jaas.modules.encryption.EncryptionSupport;
+import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import it.greenvulcano.gvesb.iam.domain.Role;
 import it.greenvulcano.gvesb.iam.domain.User;
 import it.greenvulcano.gvesb.iam.domain.UserInfo;
+import it.greenvulcano.gvesb.iam.domain.jpa.RoleJPA;
+import it.greenvulcano.gvesb.iam.domain.jpa.UserJPA;
+import it.greenvulcano.gvesb.iam.exception.GVSecurityException;
 import it.greenvulcano.gvesb.iam.exception.InvalidPasswordException;
 import it.greenvulcano.gvesb.iam.exception.InvalidRoleException;
 import it.greenvulcano.gvesb.iam.exception.InvalidUsernameException;
@@ -45,38 +59,37 @@ import it.greenvulcano.gvesb.iam.exception.PasswordMissmatchException;
 import it.greenvulcano.gvesb.iam.exception.UserExistException;
 import it.greenvulcano.gvesb.iam.exception.UserExpiredException;
 import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
-import it.greenvulcano.gvesb.iam.jaas.GVBackingEngine;
-import it.greenvulcano.gvesb.iam.jaas.GVBackingEngineFactory;
-import it.greenvulcano.gvesb.iam.repository.RoleRepository;
-import it.greenvulcano.gvesb.iam.repository.UserRepository;
-import it.greenvulcano.gvesb.iam.repository.UserRepository.Order;
-import it.greenvulcano.gvesb.iam.repository.UserRepository.Parameter;
+import it.greenvulcano.gvesb.iam.jaas.GVLoginModule;
+import it.greenvulcano.gvesb.iam.repository.hibernate.RoleRepositoryHibernate;
+import it.greenvulcano.gvesb.iam.repository.hibernate.UserRepositoryHibernate;
 import it.greenvulcano.gvesb.iam.service.SearchCriteria;
 import it.greenvulcano.gvesb.iam.service.SearchResult;
 import it.greenvulcano.gvesb.iam.service.UsersManager;
 
-public class GVUsersManager implements UsersManager {
-
-	private GVBackingEngine jaasEngine;
-	private UserRepository userRepository;
-	private RoleRepository roleRepository;
+public class GVUsersManager implements UsersManager, BackingEngine, BackingEngineFactory {
 	
-	public void setUserRepository(UserRepository userRepository) {
+	private UserRepositoryHibernate userRepository;
+	private RoleRepositoryHibernate roleRepository;
+	private final EncryptionSupport encryptionSupport;
+	
+	{
+		Map<String, Object> allOptions = new HashMap<>();	
+		allOptions.putAll(GVLoginModule.ENCRYPTION_SETTINGS);
+		encryptionSupport = new EncryptionSupport(allOptions);
+	}
+	
+	public void setUserRepository(UserRepositoryHibernate userRepository) {
 		this.userRepository = userRepository;
 	}
 	
-	public void setRoleRepository(RoleRepository roleRepository) {
+	public void setRoleRepository(RoleRepositoryHibernate roleRepository) {
 		this.roleRepository = roleRepository;
 	}
-	
-	public void setJaasEngineFactory(GVBackingEngineFactory gvBackingEngineFactory) {
-		this.jaasEngine = (GVBackingEngine) gvBackingEngineFactory.build();
-	}
-	
+			
 	@Override
 	public User createUser(String username, String password)
 			throws InvalidUsernameException, InvalidPasswordException, UserExistException {		
-		jaasEngine.addUser(username, password);
+		addUser(username, password);
 		
 		return userRepository.get(username).get();
 	}
@@ -85,7 +98,7 @@ public class GVUsersManager implements UsersManager {
 	public Role createRole(String name, String description) throws InvalidRoleException {
 		if (!name.matches(Role.ROLE_PATTERN)) throw new InvalidRoleException(name);
 		
-		Role role = new Role(name, description);
+		Role role = new RoleJPA(name, description);
 		roleRepository.add(role);
 		return role;
 	}
@@ -97,8 +110,8 @@ public class GVUsersManager implements UsersManager {
 		user.setUserInfo(userInfo);
 		user.setEnabled(enabled);
 		user.setExpired(expired);
-		user.getRoles().clear();
-		if (grantedRoles!=null) {
+		user.clearRoles();;
+		if (grantedRoles!=null){
 			
 			Predicate<Role> roleIsValid = role-> Optional.ofNullable(role.getName()).orElse("").matches(Role.ROLE_PATTERN);
 			
@@ -108,7 +121,7 @@ public class GVUsersManager implements UsersManager {
 			}
 			
 			for (Role r : grantedRoles) {
-				user.getRoles().add(roleRepository.get(r.getName()).orElse(r));
+				user.addRole(roleRepository.get(r.getName()).orElse(r));
 			}
 			
 		}
@@ -138,7 +151,7 @@ public class GVUsersManager implements UsersManager {
 	
 		if (!Objects.requireNonNull(defaultPassword, "A default password is required").matches(User.PASSWORD_PATTERN)) throw new InvalidPasswordException(defaultPassword);
 		
-		user.setPassword(jaasEngine.getEncryptedPassword(defaultPassword));
+		user.setPassword(getEncryptedPassword(defaultPassword));
 		user.setPasswordTime(new Date());
 		user.setExpired(true);
 		userRepository.add(user);
@@ -154,7 +167,7 @@ public class GVUsersManager implements UsersManager {
 		if (!newPassword.matches(User.PASSWORD_PATTERN)) throw new InvalidPasswordException(newPassword);
 				
 		user.setUsername(username);
-		user.setPassword(jaasEngine.getEncryptedPassword(newPassword));
+		user.setPassword(getEncryptedPassword(newPassword));
 		user.setPasswordTime(new Date());
 		user.setExpired(false);
 		
@@ -168,7 +181,7 @@ public class GVUsersManager implements UsersManager {
 			throws UserNotFoundException, PasswordMissmatchException, UserExpiredException {
 		
 		User user = userRepository.get(username).orElseThrow(()->new UserNotFoundException(username));
-		if(user.getPassword().equals(jaasEngine.getEncryptedPassword(password))) {
+		if(user.getPassword().equals(getEncryptedPassword(password))) {
 			if (user.isExpired()) {
 				throw new UserExpiredException(username);				
 			} else if (!user.isEnabled()) {
@@ -192,7 +205,15 @@ public class GVUsersManager implements UsersManager {
 	public Set<Role> getRoles() {		
 		return roleRepository.getAll();
 	}
-
+	
+	@Override
+	public Role getRole(String name) {
+		Optional<Role> role  = roleRepository.get(name);		
+		if (role.isPresent()) {
+			return role.get();
+		}
+		return null;
+	}
 	
 	public Set<User> getUsers() {		
 		return userRepository.getAll();
@@ -203,16 +224,16 @@ public class GVUsersManager implements UsersManager {
 		
 		SearchResult result = new SearchResult();
 		
-		Map<Parameter, Object> parameters = criteria.getParameters()
+		Map<UserRepositoryHibernate.Parameter, Object> parameters = criteria.getParameters()
 				                                    .keySet().stream()
-				                                    .map(UserRepository.Parameter::valueOf)
+				                                    .map(UserRepositoryHibernate.Parameter::valueOf)
 				                                    .filter(Objects::nonNull)
 				                                    .collect(Collectors.toMap(Function.identity(), k->criteria.getParameters().get(k.name())));
 		
-		LinkedHashMap<Parameter, Order> order = new LinkedHashMap<>(criteria.getOrder().size());
+		LinkedHashMap<UserRepositoryHibernate.Parameter, UserRepositoryHibernate.Order> order = new LinkedHashMap<>(criteria.getOrder().size());
 		for (Entry<String, String>  e : criteria.getOrder().entrySet()) {
-			Optional.ofNullable(UserRepository.Parameter.get(e.getKey())).ifPresent(p-> {
-				order.put(p, UserRepository.Order.get(e.getValue()));
+			Optional.ofNullable(UserRepositoryHibernate.Parameter.get(e.getKey())).ifPresent(p-> {
+				order.put(p, UserRepositoryHibernate.Order.get(e.getValue()));
 			});
 		}
 		
@@ -258,9 +279,9 @@ public class GVUsersManager implements UsersManager {
 	public void checkManagementRequirements() {
 		final Logger logger = LoggerFactory.getLogger(getClass());
 		
-		Map<Parameter, Object> parameters = new HashMap<>(2);
-		parameters.put(UserRepository.Parameter.role, Authority.ADMINISTRATOR);
-		parameters.put(UserRepository.Parameter.enabled, Boolean.TRUE);
+		Map<UserRepositoryHibernate.Parameter, Object> parameters = new HashMap<>(2);
+		parameters.put(UserRepositoryHibernate.Parameter.role, Authority.ADMINISTRATOR);
+		parameters.put(UserRepositoryHibernate.Parameter.enabled, Boolean.TRUE);
 		
 		int admins = userRepository.count(parameters);
 		/**
@@ -270,12 +291,12 @@ public class GVUsersManager implements UsersManager {
 			logger.info("Creating a default 'gvadmin'");
 			User admin;
 			try {
-				jaasEngine.addUser("gvadmin", "gvadmin");				
+				addUser("gvadmin", "gvadmin");				
 			} catch (SecurityException e) {				
 				logger.info("A user named 'gvadmin' exist: restoring his default settings", e);
 				
 				admin = userRepository.get("gvadmin").get();
-				admin.setPassword(jaasEngine.getEncryptedPassword("gvadmin"));
+				admin.setPassword(getEncryptedPassword("gvadmin"));
 				admin.setPasswordTime(new Date());
 				admin.setExpired(true);
 				userRepository.add(admin);
@@ -284,14 +305,14 @@ public class GVUsersManager implements UsersManager {
 			
 			admin = userRepository.get("gvadmin").get();
 			admin.setEnabled(true);
-			admin.getRoles().clear();
-			admin.getRoles().add(new Role(Authority.ADMINISTRATOR, "Created by GV"));
+			admin.clearRoles();
+			admin.addRole(new RoleJPA(Authority.ADMINISTRATOR, "Created by GV"));
 
 			//roles required to use karaf 
-			admin.getRoles().add(new Role("admin", "Created by GV"));
-			admin.getRoles().add(new Role("manager", "Created by GV"));
-			admin.getRoles().add(new Role("viewer", "Created by GV"));
-			admin.getRoles().add(new Role("systembundles", "Created by GV"));
+			admin.addRole(new RoleJPA("admin", "Created by GV"));
+			admin.addRole(new RoleJPA("manager", "Created by GV"));
+			admin.addRole(new RoleJPA("viewer", "Created by GV"));
+			admin.addRole(new RoleJPA("systembundles", "Created by GV"));
 						
 			userRepository.add(admin);
 		}	
@@ -299,24 +320,9 @@ public class GVUsersManager implements UsersManager {
 	}
 
 	@Override
-	public void addRole(String username, String rolename) throws InvalidRoleException, UserNotFoundException{
-		try {
-			jaasEngine.addRole(username, rolename);
-		} catch (SecurityException e) {
-			if (e.getCause() instanceof UserNotFoundException) {
-				throw (UserNotFoundException) e.getCause();
-			} else {
-				throw e;
-			}
-		}
-		
-		
-	}
-
-	@Override
 	public void revokeRole(String username, String role) throws UserNotFoundException {
 		try {
-			jaasEngine.deleteRole(username, role);
+			deleteRole(username, role);
 		} catch (SecurityException e) {
 			if (e.getCause() instanceof UserNotFoundException) {
 				throw (UserNotFoundException) e.getCause();
@@ -339,7 +345,141 @@ public class GVUsersManager implements UsersManager {
 		
 		userRepository.add(user);
 	}
+
+	private void throwException(GVSecurityException cause){
+		throw new SecurityException(cause);
+	}
+		
+	@Override
+	public void addUser(String username, String password) {
+		
+		if (!username.matches(User.USERNAME_PATTERN)) throwException(new InvalidUsernameException(username));
+		if (!password.matches(User.PASSWORD_PATTERN)) throwException(new InvalidPasswordException(password));
+					
+		UserJPA user = new UserJPA();		
+		user.setUsername(username);
+		user.setPassword(getEncryptedPassword(password));
+		user.setPasswordTime(new Date());
+		user.setEnabled(true);
+				
+		try {
+			userRepository.add(user);
+		} catch (org.hibernate.StaleObjectStateException|ConstraintViolationException constraintViolationException) {			
+			throwException(new UserExistException(username));
+		}
+	}
+
+	@Override
+	public void addRole(String username, String rolename) {
+		if (!rolename.matches(Role.ROLE_PATTERN)) throwException(new InvalidRoleException(rolename));
+		
+		User user = userRepository.get(username).orElseThrow(()->new SecurityException(new UserNotFoundException(username)));
+		
+		Role role = roleRepository.get(rolename).orElse(new RoleJPA(rolename, "Created by JAAS"));
+		user.addRole(role);
+		
+		userRepository.add(user);
+
+	}
+
+	@Override
+	public void deleteRole(String username, String rolename) {
+		User user = userRepository.get(username).orElseThrow(()->new SecurityException(new UserNotFoundException(username)));
+		user.removeRole(rolename);				
+		userRepository.add(user);
+
+	}	
+
+	@Override
+	public List<UserPrincipal> listUsers() {
+		
+		return userRepository.getAll().stream()
+							 .map(User::getUsername)
+							 .map(UserPrincipal::new)
+							 .collect(Collectors.toList());
+	}	
+
+	@Override
+	public List<RolePrincipal> listRoles(Principal principal) {		
+		return userRepository.get(principal.getName()).orElseThrow(()->new SecurityException(new UserNotFoundException(principal.getName())))
+							 .getRoles().stream()
+							 			.map(Role::getName)
+							 			.map(RolePrincipal::new)
+							 			.collect(Collectors.toList());
+	}
 	
+	@Override
+	public void addGroup(String username, String group) {
+		throw new UnsupportedOperationException();
+
+	}
+
+	@Override
+	public void createGroup(String group) {
+		throw new UnsupportedOperationException();
+
+	}
+
+	@Override
+	public void deleteGroup(String username, String group) {
+		throw new UnsupportedOperationException();
+
+	}
 	
+	@Override
+	public void addGroupRole(String group, String role) {
+		throw new UnsupportedOperationException();
+
+	}
+
+	@Override
+	public void deleteGroupRole(String group, String role) {
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public List<GroupPrincipal> listGroups(UserPrincipal user) {
+		return new ArrayList<>();
+	}
+
+	@Override
+	public Map<GroupPrincipal, String> listGroups() {
+		return new HashMap<>();
+	}
+	
+	public String getEncryptedPassword(String password) {
+        Encryption encryption = encryptionSupport.getEncryption();
+        String encryptionPrefix = encryptionSupport.getEncryptionPrefix();
+        String encryptionSuffix = encryptionSupport.getEncryptionSuffix();
+
+        if (encryption == null) {
+            return password;
+        } else {
+            boolean prefix = encryptionPrefix == null || password.startsWith(encryptionPrefix);
+            boolean suffix = encryptionSuffix == null || password.endsWith(encryptionSuffix);
+            if (prefix && suffix) {
+                return password;
+            } else {
+                String p = encryption.encryptPassword(password);
+                if (encryptionPrefix != null) {
+                    p = encryptionPrefix + p;
+                }
+                if (encryptionSuffix != null) {
+                    p = p + encryptionSuffix;
+                }
+                return p;
+            }
+        }
+	}
+
+	@Override
+	public String getModuleClass() {
+		return GVLoginModule.class.getName();
+	}
+
+	@Override
+	public BackingEngine build(Map<String, ?> options) {		
+		return this;
+	}	
 
 }

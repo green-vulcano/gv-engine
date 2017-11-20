@@ -21,7 +21,6 @@ package it.greenvulcano.gvesb.iam.jaas;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -39,7 +38,6 @@ import javax.security.auth.login.LoginException;
 import org.apache.karaf.jaas.boot.principal.RolePrincipal;
 import org.apache.karaf.jaas.boot.principal.UserPrincipal;
 import org.apache.karaf.jaas.modules.AbstractKarafLoginModule;
-import org.apache.karaf.jaas.modules.BackingEngineFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
@@ -49,7 +47,10 @@ import org.slf4j.LoggerFactory;
 
 import it.greenvulcano.gvesb.iam.domain.Role;
 import it.greenvulcano.gvesb.iam.domain.User;
-import it.greenvulcano.gvesb.iam.repository.UserRepository;
+import it.greenvulcano.gvesb.iam.exception.PasswordMissmatchException;
+import it.greenvulcano.gvesb.iam.exception.UserExpiredException;
+import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
+import it.greenvulcano.gvesb.iam.service.UsersManager;
 
 /**
  * GreenVulcano implementation of Karaf JAAS facility
@@ -60,7 +61,7 @@ public class GVLoginModule extends AbstractKarafLoginModule{
 
 	private final static Logger LOG = LoggerFactory.getLogger(GVLoginModule.class);
 	
-	final static Map<String, String> ENCRYPTION_SETTINGS = new HashMap<>();
+	public final static Map<String, Object> ENCRYPTION_SETTINGS = new HashMap<>();
 	static {
 		ENCRYPTION_SETTINGS.put("encryption.enabled","true");
 		ENCRYPTION_SETTINGS.put("encryption.name","basic");
@@ -68,6 +69,8 @@ public class GVLoginModule extends AbstractKarafLoginModule{
 		ENCRYPTION_SETTINGS.put("encryption.prefix",".x#");
 		ENCRYPTION_SETTINGS.put("encryption.suffix","#x.");
 		ENCRYPTION_SETTINGS.put("encryption.encoding","hexadecimal");
+		ENCRYPTION_SETTINGS.put(BundleContext.class.getName(), FrameworkUtil.getBundle(GVLoginModule.class).getBundleContext());
+		
 		
 		Collections.unmodifiableMap(ENCRYPTION_SETTINGS);
 	}
@@ -105,17 +108,12 @@ public class GVLoginModule extends AbstractKarafLoginModule{
 
 		String password = new String(tmpPassword);
 		principals = new HashSet<>();
-					
-		User loggingUser = getUserRepository().get(user)
-											  .orElseThrow(() -> new LoginException("User " + user + " does not exist"));
 		
-		if (checkPassword(password, loggingUser.getPassword())) {
-           
-			if (loggingUser.isEnabled()) {
+		try {
+			User loggingUser = getUsersManager().validateUser(user, password);
 			
-				if (loggingUser.isExpired()) {
-					updateUserPassword(loggingUser);
-				}
+				           
+			if (loggingUser.isEnabled()) {				
 			
 				principals.add(new UserPrincipal(user));
 				List<RolePrincipal> roles = loggingUser.getRoles().stream()
@@ -128,14 +126,21 @@ public class GVLoginModule extends AbstractKarafLoginModule{
 			} else {
 	        	throw new LoginException("User disabled");	             
 	        }	
-        } else {
-        	throw new LoginException("Password for " + user + " does not match");             
-        }		
+	 
+			
+		} catch (UserNotFoundException userNotFoundException) {
+			throw new LoginException("User " + user + " does not exist");
+		} catch (PasswordMissmatchException passwordMissmatchException) {
+			throw new LoginException("Password for " + user + " does not match");
+		} catch (UserExpiredException e) {
+			updateUserPassword(user, password);
+		}
+				
 		
 		return true;
 	}	
 
-	private void updateUserPassword(User loggingUser) throws LoginException {
+	private void updateUserPassword(String user, String password) throws LoginException {
 		Callback[] callbacks = new Callback[]{new PasswordCallback("Password expired, enter new password: ",false)};
 				
 		try {
@@ -150,13 +155,9 @@ public class GVLoginModule extends AbstractKarafLoginModule{
 		if (tmpPassword != null && String.valueOf(tmpPassword).matches(User.PASSWORD_PATTERN)) {
 		
 			String newPassword = new String(tmpPassword);
-			
-			loggingUser.setPassword(getEncryptedPassword(newPassword));
-			loggingUser.setExpired(false);
-			loggingUser.setPasswordTime(new Date());
-			
+								
 			try {
-				getUserRepository().add(loggingUser);
+				getUsersManager().changeUserPassword(user, password, newPassword);
 			} catch (Exception exception) {
 				LOG.error("Password update fail for user "+user, exception);
 				throw new LoginException("Failed  to update password"); 
@@ -182,15 +183,21 @@ public class GVLoginModule extends AbstractKarafLoginModule{
 	    return true;
 	}
 	
-	private UserRepository getUserRepository() {
+	private UsersManager getUsersManager() throws LoginException {
 		BundleContext context = FrameworkUtil.getBundle(GVLoginModule.class).getBundleContext();
 
 		ServiceReference<?>[] serviceReference;
 		try {
-			serviceReference = context.getServiceReferences(BackingEngineFactory.class.getName(), "(name=GVBackingEngineFactory)");
-			GVBackingEngineFactory engineFactory = (GVBackingEngineFactory) context.getService(serviceReference[0]);
+			serviceReference = context.getServiceReferences(UsersManager.class.getName(), null);
 			
-			return engineFactory.getUserRepository();
+			if (serviceReference!=null && serviceReference.length>0) {
+				
+				UsersManager userManager = (UsersManager) context.getService(serviceReference[0]);				
+				return userManager;
+			} else {
+				throw new LoginException("Required it.greenvulcano.gvesb.iam.service.UsersManager instance not found");
+			}
+			
 		
 		} catch (InvalidSyntaxException e) {
 			LOG.error("Error getting service reference ",e);

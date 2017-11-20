@@ -114,6 +114,8 @@ public interface UsersManager {
 		
 		Set<Role> getRoles();
 		
+		Role getRole(String name);
+		
 		SearchResult searchUsers(SearchCriteria criteria);
 				
 		void updateUser(String username, UserInfo userInfo, Set<Role> grantedRoles, boolean enabled, boolean expired) throws UserNotFoundException, InvalidRoleException;
