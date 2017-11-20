@@ -37,6 +37,7 @@ import it.greenvulcano.gvesb.gviamx.domain.UserActionRequest;
 import it.greenvulcano.gvesb.gviamx.repository.UserActionRepository;
 import it.greenvulcano.gvesb.gviamx.service.NotificationManager;
 import it.greenvulcano.gvesb.iam.domain.User;
+import it.greenvulcano.gvesb.iam.domain.jpa.UserJPA;
 import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
 import it.greenvulcano.gvesb.iam.service.UsersManager;
 
@@ -86,7 +87,7 @@ public class EmailChangeManager {
 		User user = usersManager.getUser(currentEmailAddress);			
 		
 	    EmailChangeRequest request = repository.get(newEmailAddress, EmailChangeRequest.class).orElseGet(EmailChangeRequest::new);
-	    request.setUser(user);
+	    request.setUser((UserJPA) user);
 	    request.setEmail(newEmailAddress);
 	    request.setIssueTime(new Date());
 	    request.setExpireTime(expireTime);

@@ -24,7 +24,7 @@
                                  <table class="table table-hover col-sm-12" style="margin: 0px">
                                     <tbody>
                                        <tr data-ng-repeat="service in serviceByGroup[group]">
-                                          <td data-toggle="collapse" class="Clickable" data-target="#{{service.idService}}" ng-click="OpenServiceDet=!OpenServiceDet">{{service.idService}} <i aria-hidden="true" data-ng-class="(OpenServiceDet) ? 'fa fa-chevron-left pull-right' : 'fa fa-chevron-right pull-right'"></i></td>
+                                          <td data-toggle="collapse" class="Clickable" data-target="#{{service.idService}}" data-ng-click="OpenServiceDet = !OpenServiceDet"><span  data-ng-class="(OpenServiceDet) ? 'text-danger' : 'text-default'">{{service.idService}}</span> <i aria-hidden="true" data-ng-class="(OpenServiceDet) ? 'fa fa-chevron-left pull-right' : 'fa fa-chevron-right pull-right'"></i></td>
                                           <!-- Service -->
                                        </tr>
                                     </tbody>
@@ -37,7 +37,7 @@
                         <div data-ng-repeat="group in groups">
                            <div data-ng-repeat="service in serviceByGroup[group]" id="{{service.idService}}" class="panel panel-default collapse" style="margin-top:10px">
                               <div class="panel-body">
-                                 <i id="crossClose" class="fa fa-times pull-right Clickable" ng-click="OpenServiceDet=!OpenServiceDet" aria-hidden="true" data-toggle="collapse" data-target="#{{service.idService}}"></i>
+                                 <!-- <i id="crossClose" class="fa fa-times pull-right Clickable" ng-click="OpenServiceDet=!OpenServiceDet" aria-hidden="true" data-toggle="collapse" data-target="#{{service.idService}}"></i> -->
                                  <h3>{{group}}/{{service.idService}}</h3>
                                  <ul>
                                     <li data-ng-repeat="operation in service.operations">{{operation.name}}</li>

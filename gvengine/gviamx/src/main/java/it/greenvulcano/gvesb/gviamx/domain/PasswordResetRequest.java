@@ -27,21 +27,22 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import it.greenvulcano.gvesb.iam.domain.User;
+
+import it.greenvulcano.gvesb.iam.domain.jpa.UserJPA;
 
 @Entity
 @DiscriminatorValue(value="PWD_RESET")
 public class PasswordResetRequest extends UserActionRequest implements Serializable{
 	private static final long serialVersionUID = 1L;
 			
-	@ManyToOne(optional=true, fetch=FetchType.EAGER)
+	@ManyToOne(optional=true, fetch=FetchType.EAGER, targetEntity=UserJPA.class)
 	@JoinColumn(name="user_id", nullable=true)
-	private User user;			
+	private UserJPA user;			
 	
-	public User getUser() {
+	public UserJPA getUser() {
 		return user;
 	}
-	public void setUser(User user) {
+	public void setUser(UserJPA user) {
 		this.user = user;	
 	}
 		

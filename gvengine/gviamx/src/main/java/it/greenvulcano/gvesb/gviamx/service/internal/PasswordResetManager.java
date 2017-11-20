@@ -36,6 +36,7 @@ import it.greenvulcano.gvesb.gviamx.domain.PasswordResetRequest;
 import it.greenvulcano.gvesb.gviamx.repository.UserActionRepository;
 import it.greenvulcano.gvesb.gviamx.service.NotificationManager;
 import it.greenvulcano.gvesb.iam.domain.User;
+import it.greenvulcano.gvesb.iam.domain.jpa.UserJPA;
 import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
 import it.greenvulcano.gvesb.iam.service.UsersManager;
 
@@ -81,7 +82,7 @@ public class PasswordResetManager {
 		User user = usersManager.getUser(email);			
 		
 	    PasswordResetRequest passwordResetRequest = repository.get(email, PasswordResetRequest.class).orElseGet(PasswordResetRequest::new);
-	    passwordResetRequest.setUser(user);
+	    passwordResetRequest.setUser((UserJPA)user);
 	    passwordResetRequest.setEmail(email);
 	    passwordResetRequest.setIssueTime(new Date());
 	    passwordResetRequest.setExpireTime(expireTime);

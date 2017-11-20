@@ -51,9 +51,10 @@
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
-                        <Export-Package />                        	
-                        <Private-Package>
-                                it.greenvulcano.gvesb.iam.domain.jpa,                        		
+                        <Export-Package>
+                        		it.greenvulcano.gvesb.iam.domain.jpa,
+                        </Export-Package>                        	
+                        <Private-Package>                       		
                         		it.greenvulcano.gvesb.iam.repository,
                         		it.greenvulcano.gvesb.iam.repository.hibernate,
                         		it.greenvulcano.gvesb.iam.service.internal,

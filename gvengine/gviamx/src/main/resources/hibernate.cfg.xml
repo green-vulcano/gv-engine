@@ -14,8 +14,8 @@
         <mapping class="it.greenvulcano.gvesb.gviamx.domain.PasswordResetRequest"/>
         <mapping class="it.greenvulcano.gvesb.gviamx.domain.EmailChangeRequest"/>
         
-        <mapping class="it.greenvulcano.gvesb.iam.domain.User"/>
-        <mapping class="it.greenvulcano.gvesb.iam.domain.Role"/>
+        <mapping class="it.greenvulcano.gvesb.iam.domain.jpa.UserJPA"/>
+        <mapping class="it.greenvulcano.gvesb.iam.domain.jpa.RoleJPA"/>
     </session-factory>
  
 </hibernate-configuration>
