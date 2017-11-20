@@ -3,8 +3,6 @@ angular.module('gvconsole')
 
 		this.getAllUsers = function(range,params,order){
 			
-			console.log("range: " + range);
-			
 			if($rootScope.querystring == undefined && $rootScope.savedQuerystring != undefined){
 			
 				var querystring = $rootScope.savedQuerystring;
@@ -211,9 +209,6 @@ angular.module('gvconsole')
       $scope.saveQuery = function(){
     	  $rootScope.savedQuerystring = $rootScope.querystring;
     	  $rootScope.querystring = undefined;
-    	  /*$rootScope.savedQueryrange = $scope.range;
-    	  $rootScope.savedQuerypage = $scope.currentPage;
-    	  $rootScope.savedQueryview = $scope.viewby;*/
     	  
     	  $rootScope.savedQuery = {
     			  view:$scope.viewby,
@@ -222,8 +217,6 @@ angular.module('gvconsole')
     			  params:$scope.params,
     			  range:$scope.range
     	  };
-    	  
-    	  console.log("$rootScope.savedQuery: " + $rootScope.savedQuery.page);
       };
 
 }]);
