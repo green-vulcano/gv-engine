@@ -406,6 +406,30 @@
             }
           }
         }
+      },
+      "patch": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Change expired password",
+        "description": "Set a new password for an expired user, required API key correspond with [username]:[expired password]:[new password] in Base64",
+        "operationId": "resetPassword",
+        "security": [
+          {
+            "gvrenew": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "the current logged user",
+            "schema": {
+              "$ref": "#/definitions/user"
+            }
+          },
+          "400": {
+            "description": "Bad request, invalid password"
+          }
+        }
       }
     },
     "/password": {
@@ -441,31 +465,8 @@
             "description": "Bad request, invalid password"
           }
         }
-      },
-      "patch": {
-        "tags": [
-          "user"
-        ],
-        "summary": "Change expired password",
-        "description": "Set a new password for an expired user",
-        "operationId": "resetPassword",
-        "security": [
-          {
-            "gvrenew": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "the current logged user",
-            "schema": {
-              "$ref": "#/definitions/user"
-            }
-          },
-          "400": {
-            "description": "Bad request, invalid password"
-          }
-        }
       }
+
     },
     "/oauth2/access_token": {
       "post": {
