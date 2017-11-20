@@ -1,69 +1,58 @@
 <div class="container-fluid">
-<div class="side-body">
-  <div data-ng-controller = "ConfigController as ctrl" data-ng-init="init();">
-   <h1>Configuration</h1>
-
-      <div class="panel panel-default">
-          <div class="panel-heading">
-              <i class="fa fa-sitemap fa-rotate-270"></i> Configuration
-          </div>
-          <div class="panel-body" style="padding: 0;">
-            <ul class="nav nav-tabs">
-              <li class="active"><a data-toggle="tab" data-target="#Services">Services</a></li>
-              <li><a data-toggle="tab" data-target="#Systems">Systems</a></li>
-            </ul>
-
-            <div class="tab-content">
-              <div id="Services" class="tab-pane fade in active">
-                <div class="col-sm-6">
-                  <div class="panel panel-default" style="margin-top:10px">
-                    <div data-ng-repeat="group in groups">
-                    <div class="panel-heading Clickable serviceHead" data-toggle="collapse" data-target="#{{group}}" style="border-radius: 0px" ng-click="OpenServiceList=!OpenServiceList">
-                        <h3 class="panel-title">{{group}} <i aria-hidden="true" data-ng-class="(OpenServiceList) ? 'fa fa-chevron-up pull-right' : 'fa fa-chevron-down pull-right'"></i></h3> <!-- Group -->
-                    </div>
-                    <div class="panel-body collapse" style="padding:0px; border-radius: 0px" id="{{group}}">
-                      <table class="table table-hover col-sm-12" style="margin: 0px">
-                        <tbody>
-                          <tr data-ng-repeat="service in serviceByGroup[group]">
-                            <td data-toggle="collapse" class="Clickable" data-target="#{{service.idService}}" ng-click="OpenServiceDet=!OpenServiceDet">{{service.idService}} <i aria-hidden="true" data-ng-class="(OpenServiceDet) ? 'fa fa-chevron-left pull-right' : 'fa fa-chevron-right pull-right'"></i></td> <!-- Service -->
-                          </tr>
-                       </tbody>
-                      </table>
-                    </div>
-                  </div>
-                  </div>
-				</div>
-
-
-                </div>
-
-                <div class="col-sm-6">
-                  <div data-ng-repeat="group in groups">
-                    <div data-ng-repeat="service in serviceByGroup[group]" id="{{service.idService}}" class="panel panel-default collapse" style="margin-top:10px">
-                      <div class="panel-body">
-                        <i id="crossClose" class="fa fa-times pull-right Clickable" aria-hidden="true" data-toggle="collapse" data-target="#{{service.idService}}"></i>
-                        <h3>{{group}}/{{service.idService}}</h3>
-                          <ul>
-                            <li data-ng-repeat="operation in service.operations">{{operation.name}}</li>
-                          </ul>
-                      </div>
-                    </div>
-                  </div>
-                  </div>
-
-
-
-                <div id="Systems" class="tab-pane fade in active">
-              </div>
-              </div>
-
-
-              </div>
+   <div class="side-body">
+      <div data-ng-controller = "ConfigController as ctrl" data-ng-init="init();">
+         <h1>Configuration</h1>
+         <div class="panel panel-default">
+            <div class="panel-heading">
+               <i class="fa fa-sitemap fa-rotate-270"></i> Configuration
             </div>
-
-
-       </div>
-
-</div>
+            <div class="panel-body" style="padding: 0;">
+               <ul class="nav nav-tabs">
+                  <li class="active"><a data-toggle="tab" data-target="#Services">Services</a></li>
+                  <li><a data-toggle="tab" data-target="#Systems">Systems</a></li>
+               </ul>
+               <div class="tab-content">
+                  <div id="Services" class="tab-pane fade in active">
+                     <div class="col-sm-6">
+                        <div class="panel panel-default" style="margin-top:10px">
+                           <div data-ng-repeat="group in groups">
+                              <div class="panel-heading Clickable serviceHead" data-toggle="collapse" data-target="#{{group}}" style="border-radius: 0px" ng-click="OpenServiceList=!OpenServiceList">
+                                 <h3 class="panel-title">{{group}} <i aria-hidden="true" data-ng-class="(OpenServiceList) ? 'fa fa-chevron-up pull-right' : 'fa fa-chevron-down pull-right'"></i></h3>
+                                 <!-- Group -->
+                              </div>
+                              <div class="panel-body collapse" style="padding:0px; border-radius: 0px" id="{{group}}">
+                                 <table class="table table-hover col-sm-12" style="margin: 0px">
+                                    <tbody>
+                                       <tr data-ng-repeat="service in serviceByGroup[group]">
+                                          <td data-toggle="collapse" class="Clickable" data-target="#{{service.idService}}" ng-click="OpenServiceDet=!OpenServiceDet">{{service.idService}} <i aria-hidden="true" data-ng-class="(OpenServiceDet) ? 'fa fa-chevron-left pull-right' : 'fa fa-chevron-right pull-right'"></i></td>
+                                          <!-- Service -->
+                                       </tr>
+                                    </tbody>
+                                 </table>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                     <div class="col-sm-6">
+                        <div data-ng-repeat="group in groups">
+                           <div data-ng-repeat="service in serviceByGroup[group]" id="{{service.idService}}" class="panel panel-default collapse" style="margin-top:10px">
+                              <div class="panel-body">
+                                 <i id="crossClose" class="fa fa-times pull-right Clickable" ng-click="OpenServiceDet=!OpenServiceDet" aria-hidden="true" data-toggle="collapse" data-target="#{{service.idService}}"></i>
+                                 <h3>{{group}}/{{service.idService}}</h3>
+                                 <ul>
+                                    <li data-ng-repeat="operation in service.operations">{{operation.name}}</li>
+                                 </ul>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <div id="Systems" class="tab-pane fade in active">
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
 </div>
 </div>

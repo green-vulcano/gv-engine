@@ -89,7 +89,29 @@ angular.module('gvconsole')
 .factory('AuthenticationService',
 	    ['ENDPOINTS', 'Base64', '$http', '$cookieStore', '$rootScope', '$timeout',
 	    function (Endpoints, Base64, $http, $cookieStore, $rootScope, $timeout) {
-	        var service = {};
+	        
+	    	function mapsPrivileges(_response,_rootScope){
+	        	
+	        	angular.merge(_rootScope.globals.currentUser, _response.data);
+	        	
+	        	if (_response.data.roles) {
+    	   			for ( var item in _response.data.roles) {
+
+    	   				_rootScope.globals.currentUser.isAdministrator = _rootScope.globals.currentUser.isAdministrator || (item == 'gvadmin');
+        	   			_rootScope.globals.currentUser.isAccountManager = _rootScope.globals.currentUser.isAccountManager || (item == 'gvmanager_account');
+        	   			_rootScope.globals.currentUser.isAccountClient = _rootScope.globals.currentUser.isAccountClient || (item == 'gvclient_account');
+        	   			_rootScope.globals.currentUser.isAccountGuest = _rootScope.globals.currentUser.isAccountGuest || (item == 'gvguest_account');
+        	   			_rootScope.globals.currentUser.isSchedulerManager = _rootScope.globals.currentUser.isSchedulerManager || (item == 'gvmanager_schedule');
+        	   			_rootScope.globals.currentUser.isSchedulerGuest = _rootScope.globals.currentUser.isSchedulerGuest || (item == 'gvguest_schedule');
+        	   			_rootScope.globals.currentUser.isConfigManager = _rootScope.globals.currentUser.isConfigManager || (item == 'gvmanager_config');
+        	   			_rootScope.globals.currentUser.isConfigGuest = _rootScope.globals.currentUser.isConfigGuest || (item == 'gvguest_config');
+
+    	   			}
+	   			}
+	        	
+	        }
+	    	
+	    	var service = {};
 
 	        service.createContext = function (username, password, callback) {
 
@@ -107,22 +129,8 @@ angular.module('gvconsole')
 	           $http.defaults.headers.common['Authorization'] = 'Basic ' + authdata;
 
 	           $http.post(Endpoints.gviam +'/authenticate').then(function(response) {
-	        	   			angular.merge($rootScope.globals.currentUser, response.data);
-
-	        	   			if (response.data.roles) {
-		        	   			for ( var item in response.data.roles) {
-
-		        	   				$rootScope.globals.currentUser.isAdministrator = $rootScope.globals.currentUser.isAdministrator || (item == 'gvadmin');
-			        	   			$rootScope.globals.currentUser.isAccountManager = $rootScope.globals.currentUser.isAccountManager || (item == 'gvmanager_account');
-			        	   			$rootScope.globals.currentUser.isAccountClient = $rootScope.globals.currentUser.isAccountClient || (item == 'gvclient_account');
-			        	   			$rootScope.globals.currentUser.isAccountGuest = $rootScope.globals.currentUser.isAccountGuest || (item == 'gvguest_account');
-			        	   			$rootScope.globals.currentUser.isSchedulerManager = $rootScope.globals.currentUser.isSchedulerManager || (item == 'gvmanager_schedule');
-			        	   			$rootScope.globals.currentUser.isSchedulerGuest = $rootScope.globals.currentUser.isSchedulerGuest || (item == 'gvguest_schedule');
-			        	   			$rootScope.globals.currentUser.isConfigManager = $rootScope.globals.currentUser.isConfigManager || (item == 'gvmanager_config');
-			        	   			$rootScope.globals.currentUser.isConfigGuest = $rootScope.globals.currentUser.isConfigGuest || (item == 'gvguest_config');
-
-		        	   			}
-	        	   			}
+	        	   			
+	        	   			mapsPrivileges(response,$rootScope);
 	        	   			$cookieStore.put('globals', $rootScope.globals);
 	        	   			callback(response);
 	           			},
@@ -133,7 +141,7 @@ angular.module('gvconsole')
 	           		   });
 
 	        };
-
+	        
 	        service.changePassword = function (username, oldPassword, newPassword, callback) {
 
 	           var token = Base64.encode(username + ':' + oldPassword+ ':'+newPassword);
@@ -160,7 +168,8 @@ angular.module('gvconsole')
 
 				            $http.defaults.headers.common['Authorization'] = 'Basic ' + authdata;
 
-	        	   			angular.merge($rootScope.globals.currentUser, response.data);
+				            mapsPrivileges(response,$rootScope);
+				            
 	        	   			$cookieStore.put('globals', $rootScope.globals);
 	        	   			callback(response.status);
 	           			},

@@ -1,42 +1,49 @@
 <div class="container-fluid">
-<div class="side-body">
-  <div data-ng-controller = "PropertiesController as ctrl">
-   <h1>File Properties</h1>
-   <div id="fadeout" data-ng-repeat="alert in ctrl.alerts" class="fadeout alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
-
-   <div class="panel panel-default">
-      <div class="panel-heading clearfix">
-         <i class="fa fa-list" aria-hidden="true"></i> Value Search
-      </div>
-          <div class="panel-body">
-            <label id="labelLeft" class="control-label optionForm col-sm-1">Key </label>
-            <div class="col-sm-4"><input type="text" class="form-control" data-ng-model="key" placeholder="Key"></div>
-            <label id="labelLeft" class="control-label optionForm col-sm-1 col-sm-offset-1">Value </label>
-            <div class="col-sm-4"><input type="text" class="form-control" value="{{value}}" disabled></div>
-       </div>
-       <div class="panel-footer clearfix">
-       <a data-ng-click="matchKey();" class="btn btn-primary pull-right"><i class="fa fa-search" aria-hidden="true"></i> Match</a>
-     </div>
-     </div>
-            <div class="panel panel-default">
+   <div class="side-body">
+      <div data-ng-controller = "PropertiesController as ctrl">
+         <h1>File Properties</h1>
+         <div id="fadeout" data-ng-repeat="alert in ctrl.alerts" class="fadeout alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
+         <div class="panel panel-default">
+            <div class="panel-heading clearfix">
+               <i class="fa fa-list" aria-hidden="true"></i> Value Search
+            </div>
+            <div class="panel-body">
+               <label id="labelLeft" class="control-label optionForm col-sm-1">Key </label>
+               <div class="col-sm-4"><input type="text" class="form-control" data-ng-model="key" placeholder="Key"></div>
+               <label id="labelLeft" class="control-label optionForm col-sm-1 col-sm-offset-1">Value </label>
+               <div class="col-sm-4"><input type="text" class="form-control" value="{{value}}" disabled></div>
+            </div>
+            <div class="panel-footer clearfix">
+               <a data-ng-click="matchKey();" class="btn btn-primary pull-right"><i class="fa fa-search" aria-hidden="true"></i> Match</a>
+            </div>
+         </div>
+         <div class="panel panel-default">
             <div id="panelHead" class="panel-heading clearfix">
                <i class="fa fa-list" aria-hidden="true"></i> Properties list
             </div>
-			   <table class="table table-hover">
-	            <thead>
-	              <tr>
-	                <th><div class="col-sm-6">Key</div></th>
-	                <th><div class="col-sm-6">Value</div></th>
-	              </tr>
-	            </thead>
-	            <tbody>
-	              <tr data-ng-repeat="(key,value) in ctrl.properties">
-	                <td><div class="col-sm-6">{{key}}</div></td>
-	                <td><div class="col-sm-6">{{value}}</div></td>
-	              </tr>
-	            </tbody>
-	          </table>
-        </div>
-	</div>
-</div>
+            <table class="table table-hover">
+               <thead>
+                  <tr>
+                     <th>
+                        <div class="col-sm-6">Key</div>
+                     </th>
+                     <th>
+                        <div class="col-sm-6">Value</div>
+                     </th>
+                  </tr>
+               </thead>
+               <tbody>
+                  <tr data-ng-repeat="(key,value) in ctrl.properties">
+                     <td>
+                        <div class="col-sm-6">{{key}}</div>
+                     </td>
+                     <td>
+                        <div class="col-sm-6">{{value}}</div>
+                     </td>
+                  </tr>
+               </tbody>
+            </table>
+         </div>
+      </div>
+   </div>
 </div>
