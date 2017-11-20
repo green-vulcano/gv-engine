@@ -347,7 +347,7 @@ public class GVAccountControllerRest {
 			
 			EmailChangeRequest request = emailChangeManager.retrieveEmailChangeRequest(email, token);
 						
-			if (email.equals(securityContext.getUserPrincipal().getName()) //  Any user can change its own email 
+			if (request !=null && request.getUser().getUsername().equals(securityContext.getUserPrincipal().getName()) //  Any user can change its own email 
 			     || securityContext.isUserInRole(Authority.ADMINISTRATOR) //Administrator can change email to all
 				 || (securityContext.isUserInRole(Authority.MANAGER) && request.getUser().getRoles().stream().map(Role::getName).noneMatch(Authority.ADMINISTRATOR::equals)) // Manager cannot change email to administrator
 				 || (securityContext.isUserInRole(Authority.CLIENT) && request.getUser().getRoles().stream().map(Role::getName).noneMatch(Authority.entries::contains) && request.getUser().getRoles().stream().map(Role::getName).anyMatch(Authority.NOT_AUTHORATIVE::equals))){ // Client can change email only to apllication user
