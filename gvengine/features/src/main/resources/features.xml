@@ -63,7 +63,7 @@
 	
 	<feature name="gviam" version="${project.version}" description="GreenVulcano IAM">
 		<feature>jaas</feature>
-		<bundle start-level="93">mvn:it.greenvulcano.gvesb/gviam/4.0.0-SNAPSHOT</bundle>		
+		<bundle start-level="93">mvn:it.greenvulcano.gvesb/gviam/${project.version}</bundle>		
 	</feature>
 	
 	<feature name="gviam-ds" version="${project.version}" description="GreenVulcano IAM DB datasource">		
@@ -85,7 +85,7 @@
 		<feature>pax-jdbc-pool-dbcp2</feature>
 		<feature>gviam-ds</feature>
 		
-		<bundle start-level="95">mvn:it.greenvulcano.gvesb/gviam-db/4.0.0-SNAPSHOT</bundle>
+		<bundle start-level="95">mvn:it.greenvulcano.gvesb/gviam-db/${project.version}</bundle>
 	</feature>
 	
 	<feature name="gvengine" version="${project.version}" description="GreenVulcano Engine">		
