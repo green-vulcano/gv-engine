@@ -164,7 +164,7 @@ angular.element(document).ready(function() {
   });
 });
 function resetFunction() {
-document.getElementById("prova2").reset();
+document.getElementById("testingForm").reset();
 };
 function resetFunctionDeploy() {
 document.getElementById("deployForm").reset();

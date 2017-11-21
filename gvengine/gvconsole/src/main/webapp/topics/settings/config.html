@@ -2,17 +2,18 @@
   <div class="side-body">
   <h1> Configuration XML </h1>
 
-    <div class="row" data-ng-controller="Settings">
+    <div class="row" data-ng-controller="SettingsController">
 
-<!-- **************************************************** -->
+<!-- *********************   GVPolicy   ******************************* -->
 
+	<form id="formPolicy">
       <div class="panel panel-default" style="overflow-x:auto;">
-        <div id="panelHead"  class="panel-heading Clickable" data-toggle="collapse" data-target="#content1"><i class="fa fa-code"></i> GVPolicy
+        <div id="panelHead"  class="panel-heading Clickable" data-toggle="collapse" data-target="#contentPolicy"><i class="fa fa-code"></i> GVPolicy
           <i id="changeIcon" aria-hidden="true" class="fa fa-chevron-down fa-2x pull-right"></i>
         </div>
-        <div class="pannel-body container-fluid collapse" id="content1">
+        <!--  <div class="pannel-body container-fluid collapse" id="contentPolicy">
           <br>
-          <label class="control-label optionForm col-sm-1">Roles:</label>
+          <label class="control-label optionForm col-sm-1">Role:</label>
           <div class="form-group clearfix">
              <div class="col-sm-3"><input type="text" class="form-control" data-ng-model="key" placeholder="Role name ..."></div>
              <div class="col-sm-3"><input type="text" class="form-control" data-ng-model="value" placeholder="Description ..."></div>
@@ -25,16 +26,19 @@
                 <a class="close" data-ng-click="removeParameter(key)">×</a>
              </div>
           </div>
-        </div>
+        </div> -->
+        
       </div>
+	</form>
+	
+<!-- ***********************   GVCryptoHelper   **************************** -->
 
-<!-- **************************************************** -->
-
+	<form id="formCryptoHelper">
       <div class="panel panel-default" style="overflow-x:auto;">
-        <div id="panelHead"  class="panel-heading Clickable" data-toggle="collapse" data-target="#content2"><i class="fa fa-code"></i> GVCryptoHelper
+        <div id="panelHead"  class="panel-heading Clickable" data-toggle="collapse" data-target="#contentCryptoHelper"><i class="fa fa-code"></i> GVCryptoHelper
           <i aria-hidden="true" class="fa fa-chevron-down  fa-2x pull-right"></i>
         </div>
-        <div class="pannel-body container-fluid collapse" id="content2">
+        <div class="pannel-body container-fluid collapse" id="contentCryptoHelper">
           <br>
           <div class="form-group clearfix">
              <div class="col-sm-3"><label class="control-label optionForm">Type:</label>
@@ -110,14 +114,16 @@
       <!-- INSERIRE QUI -->
         </div>
       </div>
+	</form>
+	
+<!-- **************************   GVPoolManager   ************************** -->
 
-<!-- **************************************************** -->
-
+	<form id="formPoolManager">
       <div class="panel panel-default" style="overflow-x:auto;">
-        <div id="panelHead"  class="panel-heading Clickable" data-toggle="collapse" data-target="#content3"><i class="fa fa-code"></i> GVPoolManager
+        <div id="panelHead"  class="panel-heading Clickable" data-toggle="collapse" data-target="#contentPoolManager"><i class="fa fa-code"></i> GVPoolManager
           <i aria-hidden="true" class="fa fa-chevron-down  fa-2x pull-right"></i>
         </div>
-        <div class="pannel-body container-fluid collapse" id="content3">
+        <div class="pannel-body container-fluid collapse" id="contentPoolManager">
           <br>
           <div class="form-group clearfix">
              <div class="col-sm-3"><label class="control-label optionForm">Type:</label>
@@ -154,14 +160,16 @@
               <!-- INSERIRE QUI -->
         </div>
       </div>
+ 	</form>
+ 	 
+<!-- **************************    GVBufferDump    ************************** -->
 
-<!-- **************************************************** -->
-
+	<form id="formBufferDump">
       <div class="panel panel-default" style="overflow-x:auto;">
-        <div id="panelHead"  class="panel-heading Clickable"  data-toggle="collapse" data-target="#content4"><i class="fa fa-code"></i> GVBufferDump
+        <div id="panelHead"  class="panel-heading Clickable"  data-toggle="collapse" data-target="#contentBufferDump"><i class="fa fa-code"></i> GVBufferDump
           <i aria-hidden="true" class="fa fa-chevron-down  fa-2x pull-right"></i>
         </div>
-        <div class="pannel-body container-fluid collapse" id="content4">
+        <div class="pannel-body container-fluid collapse" id="contentBufferDump">
           <br>
           <div class="form-group clearfix">
              <div class="col-sm-3"><label class="control-label optionForm">Type:</label>
@@ -203,18 +211,21 @@
         </div>
         </div>
       </div>
+	</form>
+	
+<!-- ************************   GVStatisticConfig   **************************** -->
 
-<!-- **************************************************** -->
-
+	<form id="formStatisticConfig">
       <div class="panel panel-default" style="overflow-x:auto;">
-        <div id="panelHead"  class="panel-heading Clickable"  data-toggle="collapse" data-target="#content5"><i class="fa fa-code"></i> GVStatisticConfig
+        <div id="panelHead"  class="panel-heading Clickable"  data-toggle="collapse" data-target="#contentStatisticConfig"><i class="fa fa-code"></i> GVStatisticConfig
           <i aria-hidden="true" class="fa fa-chevron-down fa-2x pull-right"></i>
         </div>
-        <div class="pannel-body container-fluid collapse" id="content5">
+        <div class="pannel-body container-fluid collapse" id="contentStatisticConfig">
           PROVA
         </div>
       </div>
-
+	</form>
+	
       <div>
         <a id="btnProp" href="" onClick="slide();" class="btn btn-success pull-right">Send
         </a>

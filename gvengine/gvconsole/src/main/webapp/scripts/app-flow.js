@@ -91,8 +91,14 @@ angular.module('gvconsole')
 				    	  $scope.output = response.data;
 
 				      });
-
-			 //$scope.username = false;
+    }
+    
+    $scope.convert = function(){
+    	
+    	if($scope.convertType === "binary" && $scope.resultType === "hexadecimal"){
+    	$scope.converterOutput = parseInt($scope.converterInput, 2).toString(16);
+    	}
+		
     }
 
     angular.element("textarea").keydown(function(e) {
