@@ -3,33 +3,6 @@
   <h1> Configuration XML </h1>
 
     <div class="row" data-ng-controller="SettingsController">
-
-<!-- *********************   GVPolicy   ******************************* -->
-
-	<form id="formPolicy">
-      <div class="panel panel-default" style="overflow-x:auto;">
-        <div id="panelHead"  class="panel-heading Clickable" data-toggle="collapse" data-target="#contentPolicy"><i class="fa fa-code"></i> GVPolicy
-          <i id="changeIcon" aria-hidden="true" class="fa fa-chevron-down fa-2x pull-right"></i>
-        </div>
-        <!--  <div class="pannel-body container-fluid collapse" id="contentPolicy">
-          <br>
-          <label class="control-label optionForm col-sm-1">Role:</label>
-          <div class="form-group clearfix">
-             <div class="col-sm-3"><input type="text" class="form-control" data-ng-model="key" placeholder="Role name ..."></div>
-             <div class="col-sm-3"><input type="text" class="form-control" data-ng-model="value" placeholder="Description ..."></div>
-             <button class="btn btn-default" id="fabuttonplus" data-ng-click="addParameter()"><i class="fa fa-plus"></i></button>
-          </div>
-          <div data-ng-repeat="(key,param) in service.properties">
-             <div class="form-group clearfix">
-                <div class="col-sm-5"><strong>{{key}}</strong></div>
-                <div class="col-sm-6">{{param}}</div>
-                <a class="close" data-ng-click="removeParameter(key)">×</a>
-             </div>
-          </div>
-        </div> -->
-        
-      </div>
-	</form>
 	
 <!-- ***********************   GVCryptoHelper   **************************** -->
 
@@ -111,7 +84,12 @@
             </div>
           </fieldset>
       </div>
-      <!-- INSERIRE QUI -->
+      <div>
+        <a id="btnProp" href="" onClick="slide();" class="btn btn-success pull-right">Send
+        </a>
+        <a id="btnProp"  onClick="window.location.reload(); slide();" class="btn btn-danger pull-left">Cancel
+        </a>
+      </div>
         </div>
       </div>
 	</form>
@@ -157,7 +135,12 @@
               </div>
             </fieldset>
         </div>
-              <!-- INSERIRE QUI -->
+			<div>
+        <a id="btnProp" href="" onClick="slide();" class="btn btn-success pull-right">Send
+        </a>
+        <a id="btnProp"  onClick="window.location.reload(); slide();" class="btn btn-danger pull-left">Cancel
+        </a>
+      </div>
         </div>
       </div>
  	</form>
@@ -209,6 +192,12 @@
               </div>
             </fieldset>
         </div>
+        <div>
+        <a id="btnProp" href="" onClick="slide();" class="btn btn-success pull-right">Send
+        </a>
+        <a id="btnProp"  onClick="window.location.reload(); slide();" class="btn btn-danger pull-left">Cancel
+        </a>
+      </div>
         </div>
       </div>
 	</form>
@@ -221,17 +210,20 @@
           <i aria-hidden="true" class="fa fa-chevron-down fa-2x pull-right"></i>
         </div>
         <div class="pannel-body container-fluid collapse" id="contentStatisticConfig">
-          PROVA
-        </div>
-      </div>
-	</form>
-	
-      <div>
+        
+        <!-- Inserire qui proprietà e figli -->
+        
+        
+        
+          <div>
         <a id="btnProp" href="" onClick="slide();" class="btn btn-success pull-right">Send
         </a>
         <a id="btnProp"  onClick="window.location.reload(); slide();" class="btn btn-danger pull-left">Cancel
         </a>
-    	</div>
+      </div>
+        </div>
+      </div>
+	</form>
 
     </div>
   </div>

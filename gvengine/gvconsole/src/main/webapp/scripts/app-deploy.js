@@ -272,10 +272,10 @@ angular.module('gvconsole')
     	console.log("error: " + response.data);
     });
 
-    $scope.serviceByGroupNew = [];
-    $scope.groupsNew = [];
+    $scope.servicesNew = [];
 
-    DeployService.getNewServices($scope.newConfigId).then(function(response){
+    /*DeployService.getNewServices($scope.newConfigId).then(function(response){
+    	console.log("new: " + response.data);
   		angular.forEach(response.data,function(value){
   			if(!$scope.groupsNew.includes(value.groupName)){
   				$scope.groupsNew.push(value.groupName);
@@ -289,7 +289,15 @@ angular.module('gvconsole')
   		})
   	},function(response){
   		console.log("error: " + response.data);
-  	});
+  	});*/
+    
+    DeployService.getNewServices($scope.newConfigId).then(function(response){
+    	angular.forEach(response.data,function(value){
+    		$scope.servicesNew.push(value);
+    	});
+    },function(response){
+    	console.log("error: " + response.data);
+    });
 
 
 
