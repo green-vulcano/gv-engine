@@ -23,21 +23,24 @@
                      src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
                   <a id="export" data-ng-hide="exportInProgress" data-ng-click="ctrl.exportConfig()" class="btn btn-primary"><i class="fa fa-download"></i> Export</a>
                   <button type="button" class="btn btn-default" data-ng-click="ctrl.reloadConfig()"><i class="fa fa-refresh" aria-hidden="true"></i></button>
+                  <button onClick="resetFunctionDeploy();" type="button" class="btn btn-default" data-toggle="modal" data-target="#addModal{{$index}}"><i class="fa fa-plus"></i></button>
                </div>
             </div>
             <table id="users" class="table table-hover">
                <thead>
                   <tr>
-                     <th>Id</th>
-                     <th>Date</th>
-                     <th class="text-right">Action</th>
+                     <th class="col-sm-2 Clickable" data-ng-click="orderFunction('id')">Id <i aria-hidden="true" data-ng-class="{'fa fa-sort': order != 'id' && order != '-'+'id', 'fa fa-sort-asc': order == 'id', 'fa fa-sort-desc': order == '-'+'id'}"></i></th>
+                     <th class="col-sm-3 Clickable" data-ng-click="orderFunction('date')">Date <i aria-hidden="true" data-ng-class="{'fa fa-sort': order != 'date' && order != '-'+'date', 'fa fa-sort-asc': order == 'date', 'fa fa-sort-desc': order == '-'+'date'}"></i></th>
+                     <th class="col-sm-4">Description</th>
+                     <th class="text-right col-sm-3">Action</th>
                   </tr>
                </thead>
                <tbody>
                   <tr data-ng-repeat="config in ctrl.history">
-                     <td>{{config.id}}</td>
-                     <td>{{config.time | date : 'd MMMM yyyy H:mm:ss'}}</td>
-                     <td class="text-right">
+                     <td class="col-sm-2">{{config.id}}</td>
+                     <td class="col-sm-3">{{config.time | date : 'd MMMM yyyy H:mm:ss'}}</td>
+                     <td class="col-sm-4">{{config.description}}</td>
+                     <td class="text-right col-sm-3">
                         <button onClick="slide();" type="button" class="btn btn-success" data-ng-click="go('/deploy/' + config.id)"><i class="fa fa-bolt"></i> Deploy</button>
                         <button onClick="slide();" type="button" class="btn btn-danger" data-toggle="modal" data-target="#myModal{{$index}}" data-dismiss="modal"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
                         <div id="myModal{{$index}}" class="modal">
@@ -65,7 +68,15 @@
                                  placeholder="Configuration ID" pattern="(?=^.{1,64}$)^[a-zA-Z0-9._-]+$"
                                  data-ng-maxlength="64" data-ng-model="ctrl.deploy.id" required>
                            </div>
-                        </div>
+                         </div>
+                         <div class="form-group">
+                           <div class="col-sm-8 col-sm-offset-2">
+                              <input id="descriptfile" maxlength="64" name="desciptfile" type="text" class="form-control" placeholder="Description Configuration" data-ng-model="ctrl.history.description">
+                              <span class="help-block small pull-left">
+                                Small description of configuration max. 64 characters.
+                              </span>
+                           </div>
+                         </div>
                         <div class="form-group">
                            <div class="col-sm-8 col-sm-offset-2">
                               <input id="configfile" name="configfile" type="file"
@@ -80,9 +91,6 @@
                      </fieldset>
                   </form>
                </div>
-            </div>
-            <div class="panel-footer clearfix" style="text-align: center; border-bottom: 1px solid #ddd;border-radius:0px">
-               <button onClick="resetFunctionDeploy();" type="button" class="btn btn-warning pull-right" data-toggle="modal" data-target="#addModal{{$index}}"><i class="fa fa-plus"></i></button>
             </div>
          </div>
          <div class="panel panel-default" >
