@@ -44,6 +44,9 @@ angular.module('gvconsole', ['ngCookies','ngRoute','angular-quartz-cron', 'ui.bo
 			when('/settings', {
 				templateUrl: 'topics/settings/config.html'
 			}).
+			when('/tools', {
+				templateUrl: 'topics/tools/tools.html'
+			}).
 			otherwise({
     	        redirectTo: '/myprofile'
 			});
