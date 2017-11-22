@@ -111,13 +111,13 @@ angular.module('gvconsole')
 	var instance = this;
 
 	this.alerts = [];
-    this.alertsAdd = [];
+
+  this.alertsAdd = [];
 
 	this.configInfo = {};
 
 	this.deploy = {};
 
-	var instance = this;
 	this.history = [];
 
     this.loadList = function() {
@@ -290,7 +290,7 @@ angular.module('gvconsole')
   	},function(response){
   		console.log("error: " + response.data);
   	});*/
-    
+
     DeployService.getNewServices($scope.newConfigId).then(function(response){
     	angular.forEach(response.data,function(value){
     		$scope.servicesNew.push(value);

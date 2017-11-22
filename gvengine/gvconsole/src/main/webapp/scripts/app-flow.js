@@ -33,7 +33,7 @@ angular.module('gvconsole')
 	     return $http(request);
 
 	}
-	
+
 	this.getServices = function(){
 		return $http.get(Endpoints.gvesb);
 	}
@@ -43,7 +43,7 @@ angular.module('gvconsole')
 angular.module('gvconsole')
 .controller('FlowController', [ 'Base64', 'FlowService', '$scope', function(Base64, FlowService, $scope){
 
-		
+
     $scope.operations = [];
     $scope.service = {};
 
@@ -93,13 +93,6 @@ angular.module('gvconsole')
 				      });
     }
     
-    $scope.convert = function(){
-    	
-    	if($scope.convertType === "binary" && $scope.resultType === "hexadecimal"){
-    	$scope.converterOutput = parseInt($scope.converterInput, 2).toString(16);
-    	}
-		
-    }
 
     angular.element("textarea").keydown(function(e) {
         if(e.keyCode === 9) { // tab was pressed
