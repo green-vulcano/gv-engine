@@ -84,15 +84,15 @@
 													                   </div>
 													                 </div>
 												                  <div class="panel panel-default" style="margin-top:10px; border-radius:5px">
-												                    <div data-ng-repeat="serviceCurrent in servicesCurrent">
-												                    <div class="panel-heading Clickable serviceHead" data-toggle="collapse" data-target="#{{serviceCurrent.idService}}New" style="border-radius: 0px" ng-click="OpenNewServiceList=!OpenNewServiceList">
-												                        <h3 class="panel-title">{{serviceCurrent.idService}} <i data-ng-class="(OpenNewServiceList) ? 'fa fa-chevron-up pull-right' : 'fa fa-chevron-down pull-right'"></i></h3> <!-- Group -->
+												                    <div data-ng-repeat="serviceNew in servicesNew">
+												                    <div class="panel-heading Clickable serviceHead" data-toggle="collapse" data-target="#{{serviceNew.idService}}New" style="border-radius: 0px" ng-click="OpenNewServiceList=!OpenNewServiceList">
+												                        <h3 class="panel-title">{{serviceNew.idService}} <i data-ng-class="(OpenNewServiceList) ? 'fa fa-chevron-up pull-right' : 'fa fa-chevron-down pull-right'"></i></h3> <!-- Group -->
 												                    </div>
-												                    <div  class="panel-body collapse" style="padding:0px; border-radius: 0px" id="{{serviceCurrent.idService}}New">
+												                    <div  class="panel-body collapse" style="padding:0px; border-radius: 0px" id="{{serviceNew.idService}}New">
 												                      <table class="table table-hover col-sm-12" style="margin: 0px">
 												                        <tbody>
-												                          <tr data-ng-repeat="operationCurrent in serviceCurrent.operations">
-												                            <td>{{operationCurrent.name}}</td>
+												                          <tr data-ng-repeat="operationNew in serviceNew.operations">
+												                            <td>{{operationNew.name}}</td>
 												                          </tr>
 												                       </tbody>
 												                      </table>
