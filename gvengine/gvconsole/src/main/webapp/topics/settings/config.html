@@ -15,13 +15,13 @@
           <br>
           <div class="form-group clearfix">
              <div class="col-sm-3"><label class="control-label optionForm">Type:</label>
-             <input type="text" class="form-control" value="module" disabled></div>
+             <input id="CryptoHelperType" type="text" class="form-control" value="module" disabled></div>
              <div class="col-sm-3"><label class="control-label optionForm">Name:</label>
-             <input type="text" class="form-control" value="CRYPTO_HELPER" disabled></div>
+             <input id="CryptoHelperName" type="text" class="form-control" value="CRYPTO_HELPER" disabled></div>
              <div class="col-sm-3"><label class="control-label optionForm">Description:</label>
-             <input type="text" class="form-control"></div>
+             <input id="CryptoHelperDescription" type="text" class="form-control"></div>
              <div class="col-sm-3"><label class="control-label optionForm">key-store-folder:</label>
-             <input type="text" class="form-control" required></div>
+             <input id="CryptoHelperKeyStoreFolder" type="text" class="form-control" required></div>
           </div>
           <div class="form-group clearfix">
             <fieldset class="col-md-11 fieldset-xmlconfig">
@@ -29,8 +29,8 @@
               <div class="panel panel-default">
 						    <div class="panel-body">
 							     <div class="form-group clearfix">
-                        <div class="col-sm-3"><label class="control-label optionForm">ID:</label>
-                        <input type="text" class="form-control" required></div>
+                        <div class="col-sm-3"><label class="control-label optionForm">id:</label>
+                        <input id="KeyStoreIDID" type="text" class="form-control" required></div>
                         <div class="col-sm-3"><label class="control-label optionForm">key-store-type:</label>
                           <select class="form-control" >
                             <option value="" selected>JCEKS - default</option>
@@ -54,13 +54,11 @@
                            <div class="col-sm-3"><label class="control-label optionForm">Description:</label>
              				<input type="text" class="form-control"></div>
                    </div>
-                   <button class="btn btn-default pull-right" id="fabuttonplus" data-ng-click="addParameter()"><i class="fa fa-plus"></i></button>
+                   <button class="btn btn-default pull-right" id="fabuttonplus" data-ng-click="addKeyStoreID()"><i class="fa fa-plus"></i></button>
 						    </div>
 					    </div>
             </fieldset>
         </div>
-
-
 <!-- INSERIRE QUI -->
 
 
@@ -91,7 +89,7 @@
                         <div class="col-sm-3"><label class="control-label optionForm">Description:</label>
          				<input type="text" class="form-control"></div>
                  </div>
-                 <button class="btn btn-default pull-right" id="fabuttonplus" data-ng-click="addParameter()"><i class="fa fa-plus"></i></button>
+                 <button class="btn btn-default pull-right" id="fabuttonplus" data-ng-click="addKeyID()"><i class="fa fa-plus"></i></button>
               </div>
             </div>
           </fieldset>
@@ -101,7 +99,7 @@
       
       
       <div>
-        <a id="btnProp" href="" onClick="slide();" class="btn btn-success pull-right">Send
+        <a id="btnProp" onClick="slide();" class="btn btn-success pull-right" data-ng-click="sendCryptoHelper()">Send
         </a>
         <a id="btnProp"  onClick="window.location.reload(); slide();" class="btn btn-danger pull-left">Cancel
         </a>
@@ -150,7 +148,7 @@
                           <div class="col-sm-3"><label class="control-label optionForm">Description:</label>
              			  <input type="text" class="form-control"></div>
                         </div>
-                   <button class="btn btn-default pull-right" id="fabuttonplus" data-ng-click="addParameter()"><i class="fa fa-plus"></i></button>
+                   <button class="btn btn-default pull-right" id="fabuttonplus" data-ng-click="addGreenVulcanoPool()"><i class="fa fa-plus"></i></button>
                 </div>
               </div>
             </fieldset>
@@ -212,15 +210,15 @@
                                     <div class="col-sm-3"><label class="control-label optionForm">Description:</label>
              						<input type="text" class="form-control"></div>
                                   </div>
-                                  
-                                  <!-- INSERIRE QUI -->
-                                  
-                               <button class="btn btn-default pull-right" id="fabuttonplus" data-ng-click="addParameter()"><i class="fa fa-plus"></i></button>
+                               <button class="btn btn-default pull-right" id="fabuttonplus" data-ng-click="addClientDump()"><i class="fa fa-plus"></i></button>
                             </div>
                           </div>
                         </fieldset>
                       </div>
-                   <button class="btn btn-default pull-right" id="fabuttonplus" data-ng-click="addParameter()"><i class="fa fa-plus"></i></button>
+                      
+                      <!-- INSERIRE QUI -->
+                      
+                   <button class="btn btn-default pull-right" id="fabuttonplus" data-ng-click="addServiceDump()"><i class="fa fa-plus"></i></button>
                 </div>
               </div>
             </fieldset>
@@ -267,7 +265,7 @@
                         <div class="col-sm-3"><label class="control-label optionForm">Description:</label>
              			<input type="text" class="form-control"></div>
                       </div>
-                   <button class="btn btn-default pull-right" id="fabuttonplus" data-ng-click="addParameter()"><i class="fa fa-plus"></i></button>
+                   <button class="btn btn-default pull-right" id="fabuttonplus" data-ng-click="addWriters()"><i class="fa fa-plus"></i></button>
                 </div>
               </div>
             </fieldset>
@@ -293,7 +291,7 @@
 			                        <div class="col-sm-3"><label class="control-label optionForm">Description:</label>
 			             			<input type="text" class="form-control"></div>
 			                      </div>
-			                   <button class="btn btn-default pull-right" id="fabuttonplus" data-ng-click="addParameter()"><i class="fa fa-plus"></i></button>
+			                   <button class="btn btn-default pull-right" id="fabuttonplus" data-ng-click="addExtendedData()"><i class="fa fa-plus"></i></button>
 			                </div>
 			              </div>
 			            </fieldset>
@@ -301,7 +299,7 @@
                       
                       <!-- INSERIRE QUI -->
                       
-                   <button class="btn btn-default pull-right" id="fabuttonplus" data-ng-click="addParameter()"><i class="fa fa-plus"></i></button>
+                   <button class="btn btn-default pull-right" id="fabuttonplus" data-ng-click="addExtendedDataMappings()"><i class="fa fa-plus"></i></button>
                 </div>
               </div>
             </fieldset>
