@@ -169,6 +169,12 @@ angular.module('gvconsole')
 
 	}
 
+  $scope.historyOrderFunction = function(propertyName) {
+    $scope.reverse = ($scope.propertyName === propertyName) ? !$scope.reverse : false;
+    $scope.propertyName = propertyName;
+    console.log($scope.reverse);
+  };
+
 	this.exportConfig = function () {
 		$scope.exportInProgress = true;
 		DeployService.exportConfig()
@@ -298,6 +304,7 @@ angular.module('gvconsole')
     },function(response){
     	console.log("error: " + response.data);
     });
+
 
 
 

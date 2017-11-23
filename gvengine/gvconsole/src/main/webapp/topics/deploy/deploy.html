@@ -57,14 +57,14 @@
 													                   </div>
 													                 </div>
 												                  <div class="panel panel-default" style="margin-top:10px">
-												                    <div data-ng-repeat="serviceCurrent in servicesCurrent">
+												                    <div data-ng-repeat="serviceCurrent in servicesCurrent | orderBy:'idService'">
 												                    <div class="panel-heading Clickable serviceHead" data-toggle="collapse" data-target="#{{serviceCurrent.idService}}Current" style="border-radius: 0px" ng-click="OpenCurrentServiceList=!OpenCurrentServiceList">
 												                        <h3 class="panel-title">{{serviceCurrent.idService}} <i aria-hidden="true" data-ng-class="(OpenCurrentServiceList) ? 'fa fa-chevron-up pull-right' : 'fa fa-chevron-down pull-right'"></i></h3> <!-- Group -->
 												                    </div>
 												                    <div  class="panel-body collapse" style="padding:0px; border-radius: 0px" id="{{serviceCurrent.idService}}Current">
 												                      <table class="table table-hover col-sm-12" style="margin: 0px">
 												                        <tbody>
-												                           <tr data-ng-repeat="operationCurrent in serviceCurrent.operations">
+												                           <tr data-ng-repeat="operationCurrent in serviceCurrent.operations | orderBy:'name'">
 												                            <td>{{operationCurrent.name}} </td>
 												                          </tr>
 												                       </tbody>
@@ -84,14 +84,14 @@
 													                   </div>
 													                 </div>
 												                  <div class="panel panel-default" style="margin-top:10px; border-radius:5px">
-												                    <div data-ng-repeat="serviceNew in servicesNew">
+												                    <div data-ng-repeat="serviceNew in servicesNew | orderBy:'idService' ">
 												                    <div class="panel-heading Clickable serviceHead" data-toggle="collapse" data-target="#{{serviceNew.idService}}New" style="border-radius: 0px" ng-click="OpenNewServiceList=!OpenNewServiceList">
 												                        <h3 class="panel-title">{{serviceNew.idService}} <i data-ng-class="(OpenNewServiceList) ? 'fa fa-chevron-up pull-right' : 'fa fa-chevron-down pull-right'"></i></h3> <!-- Group -->
 												                    </div>
 												                    <div  class="panel-body collapse" style="padding:0px; border-radius: 0px" id="{{serviceNew.idService}}New">
 												                      <table class="table table-hover col-sm-12" style="margin: 0px">
 												                        <tbody>
-												                          <tr data-ng-repeat="operationNew in serviceNew.operations">
+												                          <tr data-ng-repeat="operationNew in serviceNew.operations | orderBy:'name'">
 												                            <td>{{operationNew.name}}</td>
 												                          </tr>
 												                       </tbody>
@@ -123,7 +123,7 @@
 											            <tbody>
 											              <tr data-ng-repeat="(key,value) in ctrl.properties">
 											                <td><div class="col-sm-4">{{key}}</div></td>
-											                <td><div class="col-sm-6"><input type="text" class="form-control" data-ng-model="ctrl.properties[key]" name="value" required></div></td>
+											                <td><div class="col-sm-6 form-group"  data-ng-class="{'has-error' : !ctrl.properties[key]}"><input name="{{key}}" type="text" class="form-control" data-ng-model="ctrl.properties[key]" name="value" required></div></td>
 											              </tr>
 											            </tbody>
 											          </table>

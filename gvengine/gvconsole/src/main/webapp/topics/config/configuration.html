@@ -23,7 +23,7 @@
                               <div class="panel-body collapse" style="padding:0px; border-radius: 0px" id="{{group}}">
                                  <table class="table table-hover col-sm-12" style="margin: 0px">
                                     <tbody>
-                                       <tr data-ng-repeat="service in serviceByGroup[group]">
+                                       <tr data-ng-repeat="service in serviceByGroup[group] | orderBy:'idService'">
                                           <td data-toggle="collapse" class="Clickable" data-target="#{{service.idService}}" data-ng-click="OpenServiceDet = !OpenServiceDet"><span  data-ng-class="(OpenServiceDet) ? 'text-danger' : 'text-default'">{{service.idService}}</span> <i aria-hidden="true" data-ng-class="(OpenServiceDet) ? 'fa fa-chevron-left pull-right' : 'fa fa-chevron-right pull-right'"></i></td>
                                           <!-- Service -->
                                        </tr>

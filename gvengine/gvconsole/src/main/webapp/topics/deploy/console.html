@@ -29,14 +29,14 @@
             <table id="users" class="table table-hover">
                <thead>
                   <tr>
-                     <th class="col-sm-2 Clickable" data-ng-click="orderFunction('id')">Id <i aria-hidden="true" data-ng-class="{'fa fa-sort': order != 'id' && order != '-'+'id', 'fa fa-sort-asc': order == 'id', 'fa fa-sort-desc': order == '-'+'id'}"></i></th>
-                     <th class="col-sm-3 Clickable" data-ng-click="orderFunction('date')">Date <i aria-hidden="true" data-ng-class="{'fa fa-sort': order != 'date' && order != '-'+'date', 'fa fa-sort-asc': order == 'date', 'fa fa-sort-desc': order == '-'+'date'}"></i></th>
+                     <th class="col-sm-2 Clickable noselect" data-ng-click="historyOrderFunction('id')">Id <i aria-hidden="true" data-ng-class="{'fa fa-sort': propertyName != 'id', 'fa fa-sort-asc': propertyName == 'id' && !reverse, 'fa fa-sort-desc': propertyName == 'id' && reverse}"></i></th>
+                     <th class="col-sm-3 Clickable noselect" data-ng-click="historyOrderFunction('date')">Date <i aria-hidden="true" data-ng-class="{'fa fa-sort': propertyName != 'date', 'fa fa-sort-asc': propertyName == 'date' && !reverse, 'fa fa-sort-desc': propertyName == 'date' && reverse}"></i></th>
                      <th class="col-sm-4">Description</th>
                      <th class="text-right col-sm-3">Action</th>
                   </tr>
                </thead>
                <tbody>
-                  <tr data-ng-repeat="config in ctrl.history">
+                  <tr data-ng-repeat="config in ctrl.history | orderBy:propertyName:reverse">
                      <td class="col-sm-2">{{config.id}}</td>
                      <td class="col-sm-3">{{config.time | date : 'd MMMM yyyy H:mm:ss'}}</td>
                      <td class="col-sm-4">{{config.description}}</td>
