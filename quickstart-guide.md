@@ -60,7 +60,7 @@ Export a configuration from Developer studio. Then choose whether to use "Develo
 - Developer Studio & GVConsole
  -- GVConsole -> Configuration
  -- upload configurazion in .zip format
- -- choos a Configuration-Id
+ -- choose a Configuration-Id
  -- press Deploy button
 - Karaf
     ```sh
