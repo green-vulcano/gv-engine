@@ -23,7 +23,7 @@
       <script type="text/javascript" src="libs/js/XMLDisplay.js"></script>
 
       <link rel="stylesheet" href="libs/css/app.custom.css"/>
-      <!-- API Registry function to use when webapp run out of API container -->
+      <!-- API Registry function to use when webapp run out of API container
       <script type="text/javascript">
          function getEndpoints() {
            var basePath = 'http://localhost:8181/cxf';
@@ -37,12 +37,12 @@
                   gvproperties : basePath + '/gvproperties'
                 }
          }
-      </script>
+      </script> -->
 
 
 
-	  <!-- API Registry servlet to use when webapp run inside the same container of API
-	  <script type="text/javascript" src="registry"></script>-->
+	  <!-- API Registry servlet to use when webapp run inside the same container of API -->
+	  <script type="text/javascript" src="registry"></script>
       <script type="text/javascript" src="scripts/app.custom.js"></script>
       <script type="text/javascript" src="scripts/app-auth.js"></script>
       <script type="text/javascript" src="scripts/app-admin.js"></script>
@@ -55,7 +55,6 @@
       <script type="text/javascript" src="scripts/app-properties.js"></script>
       <script type="text/javascript" src="scripts/app-flow.js"></script>
       <script type="text/javascript" src="scripts/app-config.js"></script>
-    
    </head>
    <body data-ng-app="gvconsole">
       <div class="row" data-ng-show="globals.currentUser">
@@ -63,7 +62,7 @@
 		      <nav class="navbar navbar-default" role="navigation">
 		         <div class="container">
 		            <!-- Hamburger -->
-		            <button type="button" class="navbar-toggle" ng-click="isNavCollapsed = !isNavCollapsed" >
+		            <button type="button" class="navbar-toggle" data-ng-click="isNavCollapsed = !isNavCollapsed" >
 		            <span class="sr-only">Toggle navigation</span>
 		            <span class="icon-bar"></span>
 		            <span class="icon-bar"></span>
