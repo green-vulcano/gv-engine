@@ -74,6 +74,8 @@
 		<property name="configurationManager" ref="configManager" />
 	</bean>
 	
+	<bean id="settingsController" class="it.greenvulcano.gvesb.api.controller.GvSettingsControllerRest"/>
+		
 	<bean id="gvconfigAuthorizationInterceptor" class="org.apache.cxf.interceptor.security.SecureAnnotationsInterceptor">
    		<property name="allowAnonymousUsers" value="true" />
    		<property name="checkConfiguredRolesOnly" value="false" />
@@ -86,7 +88,8 @@
 	
 	<jaxrs:server address="/gvconfig" id="gvconfigapi">
         <jaxrs:serviceBeans>            
-           	<ref component-id="configurationController" />            
+           	<ref component-id="configurationController" />
+           	<ref component-id="settingsController" />          
         </jaxrs:serviceBeans> 
         <jaxrs:providers>
 	       	<ref component-id="gvAuthenticationFilter"/>
