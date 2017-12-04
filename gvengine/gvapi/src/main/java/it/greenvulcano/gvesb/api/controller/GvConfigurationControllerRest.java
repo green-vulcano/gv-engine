@@ -390,7 +390,8 @@ public class GvConfigurationControllerRest extends BaseControllerRest {
 	 public void deploy(@PathParam("configId") String id) {
 		 				 		 		 
 		 try {		 
-			 gvConfigurationManager.deploy(id);			 	 
+			 gvConfigurationManager.deploy(id);
+			 gvConfigurationManager.reload();
 			 
 		 } catch (IllegalStateException e) {
 			 LOG.error("Deploy failed, a deploy is already in progress",e);

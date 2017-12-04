@@ -3,26 +3,16 @@
   <h1> Configuration XML </h1>
 
     <div class="row" data-ng-controller="SettingsController">
-	
+
 <!-- ***********************   GVCryptoHelper   **************************** -->
 
-	<form id="formCryptoHelper">
-      <div class="panel panel-default" style="overflow-x:auto;">
+	<form id="formCryptoHelper" data-ng-hide="true">
+      <div class="panel panel-default" style="overflow-x:auto; ">
         <div id="panelHead"  class="panel-heading Clickable" data-toggle="collapse" data-target="#contentCryptoHelper"><i class="fa fa-code"></i> GVCryptoHelper
           <i aria-hidden="true" class="fa fa-chevron-down  fa-2x pull-right"></i>
         </div>
         <div class="pannel-body container-fluid collapse" id="contentCryptoHelper">
-          <br>
-          <div class="form-group clearfix">
-             <div class="col-sm-3"><label class="control-label optionForm">Type:</label>
-             <input id="CryptoHelperType" type="text" class="form-control" value="module" disabled></div>
-             <div class="col-sm-3"><label class="control-label optionForm">Name:</label>
-             <input id="CryptoHelperName" type="text" class="form-control" value="CRYPTO_HELPER" disabled></div>
-             <div class="col-sm-3"><label class="control-label optionForm">Description:</label>
-             <input id="CryptoHelperDescription" type="text" class="form-control"></div>
-             <div class="col-sm-3"><label class="control-label optionForm">key-store-folder:</label>
-             <input id="CryptoHelperKeyStoreFolder" type="text" class="form-control" required></div>
-          </div>
+
           <div class="form-group clearfix">
             <fieldset class="col-md-11 fieldset-xmlconfig">
               <legend>KeyStoreID</legend>
@@ -94,10 +84,10 @@
             </div>
           </fieldset>
       </div>
-      
+
       <!-- INSERIRE QUI -->
-      
-      
+
+
       <div>
         <a id="btnProp" onClick="slide();" class="btn btn-success pull-right" data-ng-click="sendCryptoHelper()">Send
         </a>
@@ -107,56 +97,44 @@
         </div>
       </div>
 	</form>
-	
+
 <!-- **************************   GVPoolManager   ************************** -->
 
 	<form id="formPoolManager">
       <div class="panel panel-default" style="overflow-x:auto;">
-        <div id="panelHead"  class="panel-heading Clickable" data-toggle="collapse" data-target="#contentPoolManager"><i class="fa fa-code"></i> GVPoolManager
-          <i aria-hidden="true" class="fa fa-chevron-down  fa-2x pull-right"></i>
+        <div id="panelHead"  class="panel-heading"><i class="fa fa-code"></i> GVPoolManagers</i>
         </div>
-        <div class="pannel-body container-fluid collapse" id="contentPoolManager">
-          <br>
-          <div class="form-group clearfix">
-             <div class="col-sm-3"><label class="control-label optionForm">Type:</label>
-             <input type="text" class="form-control" value="module" disabled></div>
-             <div class="col-sm-3"><label class="control-label optionForm">Name:</label>
-             <input type="text" class="form-control" value="POOL_MANAGER" disabled></div>
-             <div class="col-sm-3"><label class="control-label optionForm">Description:</label>
-             <input type="text" class="form-control"></div>
-          </div>
-          <div class="form-group clearfix">
+        <div class="panel-body container-fluid" id="contentPoolManager">
+
+          <div class="form-group clearfix" data-ng-repeat="pool in settings.GVConfig.GVPoolManager.GreenVulcanoPool">
             <fieldset class="col-md-11 fieldset-xmlconfig">
-              <legend>GreenVulcanoPool</legend>
+              <legend>{{pool.subsystem}}</legend>
               <div class="panel panel-default">
                 <div class="panel-body">
                    <div class="form-group clearfix">
-                        <div class="col-sm-3"><label class="control-label optionForm">subsystem:</label>
-                        <input type="text" class="form-control" required></div>
                         <div class="col-sm-3"><label class="control-label optionForm">initial-size:</label>
-                        <input type="text" class="form-control" pattern="[0-9]*" title="set a integer value > 0" required></div>
+                        <input type="text" class="form-control" data-ng-model="pool['initial-size']" pattern="[0-9]*" title="set a integer value > 0" required></div>
                         <div class="col-sm-3"><label class="control-label optionForm">maximum-size:</label>
-                        <input type="text" class="form-control" placeholder="10" pattern="(-1)|([1-9][0-9]*)" title="set -1 (not limited pool) or an integer > 0" required></div>
+                        <input type="text" class="form-control" data-ng-model="pool['maximum-size']" placeholder="10" pattern="(-1)|([1-9][0-9]*)" title="set -1 (not limited pool) or an integer > 0" required></div>
                         <div class="col-sm-3"><label class="control-label optionForm">maximum-creation:</label>
-                        <input type="text" class="form-control" placeholder="50" pattern="(-1)|([1-9][0-9]*)" title="set -1 (unlimited number of creations) or an integer > 0" required></div>
+                        <input type="text" class="form-control" data-ng-model="pool['maximum-creation']" placeholder="50" pattern="(-1)|([1-9][0-9]*)" title="set -1 (unlimited number of creations) or an integer > 0" required></div>
                         </div>
                         <div class="form-group clearfix">
                           <div class="col-sm-3"><label class="control-label optionForm">default-timeout:</label>
-                          <input type="text" class="form-control" pattern="[1-9][0-9]*" title="set a integer value" required></div>
+                          <input type="text" class="form-control" data-ng-model="pool['default-timeout']" pattern="[1-9][0-9]*" title="set a integer value" required></div>
                           <div class="col-sm-3"><label class="control-label optionForm">shrink-timeout:</label>
-                          <input type="text" class="form-control" placeholder="15" pattern="(-1)|([1-9][0-9]*)" title="set -1 (disables resizing of the pool) or an integer > 0"></div>
-                          <div class="col-sm-3"><label class="control-label optionForm">Description:</label>
-             			  <input type="text" class="form-control"></div>
+                          <input type="text" class="form-control" data-ng-model="pool['shrink-timeout']" placeholder="15" pattern="(-1)|([1-9][0-9]*)" title="set -1 (disables resizing of the pool) or an integer > 0"></div>
+
                         </div>
-                   <button class="btn btn-default pull-right" id="fabuttonplus" data-ng-click="addGreenVulcanoPool()"><i class="fa fa-plus"></i></button>
+                   <button class="btn btn-default pull-right" type="reset" id="fabuttonplus" ><i class="fa fa-plus"></i></button>
                 </div>
               </div>
             </fieldset>
         </div>
-        
+
         <!-- INSERIRE QUI -->
-        
-        
+
+
 			<div>
         <a id="btnProp" href="" onClick="slide();" class="btn btn-success pull-right">Send
         </a>
@@ -166,10 +144,10 @@
         </div>
       </div>
  	</form>
- 	 
+
 <!-- **************************    GVBufferDump    ************************** -->
 
-	<form id="formBufferDump">
+	<form id="formBufferDump" data-ng-hide="true">
       <div class="panel panel-default" style="overflow-x:auto;">
         <div id="panelHead"  class="panel-heading Clickable"  data-toggle="collapse" data-target="#contentBufferDump"><i class="fa fa-code"></i> GVBufferDump
           <i aria-hidden="true" class="fa fa-chevron-down  fa-2x pull-right"></i>
@@ -215,17 +193,17 @@
                           </div>
                         </fieldset>
                       </div>
-                      
+
                       <!-- INSERIRE QUI -->
-                      
+
                    <button class="btn btn-default pull-right" id="fabuttonplus" data-ng-click="addServiceDump()"><i class="fa fa-plus"></i></button>
                 </div>
               </div>
             </fieldset>
         </div>
-        
+
         <!-- INSERIRE QUI -->
-        
+
         <div>
         <a id="btnProp" href="" onClick="slide();" class="btn btn-success pull-right">Send
         </a>
@@ -235,16 +213,16 @@
         </div>
       </div>
 	</form>
-	
+
 <!-- ************************   GVStatisticConfig   **************************** -->
 
-	<form id="formStatisticConfig">
+	<form id="formStatisticConfig" data-ng-hide="true">
       <div class="panel panel-default" style="overflow-x:auto;">
         <div id="panelHead"  class="panel-heading Clickable"  data-toggle="collapse" data-target="#contentStatisticConfig"><i class="fa fa-code"></i> GVStatisticConfig
           <i aria-hidden="true" class="fa fa-chevron-down fa-2x pull-right"></i>
         </div>
         <div class="pannel-body container-fluid collapse" id="contentStatisticConfig">
-        
+
         <br>
           <div class="form-group clearfix">
              <div class="col-sm-3"><label class="control-label optionForm">type:</label>
@@ -269,9 +247,9 @@
                 </div>
               </div>
             </fieldset>
-            
+
             <!-- INSERIRE QUI -->
-            
+
             <fieldset class="col-md-11 fieldset-xmlconfig">
               <legend>ExtendedDataMappings</legend>
               <div class="panel panel-default">
@@ -296,17 +274,17 @@
 			              </div>
 			            </fieldset>
                       </div>
-                      
+
                       <!-- INSERIRE QUI -->
-                      
+
                    <button class="btn btn-default pull-right" id="fabuttonplus" data-ng-click="addExtendedDataMappings()"><i class="fa fa-plus"></i></button>
                 </div>
               </div>
             </fieldset>
         </div>
-        
+
         <!-- INSERIRE QUI -->
-        
+
           <div>
         <a id="btnProp" href="" onClick="slide();" class="btn btn-success pull-right">Send
         </a>

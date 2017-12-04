@@ -314,6 +314,7 @@ public abstract class BaseLoopController implements LoopController {
 			gvContext.setContext(localSubFlow, internalGVBuffer);
 			gvContext.setGVServiceConfigManager(mainCtx.getGVServiceConfigManager());
 			gvContext.setStatisticsDataManager(mainCtx.getStatisticsDataManager());
+			gvContext.setExtraField("DTE_CONTROLLER", mainCtx.getExtraField("DTE_CONTROLLER"));
 
 			GVSubFlow subFlow = getSubFlow(localSubFlow);
 
