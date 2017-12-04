@@ -1,7 +1,7 @@
 <div class="container-fluid">
    <div class="side-body">
-      <h1>New scheduled execution</h1>
       <div class="container row " data-ng-controller="ScheduleFormController as ctrl">
+        <h1>New scheduled execution</h1>
          <div id="fadeout" data-ng-repeat="alert in ctrl.alerts" class="fadeout alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
          <div class="panel panel-default" style="overflow-x:auto;">
             <div id="panelHead"  class="panel-heading">

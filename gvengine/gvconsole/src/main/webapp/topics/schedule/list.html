@@ -1,7 +1,7 @@
 <div class="container-fluid">
 <div class="side-body">
-   <h1>Scheduling</h1>
-   <div class="row" data-ng-controller="ScheduleListController as ctrl">
+   <div class="container row" data-ng-controller="ScheduleListController as ctrl">
+     <h1>Scheduling</h1>
       <div id="fadeout" data-ng-repeat="alert in ctrl.alerts" class="fadeout alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
       <div class="panel panel-default">
          <div id="panelHead" class="panel-heading">

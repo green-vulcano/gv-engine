@@ -1,10 +1,8 @@
 <div class="container-fluid">
    <div class="side-body">
-      <h1>Deploy</h1>
-      <div class="row" data-ng-controller="DeployController as ctrl" data-ng-init="ctrl.loadConfigInfo(); ctrl.loadList(); ctrl.getFiles()">
-         <!-- FadeOut Function -->
+      <div class="container row" data-ng-controller="DeployController as ctrl" data-ng-init="ctrl.loadConfigInfo(); ctrl.loadList(); ctrl.getFiles()">
+        <h1>Deploy</h1>
          <div id="fadeout" data-ng-repeat="alert in ctrl.alerts" class="fadeout alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
-         <!-- FadeOut Function -->
          <div class="panel panel-default">
             <div class="panel-heading clearfix">
                <i class="fa fa-sitemap fa-rotate-270"></i> Current Configuration
