@@ -29,11 +29,13 @@ angular.module('gvconsole')
 	});
 
 	$scope.matchKey = function(){
+		if ($scope.key != undefined && $scope.key != "") {
 		PropertiesService.getPropertyValue($scope.key).then(function(response){
 			$scope.value = response.data;
 		},function(response){
 			console.log("error: " + response.data);
-		})
+			})
+		}
 	}
 
 	$scope.modifyProperties = function(){
