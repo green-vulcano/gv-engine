@@ -38,37 +38,38 @@
             </tbody>
          </table>
          <div class="panel-footer clearfix" style="text-align: center;">
-            <button type="button" onClick="resetFunctionPassword();" class="btn btn-primary pull-right" data-toggle="modal" data-target="#passwordModal{{$index}}">Change Password</button>
-         </div>
-      </div>
-      <!-- Prova Style -->
-      <div class="col-md-12">
-         <div id="passwordModal" class="modal fadeoutModal">
-            <div class="modal-content">
-               <form id="passwordForm" name="renewForm" data-ng-submit="changePassword()">
-                  <h4>Set new password</h4>
-                  <div data-ng-repeat="alert in ctrl.alerts" class="fadeout2 alert alert-{{alert.type}}" role="alert" data-ng-class="{'off': error==false}">{{alert.msg}}</div>
-                  <div id="setNewPassword" class="input-group">
-                     <span class="input-group-addon">
-                     <i class="fa fa-key fa-fw"></i>
-                     </span>
-                     <input class="form-control" type="password" placeholder="Old Password" name="j_password" data-ng-model="oldPassword" required>
+          <form id="passwordForm" name="renewForm" data-ng-submit="changePassword()">
+            <button type="reset" class="btn btn-primary pull-right" data-toggle="modal" data-target="#passwordModal{{$index}}">Change Password</button>
+              <div class="col-md-12">
+               <div id="passwordModal" class="modal fadeoutModal">
+                  <div class="modal-content">
+                        <h4>Set new password</h4>
+                        <div data-ng-repeat="alert in ctrl.alerts" class="fadeout2 alert alert-{{alert.type}}" role="alert" data-ng-class="{'off': error==false}">{{alert.msg}}</div>
+                        <div id="setNewPassword" class="input-group">
+                           <span class="input-group-addon">
+                           <i class="fa fa-key fa-fw"></i>
+                           </span>
+                           <input class="form-control" type="password" placeholder="Old Password" name="j_password" data-ng-model="oldPassword" required>
+                        </div>
+                        <div id="setNewPassword" class="input-group">
+                           <span class="input-group-addon">
+                           <i class="fa fa-key fa-fw"></i>
+                           </span>
+                           <input class="form-control" type="password" placeholder="New Password" data-ng-model="newPassword" name="new_password" pattern="(?=^.{4,28}$)^[a-zA-Z0-9._@&$#!?-]+$" required>
+                        </div>
+                        <span class="help-block small">
+                        Length: min 4, max 28
+                        <br> Valid chars: a-z A-Z 0-9 &#46; &#95; &#64; &amp; &#36; &#35; &#33; &#63; &#45; (no white space)
+                        </span>
+                        <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button>
+                        <button type="submit" id="prova" class="btn btn-success" data-ng-disabled="renewForm.new_password.$invalid">Confirm</button>
+                     </form>
                   </div>
-                  <div id="setNewPassword" class="input-group">
-                     <span class="input-group-addon">
-                     <i class="fa fa-key fa-fw"></i>
-                     </span>
-                     <input class="form-control" type="password" placeholder="New Password" data-ng-model="newPassword" name="new_password" pattern="(?=^.{4,28}$)^[a-zA-Z0-9._@&$#!?-]+$" required>
-                  </div>
-                  <span class="help-block small">
-                  Length: min 4, max 28
-                  <br> Valid chars: a-z A-Z 0-9 &#46; &#95; &#64; &amp; &#36; &#35; &#33; &#63; &#45; (no white space)
-                  </span>
-                  <button type="button" class="btn" data-dismiss="modal">Back</button>
-                  <button type="submit" id="prova" class="btn btn-success" data-ng-disabled="renewForm.new_password.$invalid">Confirm</button>
-               </form>
+               </div>
             </div>
          </div>
       </div>
+      <!-- Prova Style -->
+
    </div>
 </div>

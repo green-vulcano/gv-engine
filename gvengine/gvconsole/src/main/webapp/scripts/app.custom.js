@@ -166,15 +166,6 @@ angular.element(document).ready(function() {
       angular.element('.side-body').toggleClass('body-slide-in');
   });
 });
-function resetFunction() {
-document.getElementById("testingForm").reset();
-};
-function resetFunctionDeploy() {
-document.getElementById("deployForm").reset();
-};
-function resetFunctionPassword() {
-document.getElementById("passwordForm").reset();
-};
 function slideButtonMenu(){
 	var width = angular.element(window).width();
 	if(width <= 768){

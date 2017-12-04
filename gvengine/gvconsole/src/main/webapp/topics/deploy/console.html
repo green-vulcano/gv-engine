@@ -23,7 +23,44 @@
                      src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
                   <a id="export" data-ng-hide="exportInProgress" data-ng-click="ctrl.exportConfig()" class="btn btn-primary"><i class="fa fa-download"></i> Export</a>
                   <button type="button" class="btn btn-default" data-ng-click="ctrl.reloadConfig()"><i class="fa fa-refresh" aria-hidden="true"></i></button>
-                  <button onClick="resetFunctionDeploy();" type="button" class="btn btn-default" data-toggle="modal" data-target="#addModal{{$index}}"><i class="fa fa-plus"></i></button>
+                  <form id="deployForm" name="deployForm" class="form-horizontal" data-ng-submit="ctrl.addConfig()" style="display: inline">
+                  <button type="reset" class="btn btn-default" data-toggle="modal" data-target="#addModal{{$index}}"><i class="fa fa-plus"></i></button>
+                  <div id="addModal{{$index}}" class="modal fadeout2">
+                     <div class="modal-content">
+                        <h3> Add new Configuration</h3>
+                        <div id="fadeout" data-ng-repeat="alert in ctrl.alertsAdd" class="fadeout alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
+
+                           <fieldset id="myFieldset">
+                              <div class="form-group">
+                                 <div class="col-sm-8 col-sm-offset-2">
+                                    <input id="configid" name="configid" type="text" class="form-control"
+                                       placeholder="Configuration ID" pattern="(?=^.{1,64}$)^[a-zA-Z0-9._-]+$"
+                                       data-ng-maxlength="64" data-ng-model="ctrl.deploy.id" required>
+                                 </div>
+                               </div>
+                               <div class="form-group">
+                                 <div class="col-sm-8 col-sm-offset-2">
+                                    <input id="descriptfile" maxlength="64" name="desciptfile" type="text" class="form-control" placeholder="Description Configuration" data-ng-model="ctrl.history.description">
+                                    <span class="help-block small pull-left">
+                                      Small description of configuration max. 64 characters.
+                                    </span>
+                                 </div>
+                               </div>
+                              <div class="form-group">
+                                 <div class="col-sm-8 col-sm-offset-2">
+                                    <input id="configfile" name="configfile" type="file"
+                                       accept="application/zip" file-model="ctrl.deploy.configfile" required>
+                                 </div>
+                              </div>
+                              <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button>
+                              <button type="submit" class="btn btn-success"
+                                 data-ng-hide="downloadInProgress"
+                                 data-ng-disabled="deployForm.$invalid || !(ctrl.deploy.configfile)">
+                              <i class="fa fa-plus"></i> Add</button>
+                           </fieldset>
+                        </form>
+                     </div>
+                  </div>
                </div>
             </div>
             <table id="users" class="table table-hover">
@@ -55,43 +92,7 @@
                </tbody>
             </table>
             <div style="margin:10px" class="alert alert-warning" data-ng-hide="ctrl.history.length">No previously configuration found!</div>
-            <div id="addModal{{$index}}" class="modal fadeout2">
-               <div class="modal-content">
-                  <h3> Add new Configuration</h3>
-                  <div id="fadeout" data-ng-repeat="alert in ctrl.alertsAdd" class="fadeout alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
-                  <form id="deployForm" name="deployForm" class="form-horizontal"
-                     data-ng-submit="ctrl.addConfig()" >
-                     <fieldset id="myFieldset">
-                        <div class="form-group">
-                           <div class="col-sm-8 col-sm-offset-2">
-                              <input id="configid" name="configid" type="text" class="form-control"
-                                 placeholder="Configuration ID" pattern="(?=^.{1,64}$)^[a-zA-Z0-9._-]+$"
-                                 data-ng-maxlength="64" data-ng-model="ctrl.deploy.id" required>
-                           </div>
-                         </div>
-                         <div class="form-group">
-                           <div class="col-sm-8 col-sm-offset-2">
-                              <input id="descriptfile" maxlength="64" name="desciptfile" type="text" class="form-control" placeholder="Description Configuration" data-ng-model="ctrl.history.description">
-                              <span class="help-block small pull-left">
-                                Small description of configuration max. 64 characters.
-                              </span>
-                           </div>
-                         </div>
-                        <div class="form-group">
-                           <div class="col-sm-8 col-sm-offset-2">
-                              <input id="configfile" name="configfile" type="file"
-                                 accept="application/zip" file-model="ctrl.deploy.configfile" required>
-                           </div>
-                        </div>
-                        <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button>
-                        <button type="submit" class="btn btn-success"
-                           data-ng-hide="downloadInProgress"
-                           data-ng-disabled="deployForm.$invalid || !(ctrl.deploy.configfile)">
-                        <i class="fa fa-plus"></i> Add</button>
-                     </fieldset>
-                  </form>
-               </div>
-            </div>
+
          </div>
          <div class="panel panel-default" >
             <div id="panelHead" class="panel-heading">
