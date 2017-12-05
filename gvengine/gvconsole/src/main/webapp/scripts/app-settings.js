@@ -36,53 +36,53 @@ angular.module('gvconsole')
                 $scope.alerts.push({type: 'danger', msg: 'Data not available'});
                 break;
               }
-          });
-
-
-	/*
-	 * Scegliere come prendere i valori:
-	 * 1) Prenderli tramite i forms(non tutti) e i rimanenti tramite angular.
-	 * 2) Prenderli tutti tramite angular .
-	 * 3) Modificare la sezione e far un form unico per nodo.
-	 */
- $scope.sendCryptoHelper = function(){
-
-	 $scope.cryptoHelper = {
-
-
-		 type: angular.element("#CryptoHelperType").val(),
-		 name: angular.element("#CryptoHelperName").val(),
-		 description: angular.element("#CryptoHelperDescription").val(),
-		 keyStoreFolder: angular.element("#CryptoHelperKeyStoreFolder").val(),
-		 KeyStoreID: {
-
-			 id: angular.element("#KeyStoreIDID").val()
-
-		 }
-	 };
- }
-
- $scope.addKeyStoreID = function(){
-	 cryptoHelper.KeyStoreID.push({id: angular.element("#KeyStoreIDID").val()});
- }
-
-
- /* Mettere i seguenti controlli:
-  *
-  * GreenVulcanoPool[(@maximum-size > 0 ) and
-  * (@initial-size > @maximum-size)]}} initial-size > maximum-size
-  *
-  *
-  * GreenVulcanoPool[(@maximum-creation > 0) and
-  * (@maximum-size > @maximum-creation)]}} maximum-size > maximum-creation
-  *
-  *
-  * ExtendedData[count(//ExtendedData[@system=current()/@system and
-  * @service=current()/@service]) > 1]}} Attenzione: coppia sistema-servizio duplicata
-  *
-  *
-  *
-  * */
+   });
 
 
 }]);
+
+
+angular.module('gvconsole')
+.controller('SettingsForm',['SettingsService', '$routeParams', '$scope', function(SettingsService, $routeParams, $scope){
+	
+	$scope.subsystem = $routeParams.settingId;
+	
+	var i = 0;
+	
+	SettingsService.getAll().then(
+	        function(response) {
+	          var settings = response.data;
+
+	          $scope.poolSettings = angular.isArray(settings.GVConfig.GVPoolManager.GreenVulcanoPool) ?
+	                                settings.GVConfig.GVPoolManager.GreenVulcanoPool :
+	                                [settings.GVConfig.GVPoolManager.GreenVulcanoPool];
+	          
+	          for(i=0; $scope.poolSettings[i].subsystem!=null; i++ ){
+	      		if($scope.poolSettings[i].subsystem == $scope.subsystem){
+	      			$scope.initial_size = $scope.poolSettings[i]['initial-size'];
+	      			$scope.maximum_size = $scope.poolSettings[i]['maximum-size'];
+	      			$scope.maximum_creation = $scope.poolSettings[i]['maximum-creation'];
+	      			$scope.default_timeout = $scope.poolSettings[i]['default-timeout'];
+	      			$scope.shrink_timeout = $scope.poolSettings[i]['shrink-timeout'];
+	      			break;
+	      		}
+	      	}
+	        
+	          $scope.alerts = [];
+	        },
+	        function(response){
+	          switch (response.status) {
+
+	              case 401: case 403:
+	                $location.path('login');
+	                break;
+
+	              default:
+	                $scope.alerts.push({type: 'danger', msg: 'Data not available'});
+	                break;
+	              }
+	   });
+	
+	
+}]);	
+
