@@ -8,8 +8,8 @@
                <i class="fa fa-list" aria-hidden="true"></i>
                Scheduler Form
             </div>
+            <form name="taskForm" data-ng-submit="taskForm.$valid && save()" novalidate>
             <div class="panel-body container-fluid">
-               <form name="taskForm" data-ng-submit="taskForm.$valid && save()" novalidate>
                   <div>
                      <label id="labelLeft" class="col-sm-3 control-label">Cron Expression</label>
                      <div class="col-sm-8"><input type="text" id="cronExpression" name="cronExpression" class="form-control" ng-model="schedule.cronExpression" required></div>
@@ -74,7 +74,7 @@
                   <div class="form-group clearfix">
                      <div class="col-sm-4"><input type="text" class="form-control" ng-model="key" placeholder="key"></div>
                      <div class="col-sm-4"><input type="text" class="form-control" ng-model="value" placeholder="value"></div>
-                     <button id="fabuttonplus" class="btn btn-default" ng-click="addParameter()"><i class="fa fa-plus"></i></button>
+                     <button id="fabuttonplus" type="button" class="btn btn-default" ng-click="addParameter()"><i class="fa fa-plus"></i></button>
                   </div>
                   <div ng-repeat="(key,param) in schedule.properties">
                      <div class="form-group clearfix">
