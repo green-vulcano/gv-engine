@@ -6,7 +6,7 @@
     <parent>
 	    <artifactId>gvengine</artifactId>
 	    <groupId>it.greenvulcano.gvesb</groupId>
-	    <version>4.0.alpha1</version>
+	    <version>4.0.alpha2-SNAPSHOT</version>
     </parent>
 
     <artifactId>gvscheduler</artifactId>
