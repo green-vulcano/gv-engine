@@ -2,7 +2,7 @@ angular.module('gvconsole')
  .service('SettingsService', ['ENDPOINTS', '$http', function(Endpoints, $http){
 
        this.getAll = function() {
-         return $http.get(Endpoints.gvconfig + '/settings');
+         return $http.get(Endpoints.gvconfig + '/settings/',{headers:{'Content-Type':'application/json'}});
        }
 
        this.get = function(name) {
@@ -17,7 +17,12 @@ angular.module('gvconsole')
 
   SettingsService.getAll().then(
         function(response) {
-          $scope.settings = response.data;
+          var settings = response.data;
+
+          $scope.poolSettings = angular.isArray(settings.GVConfig.GVPoolManager.GreenVulcanoPool) ?
+                                settings.GVConfig.GVPoolManager.GreenVulcanoPool :
+                                [settings.GVConfig.GVPoolManager.GreenVulcanoPool];
+        
           $scope.alerts = [];
         },
         function(response){

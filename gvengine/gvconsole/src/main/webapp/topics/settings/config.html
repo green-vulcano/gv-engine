@@ -1,9 +1,8 @@
 <div class="container-fluid">
   <div class="side-body">
-  <h1> Configuration XML </h1>
 
     <div class="container row" data-ng-controller="SettingsController">
-
+      <h1> Settings XML </h1>
 <!-- ***********************   GVCryptoHelper   **************************** -->
 
 	<form id="formCryptoHelper" data-ng-hide="true">
@@ -105,8 +104,7 @@
         <div id="panelHead"  class="panel-heading"><i class="fa fa-code"></i> GVPoolManagers</i>
         </div>
         <div class="panel-body container-fluid" id="contentPoolManager">
-
-          <div class="form-group clearfix" data-ng-repeat="pool in settings.GVConfig.GVPoolManager.GreenVulcanoPool">
+          <div class="form-group clearfix" data-ng-repeat="pool in poolSettings">
             <fieldset class="col-md-11 fieldset-xmlconfig">
               <legend>{{pool.subsystem}}</legend>
               <div class="panel panel-default">
