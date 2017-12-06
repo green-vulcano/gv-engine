@@ -1,5 +1,26 @@
 angular.module('gvconsole')
  .service('SettingsService', ['ENDPOINTS', '$http', function(Endpoints, $http){
+	 
+	 var gvPoolObject;
+	 
+	 this.setObject = function(Subsystem,Initial_size,Maximum_size,Maximum_creation,Default_timeout,Shrink_timeout){
+	  
+		 	gvPoolObject = {
+				 
+				subsystem: Subsystem,
+				initial_size: Initial_size,
+				maximum_size: Maximum_size,
+				maximum_creation: Maximum_creation,
+				default_timeout: Default_timeout,
+				shrink_timeout: Shrink_timeout
+				 
+		 };
+		 
+	 };
+	 
+	 this.getObject = function(){
+		 return gvPoolObject;
+	 }
 
        this.getAll = function() {
          return $http.get(Endpoints.gvconfig + '/settings/',{headers:{'Content-Type':'application/json'}});
@@ -37,6 +58,10 @@ angular.module('gvconsole')
                 break;
               }
    });
+  
+  $scope.passData = function(subsystem,initial_size,maximum_size,maximum_creation,default_timeout,shrink_timeout){
+	  SettingsService.setObject(subsystem,initial_size,maximum_size,maximum_creation,default_timeout,shrink_timeout);
+  }
 
 
 }]);
@@ -47,41 +72,13 @@ angular.module('gvconsole')
 	
 	$scope.subsystem = $routeParams.settingId;
 	
-	var i = 0;
+	var object = SettingsService.getObject();
 	
-	SettingsService.getAll().then(
-	        function(response) {
-	          var settings = response.data;
-
-	          $scope.poolSettings = angular.isArray(settings.GVConfig.GVPoolManager.GreenVulcanoPool) ?
-	                                settings.GVConfig.GVPoolManager.GreenVulcanoPool :
-	                                [settings.GVConfig.GVPoolManager.GreenVulcanoPool];
-	          
-	          for(i=0; $scope.poolSettings[i].subsystem!=null; i++ ){
-	      		if($scope.poolSettings[i].subsystem == $scope.subsystem){
-	      			$scope.initial_size = $scope.poolSettings[i]['initial-size'];
-	      			$scope.maximum_size = $scope.poolSettings[i]['maximum-size'];
-	      			$scope.maximum_creation = $scope.poolSettings[i]['maximum-creation'];
-	      			$scope.default_timeout = $scope.poolSettings[i]['default-timeout'];
-	      			$scope.shrink_timeout = $scope.poolSettings[i]['shrink-timeout'];
-	      			break;
-	      		}
-	      	}
-	        
-	          $scope.alerts = [];
-	        },
-	        function(response){
-	          switch (response.status) {
-
-	              case 401: case 403:
-	                $location.path('login');
-	                break;
-
-	              default:
-	                $scope.alerts.push({type: 'danger', msg: 'Data not available'});
-	                break;
-	              }
-	   });
+	$scope.initial_size = object.initial_size;
+	$scope.maximum_size = object.maximum_size;
+	$scope.maximum_creation = object.maximum_creation;
+	$scope.default_timeout = object.default_timeout;
+	$scope.shrink_timeout = object.shrink_timeout;
 	
 	
 }]);	

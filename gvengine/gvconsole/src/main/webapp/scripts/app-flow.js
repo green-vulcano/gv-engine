@@ -72,8 +72,12 @@ angular.module('gvconsole')
     $scope.removeParameter=function(key){
   		 delete $scope.service.properties[key];
   	};
+  	
+  	$scope.flag = true;
 
     $scope.run = function(){
+    	
+    	$scope.flag = false;
 
 	      var auth;
 	      if($scope.username && $scope.password){
@@ -85,10 +89,14 @@ angular.module('gvconsole')
 	                 .then(function(response){
 
 				    	  $scope.output = response.data;
+				    	  
+				    	  $scope.flag = true;
 
 				      }, function(response){
 
 				    	  $scope.output = response.data;
+				    	  
+				    	  $scope.flag = true;
 
 				      });
     }

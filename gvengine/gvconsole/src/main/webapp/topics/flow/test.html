@@ -59,7 +59,9 @@
                      <div id="btnspace" >
                         <button class="btn btn-danger pull-left reset" value="Reset" type="reset">
                         <i class="fa fa-ban" aria-hidden="true"></i> Reset</button>
-                        <button type="submit" class="btn btn-primary pull-right" data-ng-click="run()">
+                        <button type="submit" class="btn btn-primary pull-right" data-ng-click="run()" data-ng-show="flag == true">
+                        <i class="fa fa-play-circle" aria-hidden="true"></i> Run</button>
+                        <button type="submit" class="btn btn-primary pull-right" data-ng-click="run()" data-ng-show="flag == false" disabled>
                         <i class="fa fa-play-circle" aria-hidden="true"></i> Run</button>
                      </div>
                   </div>

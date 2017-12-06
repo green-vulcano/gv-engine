@@ -31,7 +31,9 @@
                      <td class="col-sm-2">{{pool['default-timeout']}}</td>
                      <td class="col-sm-2">{{pool['shrink-timeout']}}</td>
                      <td class="col-sm-2 text-right">
-                     <button onClick="slide();" class="btn btn-warning" data-ng-click="go('/settings/' + pool.subsystem)"><i class="fa fa-pencil"></i></button>
+                     <button onClick="slide();" class="btn btn-warning" 
+                     data-ng-click="passData(pool.subsystem,pool['initial-size'],pool['maximum-size'],pool['maximum-creation'],pool['default-timeout'],pool['shrink-timeout']); go('/settings/' + pool.subsystem)">
+                     <i class="fa fa-pencil"></i></button>
                      </td>
                   </tr>
                </tbody>
