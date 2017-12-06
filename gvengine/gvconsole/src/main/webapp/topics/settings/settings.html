@@ -9,6 +9,8 @@
 	<form id="formPoolManager">
       <div class="panel panel-default" style="overflow-x:auto;">
         <div id="panelHead"  class="panel-heading"><i class="fa fa-code"></i> GVPoolManagers
+          <a href="#/settings/new" data-ng-click="slide();" class="btn btn-primary pull-right">
+             <i class="fa fa-plus"></i></a>
         </div>
 	    <table id="gvPoolManager" class="table table-hover" style="margin-bottom:0px">
                <thead>
@@ -31,15 +33,20 @@
                      <td class="col-sm-2">{{pool['default-timeout']}}</td>
                      <td class="col-sm-2">{{pool['shrink-timeout']}}</td>
                      <td class="col-sm-2 text-right">
+<<<<<<< HEAD
                      <button onClick="slide();" class="btn btn-warning" 
                      data-ng-click="passData(pool.subsystem,pool['initial-size'],pool['maximum-size'],pool['maximum-creation'],pool['default-timeout'],pool['shrink-timeout']); go('/settings/' + pool.subsystem)">
                      <i class="fa fa-pencil"></i></button>
+=======
+                       <button onClick="slide();" class="btn btn-warning"
+                      data-ng-click="passData(pool.subsystem,pool['initial-size'],pool['maximum-size'],pool['maximum-creation'],pool['default-timeout'],pool['shrink-timeout']); go('/settings/' + pool.subsystem)">
+                      <i class="fa fa-pencil"></i></button>
+>>>>>>> 24617790f876f8d7c8acb4cbbae3cb552b3e682e
                      </td>
                   </tr>
                </tbody>
             </table>
       </div>
  	</form>
-    </div>
   </div>
 </div>
