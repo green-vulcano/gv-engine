@@ -25,6 +25,11 @@ import it.greenvulcano.util.txt.TextUtils;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
+import javax.script.CompiledScript;
 
 /**
  * Perform a script file cache.
@@ -59,7 +64,9 @@ public final class ScriptCache
      * Script file map.
      */
     private HashMap<String, String> scriptMap        = new HashMap<String, String>();
-
+    
+    private final ConcurrentMap<String, CompiledScript> compiledScripts = new ConcurrentHashMap<>();
+   
     static {
         try {
             basePath = PropertiesHandler.expand("sp{{gv.app.home}}" + File.separator + "scripts");
@@ -146,12 +153,21 @@ public final class ScriptCache
         }
         return script;
     }
+    
+    public void putCompiledScript(String key, CompiledScript compiledScript) {
+    	compiledScripts.putIfAbsent(key, compiledScript);
+    }
+    
+    public Optional<CompiledScript> getCompiledScript(String key) {
+    	return Optional.ofNullable(compiledScripts.get(key));
+    }
 
     /**
      * Called by BaseContextManager on configuration reload.
      */
     public synchronized void clearCache() {
         scriptMap.clear();
+        compiledScripts.clear();
     }
 
     /**
