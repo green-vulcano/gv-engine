@@ -2,6 +2,12 @@ html {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size:  24px;
 }
+input[type=number]::-webkit-inner-spin-button {
+  opacity: 1;
+}
+input[type=number]::-moz-inner-spin-button {
+  opacity: 1;
+}
 #crossClose {
   color: #bdbdbd
 }

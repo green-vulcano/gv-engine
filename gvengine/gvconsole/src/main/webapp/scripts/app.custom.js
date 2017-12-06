@@ -42,7 +42,10 @@ angular.module('gvconsole', ['ngCookies','ngRoute','angular-quartz-cron', 'ui.bo
 				templateUrl: 'topics/properties/properties.html'
 			}).
 			when('/settings', {
-				templateUrl: 'topics/settings/config.html'
+				templateUrl: 'topics/settings/settings.html'
+			}).
+			when('/settings/:settingId', {
+				templateUrl: 'topics/settings/gvPoolManager.html'
 			}).
 			when('/tools', {
 				templateUrl: 'topics/tools/tools.html'

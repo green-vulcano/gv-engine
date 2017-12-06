@@ -1,0 +1,72 @@
+<div class="container-fluid">
+   <div class="side-body">
+   	<div class="container row" data-ng-controller="SettingsForm as ctrl">
+   	 <h1>Form GVPoolManager</h1>
+   	 <form name="gvPoolManagerForm" data-ng-submit="gvPoolManagerForm.$valid && ctrl.saveForm()">
+   	 <div class="panel panel-default">
+   	 	<div class="panel-heading"><i class="fa fa-list" aria-hidden="true"></i> GVPoolManager Form</div>
+   	 	<div class="panel-body">
+   	 		<div class="panel-body container-fluid">
+   	 		<div class="form-group">
+              <label id="labelLeft" class="col-sm-3 control-label">Name</label>
+              <div class="col-sm-4">
+                <input id="name" class="form-control " name="name" type="text" data-ng-model="subsystem" required>
+   	 		  </div>
+   	 		</div>
+   	 		</div>
+   	 		  <div class="panel-body container-fluid">
+	 		<div class="form-group">
+	 		  <label id="labelLeft" class="col-sm-3 control-label">Initial-size</label>
+           	  <div class="col-sm-4">
+             <input type="number" data-ng-model="initial_size" min="1" max="{{maximum_size}}" class="text-right form-control" required>
+	 		  </div>
+	 		  </div>
+	 		</div>
+	 		<div class="panel-body container-fluid">
+   	 		<div class="form-group">
+   	 			<label id="labelLeft" class="col-sm-3 control-label">maximum-size</label>
+   	 			<div class="col-sm-4">
+   	 				<input type="number" class="text-right form-control" data-ng-model="maximum_size">
+   	 			</div>
+   	 		</div>
+   	 		</div>
+   	 		<div class="panel-body container-fluid">
+   	 		<div class="form-group">
+   	 			<label id="labelLeft" class="col-sm-3 control-label">maximum-creation</label>
+   	 			<div class="col-sm-4">
+   	 				<input type="number" class="text-right form-control" data-ng-model="maximum_creation" max="{{maximum_size}}">
+   	 			</div>
+   	 		</div>
+   	 		</div>
+   	 		<div class="panel-body container-fluid">
+   	 		<div class="form-group">
+   	 			<label id="labelLeft" class="col-sm-3 control-label">default-timeout(ms)</label>
+   	 			<div class="col-sm-4">
+   	 				<input class="text-right form-control" data-ng-model="default_timeout">
+   	 			</div>
+   	 		</div>
+   	 		</div>
+   	 		<div class="panel-body container-fluid">
+   	 		<div class="form-group">
+   	 			<label id="labelLeft" class="col-sm-3 control-label">shrink-timeout(ms)</label>
+   	 			<div class="col-sm-4">
+   	 				<input class="text-right form-control" data-ng-model="shrink_timeout">
+   	 			</div>
+   	 		</div>
+   	 		</div>
+   	 	</div>
+      <div class="panel-footer">
+      <div class="row">
+      <div class="form-group">
+      <div>
+        <button type="button" class="btn btn-default pull-left" data-ng-click="go('settings')"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button>
+        <button type="submit" class="btn btn-primary pull-right" data-ng-click=""><i class="fa fa-floppy-o" aria-hidden="true"></i> Save</button>
+      </div>
+      </div>
+      </div>
+      </div>
+   	 </div>
+   	 </form>
+   	</div>
+   </div>
+</div>

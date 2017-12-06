@@ -1,8 +1,29 @@
 angular.module('gvconsole')
  .service('SettingsService', ['ENDPOINTS', '$http', function(Endpoints, $http){
+	 
+	 var gvPoolObject;
+	 
+	 this.setObject = function(Subsystem,Initial_size,Maximum_size,Maximum_creation,Default_timeout,Shrink_timeout){
+	  
+		 	gvPoolObject = {
+				 
+				subsystem: Subsystem,
+				initial_size: Initial_size,
+				maximum_size: Maximum_size,
+				maximum_creation: Maximum_creation,
+				default_timeout: Default_timeout,
+				shrink_timeout: Shrink_timeout
+				 
+		 };
+		 
+	 };
+	 
+	 this.getObject = function(){
+		 return gvPoolObject;
+	 }
 
        this.getAll = function() {
-         return $http.get(Endpoints.gvconfig + '/settings');
+         return $http.get(Endpoints.gvconfig + '/settings/',{headers:{'Content-Type':'application/json'}});
        }
 
        this.get = function(name) {
@@ -17,7 +38,12 @@ angular.module('gvconsole')
 
   SettingsService.getAll().then(
         function(response) {
-          $scope.settings = response.data;
+          var settings = response.data;
+
+          $scope.poolSettings = angular.isArray(settings.GVConfig.GVPoolManager.GreenVulcanoPool) ?
+                                settings.GVConfig.GVPoolManager.GreenVulcanoPool :
+                                [settings.GVConfig.GVPoolManager.GreenVulcanoPool];
+        
           $scope.alerts = [];
         },
         function(response){
@@ -31,53 +57,29 @@ angular.module('gvconsole')
                 $scope.alerts.push({type: 'danger', msg: 'Data not available'});
                 break;
               }
-          });
-
-
-	/*
-	 * Scegliere come prendere i valori:
-	 * 1) Prenderli tramite i forms(non tutti) e i rimanenti tramite angular.
-	 * 2) Prenderli tutti tramite angular .
-	 * 3) Modificare la sezione e far un form unico per nodo.
-	 */
- $scope.sendCryptoHelper = function(){
-
-	 $scope.cryptoHelper = {
-
-
-		 type: angular.element("#CryptoHelperType").val(),
-		 name: angular.element("#CryptoHelperName").val(),
-		 description: angular.element("#CryptoHelperDescription").val(),
-		 keyStoreFolder: angular.element("#CryptoHelperKeyStoreFolder").val(),
-		 KeyStoreID: {
-
-			 id: angular.element("#KeyStoreIDID").val()
-
-		 }
-	 };
- }
-
- $scope.addKeyStoreID = function(){
-	 cryptoHelper.KeyStoreID.push({id: angular.element("#KeyStoreIDID").val()});
- }
-
-
- /* Mettere i seguenti controlli:
-  *
-  * GreenVulcanoPool[(@maximum-size > 0 ) and
-  * (@initial-size > @maximum-size)]}} initial-size > maximum-size
-  *
-  *
-  * GreenVulcanoPool[(@maximum-creation > 0) and
-  * (@maximum-size > @maximum-creation)]}} maximum-size > maximum-creation
-  *
-  *
-  * ExtendedData[count(//ExtendedData[@system=current()/@system and
-  * @service=current()/@service]) > 1]}} Attenzione: coppia sistema-servizio duplicata
-  *
-  *
-  *
-  * */
+   });
+  
+  $scope.passData = function(subsystem,initial_size,maximum_size,maximum_creation,default_timeout,shrink_timeout){
+	  SettingsService.setObject(subsystem,initial_size,maximum_size,maximum_creation,default_timeout,shrink_timeout);
+  }
 
 
 }]);
+
+
+angular.module('gvconsole')
+.controller('SettingsForm',['SettingsService', '$routeParams', '$scope', function(SettingsService, $routeParams, $scope){
+	
+	$scope.subsystem = $routeParams.settingId;
+	
+	var object = SettingsService.getObject();
+	
+	$scope.initial_size = object.initial_size;
+	$scope.maximum_size = object.maximum_size;
+	$scope.maximum_creation = object.maximum_creation;
+	$scope.default_timeout = object.default_timeout;
+	$scope.shrink_timeout = object.shrink_timeout;
+	
+	
+}]);	
+
