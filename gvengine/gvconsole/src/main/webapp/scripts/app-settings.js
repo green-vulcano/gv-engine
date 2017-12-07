@@ -1,34 +1,17 @@
 angular.module('gvconsole')
  .service('SettingsService', ['ENDPOINTS', '$http', function(Endpoints, $http){
-	 
-	 var gvPoolObject;
-	 
-	 this.setObject = function(Subsystem,Initial_size,Maximum_size,Maximum_creation,Default_timeout,Shrink_timeout){
-	  
-		 	gvPoolObject = {
-				 
-				subsystem: Subsystem,
-				initial_size: Initial_size,
-				maximum_size: Maximum_size,
-				maximum_creation: Maximum_creation,
-				default_timeout: Default_timeout,
-				shrink_timeout: Shrink_timeout
-				 
-		 };
-		 
-	 };
-	 
-	 this.getObject = function(){
-		 return gvPoolObject;
+
+	 this.getAllSettings = function() {
+		 return $http.get(Endpoints.gvconfig + '/settings/');
 	 }
 
-       this.getAll = function() {
-         return $http.get(Endpoints.gvconfig + '/settings/',{headers:{'Content-Type':'application/json'}});
-       }
-
-       this.get = function(name) {
-         return $http.get(Endpoints.gvconfig + '/settings/'+name);
-       }
+	 this.getSettings = function(group) {
+		 return $http.get(Endpoints.gvconfig + '/settings/'+group);
+	 }
+   
+	 this.mergeSettings = function(group,setting) {
+		 return $http.put(Endpoints.gvconfig + '/settings/'+group, setting, {headers:{'Content-Type':'application/json'}});
+	 }
  }]);
 
 angular.module('gvconsole')
@@ -36,7 +19,7 @@ angular.module('gvconsole')
 
   $scope.alerts = [];
 
-  SettingsService.getAll().then(
+  SettingsService.getAllSettings().then(
         function(response) {
           var settings = response.data;
 
@@ -45,6 +28,7 @@ angular.module('gvconsole')
                                 [settings.GVConfig.GVPoolManager.GreenVulcanoPool];
         
           $scope.alerts = [];
+          
         },
         function(response){
           switch (response.status) {
@@ -57,12 +41,7 @@ angular.module('gvconsole')
                 $scope.alerts.push({type: 'danger', msg: 'Data not available'});
                 break;
               }
-   });
-  
-  $scope.passData = function(subsystem,initial_size,maximum_size,maximum_creation,default_timeout,shrink_timeout){
-	  SettingsService.setObject(subsystem,initial_size,maximum_size,maximum_creation,default_timeout,shrink_timeout);
-  }
-
+    });
 
 }]);
 
@@ -70,16 +49,36 @@ angular.module('gvconsole')
 angular.module('gvconsole')
 .controller('SettingsForm',['SettingsService', '$routeParams', '$scope', function(SettingsService, $routeParams, $scope){
 	
-	$scope.subsystem = $routeParams.settingId;
+	var group;
+	var object;
 	
-	var object = SettingsService.getObject();
-	
-	$scope.initial_size = object.initial_size;
-	$scope.maximum_size = object.maximum_size;
-	$scope.maximum_creation = object.maximum_creation;
-	$scope.default_timeout = object.default_timeout;
-	$scope.shrink_timeout = object.shrink_timeout;
-	
-	
+		//a seconda di quale pulsante clicca nell'html, mi faccio passare una variabile che userò per effettuare la chiamata
+		SettingsService.getSettings('GVPoolManager').then(function(response){
+			
+			group = response.data.GVPoolManager.GreenVulcanoPool;
+			
+			if($routeParams.settingId != "new"){
+				object = group.find(function (o){return o.subsystem==$routeParams.settingId});
+				$scope.subsystem = object['subsystem'];
+				$scope.initial_size = object['initial-size'];
+				$scope.maximum_size = object['maximum-size'];
+				$scope.maximum_creation = object['maximum-creation'];
+				$scope.default_timeout = object['default-timeout'];
+				$scope.shrink_timeout = object['shrink-timeout'];
+			}
+		},function(response){
+			console.log("Error: " + response.data);
+		});
+		
+		object = {
+				
+				'subsystem': $scope.subsystem,
+				'initial-size': $scope.initial_size,
+				'maximum-size': $scope.maximum_size,
+				'maximum-creation': $scope.maximum_creation,
+				'default-timeout': $scope.default_timeout,
+				'shrink-timeout': $scope.shrink_timeout
+			}
+		
 }]);	
 

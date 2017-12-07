@@ -2,7 +2,7 @@
    <div class="side-body">
    	<div class="container row" data-ng-controller="SettingsForm as ctrl">
    	 <h1>Form GVPoolManager</h1>
-   	 <form name="gvPoolManagerForm" data-ng-submit="gvPoolManagerForm.$valid && ctrl.saveForm()">
+   	 <form name="gvPoolManagerForm" data-ng-submit="gvPoolManagerForm.$valid && saveObject()">
    	 <div class="panel panel-default">
    	 	<div class="panel-heading"><i class="fa fa-list" aria-hidden="true"></i> GVPoolManager Form</div>
    	 	<div class="panel-body">
@@ -60,7 +60,7 @@
       <div class="form-group">
       <div>
         <button type="button" class="btn btn-default pull-left" data-ng-click="go('settings')"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button>
-        <button type="submit" class="btn btn-primary pull-right" data-ng-click=""><i class="fa fa-floppy-o" aria-hidden="true"></i> Save</button>
+        <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-floppy-o" aria-hidden="true"></i> Save</button>
       </div>
       </div>
       </div>
