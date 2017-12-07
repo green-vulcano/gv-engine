@@ -116,7 +116,7 @@ public class GvConfigurationControllerRest extends BaseControllerRest {
 			            @Multipart(value="gvconfiguration") Attachment config) {
 		 
 		 File currentConfig = new File(XMLConfig.getBaseConfigPath());
-		 if (id.equals(currentConfig.getName())) {
+		 if (id.equals(currentConfig.getName()) && !id.endsWith("-debug") ) {
 			 throw new WebApplicationException(Response.status(Response.Status.CONFLICT).build());
 		 }
 		 
