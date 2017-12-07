@@ -227,11 +227,11 @@ public class ScriptExecutorTestCase extends BaseTestCase
         for (int j = 0; j < 10; j++) {
             gvb.setProperty("SVC", svc[j % 2]);
             se.putProperty("data", gvb);
-            Object out = se.execute(GVBufferPropertiesHelper.getPropertiesMapSO(gvb, true), gvb);
+            se.execute(GVBufferPropertiesHelper.getPropertiesMapSO(gvb, true), gvb);
             se.cleanUp();
-            System.out.println("testSimpleJython[" + j + "]: " + out.getClass() + " -> " + out);
+            System.out.println("testSimpleJython[" + j + "]: " + se.getProperty("RESULT") + " -> " + se.getProperty("RESULT"));
 
-            assertEquals("testSimpleJython: Failed iteration " + j, out, (j % 2 == 0));            
+            assertEquals("testSimpleJython: Failed iteration " + j, se.getProperty("RESULT"), (j % 2 == 0));            
         }
     }
 
@@ -322,11 +322,11 @@ public class ScriptExecutorTestCase extends BaseTestCase
         for (int j = 0; j < 10; j++) {
             gvb.setProperty("SVC", svc[j % 2]);
             se.putProperty("data", gvb);
-            Object out = se.execute(GVBufferPropertiesHelper.getPropertiesMapSO(gvb, true), gvb);
+            se.execute(GVBufferPropertiesHelper.getPropertiesMapSO(gvb, true), gvb);
             se.cleanUp();
-            System.out.println("testSimpleJython_props[" + j + "]: " + out.getClass() + " -> " + out);
+            System.out.println("testSimpleJython_props[" + j + "]: " + se.getProperty("RESULT").getClass() + " -> " + se.getProperty("RESULT"));
 
-            assertEquals("testSimpleJython_props: Failed iteration " + j, out, (j % 2 == 0));            
+            assertEquals("testSimpleJython_props: Failed iteration " + j, se.getProperty("RESULT"), (j % 2 == 0));            
         }
     }
 
@@ -417,11 +417,12 @@ public class ScriptExecutorTestCase extends BaseTestCase
         for (int j = 0; j < 10; j++) {
             gvb.setProperty("SVC", svc[j % 2]);
             se.putProperty("data", gvb);
-            Object out = se.execute(GVBufferPropertiesHelper.getPropertiesMapSO(gvb, true), gvb);
+            Map<String,Object> data = GVBufferPropertiesHelper.getPropertiesMapSO(gvb, true);
+            se.execute(data, gvb);
+            
+            System.out.println("testSimpleJython_file[" + j + "]: " + se.getProperty("RESULT")+ " -> " + gvb.getProperty("RESULT"));
             se.cleanUp();
-            System.out.println("testSimpleJython_file[" + j + "]: " + out.getClass() + " -> " + out);
-
-            assertEquals("testSimpleJython_file: Failed iteration " + j, out, (j % 2 == 0));            
+            assertEquals("testSimpleJython_file: Failed iteration " + j, se.getProperty("RESULT"), (j % 2 == 0));            
         }
     }
 
@@ -512,11 +513,11 @@ public class ScriptExecutorTestCase extends BaseTestCase
         for (int j = 0; j < 10; j++) {
             gvb.setProperty("SVC", svc[j % 2]);
             se.putProperty("data", gvb);
-            Object out = se.execute(GVBufferPropertiesHelper.getPropertiesMapSO(gvb, true), gvb);
+            se.execute(GVBufferPropertiesHelper.getPropertiesMapSO(gvb, true), gvb);
             se.cleanUp();
-            System.out.println("testSimpleJython_inc_file[" + j + "]: " + out.getClass() + " -> " + out);
+            System.out.println("testSimpleJython_inc_file[" + j + "]: " + se.getProperty("RESULT") + " -> " + se.getProperty("RESULT"));
 
-            assertEquals("testSimpleJython_inc_file: Failed iteration " + j, out, (j % 2 == 0));            
+            assertEquals("testSimpleJython_inc_file: Failed iteration " + j, se.getProperty("RESULT"), (j % 2 == 0));            
         }
     }
 
