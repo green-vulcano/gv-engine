@@ -2,7 +2,7 @@
    <div class="side-body">
    	<div class="container row" data-ng-controller="PoolSettingsFormController">
    	 <h1>Form GVPoolManager</h1>
-   	 <form name="gvPoolManagerForm" data-ng-submit="gvPoolManagerForm.$valid && save()">
+   	 <form name="gvPoolManagerForm" data-ng-submit="gvPoolManagerForm.$valid && !subsystemInConflict && save()">
    	 <div data-ng-repeat="alert in alerts" class="fadeout alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
    	 <div class="panel panel-default">
    	 	<div class="panel-heading"><i class="fa fa-list" aria-hidden="true"></i> GVPoolManager Form</div>
@@ -11,11 +11,19 @@
    	 		<div class="form-group" data-ng-show="currentPoolIndex<0">
               <label id="labelLeft" class="col-sm-3 control-label">Name</label>
               <div class="col-sm-4">
-                <input id="name" class="form-control " name="name" type="text" data-ng-model="currentPool.subsystem" required>
+                <input id="name" class="form-control " name="name" type="text" data-ng-blur="checkSubsytem()" data-ng-model="currentPool.subsystem" required>
+                <p style="margin: 0">
+                   <span data-ng-show="subsystemInConflict"
+                      class="text-warning">
+                   <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                   Susbsystem already configured
+                   </span>
+                   &ensp;
+                </p>
    	 		  </div>
    	 		</div>
    	 		
-   	 		<label data-ng-show="currentPoolIndex>=0">{{currentPool.subsystem}}</label>
+   	 		<h2 data-ng-show="currentPoolIndex>=0">{{currentPool.subsystem}}</h2>
    	 		</div>
    	 		  <div class="panel-body container-fluid">
 	 		<div class="form-group">
