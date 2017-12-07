@@ -23,6 +23,9 @@ import it.greenvulcano.script.util.BaseContextManager;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import javax.script.Bindings;
 import javax.script.ScriptEngine;
@@ -40,12 +43,28 @@ public abstract class ScriptExecutor
 {
     private static Logger                logger          = org.slf4j.LoggerFactory.getLogger(ScriptExecutor.class);
 
-    protected static ScriptEngineManager globalScriptEngineManager      = new ScriptEngineManager(ClassLoader.getSystemClassLoader());
-    protected static ScriptEngineManager localSriptEngineManager      = new ScriptEngineManager(ScriptExecutor.class.getClassLoader());
+    private static ScriptEngineManager globalScriptEngineManager      = new ScriptEngineManager(ClassLoader.getSystemClassLoader());
+    private static ScriptEngineManager localSriptEngineManager      = new ScriptEngineManager(ScriptExecutor.class.getClassLoader());
 
     protected String                     lang            = null;
     protected String                     scriptName      = null;
 
+    
+    private final static ConcurrentMap<String, ScriptEngine> engines = new ConcurrentHashMap<>();
+    
+    
+    protected static ScriptEngine getScriptEngine(String lang) {
+    	
+    	if (!engines.containsKey(lang)) {
+    		ScriptEngine engine = Optional.ofNullable(localSriptEngineManager.getEngineByName(lang)).orElseGet(()->globalScriptEngineManager.getEngineByName(lang));
+    		engines.putIfAbsent(lang, engine);
+    		
+    		return engine;
+    	}    	
+    	
+    	return engines.get(lang);
+    }
+      
     /**
      * 
      */
