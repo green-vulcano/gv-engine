@@ -43,6 +43,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -54,6 +55,7 @@ import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.apache.cxf.rs.security.cors.CrossOriginResourceSharing;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
 import org.slf4j.Logger;
@@ -487,20 +489,45 @@ public class GvConfigurationControllerRest extends BaseControllerRest {
 		
 	 }
 	 
-	 @PUT
+	 @POST
 	 @Path("/property")
 	 @Consumes(MediaType.APPLICATION_JSON)
 	 @RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
-	 public void setProperties(String properties) {
+	 public void createProperties(String properties) {
 		 try {
 			 JSONObject configJson = new JSONObject(properties);
 			 Properties configProperties = new Properties();
 			 
-			 configProperties.putAll(configJson.toMap());
-			 
-			 //configJson.keySet().stream().filter(k-> !configJson.isNull(k)).forEach(k -> configProperties.put(k, configJson.get(k)));
+			 configJson.keySet().stream().filter(k-> !configJson.isNull(k)).forEach(k -> configProperties.put(k, configJson.get(k).toString()));			 		 		 
 			 
 			 gvConfigurationManager.saveXMLConfigProperties(configProperties);
+		 
+		 } catch (JSONException e) {
+			 throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).build());
+		
+		 } catch (Exception e) {
+			 LOG.error("Failed to update XMLConfigProperties ",e);
+			 throw new WebApplicationException(Response.status(Response.Status.SERVICE_UNAVAILABLE).build());
+		}
+	 }
+	 
+	 @PUT
+	 @Path("/property")
+	 @Consumes(MediaType.APPLICATION_JSON)
+	 @RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
+	 public void updateProperties(String properties) {
+		 try {
+			 JSONObject configJson = new JSONObject(properties);
+			 
+			 Properties configProperties = new Properties();			 
+			 configProperties.putAll(gvConfigurationManager.getXMLConfigProperties());
+			 			 
+			 configJson.keySet().stream().filter(k-> !configJson.isNull(k)).forEach(k -> configProperties.put(k, configJson.get(k).toString()));			 		 		 
+			 
+			 gvConfigurationManager.saveXMLConfigProperties(configProperties);
+		 
+		 } catch (JSONException e) {
+			 throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).build());
 		 } catch (Exception e) {
 			 LOG.error("Failed to update XMLConfigProperties ",e);
 			 throw new WebApplicationException(Response.status(Response.Status.SERVICE_UNAVAILABLE).build());
