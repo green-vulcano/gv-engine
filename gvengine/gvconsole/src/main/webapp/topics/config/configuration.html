@@ -36,7 +36,7 @@
                      <div class="col-sm-6">
                         <div data-ng-repeat="group in groups">
                            <div data-ng-repeat="service in serviceByGroup[group]" id="{{service.idService}}" class="panel panel-default collapse" style="margin-top:10px">
-                              <div class="panel-body">
+                              <div class="panel-body" style="overflow-x: auto">
                                  <!-- <i id="crossClose" class="fa fa-times pull-right Clickable" ng-click="OpenServiceDet=!OpenServiceDet" aria-hidden="true" data-toggle="collapse" data-target="#{{service.idService}}"></i> -->
                                  <h3>{{group}}/{{service.idService}}</h3>
                                  <ul>
