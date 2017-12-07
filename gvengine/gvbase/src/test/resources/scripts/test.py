@@ -1,3 +1,5 @@
-services = {"LIST_EXCEL":"1", "LIST_PDF":"1", "LIST_BIRT":"1"}
-svc = data.getProperty("SVC")
-RESULT = "1" == services.get(svc, "0")
+def gvtest( p ):
+    services = {"LIST_EXCEL":"1", "LIST_PDF":"1", "LIST_BIRT":"1"}   
+    return "1" == services.get(p, "0")
+
+RESULT = gvtest(data.getProperty("SVC"))

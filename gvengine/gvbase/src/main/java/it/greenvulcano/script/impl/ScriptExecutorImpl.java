@@ -270,18 +270,14 @@ public class ScriptExecutorImpl extends ScriptExecutor
      */
     public Object execute(Map<String, Object> properties, Object object) throws GVScriptException {
         isInitialized();
-
+       
         long start = System.currentTimeMillis();
-        
         String localScript = script;
         try {
-            if (compScript != null) {
+            if (compScript != null) {           	
                          	
-                Object res = compScript.eval(bindings);
-                
-                if (res == null && bindings.containsKey("RESULT")) {                	
-                    res = bindings.get("RESULT");                  
-                }
+                Object res = compScript.eval(bindings);                                      
+                  
                 logger.debug("Engine[" + lang +"]  compiled script " +name
                 		+ " execution time [" +(System.currentTimeMillis()-start) + "] "+ " bindings size: " + bindings.size()
                 				+ " - result: " + res);
@@ -297,13 +293,10 @@ public class ScriptExecutorImpl extends ScriptExecutor
                 finally {
                     PropertiesHandler.disableExceptionOnErrors();
                 }
-            }
+            }           
            
             Object res = getScriptEngine(lang).eval(localScript, bindings);
-           
-            if (res == null && bindings.containsKey("RESULT")) {
-                res = bindings.get("RESULT");                
-            }
+             
             logger.debug("Engine[" + lang +"]  script "+name
             		+ " execution time [" +(System.currentTimeMillis()-start) + "] "+ " bindings size: " + bindings.size()
             				+ " - result: " + res);
@@ -339,10 +332,7 @@ public class ScriptExecutorImpl extends ScriptExecutor
             if (compScript != null) {
                
                 Object res = compScript.eval(bindings);
-              
-                if (res == null && bindings.containsKey("RESULT")) {
-                    res = bindings.get("RESULT");                    
-                }
+
                 logger.debug("Engine[" + lang +"]  compiled script " +name
                 		+ " execution time [" +(System.currentTimeMillis()-start) + "] " + " bindings size: " + bindings.size()
                 		+ " - result: " + res);
@@ -361,10 +351,7 @@ public class ScriptExecutorImpl extends ScriptExecutor
             }
             
             Object res = getScriptEngine(lang).eval(localScript, bindings);
-            
-            if (res == null && bindings.containsKey("RESULT")) {
-                res = bindings.get("RESULT");                
-            }
+
             logger.debug("Engine[" + lang +"]  script "+name
             		+ " execution time [" +(System.currentTimeMillis()-start) + "] "
             				+ " - result: " + res);

@@ -19,7 +19,7 @@
                <div class="pull-right">
                   <img data-ng-show="exportInProgress"
                      src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
-                  <a id="export" data-ng-hide="exportInProgress" data-ng-click="ctrl.exportConfig()" class="btn btn-primary"><i class="fa fa-download"></i> Export</a>
+                  <a id="export" data-ng-hide="exportInProgress" data-ng-click="ctrl.exportConfig()" class="btn btn-primary"><i class="fa fa-download"></i></a>
                   <button type="button" class="btn btn-default" data-ng-click="ctrl.reloadConfig()"><i class="fa fa-refresh" aria-hidden="true"></i></button>
                   <form id="deployForm" name="deployForm" class="form-horizontal" data-ng-submit="ctrl.addConfig()" style="display: inline">
                   <button type="reset" class="btn btn-default" data-toggle="modal" data-target="#addModal{{$index}}"><i class="fa fa-plus"></i></button>
@@ -61,6 +61,7 @@
                   </div>
                </div>
             </div>
+            <div style="overflow:auto">
             <table id="users" class="table table-hover">
                <thead>
                   <tr>
@@ -77,6 +78,7 @@
                      <td class="col-sm-4">{{config.description}}</td>
                      <td class="text-right col-sm-3">
                         <button onClick="slide();" type="button" class="btn btn-success" data-ng-click="go('/deploy/' + config.id)"><i class="fa fa-bolt"></i> Deploy</button>
+                        <a id="export" data-ng-click="" class="btn btn-primary" disabled><i class="fa fa-download"></i></a>
                         <button onClick="slide();" type="button" class="btn btn-danger" data-toggle="modal" data-target="#myModal{{$index}}" data-dismiss="modal"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
                         <div id="myModal{{$index}}" class="modal">
                            <div class="modal-content">
@@ -89,6 +91,7 @@
                   </tr>
                </tbody>
             </table>
+          </div>
             <div style="margin:10px" class="alert alert-warning" data-ng-hide="ctrl.history.length">No previously configuration found!</div>
 
          </div>
