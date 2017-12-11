@@ -28,16 +28,15 @@
                <tbody>
                   <tr data-ng-repeat="pool in poolSettings.GVPoolManager.GreenVulcanoPool">
                      <td class="col-sm-2 text-danger">{{pool.subsystem}}</td>
-                     <td class="col-sm-1" id="init">{{pool['initial-size']}}</td>
+                     <td class="col-sm-2" id="init">{{pool['initial-size']}}</td>
                      <td class="col-sm-1">{{pool['maximum-size']}}</td>
                      <td class="col-sm-1">{{pool['maximum-creation']}}</td>
                      <td class="col-sm-2">{{pool['default-timeout']}}</td>
                      <td class="col-sm-2">{{pool['shrink-timeout']}}</td>
-                     <td class="col-sm-4 text-right">
+                     <td class="col-sm-2 text-right">
                      <button onClick="slide();" class="btn btn-warning" data-ng-click="go('/settings/' + pool.subsystem)">
                      <i class="fa fa-pencil"></i></button>
-                     <button class="btn btn-danger" data-ng-click="deletePool($index)">
-                     <i class="fa fa-trash"></i></button>
+                     
                      </td>
                   </tr>
                </tbody>

@@ -15,31 +15,9 @@ angular.module('gvconsole')
  }]);
 
 angular.module('gvconsole')
-.controller('SettingsController',['SettingsService', '$scope', function(SettingsService, $scope){
+.controller('SettingsController',['SettingsService', '$location', '$scope', function(SettingsService, $location, $scope){
 
-  $scope.alerts = [];
-
-  $scope.deletePool =  function(index) {
-	  $scope.poolSettings.GVPoolManager.GreenVulcanoPool.splice(index,1);
-	  
-	  SettingsService.mergeSettings('GVPoolManager', $scope.poolSettings).then(function(response){
-			$scope.alerts.push({type: 'success', msg: 'Pool configuration deleted'});
-			setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
-		},function(response){
-			
-			switch (response.status) {
-
-		        case 401: case 403:
-		          $location.path('login');
-		          break;
-		
-		        default:
-		          $scope.alerts.push({type: 'danger', msg: 'Error deleting data'});
-		          break;
-	        }			
-			
-		});
-  }
+  $scope.alerts = [];  
   
   SettingsService.getSettings('GVPoolManager').then(
         function(response) {
@@ -68,9 +46,9 @@ angular.module('gvconsole')
 
 
 angular.module('gvconsole')
-.controller('PoolSettingsFormController',['SettingsService', '$routeParams', '$scope', function(SettingsService, $routeParams, $scope){
+.controller('PoolSettingsFormController',['SettingsService', '$routeParams', '$location', '$scope', function(SettingsService, $routeParams, $location, $scope){
 	
-	$scope.flag = true;
+	
 	var poolSettings = {};
 	$scope.currentPool = {};
 	$scope.currentPoolIndex = -1;
@@ -82,7 +60,7 @@ angular.module('gvconsole')
 		$scope.subsystemInConflict = poolSettings.GVPoolManager.GreenVulcanoPool.find(function(p){return p.subsystem==$scope.currentPool.subsystem}) && $scope.currentPoolIndex==-1;
 	}
 		
-	$scope.save = function(){
+	$scope.savePool = function(){
 		
 		if ($scope.currentPoolIndex==-1) {
 			poolSettings.GVPoolManager.GreenVulcanoPool.push($scope.currentPool);
@@ -108,6 +86,27 @@ angular.module('gvconsole')
 			
 		})		
 	}
+	
+	$scope.deletePool =  function() {
+		  poolSettings.GVPoolManager.GreenVulcanoPool.splice($scope.currentPoolIndex,1);
+		  
+		  SettingsService.mergeSettings('GVPoolManager', poolSettings).then(function(response){
+			  $location.path('/settings');
+			},function(response){
+				
+				switch (response.status) {
+
+			        case 401: case 403:
+			          $location.path('login');
+			          break;
+			
+			        default:
+			          $scope.alerts.push({type: 'danger', msg: 'Error deleting data'});
+			          break;
+		        }			
+				
+			});
+	  }
 	
 	SettingsService.getSettings('GVPoolManager').then(function(response){
 		

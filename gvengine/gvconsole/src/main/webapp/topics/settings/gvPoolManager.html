@@ -2,7 +2,7 @@
    <div class="side-body">
    	<div class="container row" data-ng-controller="PoolSettingsFormController">
    	 <h1>Form GVPoolManager</h1>
-   	 <form name="gvPoolManagerForm" data-ng-submit="gvPoolManagerForm.$valid && !subsystemInConflict && save()">
+   	 <form name="gvPoolManagerForm" data-ng-submit="gvPoolManagerForm.$valid && !subsystemInConflict && savePool()">
    	 <div data-ng-repeat="alert in alerts" class="fadeout alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
    	 <div class="panel panel-default">
    	 	<div class="panel-heading"><i class="fa fa-list" aria-hidden="true"></i> GVPoolManager Form</div>
@@ -71,8 +71,17 @@
       <div class="form-group">
       <div>
         <button type="button" class="btn btn-default pull-left" data-ng-click="go('settings')"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button>
-        <button type="submit" class="btn btn-primary pull-right" data-ng-show="flag == true"><i class="fa fa-floppy-o" aria-hidden="true"></i> Save</button>
-        <button type="submit" class="btn btn-primary pull-right" data-ng-show="flag == false"><i class="fa fa-floppy-o" aria-hidden="true"></i> Save</button>
+        <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-floppy-o" aria-hidden="true"></i> Save</button>
+       
+        <!-- DELETE CONFIRM WINDOW -->
+         <button type="button" data-ng-show="currentPoolIndex>=0" data-toggle="modal" data-target="#myModal" data-backdrop="static" data-keyboard="false" class="btn btn-danger pull-right" style="margin-right: 3px;" id="myBtn"><i class="fa fa-trash" aria-hidden="true"></i> Delete</button>
+         <div id="myModal" class="modal fadeout">
+            <div class="modal-content">
+               <h4 style="margin-bottom:30px"> Are you sure to delete <span style="color:red">{{ctrl.user.username}}</span> ? </h4>
+               <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button>
+               <button type="button" class="btn btn-danger" data-ng-click="deletePool()"><i class="fa fa-trash" aria-hidden="true"></i> Confirm</button>
+            </div>
+         </div>
       </div>
       </div>
       </div>
