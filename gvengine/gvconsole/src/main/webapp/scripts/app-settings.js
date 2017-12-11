@@ -46,7 +46,6 @@ angular.module('gvconsole')
         	$scope.poolSettings = response.data;
     		
     		if (!angular.isArray($scope.poolSettings.GVPoolManager.GreenVulcanoPool)) {
-    			$scope.poolSettings.GVPoolManager.GreenVulcanoPool = [poolSettings.GVPoolManager.GreenVulcanoPool];
     		}
         
           $scope.alerts = [];
