@@ -11,7 +11,7 @@ Then start karaf.
 
 Install feature repository and install gvegine
 ```sh
-gvadmin@root()> feature:repo-add mvn:it.greenvulcano.gvesb/features/4.0.alpha1/xml/features
+gvadmin@root()> feature:repo-add mvn:it.greenvulcano.gvesb/features/4.0.alpha2/xml/features
 gvadmin@root()> feature:install gvengine
 ```
 The list of karaf features, now also include those of GreenVulcano:
