@@ -34,6 +34,7 @@ import javax.script.Compilable;
 import javax.script.CompiledScript;
 import javax.script.ScriptEngine;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.w3c.dom.Node;
 
@@ -51,10 +52,12 @@ public class ScriptExecutorImpl extends ScriptExecutor
     private String             script      = null;
     private boolean            initialized = false;
     private boolean            externalScript = false;
-    private ScriptEngine       engine      = null;
+   
     private CompiledScript     compScript  = null;
     private Bindings           bindings    = null;
 
+    private String name = null;
+    
     /**
      * 
      */
@@ -71,7 +74,9 @@ public class ScriptExecutorImpl extends ScriptExecutor
      */
     public void init(Node node) throws GVScriptException {
         try {
-            lang = XMLConfig.get(node, "@lang", "js");
+            name = XMLConfig.get(node.getParentNode(), "@name");
+            logger.debug("init script node "+name);
+        	lang = XMLConfig.get(node, "@lang", "js");
             String file = XMLConfig.get(node, "@file", "");
             if (!"".equals(file)) {
                 scriptName = file;
@@ -85,8 +90,8 @@ public class ScriptExecutorImpl extends ScriptExecutor
             if ((script == null) || "".equals(script)) {
                 throw new GVScriptException("Empty configured script!");
             }
-
-            engine = Optional.ofNullable(globalScriptEngineManager.getEngineByName(lang)).orElseGet(()->localSriptEngineManager.getEngineByName(lang));
+         
+            ScriptEngine engine = getScriptEngine(lang);
             if (engine == null) {
                 throw new GVScriptException("ScriptEngine[" + lang + "] not found!");
             }
@@ -100,10 +105,17 @@ public class ScriptExecutorImpl extends ScriptExecutor
                 throw new GVScriptException("BaseContext[" + lang + "/" + bcName + "] not found!");
             }
 
-            if (engine instanceof Compilable) {
-                if (PropertiesHandler.isExpanded(script)) {
-                    logger.debug("Static script[" + lang + "], can be compiled for performance");
+            if (engine instanceof Compilable && PropertiesHandler.isExpanded(script)) {
+            	String scriptKey = DigestUtils.sha256Hex(script);
+            	
+            	Optional<CompiledScript> cachedCompiledScript = cache.getCompiledScript(scriptKey);
+                            
+            	if (cachedCompiledScript.isPresent()) {
+            		compScript = cachedCompiledScript.get();
+                } else {
+                	logger.debug("Static script[" + lang + "], can be compiled for performance");
                     compScript = ((Compilable) engine).compile(script);
+                    cache.putCompiledScript(scriptKey, compScript);
                 }
             }
             bindings = engine.createBindings();
@@ -151,7 +163,7 @@ public class ScriptExecutorImpl extends ScriptExecutor
                 throw new GVScriptException("Empty configured script!");
             }
 
-            engine = globalScriptEngineManager.getEngineByName(this.lang);
+            ScriptEngine engine = getScriptEngine(lang);
             if (engine == null) {
                 throw new GVScriptException("ScriptEngine[" + this.lang + "] not found!");
             }
@@ -168,10 +180,16 @@ public class ScriptExecutorImpl extends ScriptExecutor
                 throw new GVScriptException("BaseContext[" + this.lang + "/" + bcName + "] not found!");
             }
 
-            if (!externalScript && (engine instanceof Compilable)) {
-                if (PropertiesHandler.isExpanded(script)) {
-                    logger.debug("Static script[" + lang + "], can be compiled for performance");
-                    compScript = ((Compilable) engine).compile(this.script);
+            if (engine instanceof Compilable && PropertiesHandler.isExpanded(script)) {
+            	String scriptKey = DigestUtils.sha256Hex(script);
+            	Optional<CompiledScript> cachedCompiledScript = cache.getCompiledScript(scriptKey);
+                            
+            	if (cachedCompiledScript.isPresent()) {
+            		compScript = cachedCompiledScript.get();
+                } else {
+                	logger.debug("Static script[" + lang + "], can be compiled for performance");
+                    compScript = ((Compilable) engine).compile(script);
+                    cache.putCompiledScript(scriptKey, compScript);
                 }
             }
 
@@ -252,17 +270,18 @@ public class ScriptExecutorImpl extends ScriptExecutor
      */
     public Object execute(Map<String, Object> properties, Object object) throws GVScriptException {
         isInitialized();
-
+       
+        long start = System.currentTimeMillis();
         String localScript = script;
         try {
-            if (compScript != null) {
-                //return compScript.eval(bindings);
-                Object res = compScript.eval(bindings);
-                logger.debug("Engine[" + lang +"] script result: " + res);
-                if (res == null) {
-                    res = bindings.get("RESULT");
-                    logger.debug("Engine[" + lang +"] script RESULT: " + res);
-                }
+            if (compScript != null) {           	
+                         	
+                Object res = compScript.eval(bindings);                                      
+                  
+                logger.debug("Engine[" + lang +"]  compiled script " +name
+                		+ " execution time [" +(System.currentTimeMillis()-start) + "] "+ " bindings size: " + bindings.size()
+                				+ " - result: " + res);
+               
                 return res;
             }
             if (!PropertiesHandler.isExpanded(localScript)) {
@@ -274,14 +293,14 @@ public class ScriptExecutorImpl extends ScriptExecutor
                 finally {
                     PropertiesHandler.disableExceptionOnErrors();
                 }
-            }
-            //return engine.eval(localScript, bindings);
-            Object res = engine.eval(localScript, bindings);
-            logger.debug("Engine[" + lang +"] script result: " + res);
-            if (res == null) {
-                res = bindings.get("RESULT");
-                logger.debug("Engine[" + lang +"] script RESULT: " + res);
-            }
+            }           
+           
+            Object res = getScriptEngine(lang).eval(localScript, bindings);
+             
+            logger.debug("Engine[" + lang +"]  script "+name
+            		+ " execution time [" +(System.currentTimeMillis()-start) + "] "+ " bindings size: " + bindings.size()
+            				+ " - result: " + res);
+            
             return res;
         }
         catch (Exception exc) {
@@ -305,17 +324,19 @@ public class ScriptExecutorImpl extends ScriptExecutor
      */
     public Object execute(String script, Map<String, Object> properties, Object object) throws GVScriptException {
         isInitialized();
+        
+        long start = System.currentTimeMillis();
 
         String localScript = script;
         try {
             if (compScript != null) {
-                //return compScript.eval(bindings);
+               
                 Object res = compScript.eval(bindings);
-                logger.debug("Engine[" + lang +"] script result: " + res);
-                if (res == null) {
-                    res = bindings.get("RESULT");
-                    logger.debug("Engine[" + lang +"] script RESULT: " + res);
-                }
+
+                logger.debug("Engine[" + lang +"]  compiled script " +name
+                		+ " execution time [" +(System.currentTimeMillis()-start) + "] " + " bindings size: " + bindings.size()
+                		+ " - result: " + res);
+                bindings.clear();
                 return res;
             }
             if (!PropertiesHandler.isExpanded(localScript)) {
@@ -328,13 +349,13 @@ public class ScriptExecutorImpl extends ScriptExecutor
                     PropertiesHandler.disableExceptionOnErrors();
                 }
             }
-            //return engine.eval(localScript, bindings);
-            Object res = engine.eval(localScript, bindings);
-            logger.debug("Engine[" + lang +"] script result: " + res);
-            if (res == null) {
-                res = bindings.get("RESULT");
-                logger.debug("Engine[" + lang +"] script RESULT: " + res);
-            }
+            
+            Object res = getScriptEngine(lang).eval(localScript, bindings);
+
+            logger.debug("Engine[" + lang +"]  script "+name
+            		+ " execution time [" +(System.currentTimeMillis()-start) + "] "
+            				+ " - result: " + res);
+            bindings.clear();
             return res;
         }
         catch (Exception exc) {
@@ -358,7 +379,6 @@ public class ScriptExecutorImpl extends ScriptExecutor
         initialized = false;
         lang = null;
         script = null;
-        engine = null;
         compScript = null;
         bindings = null;
     }

@@ -1,6 +1,6 @@
 <div class="container-fluid">
    <div class="side-body">
-      <div data-ng-controller = "ConfigController as ctrl" data-ng-init="init();">
+      <div class="container row" data-ng-controller = "ConfigController as ctrl" data-ng-init="init();">
          <h1>Configuration</h1>
          <div class="panel panel-default">
             <div class="panel-heading">
@@ -23,7 +23,7 @@
                               <div class="panel-body collapse" style="padding:0px; border-radius: 0px" id="{{group}}">
                                  <table class="table table-hover col-sm-12" style="margin: 0px">
                                     <tbody>
-                                       <tr data-ng-repeat="service in serviceByGroup[group]">
+                                       <tr data-ng-repeat="service in serviceByGroup[group] | orderBy:'idService'">
                                           <td data-toggle="collapse" class="Clickable" data-target="#{{service.idService}}" data-ng-click="OpenServiceDet = !OpenServiceDet"><span  data-ng-class="(OpenServiceDet) ? 'text-danger' : 'text-default'">{{service.idService}}</span> <i aria-hidden="true" data-ng-class="(OpenServiceDet) ? 'fa fa-chevron-left pull-right' : 'fa fa-chevron-right pull-right'"></i></td>
                                           <!-- Service -->
                                        </tr>
@@ -36,7 +36,7 @@
                      <div class="col-sm-6">
                         <div data-ng-repeat="group in groups">
                            <div data-ng-repeat="service in serviceByGroup[group]" id="{{service.idService}}" class="panel panel-default collapse" style="margin-top:10px">
-                              <div class="panel-body">
+                              <div class="panel-body" style="overflow-x: auto">
                                  <!-- <i id="crossClose" class="fa fa-times pull-right Clickable" ng-click="OpenServiceDet=!OpenServiceDet" aria-hidden="true" data-toggle="collapse" data-target="#{{service.idService}}"></i> -->
                                  <h3>{{group}}/{{service.idService}}</h3>
                                  <ul>

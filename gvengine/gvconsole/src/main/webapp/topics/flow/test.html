@@ -1,13 +1,13 @@
 <div class="container-fluid">
    <div class="side-body">
-      <h1>Flow testing</h1>
-      <div class="row" data-ng-controller="FlowController as ctrl">
+      <div class="container row" data-ng-controller="FlowController as ctrl">
+        <h1>Flow execute</h1>
          <div class="panel panel-default" style="overflow-x:auto;">
             <div class="panel-heading">
-               <i class="fa fa-forward" aria-hidden="true"></i> Test
+               <i class="fa fa-play-circle-o" aria-hidden="true"></i> Test
             </div>
-            <div class="panel panel-body container-fluid">
-               <form id="prova2" class="reset">
+            <form id="testingForm" class="reset">
+              <div class="panel panel-body container-fluid">
                   <div class="form-group clearfix">
                      <label id="labelLeft" class="control-label optionForm col-sm-2">Operation</label>
                      <div class="col-sm-5">
@@ -52,20 +52,22 @@
                         <div class="col-sm-1"><a class="close pull-right" data-ng-click="removeParameter(key)">×</a></div>
                      </div>
                   </div>
-               </form>
             </div>
             <div id="panelPagination" class="panel-footer">
                <div class="row">
                   <div class="form-group">
                      <div id="btnspace" >
-                        <button type="button" class="btn btn-danger pull-left reset" value="Reset" onclick="resetFunction();">
-                        <i class="fa fa-ban" aria-hidden="true"></i> Cancel</button>
-                        <button type="submit" class="btn btn-primary pull-right" data-ng-click="run()">
+                        <button class="btn btn-danger pull-left reset" value="Reset" type="reset">
+                        <i class="fa fa-ban" aria-hidden="true"></i> Reset</button>
+                        <button type="submit" class="btn btn-primary pull-right" data-ng-click="run()" data-ng-show="flag == true">
+                        <i class="fa fa-play-circle" aria-hidden="true"></i> Run</button>
+                        <button type="submit" class="btn btn-primary pull-right" data-ng-click="run()" data-ng-show="flag == false" disabled>
                         <i class="fa fa-play-circle" aria-hidden="true"></i> Run</button>
                      </div>
                   </div>
                </div>
             </div>
+          </form>
          </div>
          <div class="row">
             <h2>Output</h2>

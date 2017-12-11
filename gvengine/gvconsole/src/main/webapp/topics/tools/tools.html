@@ -1,0 +1,34 @@
+<div class="container-fluid">
+   <div class="side-body">
+      <h1>Tools</h1>
+      <div class="row" data-ng-controller="ToolsController as ctrl">
+
+        <form id="converterForm" class="reset" style="margin-bottom:40px; margin-top:30px;">
+         <div class="col-sm-7">
+          <label style="display:inline" class="optionForm col-sm-2">Convert</label>
+        <div class="col-sm-4"><select class="form-control" data-ng-model="convertType" required><option value="binary">binary</option></select></div>
+         </div>
+         <textarea rows="10" cols="50" data-ng-model="converterInput" class="form-control" placeholder="Input text here"></textarea>
+         <div id="panelPagination" class="panel-footer">
+              <div class="row">
+                 <div class="form-group">
+                    <div id="btnspace" >
+                       <button type="button" class="btn btn-danger pull-left reset" value="Reset" onclick="resetFunction();">
+                       <i class="fa fa-ban" aria-hidden="true"></i> Clear</button>
+                       <button type="submit" class="btn btn-primary pull-right" data-ng-click="convert()">
+                       <i class="fa fa-play-circle" aria-hidden="true"></i> Run</button>
+                    </div>
+                 </div>
+              </div>
+         </div>
+         <div class="col-sm-7">
+          <label style="display:inline" class="optionForm col-sm-2">To</label>
+        <div class="col-sm-4"><select class="form-control" data-ng-model="resultType" required><option value="hexadecimal">hexadecimal</option></select></div>
+         </div>
+         <textarea rows="10" cols="50" class="form-control" data-ng-model="converterOutput" placeholder="Output text here" readonly></textarea>
+         </form>
+
+
+    </div>
+  </div>
+</div>

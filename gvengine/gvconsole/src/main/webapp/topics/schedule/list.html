@@ -1,16 +1,17 @@
 <div class="container-fluid">
 <div class="side-body">
-   <h1>Scheduling</h1>
-   <div class="row" data-ng-controller="ScheduleListController as ctrl">
+   <div class="container row" data-ng-controller="ScheduleListController as ctrl">
+     <h1>Scheduling</h1>
       <div id="fadeout" data-ng-repeat="alert in ctrl.alerts" class="fadeout alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
       <div class="panel panel-default">
          <div id="panelHead" class="panel-heading">
-            <i class="fa fa-calendar-check-o"></i> Schedule Found: {{ctrl.list.length}}
+            <i class="fa fa-clock-o"></i> Schedule Found: {{ctrl.list.length}}
             <a href="#/schedule/add" onClick="slide();" class="btn btn-primary pull-right" data-ng-class="{'btn btn-primary pull-right disabled': dataNa == true || auth != true}">
-            <i class="fa fa-calendar-plus-o"></i> Add New Schedule
+            <i class="fa fa-calendar-plus-o"></i>
             </a>
          </div>
-         <table id="flows" class="table table-hover" >
+         <div style="overflow-x: auto">
+         <table id="flows" class="table table-hover" style="margin-bottom:0px">
             <thead>
                <tr>
                   <th>Id</th>
@@ -47,6 +48,7 @@
                </tr>
             </tbody>
          </table>
+       </div>
       </div>
    </div>
 </div>

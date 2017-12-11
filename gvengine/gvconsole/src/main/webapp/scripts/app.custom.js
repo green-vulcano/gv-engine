@@ -42,7 +42,13 @@ angular.module('gvconsole', ['ngCookies','ngRoute','angular-quartz-cron', 'ui.bo
 				templateUrl: 'topics/properties/properties.html'
 			}).
 			when('/settings', {
-				templateUrl: 'topics/settings/config.html'
+				templateUrl: 'topics/settings/settings.html'
+			}).
+			when('/settings/:settingId', {
+				templateUrl: 'topics/settings/gvPoolManager.html'
+			}).
+			when('/tools', {
+				templateUrl: 'topics/tools/tools.html'
 			}).
 			otherwise({
     	        redirectTo: '/myprofile'
@@ -163,15 +169,6 @@ angular.element(document).ready(function() {
       angular.element('.side-body').toggleClass('body-slide-in');
   });
 });
-function resetFunction() {
-document.getElementById("prova2").reset();
-};
-function resetFunctionDeploy() {
-document.getElementById("deployForm").reset();
-};
-function resetFunctionPassword() {
-document.getElementById("passwordForm").reset();
-};
 function slideButtonMenu(){
 	var width = angular.element(window).width();
 	if(width <= 768){

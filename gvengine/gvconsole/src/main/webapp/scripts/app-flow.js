@@ -33,7 +33,7 @@ angular.module('gvconsole')
 	     return $http(request);
 
 	}
-	
+
 	this.getServices = function(){
 		return $http.get(Endpoints.gvesb);
 	}
@@ -43,7 +43,7 @@ angular.module('gvconsole')
 angular.module('gvconsole')
 .controller('FlowController', [ 'Base64', 'FlowService', '$scope', function(Base64, FlowService, $scope){
 
-		
+
     $scope.operations = [];
     $scope.service = {};
 
@@ -72,8 +72,12 @@ angular.module('gvconsole')
     $scope.removeParameter=function(key){
   		 delete $scope.service.properties[key];
   	};
+  	
+  	$scope.flag = true;
 
     $scope.run = function(){
+    	
+    	$scope.flag = false;
 
 	      var auth;
 	      if($scope.username && $scope.password){
@@ -85,15 +89,18 @@ angular.module('gvconsole')
 	                 .then(function(response){
 
 				    	  $scope.output = response.data;
+				    	  
+				    	  $scope.flag = true;
 
 				      }, function(response){
 
 				    	  $scope.output = response.data;
+				    	  
+				    	  $scope.flag = true;
 
 				      });
-
-			 //$scope.username = false;
     }
+    
 
     angular.element("textarea").keydown(function(e) {
         if(e.keyCode === 9) { // tab was pressed

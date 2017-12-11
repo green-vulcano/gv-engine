@@ -4,7 +4,7 @@
 
   <groupId>it.greenvulcano.gvesb</groupId>
   <artifactId>gvengine</artifactId>
-  <version>4.0.alpha1</version>
+  <version>4.0.alpha2-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>GreenVulcano Engine</name>
@@ -202,7 +202,7 @@
     <module>gvstatistics</module>
     <module>gvvcl</module>
     <module>gvvcl-internal</module>
-    <module>features</module>    
+    <module>features</module>
   </modules>
 
 </project>

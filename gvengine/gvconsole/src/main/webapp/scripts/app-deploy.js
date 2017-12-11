@@ -111,13 +111,13 @@ angular.module('gvconsole')
 	var instance = this;
 
 	this.alerts = [];
-    this.alertsAdd = [];
+
+  this.alertsAdd = [];
 
 	this.configInfo = {};
 
 	this.deploy = {};
 
-	var instance = this;
 	this.history = [];
 
     this.loadList = function() {
@@ -168,6 +168,12 @@ angular.module('gvconsole')
 		});
 
 	}
+
+  $scope.historyOrderFunction = function(propertyName) {
+    $scope.reverse = ($scope.propertyName === propertyName) ? !$scope.reverse : false;
+    $scope.propertyName = propertyName;
+    console.log($scope.propertyName);
+  };
 
 	this.exportConfig = function () {
 		$scope.exportInProgress = true;
@@ -272,10 +278,10 @@ angular.module('gvconsole')
     	console.log("error: " + response.data);
     });
 
-    $scope.serviceByGroupNew = [];
-    $scope.groupsNew = [];
+    $scope.servicesNew = [];
 
-    DeployService.getNewServices($scope.newConfigId).then(function(response){
+    /*DeployService.getNewServices($scope.newConfigId).then(function(response){
+    	console.log("new: " + response.data);
   		angular.forEach(response.data,function(value){
   			if(!$scope.groupsNew.includes(value.groupName)){
   				$scope.groupsNew.push(value.groupName);
@@ -289,7 +295,16 @@ angular.module('gvconsole')
   		})
   	},function(response){
   		console.log("error: " + response.data);
-  	});
+  	});*/
+
+    DeployService.getNewServices($scope.newConfigId).then(function(response){
+    	angular.forEach(response.data,function(value){
+    		$scope.servicesNew.push(value);
+    	});
+    },function(response){
+    	console.log("error: " + response.data);
+    });
+
 
 
 

@@ -1,0 +1,49 @@
+<div class="container-fluid">
+  <div class="side-body">
+
+    <div class="container row" data-ng-controller="SettingsController">
+      <h1> Settings XML </h1>
+
+<!-- **************************   GVPoolManager   ************************** -->
+
+	<form id="formPoolManager">
+      <div class="panel panel-default" >
+        <div id="panelHead"  class="panel-heading"><i class="fa fa-code"></i> GVPoolManagers
+          <a href="#/settings/new" data-ng-click="slide();" class="btn btn-primary pull-right">
+             <i class="fa fa-plus"></i></a>
+        </div>
+        <div style="overflow-x:auto;">
+	    <table id="gvPoolManager" class="table table-hover" style="margin-bottom:0px">
+               <thead>
+                  <tr>
+                     <th class="col-sm-2">name</th>
+                     <th class="col-sm-1"><span style="width:50px; display:block">initial-size</span></th>
+                     <th class="col-sm-1"><span style="width:50px; display:block">maximum-size</span></th>
+                     <th class="col-sm-1"><span style="width:50px; display:block">maximum-creation</span></th>
+                     <th class="col-sm-2"><span style="width:50px; display:block">default-timeout</span></th>
+                     <th class="col-sm-2"><span style="width:50px; display:block">shrink-timeout</span></th>
+                     <th class="col-sm-4 text-right">Action</th>
+                  </tr>
+               </thead>
+               <tbody>
+                  <tr data-ng-repeat="pool in poolSettings.GVPoolManager.GreenVulcanoPool">
+                     <td class="col-sm-2 text-danger">{{pool.subsystem}}</td>
+                     <td class="col-sm-2" id="init">{{pool['initial-size']}}</td>
+                     <td class="col-sm-1">{{pool['maximum-size']}}</td>
+                     <td class="col-sm-1">{{pool['maximum-creation']}}</td>
+                     <td class="col-sm-2">{{pool['default-timeout']}}</td>
+                     <td class="col-sm-2">{{pool['shrink-timeout']}}</td>
+                     <td class="col-sm-2 text-right">
+                     <button onClick="slide();" class="btn btn-warning" data-ng-click="go('/settings/' + pool.subsystem)">
+                     <i class="fa fa-pencil"></i></button>
+                     
+                     </td>
+                  </tr>
+               </tbody>
+            </table>
+            </div>
+      </div>
+ 	</form>
+  </div>
+ </div>
+</div>
