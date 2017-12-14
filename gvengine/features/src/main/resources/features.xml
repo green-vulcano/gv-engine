@@ -21,7 +21,9 @@
 		<bundle start-level="80">mvn:commons-collections/commons-collections/3.2.1</bundle>
 		<bundle start-level="80">mvn:commons-dbcp/commons-dbcp/1.4</bundle>
 		<bundle start-level="80">mvn:commons-pool/commons-pool/1.5.7</bundle>
-		<bundle start-level="80">mvn:commons-lang/commons-lang/2.6</bundle>
+		
+		<bundle start-level="80">mvn:org.apache.commons/commons-lang3/3.7</bundle>
+		<bundle start-level="81">mvn:org.apache.commons/commons-text/1.2</bundle>
 		
 		<bundle start-level="80">mvn:org.apache.geronimo.specs/geronimo-ejb_3.1_spec/1.0.2</bundle>
 		<bundle start-level="80">mvn:org.apache.geronimo.specs/geronimo-jaxrpc_1.1_spec/2.1</bundle>
@@ -33,37 +35,37 @@
 		<bundle start-level="80"><![CDATA[wrap:mvn:commons-modeler/commons-modeler/2.0.1$Bundle-SymbolicName=commons-modeler&Bundle-Version=2.0.1]]></bundle>
 		<bundle start-level="80"><![CDATA[wrap:mvn:xml-resolver/xml-resolver/1.2$Bundle-SymbolicName=xml-resolver&Bundle-Version=1.2]]></bundle>
 
-		<bundle start-level="85">mvn:it.greenvulcano.gvesb/gvbase/${project.version}</bundle>
-		<bundle start-level="86">mvn:it.greenvulcano.gvesb/gvpolicy/${project.version}</bundle>		
+		<bundle start-level="81">mvn:it.greenvulcano.gvesb/gvbase/${project.version}</bundle>
+		<bundle start-level="82">mvn:it.greenvulcano.gvesb/gvpolicy/${project.version}</bundle>		
 	</feature>
 	
 	<feature name="gvdte" description="GreenVulcano Data Transformation Engine" version="${project.version}">
                 
         <feature prerequisite="true">gvbase</feature>      
-        <bundle start-level="87">mvn:it.greenvulcano.gvesb/gvdte/${project.version}</bundle>                
+        <bundle start-level="82">mvn:it.greenvulcano.gvesb/gvdte/${project.version}</bundle>                
     </feature>
 	
 	<feature name="gvvcl" version="${project.version}"	description="GreenVulcano Virtual Communication Layer">		  
 		<feature prerequisite="true">gvbase</feature>
-		<bundle start-level="89">mvn:it.greenvulcano.gvesb/gvvcl/${project.version}</bundle>
+		<bundle start-level="85">mvn:it.greenvulcano.gvesb/gvvcl/${project.version}</bundle>
 	</feature>
 	
 	<feature name="gvvcl-internal" version="${project.version}"	description="GreenVulcano VCL Internal Plugin">		  
 		<feature prerequisite="true">gvdte</feature>
 		<feature prerequisite="true">gvvcl</feature>
-		<bundle start-level="90">mvn:it.greenvulcano.gvesb/gvvcl-internal/${project.version}</bundle>
+		<bundle start-level="88">mvn:it.greenvulcano.gvesb/gvvcl-internal/${project.version}</bundle>
 	</feature>
 	
 	<feature name="gvcore" version="${project.version}"	description="GreenVulcano Core">		  
 		<feature prerequisite="true">gvdte</feature>
 		<feature prerequisite="true">gvvcl</feature>
-		<bundle start-level="91">mvn:it.greenvulcano.gvesb/gvstatistics/${project.version}</bundle>
-		<bundle start-level="92">mvn:it.greenvulcano.gvesb/gvcore/${project.version}</bundle>
+		<bundle start-level="88">mvn:it.greenvulcano.gvesb/gvstatistics/${project.version}</bundle>
+		<bundle start-level="90">mvn:it.greenvulcano.gvesb/gvcore/${project.version}</bundle>
 	</feature>
 	
 	<feature name="gviam" version="${project.version}" description="GreenVulcano IAM">
 		<feature>jaas</feature>
-		<bundle start-level="93">mvn:it.greenvulcano.gvesb/gviam/${project.version}</bundle>		
+		<bundle start-level="91">mvn:it.greenvulcano.gvesb/gviam/${project.version}</bundle>		
 	</feature>
 	
 	<feature name="gviam-ds" version="${project.version}" description="GreenVulcano IAM DB datasource">		
@@ -72,7 +74,7 @@
         </capability>
         <feature>hibernate</feature>
        
-		<configfile finalname="${karaf.etc}/org.ops4j.datasource-gviam.cfg" override="true">mvn:it.greenvulcano.gvesb/${project.artifactId}/${pom.version}/ds/gviam</configfile>
+		<configfile finalname="${karaf.etc}/org.ops4j.datasource-gviam.cfg" override="false">mvn:it.greenvulcano.gvesb/${project.artifactId}/${pom.version}/ds/gviam</configfile>
 	</feature>
 	
 	<feature name="gviam-db" version="${project.version}" description="GreenVulcano IAM DB">		  
@@ -85,7 +87,7 @@
 		<feature>pax-jdbc-pool-dbcp2</feature>
 		<feature>gviam-ds</feature>
 		
-		<bundle start-level="95">mvn:it.greenvulcano.gvesb/gviam-db/${project.version}</bundle>
+		<bundle start-level="92">mvn:it.greenvulcano.gvesb/gviam-db/${project.version}</bundle>
 	</feature>
 	
 	<feature name="gvengine" version="${project.version}" description="GreenVulcano Engine">		
@@ -113,7 +115,7 @@
 	</feature>
 	
 	<feature name="gvscheduler-conf" version="${project.version}" description="GreenVulcano Scheduler configuration">				
-		<configfile finalname="${karaf.etc}/it.greenvulcano.gvesb.quartz.cfg" override="true">mvn:it.greenvulcano.gvesb/${project.artifactId}/${pom.version}/properties/quartz</configfile>		
+		<configfile finalname="${karaf.etc}/it.greenvulcano.gvesb.quartz.cfg" override="false">mvn:it.greenvulcano.gvesb/${project.artifactId}/${pom.version}/properties/quartz</configfile>		
 	</feature>
 	
 	<feature name="gvscheduler" version="${project.version}" description="GreenVulcano Scheduler">
@@ -133,7 +135,7 @@
 	<feature name="gvhttp" description="GreenVulcano advanced HTTP inbound adapter" version="${project.version}">		  
 				
 		<feature prerequisite="true">gvengine</feature>
-		<bundle start-level="96">mvn:it.greenvulcano.gvesb.adapter/gvhttp/${project.version}/war</bundle>		
+		<bundle start-level="94">mvn:it.greenvulcano.gvesb.adapter/gvhttp/${project.version}/war</bundle>		
 	</feature>
 	
 	<feature name="gvvcl-rest" description="GreenVulcano rest-call extension" version="${project.version}">		  
@@ -151,13 +153,13 @@
 	<feature name="gvvcl-jms" description="GreenVulcano jms-enqueue jms-dequeue extensions" version="${project.version}">		  
 				
 		<feature prerequisite="true">gvengine</feature>
-		<bundle start-level="96">mvn:it.greenvulcano.gvesb.vcl/gvvcl-jms/${project.version}</bundle>		
+		<bundle start-level="94">mvn:it.greenvulcano.gvesb.vcl/gvvcl-jms/${project.version}</bundle>		
 	</feature>	
 	
 	<feature name="gvvcl-mqtt" description="GreenVulcano mqtt-publish-call mqtt-subscribe-listener extensions" version="${project.version}">		  
 				
 		<feature prerequisite="true">gvengine</feature>
-		<bundle start-level="96">mvn:it.greenvulcano.gvesb.adapter/gvmqttx/${project.version}</bundle>		
+		<bundle start-level="94">mvn:it.greenvulcano.gvesb.adapter/gvmqttx/${project.version}</bundle>		
 	</feature>	
 	
 	<feature name="gvvcl-mail" description="GreenVulcano smtp-call pop-call imap-call extensions" version="${project.version}">		  
