@@ -72,9 +72,16 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>commons-lang</groupId>
-			<artifactId>commons-lang</artifactId>
-			<version>2.4</version>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.7</version>
+			<scope>provided</scope>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-text</artifactId>
+			<version>1.2</version>
 			<scope>provided</scope>
 			<type>jar</type>
 		</dependency>
@@ -271,8 +278,9 @@
 									org.apache.commons.collections.iterators,
 									org.apache.commons.dbcp;version="[1.3,2)",
 									org.apache.commons.io;version="[1.4,2)",
-									org.apache.commons.lang;version="[2.4,3)",
+									org.apache.commons.lang3;version="[3.7,4)",
 									org.apache.commons.modeler,
+									org.apache.commons.text,
 									org.apache.commons.net.ftp;version="[2.2,3)",
 									org.apache.commons.net.time;version="[2.2,3)",
 									org.apache.commons.pool;version=" [1.5,2)",

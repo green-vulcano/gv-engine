@@ -46,6 +46,7 @@ import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
 /**
  * This class contains static utility methods to manage text strings.
@@ -230,7 +231,7 @@ public class TextUtils
                 String replacement = phPrefix + phName + phSuffix;
                 Object phValue = phValues.get(phName);
                 if (phValue != null) {
-                    replacement = "" + phValue;
+                    replacement = StringEscapeUtils.unescapeJava(phValue.toString());
                 }
                 if (currToken.length() > 0) {
                     buf.append(currToken).append(replacement);

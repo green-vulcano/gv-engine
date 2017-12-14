@@ -22,7 +22,7 @@ package it.greenvulcano.util.clazz;
 import java.io.IOException;
 import java.io.Serializable;
 
-import org.apache.commons.lang.SerializationUtils;
+import org.apache.commons.lang3.SerializationUtils;
 
 import com.leansoft.bigqueue.BigQueueImpl;
 import com.leansoft.bigqueue.IBigQueue;

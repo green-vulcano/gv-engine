@@ -80,28 +80,28 @@ public class ArrayUtils
     	Class<?> act = ac.getComponentType();
     	if (act.isPrimitive()) {
     		if (act.equals(boolean.class)) {
-    			list = Arrays.asList(org.apache.commons.lang.ArrayUtils.toObject((boolean[]) arr));
+    			list = Arrays.asList(org.apache.commons.lang3.ArrayUtils.toObject((boolean[]) arr));
     		}
     		else if (act.equals(byte.class)) {
-    			list = Arrays.asList(org.apache.commons.lang.ArrayUtils.toObject((byte[]) arr));
+    			list = Arrays.asList(org.apache.commons.lang3.ArrayUtils.toObject((byte[]) arr));
     		}
     		else if (act.equals(char.class)) {
-    			list = Arrays.asList(org.apache.commons.lang.ArrayUtils.toObject((char[]) arr));
+    			list = Arrays.asList(org.apache.commons.lang3.ArrayUtils.toObject((char[]) arr));
     		}
     		else if (act.equals(short.class)) {
-    			list = Arrays.asList(org.apache.commons.lang.ArrayUtils.toObject((short[]) arr));
+    			list = Arrays.asList(org.apache.commons.lang3.ArrayUtils.toObject((short[]) arr));
     		}
     		else if (act.equals(int.class)) {
-    			list = Arrays.asList(org.apache.commons.lang.ArrayUtils.toObject((int[]) arr));
+    			list = Arrays.asList(org.apache.commons.lang3.ArrayUtils.toObject((int[]) arr));
     		}
     		else if (act.equals(long.class)) {
-    			list = Arrays.asList(org.apache.commons.lang.ArrayUtils.toObject((long[]) arr));
+    			list = Arrays.asList(org.apache.commons.lang3.ArrayUtils.toObject((long[]) arr));
     		}
     		else if (act.equals(float.class)) {
-    			list = Arrays.asList(org.apache.commons.lang.ArrayUtils.toObject((float[]) arr));
+    			list = Arrays.asList(org.apache.commons.lang3.ArrayUtils.toObject((float[]) arr));
     		}
     		else if (act.equals(double.class)) {
-    			list = Arrays.asList(org.apache.commons.lang.ArrayUtils.toObject((double[]) arr));
+    			list = Arrays.asList(org.apache.commons.lang3.ArrayUtils.toObject((double[]) arr));
     		}
     	}
     	else {
