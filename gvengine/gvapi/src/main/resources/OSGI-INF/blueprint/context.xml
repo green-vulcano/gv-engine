@@ -76,15 +76,25 @@
 	
 	<bean id="settingsController" class="it.greenvulcano.gvesb.api.controller.GvSettingsControllerRest"/>
 		
-	<bean id="gvconfigAuthorizationInterceptor" class="org.apache.cxf.interceptor.security.SecureAnnotationsInterceptor">
-   		<property name="allowAnonymousUsers" value="true" />
+	<bean id="configAuthorizationInterceptor" class="org.apache.cxf.interceptor.security.SecureAnnotationsInterceptor">
+   		<property name="allowAnonymousUsers" value="false" />
    		<property name="checkConfiguredRolesOnly" value="false" />
-   		<property name="securedObject" ref="configurationController"/>
+   		<property name="securedObject" ref="configurationController"/>   		
 	</bean>
 	
-	<bean id="gvconfigAuthorizationFilter" class="org.apache.cxf.jaxrs.security.SimpleAuthorizingFilter">	   
-	   <property name="interceptor" ref="gvconfigAuthorizationInterceptor"/>
+	<bean id="configAuthorizationFilter" class="org.apache.cxf.jaxrs.security.SimpleAuthorizingFilter">	   
+	   <property name="interceptor" ref="configAuthorizationInterceptor"/>
 	</bean>	
+	
+	<bean id="settingsAuthorizationInterceptor" class="org.apache.cxf.interceptor.security.SecureAnnotationsInterceptor">
+   		<property name="allowAnonymousUsers" value="false" />
+   		<property name="checkConfiguredRolesOnly" value="false" />   		
+   		<property name="securedObject" ref="settingsController"/>
+	</bean>
+	
+	<bean id="settingsAuthorizationFilter" class="org.apache.cxf.jaxrs.security.SimpleAuthorizingFilter">	   
+	   <property name="interceptor" ref="settingsAuthorizationInterceptor"/>
+	</bean>
 	
 	<jaxrs:server address="/gvconfig" id="gvconfigapi">
         <jaxrs:serviceBeans>            
@@ -93,7 +103,8 @@
         </jaxrs:serviceBeans> 
         <jaxrs:providers>
 	       	<ref component-id="gvAuthenticationFilter"/>
-	       	<ref component-id="gvconfigAuthorizationFilter"/>	
+	       	<ref component-id="configAuthorizationFilter"/>	
+	       	<ref component-id="settingsAuthorizationFilter"/>	
 	       	<ref component-id="cors-filter" />     
 	    </jaxrs:providers>        
     </jaxrs:server>

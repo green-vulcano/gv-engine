@@ -8,9 +8,12 @@ import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -42,6 +45,7 @@ import org.w3c.dom.NodeList;
 
 import it.greenvulcano.configuration.XMLConfig;
 import it.greenvulcano.configuration.XMLConfigException;
+import it.greenvulcano.gvesb.GVConfigurationManager.Authority;
 import it.greenvulcano.util.xml.XMLUtils;
 import it.greenvulcano.util.xml.XMLUtilsException;
 
@@ -49,10 +53,12 @@ import it.greenvulcano.util.xml.XMLUtilsException;
 @CrossOriginResourceSharing(allowAllOrigins=true, allowCredentials=true, exposeHeaders={"Content-type", "Content-Range", "X-Auth-Status"})
 public class GvSettingsControllerRest extends BaseControllerRest{
 	
-	private final static Logger LOG = LoggerFactory.getLogger(GvSettingsControllerRest.class);
+	private final static Logger LOG = LoggerFactory.getLogger(GvSettingsControllerRest.class);	
+	private final static ReentrantLock LOCK = new ReentrantLock();
 
 	@GET @Path("/") 
-	@Produces(MediaType.APPLICATION_JSON)	
+	@Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
 	public Response getAllSettings() {
 		
 		Response response = null; 
@@ -74,6 +80,7 @@ public class GvSettingsControllerRest extends BaseControllerRest{
 	
 	@GET @Path("/{group}") 
 	@Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
 	public Response getSettings(@PathParam("group") String groupName) {
 		
 		Response response = null;
@@ -99,25 +106,34 @@ public class GvSettingsControllerRest extends BaseControllerRest{
 	
 	@PUT @Path("/{group}") 
 	@Consumes(MediaType.APPLICATION_JSON)
+	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
 	public void mergeSettigns(@PathParam("group") String groupName, String settings) {
-		try {
-			JSONObject gvConfigEntry = new JSONObject(settings).getJSONObject(groupName);
+		
+		if  (LOCK.tryLock())  {
+			try {
+				JSONObject gvConfigEntry = new JSONObject(settings).getJSONObject(groupName);
 								
-			Document gvConfig = Optional.ofNullable(CONFIGURATORS.get(groupName))
-										.orElseThrow(()-> new WebApplicationException(Status.NOT_FOUND))
-										.apply(gvConfigEntry)
-										.orElseThrow(()-> new WebApplicationException(Status.SERVICE_UNAVAILABLE));
-			writeDocument(gvConfig);
-			
-			XMLConfig.reload("GVConfig.xml");
-		} catch (JSONException jsonException) {
-			throw new WebApplicationException(Status.BAD_REQUEST);
-		} catch (XMLConfigException xmlConfigException) {
-			LOG.error("Failed to reload  GVConfig.xml", xmlConfigException);
-			throw new WebApplicationException(xmlConfigException, Status.SERVICE_UNAVAILABLE);
-		} catch (IOException e) {
-			LOG.error("Failed to update GreenVulcanoPool in GVConfig.xml",e);
-			throw new WebApplicationException(e, Status.INTERNAL_SERVER_ERROR);
+									
+				Document gvConfig = Optional.ofNullable(CONFIGURATORS.get(groupName))
+											.orElseThrow(()-> new WebApplicationException(Status.NOT_FOUND))
+											.apply(gvConfigEntry)
+											.orElseThrow(()-> new WebApplicationException(Status.SERVICE_UNAVAILABLE));
+				writeDocument(gvConfig);
+				
+				XMLConfig.reload("GVConfig.xml");
+			} catch (JSONException jsonException) {
+				throw new WebApplicationException(Status.BAD_REQUEST);
+			} catch (XMLConfigException xmlConfigException) {
+				LOG.error("Failed to reload  GVConfig.xml", xmlConfigException);
+				throw new WebApplicationException(xmlConfigException, Status.SERVICE_UNAVAILABLE);
+			} catch (IOException e) {
+				LOG.error("Failed to update GreenVulcanoPool in GVConfig.xml",e);
+				throw new WebApplicationException(e, Status.INTERNAL_SERVER_ERROR);
+			} finally {
+				LOCK.unlock();
+			}
+		} else {
+			throw new WebApplicationException(new IllegalAccessException("Concurrency conflict"), Status.CONFLICT);
 		}
 	}	
 		
@@ -131,6 +147,11 @@ public class GvSettingsControllerRest extends BaseControllerRest{
 			poolSettings.put(newSettings);
 		}
 		
+		//avoid duplicate subsytems
+		Map<String, JSONObject> poolSettingsMap = IntStream.range(0, poolSettings.length())
+															.mapToObj(poolSettings::getJSONObject)
+															.collect(Collectors.toMap(p->p.getString("subsystem"), Function.identity(), (p1, p2) -> p2));
+	
 		try {
 			Document gvConfig = XMLConfig.getDocument("GVConfig.xml");
 			Element gvPoolManagerElement = (Element) gvConfig.getElementsByTagName("GVPoolManager").item(0);
@@ -139,9 +160,12 @@ public class GvSettingsControllerRest extends BaseControllerRest{
 			NodeList currentSettings = XMLUtils.selectNodeList_S(gvPoolManagerElement, "./GreenVulcanoPool");			
 			IntStream.range(0, currentSettings.getLength()).mapToObj(currentSettings::item).forEach(gvPoolManagerElement::removeChild);
 			
+			//remove unnecessary empty nodes
+			NodeList emptyNodes =XMLUtils.selectNodeList_S(gvPoolManagerElement, "./text()[normalize-space(.)='']");
+			IntStream.range(0, emptyNodes.getLength()).mapToObj(emptyNodes::item).forEach(gvPoolManagerElement::removeChild);
+			
 			//map new settings
-			IntStream.range(0, poolSettings.length())
-								.mapToObj(poolSettings::getJSONObject)
+			poolSettingsMap.values().stream()
 								.map(gvpool->{
 									Element poolEntry = gvConfig.createElement("GreenVulcanoPool");
 									for (String k : gvpool.keySet()) {
