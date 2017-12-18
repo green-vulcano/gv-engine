@@ -25,7 +25,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -163,7 +162,10 @@ public class UserJPA extends it.greenvulcano.gvesb.iam.domain.User implements Se
 
 	@Override
 	public it.greenvulcano.gvesb.iam.domain.UserInfo getUserInfo() {
-		return  Optional.ofNullable(userInfo).orElseGet(UserInfoJPA::new);
+		if (userInfo==null) {
+			userInfo = new UserInfoJPA();
+		}
+		return  userInfo;
 	}
 
 	@Override
@@ -175,7 +177,7 @@ public class UserJPA extends it.greenvulcano.gvesb.iam.domain.User implements Se
 			this.userInfo.setFullname(userInfo.getFullname());
 		} else {
 			this.userInfo = null;
-		}	
+		}
 		
 	}	
 

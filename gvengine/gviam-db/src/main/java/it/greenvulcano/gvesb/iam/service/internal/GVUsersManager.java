@@ -110,7 +110,7 @@ public class GVUsersManager implements UsersManager, BackingEngine, BackingEngin
 		user.setUserInfo(userInfo);
 		user.setEnabled(enabled);
 		user.setExpired(expired);
-		user.clearRoles();;
+		user.clearRoles();
 		if (grantedRoles!=null){
 			
 			Predicate<Role> roleIsValid = role-> Optional.ofNullable(role.getName()).orElse("").matches(Role.ROLE_PATTERN);
