@@ -8,6 +8,15 @@ input[type=number]::-webkit-inner-spin-button {
 input[type=number]::-moz-inner-spin-button {
   opacity: 1;
 }
+.modal-open {
+    overflow: auto;
+}
+.buttondisable {
+  display: none;
+}
+.cron-select {
+  width: auto;
+}
 #crossClose {
   color: #bdbdbd
 }

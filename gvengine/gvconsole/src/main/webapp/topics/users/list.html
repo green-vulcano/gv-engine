@@ -8,6 +8,7 @@
                <div id="panelHead"  class="panel-heading"><i class="fa fa-users"></i> Found: {{totalItems}}<a href="#/users/new" data-ng-click="slide();" class="btn btn-primary pull-right" data-ng-class="{'btn btn-primary pull-right disabled': dataNa == true || auth != true}">
                   <i class="fa fa-user-plus"></i>
                   </a>
+                  <button onClick = "window.location.reload()" class="btn btn-danger pull-right" style="margin-right:5px"><i class="fa fa fa- fa-refresh" aria-hidden="true"></i></button>
                   <button data-ng-click = "searchClick = !searchClick" class="btn btn-default pull-right" style="margin-right:5px"><i class="fa fa fa-search" aria-hidden="true"></i></button>
                </div>
                <div style="overflow-x:auto;">

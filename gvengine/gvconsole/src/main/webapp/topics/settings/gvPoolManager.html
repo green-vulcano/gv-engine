@@ -6,7 +6,7 @@
    	 <div data-ng-repeat="alert in alerts" class="fadeout alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
    	 <div class="panel panel-default">
    	 	<div class="panel-heading"><i class="fa fa-list" aria-hidden="true"></i> GVPoolManager Form</div>
-   	 	<div class="panel-body">
+   	 	<div class="panel-body" style="padding-top: 0px;">
    	 		<div class="panel-body container-fluid">
    	 		<div class="form-group" data-ng-show="currentPoolIndex<0">
               <label id="labelLeft" class="col-sm-3 control-label">Name</label>
@@ -22,8 +22,8 @@
                 </p>
    	 		  </div>
    	 		</div>
-   	 		
-   	 		<h2 data-ng-show="currentPoolIndex>=0">{{currentPool.subsystem}}</h2>
+
+   	 		<span data-ng-show="currentPoolIndex>=0" class="text-danger" style="font-size: 30px; font-weight: 500; padding-left:15px">{{currentPool.subsystem}}</span>
    	 		</div>
    	 		  <div class="panel-body container-fluid">
 	 		<div class="form-group">
@@ -72,7 +72,7 @@
       <div>
         <button type="button" class="btn btn-default pull-left" data-ng-click="go('settings')"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button>
         <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-floppy-o" aria-hidden="true"></i> Save</button>
-       
+
         <!-- DELETE CONFIRM WINDOW -->
          <button type="button" data-ng-show="currentPoolIndex>=0" data-toggle="modal" data-target="#myModal" data-backdrop="static" data-keyboard="false" class="btn btn-danger pull-right" style="margin-right: 3px;" id="myBtn"><i class="fa fa-trash" aria-hidden="true"></i> Delete</button>
          <div id="myModal" class="modal fadeout">

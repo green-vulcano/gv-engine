@@ -172,7 +172,6 @@ angular.module('gvconsole')
   $scope.historyOrderFunction = function(propertyName) {
     $scope.reverse = ($scope.propertyName === propertyName) ? !$scope.reverse : false;
     $scope.propertyName = propertyName;
-    console.log($scope.propertyName);
   };
 
 	this.exportConfig = function () {

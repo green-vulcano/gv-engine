@@ -62,7 +62,7 @@
                </div>
             </div>
             <div style="overflow:auto">
-            <table id="users" class="table table-hover">
+            <table class="table table-hover" style="margin-bottom: 0px;">
                <thead>
                   <tr>
                      <th class="col-sm-2 Clickable noselect" data-ng-click="historyOrderFunction('id')">Id <i aria-hidden="true" data-ng-class="{'fa fa-sort': propertyName != 'id', 'fa fa-sort-asc': propertyName == 'id' && !reverse, 'fa fa-sort-desc': propertyName == 'id' && reverse}"></i></th>
@@ -102,7 +102,7 @@
             </div>
             <div class="positioninline pnael-body" data-ng-repeat="(id,file) in filesName">
                <div id="{{id}}" class="collapse">
-                  <span class="col-md-10" id="{{file}}" style="overflow: auto;"> </span>
+                  <span class="col-md-12" id="{{file}}" style="overflow: auto;"> </span>
                </div>
             </div>
          </div>

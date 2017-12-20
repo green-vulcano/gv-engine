@@ -20,34 +20,48 @@
          <div class="panel panel-default">
             <div id="panelHead" class="panel-heading clearfix">
                <i class="fa fa-list" aria-hidden="true"></i> Properties list
+               <button class="btn btn-default pull-right" type="button" data-ng-click="addProperties()"><i class="fa fa-plus"></i></button>
             </div>
             <form name="propertiesForm" data-ng-submit="modifyProperties()">
-            <table class="table table-hover">
+            <table class="table table-hover" style="margin-bottom:0px">
                <thead>
                   <tr>
-                     <th>
-                        <div class="col-sm-6">Key</div>
+                     <th class="col-sm-5">
+                        Key <i aria-hidden="true"></i>
                      </th>
-                     <th>
-                        <div class="col-sm-6">Value</div>
+                     <th class="col-sm-5">
+                        Value
+                     </th>
+                     <th class="col-sm-2 text-right">
+                        Action
                      </th>
                   </tr>
                </thead>
                <tbody>
-                  <tr data-ng-repeat="(key,value) in ctrl.properties">
-                     <td>
-                        <div class="col-sm-6">{{key}}</div>
+                  <tr data-ng-repeat="property in properties">
+                     <td class="col-sm-6">
+                        <div data-ng-class="{'has-error' : !property.key}"><input ng-disabled="ctrl.check[property.key]" name="{{property.key}}" type="text" class="form-control" data-ng-model="property.key" name="key" required></div>
+                     </td>
+                     <td class="col-sm-6">
+                        <div data-ng-class="{'has-error' : !property.value}"><input name="{{property.key}}.value" type="text" class="form-control" data-ng-model="property.value" name="value" required></div>
                      </td>
                      <td>
-                        <div class="col-sm-6"  data-ng-class="{'has-error' : !ctrl.properties[key]}"><input name="{{key}}" type="text" class="form-control" data-ng-model="ctrl.properties[key]" name="value" required></div>
+                       <button class="btn btn-danger pull-right" type="button" data-toggle="modal" data-target="#myModal{{$index}}" data-dismiss="modal" data-ng-class="{'buttondisable' : ctrl.check[property.key]}"><i class="fa fa-trash"></i></button>
+                       <div id="myModal{{$index}}" class="modal">
+                          <div class="modal-content">
+                             <h4> Are you sure to delete {{config.id}} ? </h4>
+                             <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button>
+                             <button type="button" class="btn btn-danger" data-dismiss="modal" data-ng-click="deleteProperty(property.key)"><i class="fa fa-trash" aria-hidden="true"></i> Confirm</button>
+                          </div>
+                       </div>
                      </td>
                   </tr>
                </tbody>
             </table>
-            <div id="panelPagination" class="panel-footer">
+            <div class="panel-footer">
               <div class="row">
-                <button type="submit" data-ng-show="propertiesForm.$valid"  id="stepValue" value="1" class="btn btn-primary pull-right"><i class="fa fa-floppy-o" aria-hidden="true"></i> Save</button>
-                <button type="submit" data-ng-show="!propertiesForm.$valid"  id="stepValue" value="1" class="btn btn-primary pull-right" data-toggle="tab" disabled><i class="fa fa-floppy-o" aria-hidden="true"></i> Save</button>
+                <button type="submit" data-ng-show="propertiesForm.$valid" class="btn btn-primary pull-right"><i class="fa fa-floppy-o" aria-hidden="true"></i> Save</button>
+                <button type="submit" data-ng-show="!propertiesForm.$valid"  class="btn btn-primary pull-right" data-toggle="tab" disabled><i class="fa fa-floppy-o" aria-hidden="true"></i> Save</button>
               </div>
          </div>
        </form>
