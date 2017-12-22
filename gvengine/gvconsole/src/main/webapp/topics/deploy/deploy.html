@@ -112,22 +112,22 @@
 															<h2 style="text-align:center; margin:20px">Properties File</h2>
 															<div style="text-align: center;" class="alert alert-warning" data-ng-show="!propertiesForm.$valid" role="alert">All properties must be completed for proced to deploy with this configuration!</div>
 
-															<div class="col-sm-12">
+
 																<table class="table table-hover">
 											            <thead>
 											              <tr>
-											                <th><div class="col-sm-4">Key</div></th>
-											                <th><div class="col-sm-6">Value</div></th>
+											                <th class="col-sm-6">Key</th>
+											                <th class="col-sm-6">Value</th>
 											              </tr>
 											            </thead>
 											            <tbody>
 											              <tr data-ng-repeat="(key,value) in ctrl.properties">
-											                <td><div class="col-sm-4">{{key}}</div></td>
-											                <td><div class="col-sm-6 form-group"  data-ng-class="{'has-error' : !ctrl.properties[key]}"><input name="{{key}}" type="text" class="form-control" data-ng-model="ctrl.properties[key]" name="value" required></div></td>
+											                <td class="col-sm-6">{{key}}</td>
+											                <td class="col-sm-6"><div  class="form-group"  data-ng-class="{'has-error' : !ctrl.properties[key]}"><input name="{{key}}" type="text" class="form-control" data-ng-model="ctrl.properties[key]" name="value" required></div></td>
 											              </tr>
 											            </tbody>
 											          </table>
-															</div>
+
 															<div class="col-sm-6">
 																<a href="#/deploy" type="button" class="btn btn-danger pull-left">Cancel</a>
 															</div>

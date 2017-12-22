@@ -94,7 +94,7 @@ angular.module('gvconsole')
 		PropertiesService.getPropertyValue($scope.key).then(function(response){
 			$scope.value = response.data;
 		},function(response){
-			console.log("error: " + response.data);
+			$scope.value = "No match found";
 			})
 		}
 	}
@@ -106,7 +106,6 @@ angular.module('gvconsole')
 		for (j=0; j < $scope.properties.length ; j++) {
 			instance.Json[$scope.properties[j].key] = $scope.properties[j].value;
 		};
-		console.log(instance.Json);
 	PropertiesService.setProperties(instance.Json).then(function(response){
 		instance.alerts.push({type: 'success', msg: 'Properties saved'});
 		setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);

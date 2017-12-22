@@ -6,6 +6,7 @@
             <div class="panel-heading clearfix">
                <i class="fa fa-list" aria-hidden="true"></i> Value Search
             </div>
+            <form>
             <div class="panel-body">
                <label id="labelLeft" class="control-label optionForm col-sm-1">Key </label>
                <div class="col-sm-4"><input type="text" class="form-control" data-ng-model="key" placeholder="Key"></div>
@@ -13,8 +14,10 @@
                <div class="col-sm-4"><input type="text" class="form-control" value="{{value}}" disabled></div>
             </div>
             <div class="panel-footer clearfix">
-               <a data-ng-click="matchKey();" class="btn btn-primary pull-right"><i class="fa fa-search" aria-hidden="true"></i> Match</a>
+               <button type="reset" class="btn btn-danger pull-right"><i class="fa fa-refresh" aria-hidden="true"></i></button>
+               <button type="submit" data-ng-click="matchKey();" class="btn btn-primary pull-right" style="margin-right:5px"><i class="fa fa-search" aria-hidden="true"></i> Match</button>
             </div>
+          </form>
          </div>
          <div data-ng-repeat="alert in ctrl.alerts" class="fadeout alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
          <div class="panel panel-default">
