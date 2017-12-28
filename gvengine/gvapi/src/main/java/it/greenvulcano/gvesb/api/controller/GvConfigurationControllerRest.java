@@ -19,6 +19,7 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb.api.controller;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -47,7 +48,9 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
@@ -62,7 +65,6 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import it.greenvulcano.configuration.XMLConfig;
@@ -76,7 +78,18 @@ import it.greenvulcano.util.xml.XMLUtils;
 public class GvConfigurationControllerRest extends BaseControllerRest {
 	 private final static Logger LOG = LoggerFactory.getLogger(GvConfigurationControllerRest.class);	
 	
+	 private final DocumentBuilder documentBuilder;
 	 private GVConfigurationManager gvConfigurationManager;
+	 
+	 public GvConfigurationControllerRest() throws ParserConfigurationException {
+		 DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+		 documentBuilderFactory.setValidating(true);
+		 documentBuilderFactory.setFeature("http://xml.org/sax/features/namespaces", false);
+		 documentBuilderFactory.setFeature("http://xml.org/sax/features/validation", false);
+		 documentBuilderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
+		 documentBuilderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+		 documentBuilder = documentBuilderFactory.newDocumentBuilder();
+	 }	 
 	 
 	 public void setConfigurationManager(GVConfigurationManager gvConfigurationManager) {
 		this.gvConfigurationManager = gvConfigurationManager;
@@ -213,6 +226,7 @@ public class GvConfigurationControllerRest extends BaseControllerRest {
 				 response = Response.ok(properties.toString()).build();
 			 }
 		 } catch (Exception e) {
+			LOG.error("Error reading services configuration", e);
 			response = Response.status(Response.Status.NOT_FOUND).build();
 		 }
 		 
@@ -225,17 +239,16 @@ public class GvConfigurationControllerRest extends BaseControllerRest {
 	 @Produces(MediaType.APPLICATION_JSON)
 	 @RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
 	 public Response getArchivedConfigServices(@PathParam("configId") String id) {
-		 
+				
 		 try {
 			 byte[] gvcore = gvConfigurationManager.extract(id, "GVCore.xml");
+			
 			 if (gvcore!=null && gvcore.length>0) {
-				 
-				 String xml = new String(gvcore, "UTF-8");
-				 Document gvcoreDocument  = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse( IOUtils.toInputStream(xml, "UTF-8") );
-				 
-				 NodeList serviceNodes = XMLConfig.getNodeList(gvcoreDocument, "//Service");
+						 
+					Document gvcoreDocument  = documentBuilder.parse(new ByteArrayInputStream(gvcore));
 					
-					
+					NodeList serviceNodes = XMLConfig.getNodeList(gvcoreDocument, "//Service");
+										
 					Map<String, ServiceDTO> services = IntStream.range(0, serviceNodes.getLength())
 									 .mapToObj(serviceNodes::item)
 									 .map(ServiceDTO::buildServiceFromConfig)
@@ -245,6 +258,7 @@ public class GvConfigurationControllerRest extends BaseControllerRest {
 					
 					LOG.debug("Services found "+serviceNodes.getLength());
 					return Response.ok(toJson(services)).build();
+				
 			 }
 			 
 			 return Response.status(Response.Status.NOT_FOUND).build();
@@ -253,6 +267,7 @@ public class GvConfigurationControllerRest extends BaseControllerRest {
 				LOG.error("Error reading services configuration", xmlConfigException);
 				throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(toJson(xmlConfigException)).build());
 		 } catch (Exception e) {
+			LOG.error("Error reading services configuration", e);
 			return Response.status(Response.Status.NOT_FOUND).build();
 		 
 		 }		 
@@ -269,8 +284,8 @@ public class GvConfigurationControllerRest extends BaseControllerRest {
 			 byte[] gvcore = gvConfigurationManager.extract(id, "GVCore.xml");
 			 if (gvcore!=null && gvcore.length>0) {
 				 
-				 String xml = new String(gvcore, "UTF-8");
-				 Document gvcoreDocument  = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse( IOUtils.toInputStream(xml, "UTF-8") );
+				
+				 Document gvcoreDocument  = documentBuilder.parse( new ByteArrayInputStream(gvcore) );
 									
 				 Node serviceNode = Optional.ofNullable(XMLConfig.getNode(gvcoreDocument, "//Service[@id-service='"+service+"']"))
 						   .orElseThrow(NoSuchElementException::new);
@@ -289,6 +304,7 @@ public class GvConfigurationControllerRest extends BaseControllerRest {
 				LOG.error("Error reading services configuration", xmlConfigException);
 				throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(toJson(xmlConfigException)).build());
 		 } catch (Exception e) {
+			LOG.error("Error reading services configuration", e);
 			return Response.status(Response.Status.NOT_FOUND).build();
 		 
 		 }		 
@@ -307,8 +323,8 @@ public class GvConfigurationControllerRest extends BaseControllerRest {
 			 byte[] gvcore = gvConfigurationManager.extract(id, "GVCore.xml");
 			 if (gvcore!=null && gvcore.length>0) {
 				 
-				 String xml = new String(gvcore, "UTF-8");
-				 Document gvcoreDocument  = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse( IOUtils.toInputStream(xml, "UTF-8") );
+				 
+				 Document gvcoreDocument  = documentBuilder.parse( new ByteArrayInputStream(gvcore) );
 									
 				 Node operationNode = Optional.ofNullable(XMLConfig.getNode(gvcoreDocument, "//Service[@id-service='"+service+"']/Operation[@name='"+operation+"']" ))
 	                     .orElseThrow(NoSuchElementException::new);
