@@ -221,7 +221,7 @@ public abstract class ScriptExecutor
      */
     public static Object execute(String lang, String script, Map<String, Object> bindings, String bcName) throws GVScriptException {
         try {
-            ScriptEngine engine = globalScriptEngineManager.getEngineByName(lang);
+            ScriptEngine engine = getScriptEngine(lang);
             if (engine == null) {
                 throw new GVScriptException("ScriptEngine[" + lang + "] not found!");
             }
