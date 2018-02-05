@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import it.greenvulcano.gvesb.iam.exception.CredentialsExpiredException;
 import it.greenvulcano.gvesb.iam.exception.InvalidCredentialsException;
 import it.greenvulcano.gvesb.iam.exception.PasswordMissmatchException;
+import it.greenvulcano.gvesb.iam.exception.UnverifiableUserException;
 import it.greenvulcano.gvesb.iam.exception.UserExpiredException;
 import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
 import it.greenvulcano.gvesb.iam.modules.SecurityModule;
@@ -92,7 +93,7 @@ public class GVSecurityFilter implements ContainerRequestFilter {
 						                 .entity("Credentials expired").build();
 				
         		requestContext.abortWith(expiredResponse);
-			} catch (PasswordMissmatchException|UserNotFoundException|InvalidCredentialsException unauthorizedException){
+			} catch (PasswordMissmatchException|UserNotFoundException|InvalidCredentialsException|UnverifiableUserException unauthorizedException){
 				
 				Response errorResponse = Response.status(Response.Status.UNAUTHORIZED)
 		                 .header("X-Auth-Status", "Denied")

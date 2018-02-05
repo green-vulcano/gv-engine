@@ -48,6 +48,7 @@ import org.slf4j.LoggerFactory;
 import it.greenvulcano.gvesb.iam.domain.Role;
 import it.greenvulcano.gvesb.iam.domain.User;
 import it.greenvulcano.gvesb.iam.exception.PasswordMissmatchException;
+import it.greenvulcano.gvesb.iam.exception.UnverifiableUserException;
 import it.greenvulcano.gvesb.iam.exception.UserExpiredException;
 import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
 import it.greenvulcano.gvesb.iam.service.UsersManager;
@@ -130,7 +131,7 @@ public class GVLoginModule extends AbstractKarafLoginModule{
 			
 		} catch (UserNotFoundException userNotFoundException) {
 			throw new LoginException("User " + user + " does not exist");
-		} catch (PasswordMissmatchException passwordMissmatchException) {
+		} catch (UnverifiableUserException|PasswordMissmatchException passwordMissmatchException) {
 			throw new LoginException("Password for " + user + " does not match");
 		} catch (UserExpiredException e) {
 			updateUserPassword(user, password);

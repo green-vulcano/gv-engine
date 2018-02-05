@@ -22,6 +22,7 @@ package it.greenvulcano.gvesb.iam.domain;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -41,7 +42,7 @@ public abstract class User {
 	public abstract String getUsername();
 	public abstract void setUsername(String username);
 	
-	public abstract String getPassword();
+	public abstract Optional<String> getPassword();
 	public abstract void setPassword(String password);
 
 	public abstract boolean isExpired();

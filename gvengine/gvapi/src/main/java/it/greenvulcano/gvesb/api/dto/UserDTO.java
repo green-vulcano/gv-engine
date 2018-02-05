@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -99,8 +100,8 @@ public class UserDTO {
 			}
 			
 			@Override
-			public String getPassword() {				
-				return null;
+			public Optional<String> getPassword() {				
+				return Optional.empty();
 			}
 			
 			@Override

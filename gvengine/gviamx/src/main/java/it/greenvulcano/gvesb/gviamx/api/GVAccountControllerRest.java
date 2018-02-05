@@ -58,6 +58,7 @@ import it.greenvulcano.gvesb.iam.domain.UserInfo;
 import it.greenvulcano.gvesb.iam.exception.InvalidPasswordException;
 import it.greenvulcano.gvesb.iam.exception.InvalidRoleException;
 import it.greenvulcano.gvesb.iam.exception.InvalidUsernameException;
+import it.greenvulcano.gvesb.iam.exception.UnverifiableUserException;
 import it.greenvulcano.gvesb.iam.exception.UserExistException;
 import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
 import it.greenvulcano.gvesb.iam.service.UsersManager.Authority;
@@ -112,11 +113,13 @@ public class GVAccountControllerRest {
 				status.put("status", "PENDING");					
 			} catch (IllegalArgumentException signupRequestNotExistException) {
 				status.put("status", "UNKNOWN");
-			}
+			} 
 		} catch (Exception e) {
 			LOG.error("Fatal error checking signup status", e);
+			status.put("status","FAIL");
+			status.put("message", e.getMessage());
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(status.toString()).build();
 			
-			return Response.serverError().build();
 		}
 		
 		return Response.ok(status.toString()).build();
@@ -125,10 +128,11 @@ public class GVAccountControllerRest {
 	
 	@Path("/signup")
 	@POST
-	@Consumes(MediaType.APPLICATION_JSON)	
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response submitSignUpRequest(String request, @QueryParam("plain") boolean plain) {
 		Response response = null;
-		
+		JSONObject payload = new JSONObject();
 		try {
 						
 			JSONObject jsonData = new JSONObject(request);
@@ -147,29 +151,50 @@ public class GVAccountControllerRest {
 		    		throw new InvalidPasswordException(password.get());
 		    	}		    	
 		    }			
-			
+		    
 			signupManager.createSignUpRequest(jsonData.optString("email"), jsonData.toString().getBytes());
-		
-			response = Response.status(Status.ACCEPTED).build();
+			
+			payload.put("email", jsonData.getString("email"));
+			payload.put("status", "PENDING");
+			
+			response = Response.status(Status.ACCEPTED).entity(payload.toString()).build();
 		} catch (InvalidPasswordException e) {
 			LOG.warn("Error processing signup request", e);
-			response = Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();			
+			
+			payload.put("status","ERROR");
+			payload.put("message", e.getMessage());			
+			response = Response.status(Status.BAD_REQUEST).entity(payload.toString()).build();			
+		
 		} catch (JSONException jsonException) {
 			LOG.warn("Error processing signup request", jsonException);
-			response = Response.status(Status.BAD_REQUEST).entity("Invalid json").build();
+			
+			payload.put("status","ERROR");
+			payload.put("message", "Invalid json");
+			response = Response.status(Status.BAD_REQUEST).entity(payload.toString()).build();
+						
 		} catch (IllegalArgumentException e) {
 			LOG.warn("Error processing signup request", e);
-			response = Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();		
+			
+			payload.put("status","ERROR");
+			payload.put("message", e.getMessage());
+			response = Response.status(Status.BAD_REQUEST).entity(payload.toString()).build();
+			
 		} catch (UserExistException e) {
 			LOG.warn("Error processing signup request", e);
-			response = Response.status(Status.CONFLICT).entity("Email address in use ").build();
+			
+			payload.put("status","ERROR");
+			payload.put("message", "Email address in use");
+			response = Response.status(Status.CONFLICT).entity(payload.toString()).build();
+			
 		} catch (CryptoHelperException|CryptoUtilsException e){		
 			LOG.error("GVCryptoHelper configuration missing or invalid", e);			
 			response = Response.status(Status.SERVICE_UNAVAILABLE).build();
 			
 		} catch (Exception e) {
-			LOG.error("Fatal error creating signup request", e);			
-			response = Response.serverError().build();
+			LOG.error("Failure processing password reset request", e);
+			payload.put("status","FAIL");
+			payload.put("message", e.getMessage());
+			response = Response.status(Status.INTERNAL_SERVER_ERROR).entity(payload.toString()).build();
 		}
 		
 		return response;
@@ -178,7 +203,8 @@ public class GVAccountControllerRest {
 	
 	@Path("/signup")
 	@PUT
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)	
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response confirmSignUpRequest(@FormParam("email")String email, @FormParam("token")String token, @FormParam("password") String clearPassword) {
 				
 		Response response = null;
@@ -207,17 +233,35 @@ public class GVAccountControllerRest {
 			
 			try {
 				JSONObject object = new JSONObject(new String(signupRequest.getRequest(), "UTF-8"));
-				String first = object.getJSONObject("client").getString("first_name");
-				String last = object.getJSONObject("client").getString("last_name");
 				
-				String fullname = first.concat(" ").concat(last);
-				user.getUserInfo().setFullname(fullname);
+				if (object.has("fullname")) {
+					user.getUserInfo().setFullname(object.getString("fullname"));
+				}  else if (object.has("client")) {
+					String first = Optional.of(object.optJSONObject("client")).orElseGet(JSONObject::new).optString("first_name", "");
+					String last = Optional.of(object.optJSONObject("client")).orElseGet(JSONObject::new).optString("last_name", "");
+					
+					String fullname = first.concat(" ").concat(last).trim();
+					user.getUserInfo().setFullname(fullname);
+				} else {
+					
+					String first = object.optString("first_name", "GVIAM");
+					String last = object.optString("last_name", "USER");
+					
+					String fullname = first.concat(" ").concat(last).trim();
+					user.getUserInfo().setFullname(fullname);
+				}
+								
+				
 			} catch (Exception e) {
 			    LOG.debug("Fail to retrieve fullname", e);
-			}
+			}			
 							
 			signupManager.getUsersManager().updateUser(email, user.getUserInfo(), user.getRoles(), true, false);
 			signupManager.getUsersManager().addRole(email, Authority.NOT_AUTHORATIVE);
+			
+			for (String role : signupManager.getDefaultRoles()) {
+				signupManager.getUsersManager().addRole(email, role);
+			}		
 			
 			signupManager.consumeSignUpRequest(signupRequest);
 			response = Response.created(URI.create("../gviam/users/"+user.getId())).build();
@@ -226,14 +270,23 @@ public class GVAccountControllerRest {
 			response = Response.status(Status.NOT_FOUND).build();	
 		} catch (InvalidUsernameException e) {
 			LOG.warn("Error performing signup", e);
-			response = Response.status(Status.BAD_REQUEST).entity("Invalid email").build();
+			JSONObject payload = new JSONObject();
+			payload.put("status","ERROR");
+			payload.put("message", "Invalid email");
+			response = Response.status(Status.BAD_REQUEST).entity(payload.toString()).build();
 		} catch (InvalidPasswordException e) {
 			LOG.warn("Error performing signup", e);
-			response = Response.status(Status.BAD_REQUEST).entity("Invalid password").build();		
+			JSONObject payload = new JSONObject();
+			payload.put("status","ERROR");
+			payload.put("message", "Invalid password");
+			response = Response.status(Status.BAD_REQUEST).entity(payload.toString()).build();		
 		} catch (Exception e) {
 			LOG.error("Fatal error performing signup", e);
 			signupManager.getUsersManager().deleteUser(email);
-			response = Response.serverError().build();
+			JSONObject payload = new JSONObject();
+			payload.put("status","FAIL");
+			payload.put("message", e.getMessage());
+			response = Response.status(Status.INTERNAL_SERVER_ERROR).entity(payload.toString()).build();
 		}
 		
 		return response;
@@ -241,35 +294,55 @@ public class GVAccountControllerRest {
 	
 	@Path("/restore")
 	@POST
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)	
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response submitResetPasswordRequest(@FormParam("email") String email){
 		Response response = null;
+		JSONObject payload = new JSONObject();
 		try {
-			
+			payload.put("email", email);
 			Optional.ofNullable(email).orElseThrow(()->new IllegalArgumentException("Required parameter: email"));
 						
 			passwordResetManager.createPasswordResetRequest(email.trim());
-			response = Response.accepted().build();
-			
+			payload.put("status", "PENDING");
+			response = Response.accepted().entity(payload.toString()).build();
+		
+		} catch (UnverifiableUserException e) {
+			LOG.warn("Password reset request not supported for endorsed user", e);
+			payload.put("status","ERROR");
+			payload.put("message", "Password reset request not supported for endorsed user");
+			response = Response.status(Status.NOT_FOUND).entity(payload.toString()).build();
+						
 		} catch (UserNotFoundException e) {
 			LOG.warn("Error processing password reset request", e);
-			response = Response.status(Status.NOT_FOUND).entity("No matching account found").build();
+			payload.put("status","ERROR");
+			payload.put("message", "No matching account found");
+			response = Response.status(Status.NOT_FOUND).entity(payload.toString()).build();
 		} catch (IllegalArgumentException e) {
 			LOG.warn("Error processing password reset request", e);
-			response = Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();		
-		}
+			payload.put("status","ERROR");
+			payload.put("message", e.getMessage());
+			response = Response.status(Status.BAD_REQUEST).entity(payload.toString()).build();		
+		} catch (Exception e) {
+			LOG.error("Failure processing password reset request", e);
+			payload.put("status","FAIL");
+			payload.put("message", e.getMessage());
+			response = Response.status(Status.INTERNAL_SERVER_ERROR).entity(payload.toString()).build();
+		}		
 		
-		return response;
-				
+		return response;		
 	}
 	
 	@Path("/restore")
 	@PUT
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)	
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response consumeResetPasswordRequest(@FormParam("email")String email, @FormParam("token")String token, @FormParam("password")String password) {
 		
 		Response response = null;
+		JSONObject payload = new JSONObject();
 		try {
+			
 			email = Optional.ofNullable(email).orElseThrow(()->new IllegalArgumentException("Required parameter: email")).trim();
 			token = Optional.ofNullable(token).orElseThrow(()->new IllegalArgumentException("Required parameter: token")).trim();
 			password = Optional.ofNullable(password).orElseThrow(()->new IllegalArgumentException("Required parameter: password")).trim();
@@ -280,18 +353,31 @@ public class GVAccountControllerRest {
 			passwordResetManager.getUsersManager().setUserExpiration(email, false);
 			
 			passwordResetManager.consumePasswordResetRequest(passwordResetRequest);
-			response = Response.noContent().build();
+			payload.put("email", email);
+			payload.put("status", "CONFIRMED");
+			response = Response.ok().entity(payload.toString()).build();
 			
 		} catch (UserNotFoundException|SecurityException e) {
 			LOG.warn("Error performing password reset", e);
-			response = Response.status(Status.NOT_FOUND).entity("No matching account found").build();
+			payload.put("status","ERROR");
+			payload.put("message", "No matching account found");
+			response = Response.status(Status.NOT_FOUND).entity(payload.toString()).build();
 		} catch (InvalidPasswordException e) {
 			LOG.warn("Error performing password reset", e);
-			response = Response.status(Status.FORBIDDEN).entity("Invalid password").build();
+			payload.put("status","ERROR");
+			payload.put("message", "Invalid password");
+			response = Response.status(Status.FORBIDDEN).entity(payload.toString()).build();
 		} catch (IllegalArgumentException e) {
 			LOG.warn("Error performing password reset", e);
-			response = Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();		
-		}
+			payload.put("status","ERROR");
+			payload.put("message", e.getMessage());
+			response = Response.status(Status.BAD_REQUEST).entity(payload.toString()).build();		
+		} catch (Exception e) {
+			LOG.error("Failure processing password reset request", e);
+			payload.put("status","FAIL");
+			payload.put("message", e.getMessage());
+			response = Response.status(Status.INTERNAL_SERVER_ERROR).entity(payload.toString()).build();
+		}	
 		
 		return response;
 		
@@ -299,31 +385,43 @@ public class GVAccountControllerRest {
 	
 	@Path("/update")
 	@POST
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)	
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll
 	public Response submitChangeEmailRequest(@Context SecurityContext securityContext, @FormParam("email")String email, @FormParam("new_email")String newEmail){
 		Response response = null;
-		
+		JSONObject payload = new JSONObject();
 		try {
 			if (securityContext==null || securityContext.getUserPrincipal()==null) {
 				throw new  SecurityException();
-			}
-			
+			}			
 			
 			email = Optional.ofNullable(email).orElseThrow(()->new IllegalArgumentException("Required parameter: email")).trim();
 			newEmail = Optional.ofNullable(newEmail).orElseThrow(()->new IllegalArgumentException("Required parameter: new_email")).trim();		
-			
+					
 			emailChangeManager.createEmailChangeRequest(email, newEmail);
-			response = Response.ok().build();						
+			
+			payload.put("email", email);
+			payload.put("status", "PENDING");
+			response = Response.accepted().entity(payload.toString()).build();						
 		} catch (SecurityException e) {
 			response = Response.status(Status.UNAUTHORIZED).build();
 		} catch (UserNotFoundException e) {
 			LOG.warn("Error processing username update request", e);
-			response = Response.status(Status.NOT_FOUND).entity("No matching account found").build();
+			payload.put("status","ERROR");
+			payload.put("message", "No matching account found");
+			response = Response.status(Status.NOT_FOUND).entity(payload.toString()).build();
 		} catch (IllegalArgumentException e) {
 			LOG.warn("Error processing username update request", e);
-			response = Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();		
-		} 
+			payload.put("status","ERROR");
+			payload.put("message", e.getMessage());
+			response = Response.status(Status.BAD_REQUEST).entity(payload.toString()).build();		
+		} catch (Exception e) {
+			LOG.error("Failure processing password reset request", e);
+			payload.put("status","FAIL");
+			payload.put("message", e.getMessage());
+			response = Response.status(Status.INTERNAL_SERVER_ERROR).entity(payload.toString()).build();
+		}
 		
 		return response;
 		
@@ -332,10 +430,11 @@ public class GVAccountControllerRest {
 	@Path("/update")
 	@PUT
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll
 	public Response consumeChangeEmailRequest(@Context SecurityContext securityContext, @FormParam("email")String email, @FormParam("token")String token) {
 		Response response = null;
-		
+		JSONObject payload = new JSONObject();
 		try {
 			if (securityContext==null || securityContext.getUserPrincipal()==null) {
 				throw new  SecurityException();
@@ -364,7 +463,9 @@ public class GVAccountControllerRest {
 				}
 				
 				emailChangeManager.consumeEmailChangeRequest(request);
-				response = Response.ok().build();
+				payload.put("email", email);
+				payload.put("status", "CONFIRMED");
+				response = Response.ok().entity(payload.toString()).build();
 			} else {
 				response = Response.status(Status.FORBIDDEN).build();
 			}
@@ -372,11 +473,20 @@ public class GVAccountControllerRest {
 			response = Response.status(Status.UNAUTHORIZED).build();
 		} catch (UserNotFoundException e) {
 			LOG.warn("Error performing username update", e);
-			response = Response.status(Status.NOT_FOUND).entity("No matching account found").build();	
+			payload.put("status","ERROR");
+			payload.put("message", "No matching account found");
+			response = Response.status(Status.NOT_FOUND).entity(payload.toString()).build();	
 		} catch (InvalidUsernameException|IllegalArgumentException e) {
 			LOG.warn("Error performing username update", e);
-			response = Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();		
-		} 		
+			payload.put("status","ERROR");
+			payload.put("message", e.getMessage());
+			response = Response.status(Status.BAD_REQUEST).entity(payload.toString()).build();	
+		} catch (Exception e) {
+			LOG.error("Failure processing password reset request", e);
+			payload.put("status","FAIL");
+			payload.put("message", e.getMessage());
+			response = Response.status(Status.INTERNAL_SERVER_ERROR).entity(payload.toString()).build();
+		}		
 		
 		return response;
 		

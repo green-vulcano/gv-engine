@@ -56,6 +56,7 @@ import it.greenvulcano.gvesb.iam.exception.InvalidPasswordException;
 import it.greenvulcano.gvesb.iam.exception.InvalidRoleException;
 import it.greenvulcano.gvesb.iam.exception.InvalidUsernameException;
 import it.greenvulcano.gvesb.iam.exception.PasswordMissmatchException;
+import it.greenvulcano.gvesb.iam.exception.UnverifiableUserException;
 import it.greenvulcano.gvesb.iam.exception.UserExistException;
 import it.greenvulcano.gvesb.iam.exception.UserExpiredException;
 import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
@@ -146,10 +147,11 @@ public class GVUsersManager implements UsersManager, BackingEngine, BackingEngin
 	}
 
 	@Override
-	public User resetUserPassword(String username, String defaultPassword) throws UserNotFoundException, InvalidPasswordException {
+	public User resetUserPassword(String username, String defaultPassword) throws UserNotFoundException, InvalidPasswordException, UnverifiableUserException {
 		User user = userRepository.get(username).orElseThrow(()->new UserNotFoundException(username));
 	
-		if (!Objects.requireNonNull(defaultPassword, "A default password is required").matches(User.PASSWORD_PATTERN)) throw new InvalidPasswordException(defaultPassword);
+		if (!Objects.requireNonNull(defaultPassword, "A default password is required").matches(User.PASSWORD_PATTERN)) throw new InvalidPasswordException(defaultPassword);		
+		if (!user.getPassword().isPresent()) throw new UnverifiableUserException(username);
 		
 		user.setPassword(getEncryptedPassword(defaultPassword));
 		user.setPasswordTime(new Date());
@@ -161,11 +163,13 @@ public class GVUsersManager implements UsersManager, BackingEngine, BackingEngin
 
 	@Override
 	public User changeUserPassword(String username, String oldPassword, String newPassword)
-			throws UserNotFoundException, PasswordMissmatchException, InvalidPasswordException {
+			throws UserNotFoundException, PasswordMissmatchException, InvalidPasswordException, UnverifiableUserException {
 		
 		User user = userRepository.get(username).orElseThrow(()->new UserNotFoundException(username));
-		if (!newPassword.matches(User.PASSWORD_PATTERN)) throw new InvalidPasswordException(newPassword);
-				
+		if (!newPassword.matches(User.PASSWORD_PATTERN)) throw new InvalidPasswordException(newPassword);		
+		if (!user.getPassword().isPresent()) throw new UnverifiableUserException(username);			
+		
+		
 		user.setUsername(username);
 		user.setPassword(getEncryptedPassword(newPassword));
 		user.setPasswordTime(new Date());
@@ -178,10 +182,10 @@ public class GVUsersManager implements UsersManager, BackingEngine, BackingEngin
 
 	@Override
 	public User validateUser(String username, String password)
-			throws UserNotFoundException, PasswordMissmatchException, UserExpiredException {
+			throws UserNotFoundException, PasswordMissmatchException, UserExpiredException, UnverifiableUserException {
 		
 		User user = userRepository.get(username).orElseThrow(()->new UserNotFoundException(username));
-		if(user.getPassword().equals(getEncryptedPassword(password))) {
+		if(user.getPassword().orElseThrow(() -> new UnverifiableUserException(username)).equals(getEncryptedPassword(password))) {
 			if (user.isExpired()) {
 				throw new UserExpiredException(username);				
 			} else if (!user.isEnabled()) {

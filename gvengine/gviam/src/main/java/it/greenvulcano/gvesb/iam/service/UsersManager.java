@@ -30,6 +30,7 @@ import it.greenvulcano.gvesb.iam.exception.InvalidPasswordException;
 import it.greenvulcano.gvesb.iam.exception.InvalidRoleException;
 import it.greenvulcano.gvesb.iam.exception.InvalidUsernameException;
 import it.greenvulcano.gvesb.iam.exception.PasswordMissmatchException;
+import it.greenvulcano.gvesb.iam.exception.UnverifiableUserException;
 import it.greenvulcano.gvesb.iam.exception.UserExistException;
 import it.greenvulcano.gvesb.iam.exception.UserExpiredException;
 import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
@@ -106,7 +107,7 @@ public interface UsersManager {
 		
 		User getUser(String username) throws UserNotFoundException;
 		
-		User validateUser(String username, String password) throws UserNotFoundException, UserExpiredException, PasswordMissmatchException;
+		User validateUser(String username, String password) throws UserNotFoundException, UserExpiredException, PasswordMissmatchException, UnverifiableUserException;
 		
 		void addRole(String username, String role) throws InvalidRoleException, UserNotFoundException;
 		
@@ -128,9 +129,9 @@ public interface UsersManager {
 		
 		User setUserExpiration(String username, boolean expired) throws UserNotFoundException;
 		
-		User resetUserPassword(String username, String defaultPassword) throws UserNotFoundException, InvalidPasswordException;
+		User resetUserPassword(String username, String defaultPassword) throws UserNotFoundException, InvalidPasswordException, UnverifiableUserException;
 		
-		User changeUserPassword(String username, String oldPassword, String newPassword) throws UserNotFoundException, PasswordMissmatchException, InvalidPasswordException;
+		User changeUserPassword(String username, String oldPassword, String newPassword) throws UserNotFoundException, PasswordMissmatchException, InvalidPasswordException, UnverifiableUserException;
 						
 		void deleteUser(String username);
 			

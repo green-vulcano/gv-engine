@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import it.greenvulcano.gvesb.iam.domain.Role;
 import it.greenvulcano.gvesb.iam.domain.User;
 import it.greenvulcano.gvesb.iam.exception.PasswordMissmatchException;
+import it.greenvulcano.gvesb.iam.exception.UnverifiableUserException;
 import it.greenvulcano.gvesb.iam.exception.UserExpiredException;
 import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
 import it.greenvulcano.gvesb.iam.modules.Identity;
@@ -58,7 +59,7 @@ public class GVBasicAuthenticationSecurityModule implements SecurityModule {
 	}	
 	
 	@Override
-	public Optional<Identity> resolve(String authorization)  throws UserNotFoundException, UserExpiredException, PasswordMissmatchException {
+	public Optional<Identity> resolve(String authorization)  throws UserNotFoundException, UserExpiredException, PasswordMissmatchException, UnverifiableUserException {
 		
 		LOG.debug("GVBasicAuthenticationSecurityModule - Check for Basic Authentication: "+authorization);
 		
@@ -78,7 +79,7 @@ public class GVBasicAuthenticationSecurityModule implements SecurityModule {
 
 
 	@Override
-	public Optional<Identity> resolve(String type, Map<String, Object> authorization) throws UserNotFoundException, UserExpiredException, PasswordMissmatchException {
+	public Optional<Identity> resolve(String type, Map<String, Object> authorization) throws UserNotFoundException, UserExpiredException, PasswordMissmatchException, UnverifiableUserException {
 		if ("Basic".equalsIgnoreCase(type) && authorization!=null){
 			
 			return Optional.of(getIdentity((String)authorization.get("username"), (String)authorization.get("password")));
@@ -88,7 +89,7 @@ public class GVBasicAuthenticationSecurityModule implements SecurityModule {
 		return Optional.empty();
 	}
 	
-	private Identity getIdentity(String username, String password) throws UserNotFoundException, UserExpiredException, PasswordMissmatchException {
+	private Identity getIdentity(String username, String password) throws UserNotFoundException, UserExpiredException, PasswordMissmatchException, UnverifiableUserException {
 		User user = usersManager.validateUser(username, password);
 		return new Identity(user.getId(), user.getUsername(), user.getRoles().stream().map(Role::getName).collect(Collectors.toSet()));
 		
@@ -96,7 +97,7 @@ public class GVBasicAuthenticationSecurityModule implements SecurityModule {
 
 
 	@Override
-	public Optional<Identity> resolve(String type, String... authorization)	throws UserNotFoundException, UserExpiredException, PasswordMissmatchException {
+	public Optional<Identity> resolve(String type, String... authorization)	throws UserNotFoundException, UserExpiredException, PasswordMissmatchException, UnverifiableUserException {
 		if ("Basic".equalsIgnoreCase(type) && authorization!=null && authorization.length>1){
 			
 			return Optional.of(getIdentity(authorization[0], authorization[1]));
