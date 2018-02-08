@@ -19,13 +19,10 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb.iam.service.internal;
 
-import java.security.Principal;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -35,13 +32,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.apache.karaf.jaas.boot.principal.GroupPrincipal;
-import org.apache.karaf.jaas.boot.principal.RolePrincipal;
-import org.apache.karaf.jaas.boot.principal.UserPrincipal;
-import org.apache.karaf.jaas.modules.BackingEngine;
-import org.apache.karaf.jaas.modules.BackingEngineFactory;
-import org.apache.karaf.jaas.modules.Encryption;
-import org.apache.karaf.jaas.modules.encryption.EncryptionSupport;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,24 +51,17 @@ import it.greenvulcano.gvesb.iam.exception.UnverifiableUserException;
 import it.greenvulcano.gvesb.iam.exception.UserExistException;
 import it.greenvulcano.gvesb.iam.exception.UserExpiredException;
 import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
-import it.greenvulcano.gvesb.iam.jaas.GVLoginModule;
 import it.greenvulcano.gvesb.iam.repository.hibernate.RoleRepositoryHibernate;
 import it.greenvulcano.gvesb.iam.repository.hibernate.UserRepositoryHibernate;
 import it.greenvulcano.gvesb.iam.service.SearchCriteria;
 import it.greenvulcano.gvesb.iam.service.SearchResult;
 import it.greenvulcano.gvesb.iam.service.UsersManager;
 
-public class GVUsersManager implements UsersManager, BackingEngine, BackingEngineFactory {
+public class GVUsersManager implements UsersManager{
 	
 	private UserRepositoryHibernate userRepository;
 	private RoleRepositoryHibernate roleRepository;
-	private final EncryptionSupport encryptionSupport;
 	
-	{
-		Map<String, Object> allOptions = new HashMap<>();	
-		allOptions.putAll(GVLoginModule.ENCRYPTION_SETTINGS);
-		encryptionSupport = new EncryptionSupport(allOptions);
-	}
 	
 	public void setUserRepository(UserRepositoryHibernate userRepository) {
 		this.userRepository = userRepository;
@@ -90,7 +74,20 @@ public class GVUsersManager implements UsersManager, BackingEngine, BackingEngin
 	@Override
 	public User createUser(String username, String password)
 			throws InvalidUsernameException, InvalidPasswordException, UserExistException {		
-		addUser(username, password);
+		if (!username.matches(User.USERNAME_PATTERN)) throwException(new InvalidUsernameException(username));
+		if (!password.matches(User.PASSWORD_PATTERN)) throwException(new InvalidPasswordException(password));
+					
+		UserJPA user = new UserJPA();		
+		user.setUsername(username);
+		user.setPassword(DigestUtils.sha256Hex(password));
+		user.setPasswordTime(new Date());
+		user.setEnabled(true);
+				
+		try {
+			userRepository.add(user);
+		} catch (org.hibernate.StaleObjectStateException|ConstraintViolationException constraintViolationException) {			
+			throwException(new UserExistException(username));
+		}
 		
 		return userRepository.get(username).get();
 	}
@@ -153,7 +150,7 @@ public class GVUsersManager implements UsersManager, BackingEngine, BackingEngin
 		if (!Objects.requireNonNull(defaultPassword, "A default password is required").matches(User.PASSWORD_PATTERN)) throw new InvalidPasswordException(defaultPassword);		
 		if (!user.getPassword().isPresent()) throw new UnverifiableUserException(username);
 		
-		user.setPassword(getEncryptedPassword(defaultPassword));
+		user.setPassword(DigestUtils.sha256Hex(defaultPassword));
 		user.setPasswordTime(new Date());
 		user.setExpired(true);
 		userRepository.add(user);
@@ -171,7 +168,7 @@ public class GVUsersManager implements UsersManager, BackingEngine, BackingEngin
 		
 		
 		user.setUsername(username);
-		user.setPassword(getEncryptedPassword(newPassword));
+		user.setPassword(DigestUtils.sha256Hex(newPassword));
 		user.setPasswordTime(new Date());
 		user.setExpired(false);
 		
@@ -185,7 +182,7 @@ public class GVUsersManager implements UsersManager, BackingEngine, BackingEngin
 			throws UserNotFoundException, PasswordMissmatchException, UserExpiredException, UnverifiableUserException {
 		
 		User user = userRepository.get(username).orElseThrow(()->new UserNotFoundException(username));
-		if(user.getPassword().orElseThrow(() -> new UnverifiableUserException(username)).equals(getEncryptedPassword(password))) {
+		if(user.getPassword().orElseThrow(() -> new UnverifiableUserException(username)).equals(DigestUtils.sha256Hex(password))) {
 			if (user.isExpired()) {
 				throw new UserExpiredException(username);				
 			} else if (!user.isEnabled()) {
@@ -295,12 +292,12 @@ public class GVUsersManager implements UsersManager, BackingEngine, BackingEngin
 			logger.info("Creating a default 'gvadmin'");
 			User admin;
 			try {
-				addUser("gvadmin", "gvadmin");				
-			} catch (SecurityException e) {				
+				createUser("gvadmin", "gvadmin");				
+			} catch (SecurityException | InvalidUsernameException | InvalidPasswordException | UserExistException e) {				
 				logger.info("A user named 'gvadmin' exist: restoring his default settings", e);
 				
 				admin = userRepository.get("gvadmin").get();
-				admin.setPassword(getEncryptedPassword("gvadmin"));
+				admin.setPassword(DigestUtils.sha256Hex("gvadmin"));
 				admin.setPasswordTime(new Date());
 				admin.setExpired(true);
 				userRepository.add(admin);
@@ -326,7 +323,9 @@ public class GVUsersManager implements UsersManager, BackingEngine, BackingEngin
 	@Override
 	public void revokeRole(String username, String role) throws UserNotFoundException {
 		try {
-			deleteRole(username, role);
+			User user = userRepository.get(username).orElseThrow(()->new SecurityException(new UserNotFoundException(username)));
+			user.removeRole(role);				
+			userRepository.add(user);
 		} catch (SecurityException e) {
 			if (e.getCause() instanceof UserNotFoundException) {
 				throw (UserNotFoundException) e.getCause();
@@ -352,26 +351,7 @@ public class GVUsersManager implements UsersManager, BackingEngine, BackingEngin
 
 	private void throwException(GVSecurityException cause){
 		throw new SecurityException(cause);
-	}
-		
-	@Override
-	public void addUser(String username, String password) {
-		
-		if (!username.matches(User.USERNAME_PATTERN)) throwException(new InvalidUsernameException(username));
-		if (!password.matches(User.PASSWORD_PATTERN)) throwException(new InvalidPasswordException(password));
-					
-		UserJPA user = new UserJPA();		
-		user.setUsername(username);
-		user.setPassword(getEncryptedPassword(password));
-		user.setPasswordTime(new Date());
-		user.setEnabled(true);
-				
-		try {
-			userRepository.add(user);
-		} catch (org.hibernate.StaleObjectStateException|ConstraintViolationException constraintViolationException) {			
-			throwException(new UserExistException(username));
-		}
-	}
+	}	
 
 	@Override
 	public void addRole(String username, String rolename) {
@@ -384,106 +364,6 @@ public class GVUsersManager implements UsersManager, BackingEngine, BackingEngin
 		
 		userRepository.add(user);
 
-	}
-
-	@Override
-	public void deleteRole(String username, String rolename) {
-		User user = userRepository.get(username).orElseThrow(()->new SecurityException(new UserNotFoundException(username)));
-		user.removeRole(rolename);				
-		userRepository.add(user);
-
-	}	
-
-	@Override
-	public List<UserPrincipal> listUsers() {
-		
-		return userRepository.getAll().stream()
-							 .map(User::getUsername)
-							 .map(UserPrincipal::new)
-							 .collect(Collectors.toList());
-	}	
-
-	@Override
-	public List<RolePrincipal> listRoles(Principal principal) {		
-		return userRepository.get(principal.getName()).orElseThrow(()->new SecurityException(new UserNotFoundException(principal.getName())))
-							 .getRoles().stream()
-							 			.map(Role::getName)
-							 			.map(RolePrincipal::new)
-							 			.collect(Collectors.toList());
-	}
-	
-	@Override
-	public void addGroup(String username, String group) {
-		throw new UnsupportedOperationException();
-
-	}
-
-	@Override
-	public void createGroup(String group) {
-		throw new UnsupportedOperationException();
-
-	}
-
-	@Override
-	public void deleteGroup(String username, String group) {
-		throw new UnsupportedOperationException();
-
-	}
-	
-	@Override
-	public void addGroupRole(String group, String role) {
-		throw new UnsupportedOperationException();
-
-	}
-
-	@Override
-	public void deleteGroupRole(String group, String role) {
-		throw new UnsupportedOperationException();
-	}
-	
-	@Override
-	public List<GroupPrincipal> listGroups(UserPrincipal user) {
-		return new ArrayList<>();
-	}
-
-	@Override
-	public Map<GroupPrincipal, String> listGroups() {
-		return new HashMap<>();
-	}
-	
-	public String getEncryptedPassword(String password) {
-        Encryption encryption = encryptionSupport.getEncryption();
-        String encryptionPrefix = encryptionSupport.getEncryptionPrefix();
-        String encryptionSuffix = encryptionSupport.getEncryptionSuffix();
-
-        if (encryption == null) {
-            return password;
-        } else {
-            boolean prefix = encryptionPrefix == null || password.startsWith(encryptionPrefix);
-            boolean suffix = encryptionSuffix == null || password.endsWith(encryptionSuffix);
-            if (prefix && suffix) {
-                return password;
-            } else {
-                String p = encryption.encryptPassword(password);
-                if (encryptionPrefix != null) {
-                    p = encryptionPrefix + p;
-                }
-                if (encryptionSuffix != null) {
-                    p = p + encryptionSuffix;
-                }
-                return p;
-            }
-        }
-	}
-
-	@Override
-	public String getModuleClass() {
-		return GVLoginModule.class.getName();
-	}
-
-	@Override
-	public BackingEngine build(Map<String, ?> options) {		
-		return this;
 	}	
 
 }

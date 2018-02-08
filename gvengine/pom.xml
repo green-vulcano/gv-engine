@@ -24,7 +24,7 @@
     <version.osgi>5.0.0</version.osgi>
     <version.slf4j>1.6.1</version.slf4j>
     <version.junit>4.11</version.junit>
-	<version.karaf>4.0.8</version.karaf>
+	<version.karaf>4.1.4</version.karaf>
 
     <cloud.nexus.content>http://mvn.greenvulcano.com/nexus/content</cloud.nexus.content>
   </properties>
@@ -196,6 +196,7 @@
     <module>gviam</module>
     <module>gviam-db</module>
     <module>gviamx</module>
+    <module>gviam-karaf</module>
     <module>gvmonitoring</module>
     <module>gvpolicy</module>
     <module>gvscheduler</module>
@@ -203,6 +204,7 @@
     <module>gvvcl</module>
     <module>gvvcl-internal</module>
     <module>features</module>
+        
   </modules>
 
 </project>

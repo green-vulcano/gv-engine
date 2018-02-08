@@ -108,6 +108,7 @@
 		<feature prerequisite="true">gviam</feature>				
 		<feature prerequisite="true">gviam-db</feature>
 
+		<bundle start-level="93">mvn:it.greenvulcano.gvesb/gviam-karaf/${project.version}</bundle>
 		<bundle start-level="96">mvn:it.greenvulcano.gvesb/gvapi/${project.version}</bundle>
 		<bundle start-level="99">mvn:it.greenvulcano.gvesb/gvcommands/${project.version}</bundle>
 		<bundle start-level="96">mvn:it.greenvulcano.gvesb/gvmonitoring/${project.version}</bundle>

@@ -28,14 +28,7 @@
     <bean id="gvUsersManager" class="it.greenvulcano.gvesb.iam.service.internal.GVUsersManager">
 		<property name="userRepository" ref="userRepositoryHibernate"/>
     	<property name="roleRepository" ref="roleRepositoryHibernate"/>    
-	</bean>
-    
-       
-    <service id="GVBackingEngineFactory" ref="gvUsersManager" interface="org.apache.karaf.jaas.modules.BackingEngineFactory">
-    	<service-properties>
-    		<entry key="name" value="GVBackingEngineFactory"/>
-    	</service-properties>
-    </service>
+	</bean>    
     
     <service id="usersManager" ref="gvUsersManager" interface="it.greenvulcano.gvesb.iam.service.UsersManager">
     	<service-properties>
