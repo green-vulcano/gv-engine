@@ -32,7 +32,6 @@ import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
-import javax.security.auth.callback.TextOutputCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.auth.login.LoginException;
 
@@ -87,14 +86,11 @@ public class GVLoginModule extends AbstractKarafLoginModule{
 
 	@Override
 	public boolean login() throws LoginException {
+		LOG.info("Login for user "+user);
 		Callback[] callbacks = new Callback[2];
 		callbacks[0] = new NameCallback("Username: ");
 		callbacks[1] = new PasswordCallback("Password: ", false);
-		
-		TextOutputCallback message =  new TextOutputCallback(TextOutputCallback.INFORMATION, "Ciao"); 
-		callbacks[2] = message;
-		
-		
+				
 		try {
 			callbackHandler.handle(callbacks);
 		} catch (IOException ioe) {
@@ -128,22 +124,25 @@ public class GVLoginModule extends AbstractKarafLoginModule{
 				principals.addAll(roles);
 			
 			} else {
+				LOG.warn("Login failed for user "+user+ ": disabled");
 	        	throw new LoginException("User disabled");	             
 	        }	
 	 
 			
-		} catch (UserNotFoundException userNotFoundException) {			
+		} catch (UserNotFoundException userNotFoundException) {
+			LOG.warn("Login failed for user "+user+ ": "+userNotFoundException.getMessage());
 			throw new LoginException("User " + user + " does not exist");
 			
 		} catch (UnverifiableUserException|PasswordMissmatchException passwordMissmatchException) {
+			LOG.warn("Login failed for user "+user+ ": "+passwordMissmatchException.getMessage());
 			throw new LoginException("Password for " + user + " does not match");
 			
 		} catch (UserExpiredException e) {
-			
+			LOG.warn("Login failed for user "+user+ ": "+e.getMessage());
 			throw new LoginException("User expired");
 		}
 				
-		
+		LOG.info("Login succes for user "+user);
 		return true;
 	}	
 	

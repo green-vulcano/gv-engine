@@ -27,7 +27,7 @@ package it.greenvulcano.gvesb.iam.domain;
  *
  */
 public abstract class Role {		
-	public static final String ROLE_PATTERN = "(?=^.{4,28}$)^[a-zA-Z][a-zA-Z0-9._@-]*[a-zA-Z0-9]+$";
+	public static final String ROLE_PATTERN = "(?=^.{3,28}$)^[a-zA-Z][a-zA-Z0-9._@-]*[a-zA-Z0-9]+$";
 			
 	public abstract Integer getId();
 	public abstract String getName();

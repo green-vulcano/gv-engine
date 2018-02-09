@@ -314,6 +314,7 @@ public class GVUsersManager implements UsersManager{
 			admin.addRole(new RoleJPA("manager", "Created by GV"));
 			admin.addRole(new RoleJPA("viewer", "Created by GV"));
 			admin.addRole(new RoleJPA("systembundles", "Created by GV"));
+			admin.addRole(new RoleJPA("ssh", "Created by GV"));
 						
 			userRepository.add(admin);
 		}	
