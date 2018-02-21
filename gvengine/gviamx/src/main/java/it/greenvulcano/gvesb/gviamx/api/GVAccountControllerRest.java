@@ -19,7 +19,6 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb.gviamx.api;
 
-import java.net.URI;
 import java.util.Optional;
 
 import javax.annotation.security.PermitAll;
@@ -39,6 +38,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.UriInfo;
 
 import org.apache.cxf.rs.security.cors.CrossOriginResourceSharing;
 import org.json.JSONException;
@@ -205,7 +205,7 @@ public class GVAccountControllerRest {
 	@PUT
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response confirmSignUpRequest(@FormParam("email")String email, @FormParam("token")String token, @FormParam("password") String clearPassword) {
+	public Response confirmSignUpRequest(@Context UriInfo uriInfo, @FormParam("email")String email, @FormParam("token")String token, @FormParam("password") String clearPassword) {
 				
 		Response response = null;
 		
@@ -264,7 +264,8 @@ public class GVAccountControllerRest {
 			}		
 			
 			signupManager.consumeSignUpRequest(signupRequest);
-			response = Response.created(URI.create("../gviam/users/"+user.getId())).build();
+			
+			response = Response.created(uriInfo.getBaseUri().resolve("gviam/admin/users/"+user.getId())).build();
 		} catch (IllegalArgumentException|SecurityException e) {
 			LOG.warn("Error performing signup", e);
 			response = Response.status(Status.NOT_FOUND).build();	
