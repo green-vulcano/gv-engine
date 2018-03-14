@@ -504,14 +504,20 @@ public class GVAccountControllerRest {
 			username = Optional.ofNullable(username).orElseThrow(()->new IllegalArgumentException("Required parameter: username")).trim();
 			role = Optional.ofNullable(role).orElseThrow(()->new IllegalArgumentException("Required parameter: role")).trim();
 			
-			if ((securityContext.isUserInRole(Authority.CLIENT) && Authority.entries.contains(role)) 
-				|| (securityContext.isUserInRole(Authority.MANAGER) && Authority.ADMINISTRATOR.equals(role))) {
-				
+			
+			if (securityContext.isUserInRole(Authority.ADMINISTRATOR)
+				||(securityContext.isUserInRole(Authority.MANAGER) && !Authority.ADMINISTRATOR.equals(role))
+			    ||(securityContext.isUserInRole(Authority.CLIENT) && !Authority.entries.contains(role))) {
+			
+				User user = signupManager.getUsersManager().getUser(username);
+				checkSecurityContraint(securityContext, user);
+				signupManager.getUsersManager().addRole(username, role);
+								
+			} else {
 				throw new WebApplicationException(Response.status(Response.Status.FORBIDDEN).entity(String.format("Invalid role %s", role)).build());
-			} 
-			User user = signupManager.getUsersManager().getUser(username);
-			checkSecurityContraint(securityContext, user);
-			signupManager.getUsersManager().addRole(username, role);
+			}		
+			 
+			
 		} catch (InvalidRoleException e) {
 			LOG.warn("Error performing grant role", e);
 			throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(String.format("Invalid role %s", role)).build());
