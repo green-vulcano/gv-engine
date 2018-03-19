@@ -35,12 +35,12 @@ import org.w3c.dom.Node;
 /**
  * XAHelper class
  * 
- * @version 3.0.0 Feb 17, 2010
+ * @version 4.0.0 Mar 19, 2018
  * @author GreenVulcano Developer Team
  */
 public class XAHelper {
 	
-	public static final String DEFAULT_JDNI_NAME = "osgi:service/javax.transaction.Transaction";
+	public static final String DEFAULT_JDNI_NAME = "osgi:service/javax.transaction.TransactionManager";
     /**
      * The Logger instance must be provided by the caller.
      */
