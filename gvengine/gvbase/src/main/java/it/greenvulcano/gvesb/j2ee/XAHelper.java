@@ -77,8 +77,7 @@ public class XAHelper {
     private String             transactionManagerJNDI;
    
     public XAHelper() {
-        initialContext = new JNDIHelper();
-        transactionManagerJNDI = DEFAULT_JDNI_NAME;
+        initialContext = new JNDIHelper();        
     }
     
     public XAHelper(String transactionManagerJNDIName) {
@@ -116,6 +115,10 @@ public class XAHelper {
             initialContext = new JNDIHelper();
         }
     }
+    
+    public void setTransactionManagerJNDI(String transactionManagerJNDI) {
+		this.transactionManagerJNDI = transactionManagerJNDI;
+	}
 
     /**
      * Initialize the instance.
@@ -133,7 +136,7 @@ public class XAHelper {
 	        try {        	
 	        	tManager = (TransactionManager) initialContext.lookup(transactionManagerJNDI);
 	        } catch (NameNotFoundException|NoInitialContextException exc) {
-	        	logger.warn("TransactionManager lookup failed: "+transactionManagerJNDI);
+	        	logger.error("TransactionManager lookup failed: "+transactionManagerJNDI);
 	            noXA = true;
 	        } catch (Exception exc) {
 	            throw new XAHelperException("J2EE_XAHELPER_INIT_ERROR", new String[][]{{"cause", exc.getMessage()}}, exc);
