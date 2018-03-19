@@ -78,6 +78,12 @@ public class XAHelper {
    
     public XAHelper() {
         initialContext = new JNDIHelper();
+        transactionManagerJNDI = DEFAULT_JDNI_NAME;
+    }
+    
+    public XAHelper(String transactionManagerJNDIName) {
+        initialContext = new JNDIHelper();
+        transactionManagerJNDI = transactionManagerJNDIName;
     }
     
     /**
