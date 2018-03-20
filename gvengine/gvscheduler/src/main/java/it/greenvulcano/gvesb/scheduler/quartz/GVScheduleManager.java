@@ -32,7 +32,9 @@ import java.util.stream.Collectors;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
 import org.quartz.JobBuilder;
+import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
+import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
@@ -72,9 +74,15 @@ public class GVScheduleManager implements ScheduleManager {
 		TriggerKey triggerKey = TriggerKey.triggerKey(triggerName, Scheduler.DEFAULT_GROUP);		
 		return Optional.ofNullable(gvScheduler.getTrigger(triggerKey));
 	}
+	
+	@Override
+	public Optional<JobDataMap> getJobDataMap(String triggerName) throws SchedulerException {
+		JobKey jobKey = new JobKey(triggerName, Scheduler.DEFAULT_GROUP);
+		return Optional.ofNullable(gvScheduler.getJobDetail(jobKey)).map(JobDetail::getJobDataMap);
+	}
 
 	@Override
-	public String scheduleOperation(String cronExpression, String serviceName, String operationName, Map<String, String> properties, Object object) throws ParseException, SchedulerException {
+	public String scheduleOperation(String cronExpression, String serviceName, String operationName, Map<String, String> properties, Object object, boolean transactional) throws ParseException, SchedulerException {
 		
 		try {
 			
@@ -94,7 +102,12 @@ public class GVScheduleManager implements ScheduleManager {
 			JobDetail job = JobBuilder.newJob(GVOperationJob.class)
 									  .withIdentity(scheduleUUID.toString(), Scheduler.DEFAULT_GROUP)
 									  .withDescription(serviceName+"/"+operationName)
+									  .requestRecovery(transactional)
 									  .build();
+			
+			job.getJobDataMap().put("properties", properties);
+			job.getJobDataMap().put("object", object);
+			job.getJobDataMap().put("transactional", transactional);
 	
 			job.getJobDataMap().put(GVOperationJob.OPERATION_NAME, Objects.requireNonNull(operationName));
 			job.getJobDataMap().put(GVOperationJob.GVBUFFER, gvBuffer);

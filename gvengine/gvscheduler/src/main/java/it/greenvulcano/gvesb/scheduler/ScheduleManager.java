@@ -29,6 +29,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 
+import org.quartz.JobDataMap;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 
@@ -55,9 +56,11 @@ public final static class Authority {
 	
 	public List<Trigger> getTriggersList() throws SchedulerException;		
 	
-	public Optional<Trigger> getTrigger(final String triggerName) throws SchedulerException;	
+	public Optional<Trigger> getTrigger(final String triggerName) throws SchedulerException;
 	
-	public String scheduleOperation(String cronExpression, String serviceName, String operationName, Map<String, String> properties, Object object) throws ParseException, SchedulerException;
+	public Optional<JobDataMap> getJobDataMap(String triggerName) throws SchedulerException;
+	
+	public String scheduleOperation(String cronExpression, String serviceName, String operationName, Map<String, String> properties, Object object, boolean transactional) throws ParseException, SchedulerException;
 
 	public void deleteTrigger(final String triggerName) throws SchedulerException, NoSuchElementException;
 	

@@ -186,7 +186,7 @@ public class SchedulerCommand implements Action {
 			Optional.ofNullable(scheduleInfo.optJSONObject("properties"))
 					.ifPresent(p -> props.putAll(p.keySet().stream().collect(Collectors.toMap(Function.identity(), p::getString))));
 									
-			response = scheduleManager.scheduleOperation(scheduleInfo.getString("cronExpression"), service, operation, props, scheduleInfo.opt("object")) + " - CREATED";
+			response = scheduleManager.scheduleOperation(scheduleInfo.getString("cronExpression"), service, operation, props, scheduleInfo.opt("object"), scheduleInfo.optBoolean("transactional",false)) + " - CREATED";
 			
 		} catch (NullPointerException|IndexOutOfBoundsException e) {	
 			throw new IllegalArgumentException("Required param operation identifier expressed as service/operation");
@@ -218,7 +218,7 @@ public class SchedulerCommand implements Action {
 			String service = serviceURI[0];
 			String operation = serviceURI[1];
 												
-			response = scheduleManager.scheduleOperation(cronExpression, service, operation, null, null) + " - CREATED";
+			response = scheduleManager.scheduleOperation(cronExpression, service, operation, null, null, false) + " - CREATED";
 			
 		} catch (NullPointerException|IndexOutOfBoundsException e) {	
 			throw new IllegalArgumentException("Required param operation identifier expressed as service/operation");
