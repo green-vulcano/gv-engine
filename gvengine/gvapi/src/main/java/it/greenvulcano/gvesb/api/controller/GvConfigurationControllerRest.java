@@ -74,7 +74,7 @@ import it.greenvulcano.gvesb.GVConfigurationManager.Authority;
 import it.greenvulcano.gvesb.api.dto.ServiceDTO;
 import it.greenvulcano.util.xml.XMLUtils;
 
-@CrossOriginResourceSharing(allowAllOrigins=true, allowCredentials=true, exposeHeaders={"Content-type", "Content-Range", "X-Auth-Status"})
+@CrossOriginResourceSharing(allowAllOrigins=true, allowCredentials=true, exposeHeaders={"Content-Type", "Content-Range", "X-Auth-Status"})
 public class GvConfigurationControllerRest extends BaseControllerRest {
 	 private final static Logger LOG = LoggerFactory.getLogger(GvConfigurationControllerRest.class);	
 	

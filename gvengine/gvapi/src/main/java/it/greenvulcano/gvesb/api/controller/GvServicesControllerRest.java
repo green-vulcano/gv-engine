@@ -69,7 +69,7 @@ import it.greenvulcano.gvesb.identity.GVIdentityHelper;
 import it.greenvulcano.util.xml.XMLUtils;
 import it.greenvulcano.util.xml.XMLUtilsException;
 
-@CrossOriginResourceSharing(allowAllOrigins=true, allowCredentials=true, exposeHeaders={"Content-type", "Content-Range", "X-Auth-Status"})
+@CrossOriginResourceSharing(allowAllOrigins=true, allowCredentials=true, exposeHeaders={"Content-Type", "Content-Range", "X-Auth-Status"})
 public class GvServicesControllerRest extends BaseControllerRest {
 	private final static Logger LOG = LoggerFactory.getLogger(GvServicesControllerRest.class);
 		

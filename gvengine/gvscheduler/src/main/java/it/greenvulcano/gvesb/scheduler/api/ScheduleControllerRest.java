@@ -44,6 +44,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.cxf.rs.security.cors.CrossOriginResourceSharing;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.quartz.CronTrigger;
@@ -55,6 +56,7 @@ import org.slf4j.LoggerFactory;
 import it.greenvulcano.gvesb.scheduler.ScheduleManager;
 import it.greenvulcano.gvesb.scheduler.ScheduleManager.Authority;
 
+@CrossOriginResourceSharing(allowAllOrigins=true, allowCredentials=true, exposeHeaders={"Content-Type", "Content-Range", "X-Auth-Status"})
 public class ScheduleControllerRest {
 		
 	private final static Logger LOG = LoggerFactory.getLogger(ScheduleControllerRest.class);
