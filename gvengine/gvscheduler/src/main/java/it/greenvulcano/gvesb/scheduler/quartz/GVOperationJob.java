@@ -20,6 +20,8 @@
 package it.greenvulcano.gvesb.scheduler.quartz;
 
 import java.util.Objects;
+
+import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -30,6 +32,7 @@ import it.greenvulcano.gvesb.core.pool.GreenVulcanoPoolManager;
 import it.greenvulcano.gvesb.j2ee.XAHelper;
 import it.greenvulcano.gvesb.j2ee.XAHelperException;
 
+@DisallowConcurrentExecution
 public class GVOperationJob implements Job {
 
 	public static final String GVBUFFER = "gvbuffer";
