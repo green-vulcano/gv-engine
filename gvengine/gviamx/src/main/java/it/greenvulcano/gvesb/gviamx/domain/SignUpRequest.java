@@ -31,6 +31,7 @@ import javax.persistence.FetchType;
 import javax.persistence.Lob;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Type;
 import org.json.JSONObject;
 
 @Entity
@@ -39,7 +40,8 @@ public class SignUpRequest extends UserActionRequest implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
 	@Column(nullable=true)
-	@Lob() @Basic(fetch=FetchType.LAZY)
+	@Lob() @Type(type = "org.hibernate.type.BinaryType") 
+	@Basic(fetch=FetchType.LAZY)
 	private byte[] request;
 	
 	@Transient

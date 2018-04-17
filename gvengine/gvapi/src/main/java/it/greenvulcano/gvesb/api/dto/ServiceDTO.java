@@ -119,8 +119,8 @@ public class ServiceDTO {
 		try {
 			ServiceDTO service = new ServiceDTO(XMLConfig.get(config, "@id-service"), 
 										  XMLConfig.get(config, "@group-name"), 
-										  XMLConfig.get(config, "@service-activation").equals("on"), 
-										  XMLConfig.get(config, "@statistics").equals("on"));
+										  XMLConfig.get(config, "@service-activation", "on").equals("on"), 
+										  XMLConfig.get(config, "@statistics", "off").equals("on"));
 						
 			NodeList operationNodes = XMLConfig.getNodeList(config, "./Operation");
 			

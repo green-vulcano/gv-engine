@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -41,6 +42,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.persistence.Version;
 
 import org.hibernate.annotations.Cascade;
@@ -61,7 +63,7 @@ public class UserJPA extends it.greenvulcano.gvesb.iam.domain.User implements Se
 	@Column(nullable=false, length=256, unique=true, updatable=true)
 	private String username;
 	
-	@Column(nullable=false, length=512)
+	@Column(nullable=true, length=512)
 	private String password;
 	
 	@Column(name="expired", nullable=false)
@@ -71,7 +73,7 @@ public class UserJPA extends it.greenvulcano.gvesb.iam.domain.User implements Se
 	private boolean enabled;    
 	
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="pwd_time", nullable=false)
+    @Column(name="pwd_time", nullable=true)
     private Date passwordTime;
     
     @Version
@@ -116,11 +118,10 @@ public class UserJPA extends it.greenvulcano.gvesb.iam.domain.User implements Se
 		this.username = username;
 	}
 
-	
-	@Override
-	public String getPassword() {
-		return password;
-	}
+	@Transient @Override
+	public Optional<String> getPassword() {
+		return Optional.ofNullable(password);
+	}	
 
 	@Override
 	public void setPassword(String password) {

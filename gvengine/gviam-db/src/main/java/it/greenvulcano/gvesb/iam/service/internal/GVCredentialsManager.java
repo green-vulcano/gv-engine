@@ -14,6 +14,7 @@ import it.greenvulcano.gvesb.iam.domain.jpa.UserJPA;
 import it.greenvulcano.gvesb.iam.exception.CredentialsExpiredException;
 import it.greenvulcano.gvesb.iam.exception.InvalidCredentialsException;
 import it.greenvulcano.gvesb.iam.exception.PasswordMissmatchException;
+import it.greenvulcano.gvesb.iam.exception.UnverifiableUserException;
 import it.greenvulcano.gvesb.iam.exception.UserExpiredException;
 import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
 import it.greenvulcano.gvesb.iam.repository.hibernate.CredentialsRepositoryHibernate;
@@ -44,7 +45,7 @@ public class GVCredentialsManager implements CredentialsManager {
 	}
 
 	@Override
-	public Credentials create(String username, String password, String clientUsername, String clientPassword) throws UserNotFoundException, UserExpiredException, PasswordMissmatchException {
+	public Credentials create(String username, String password, String clientUsername, String clientPassword) throws UserNotFoundException, UserExpiredException, PasswordMissmatchException, UnverifiableUserException {
 				
 		User client = usersManager.validateUser(clientUsername, clientPassword);
 		User resourceOwner = usersManager.validateUser(username, password);		

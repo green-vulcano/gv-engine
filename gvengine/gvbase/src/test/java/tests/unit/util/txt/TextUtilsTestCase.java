@@ -19,13 +19,16 @@
  *******************************************************************************/
 package tests.unit.util.txt;
 
+import it.greenvulcano.util.txt.StringToHTML;
 import it.greenvulcano.util.txt.TextUtils;
 import tests.unit.BaseTestCase;
 
+import static org.junit.Assert.assertNotEquals;
+
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -67,7 +70,18 @@ public class TextUtilsTestCase extends BaseTestCase
         assertTrue("match Test ;[a-z]{2}\\d{3}[A-Z]{2} failed", TextUtils.matches("Test ;[a-z]{2}\\d{3}[A-Z]{2}", base));
         assertFalse("not match Test failed", TextUtils.matches("Test", base));
     }
-
+    
+    @Test
+    public void testTTT() throws UnsupportedEncodingException {
+    	String original =  "Yeeeee 🙈🙉🙊 xxx";
+    	String escaped = StringToHTML.escapeToEntity(original);   	
+    	
+    	assertNotEquals(original, escaped);
+    	
+    	
+    }
+    
+    
     /**
      * Test method for {@link it.greenvulcano.util.txt.TextUtils#replaceSubstring(java.lang.String, java.lang.String, java.lang.String)}.
      */

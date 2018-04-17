@@ -50,7 +50,7 @@ import it.greenvulcano.util.xml.XMLUtils;
 import it.greenvulcano.util.xml.XMLUtilsException;
 
 @Path("/settings")
-@CrossOriginResourceSharing(allowAllOrigins=true, allowCredentials=true, exposeHeaders={"Content-type", "Content-Range", "X-Auth-Status"})
+@CrossOriginResourceSharing(allowAllOrigins=true, allowCredentials=true, exposeHeaders={"Content-Type", "Content-Range", "X-Auth-Status"})
 public class GvSettingsControllerRest extends BaseControllerRest{
 	
 	private final static Logger LOG = LoggerFactory.getLogger(GvSettingsControllerRest.class);	

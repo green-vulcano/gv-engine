@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint  default-activation="eager" 
+            xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns:jaas="http://karaf.apache.org/xmlns/jaas/v1.1.0"                              			
+			xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd							  
+							   http://karaf.apache.org/xmlns/jaas/v1.1.0 http://karaf.apache.org/xmlns/jaas/v1.1.0">
+	       
+    <jaas:config name="karaf" rank="2">
+        <jaas:module name="GVLoginModule" 
+        			 className="it.greenvulcano.gvesb.iam.jaas.GVLoginModule" 
+                     flags="required"> 
+            debug=true          
+        </jaas:module>
+    </jaas:config>	
+    
+    <bean id="bakingEngine" class="it.greenvulcano.gvesb.iam.jaas.GVBackingEngine" />
+    
+    <service id="gvBackingEngineFactory" ref="bakingEngine" interface="org.apache.karaf.jaas.modules.BackingEngineFactory">
+    	<service-properties>
+    		<entry key="name" value="gvBackingEngineFactory"/>
+    	</service-properties>
+    </service>
+	
+</blueprint>

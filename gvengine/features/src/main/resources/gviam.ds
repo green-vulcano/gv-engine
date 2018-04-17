@@ -1,6 +1,6 @@
 osgi.jdbc.driver.name=H2
 pool=dbcp2
-url=jdbc:h2:file:${karaf.home}/db/gviam
+url=jdbc:h2:file:${karaf.base}/db/gviam
 dataSourceName=gviam-ds
 jdbc.pool.maxIdle=4
 jdbc.pool.maxTotal=16

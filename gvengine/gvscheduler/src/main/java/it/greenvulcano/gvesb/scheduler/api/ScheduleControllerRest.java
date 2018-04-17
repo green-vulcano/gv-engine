@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -38,10 +39,12 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.cxf.rs.security.cors.CrossOriginResourceSharing;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.quartz.CronTrigger;
@@ -53,6 +56,7 @@ import org.slf4j.LoggerFactory;
 import it.greenvulcano.gvesb.scheduler.ScheduleManager;
 import it.greenvulcano.gvesb.scheduler.ScheduleManager.Authority;
 
+@CrossOriginResourceSharing(allowAllOrigins=true, allowCredentials=true, exposeHeaders={"Content-Type", "Content-Range", "X-Auth-Status"})
 public class ScheduleControllerRest {
 		
 	private final static Logger LOG = LoggerFactory.getLogger(ScheduleControllerRest.class);
@@ -104,7 +108,8 @@ public class ScheduleControllerRest {
 		return response;
 	}
 	
-	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER, Authority.GUEST})
+	@SuppressWarnings("unchecked")
+    @RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER, Authority.GUEST})
 	@Path("/schedules/{id}")
 	@GET @Produces(MediaType.APPLICATION_JSON)
 	public Response getSchedule(@PathParam("id")String id) {
@@ -113,7 +118,27 @@ public class ScheduleControllerRest {
 			JSONObject responseData = gvScheduleManager.getTrigger(id)
 											  .map(triggerMapper)
 											  .orElseThrow(NoSuchElementException::new);
-						
+			
+			responseData.put("properties",JSONObject.NULL);
+			responseData.put("object",JSONObject.NULL);
+			responseData.put("transactional", false);
+			
+			gvScheduleManager.getJobDataMap(id)
+			                 .ifPresent(data->{
+			                	 Map<String,String> props = (Map<String, String>) data.get("properties");
+			                	 
+			                	 if (Objects.isNull(props)) {
+			                		 responseData.put("properties",JSONObject.NULL);
+			                	 } else {
+			                		 responseData.put("properties",new JSONObject(props));
+			                	 }
+			                	 			                	 
+			                     responseData.put("object", Optional.of(data.get("object")).orElse(JSONObject.NULL));
+			                     
+			                	 responseData.put("transactional", (boolean)data.get("transactional"));
+			                 });
+			                 
+			
 			response = Response.ok(responseData.toString()).build();
 		} catch (NoSuchElementException e) {
 			response = Response.status(Status.NOT_FOUND).build();
@@ -183,7 +208,7 @@ public class ScheduleControllerRest {
 	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
 	@Path("/schedule/{service}/{operation}")
 	@POST @Consumes(MediaType.APPLICATION_JSON) @Produces(MediaType.APPLICATION_JSON)
-	public Response scheduleOperation(@PathParam("service")String serviceName, @PathParam("operation")String operationName, String scheduleData) {
+	public Response scheduleOperation(@PathParam("service")String serviceName, @PathParam("operation")String operationName, @QueryParam("transactional") String transactional,  String scheduleData) {
 		
 		Response response;
 		
@@ -196,7 +221,11 @@ public class ScheduleControllerRest {
 			Optional.ofNullable(scheduleInfo.optJSONObject("properties"))
 					.ifPresent(p -> props.putAll(p.keySet().stream().collect(Collectors.toMap(Function.identity(), p::getString))));
 									
-			String triggerName = gvScheduleManager.scheduleOperation(scheduleInfo.getString("cronExpression"), serviceName, operationName, props, scheduleInfo.opt("object"));
+			String triggerName = gvScheduleManager.scheduleOperation(scheduleInfo.getString("cronExpression"), 
+					serviceName, 
+					operationName, 
+					props, scheduleInfo.opt("object"),
+					Boolean.valueOf(transactional));
 			
 			response = Response.created(URI.create("/schedules/"+triggerName)).build();
 			

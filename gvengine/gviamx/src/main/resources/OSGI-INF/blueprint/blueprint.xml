@@ -78,6 +78,7 @@
   		<property name="usersManager" ref="usersManager"/>  			
   		<property name="repository" ref="userActionRepositoryHibernate"/>
   		<property name="expireTime" value="${gviamx.signup.life}"/>
+  		<property name="defaultRoles" value="${gviamx.signup.roles}"/>
   </bean> 
   
   <bean id="passwordResetManager" class="it.greenvulcano.gvesb.gviamx.service.internal.PasswordResetManager">
@@ -108,6 +109,13 @@
   		<property name="emailChangeManager" ref="emailChangeManager"/>
   </bean>
   
+  <reference-list id="externalCredentialsManagerReferences" interface="it.greenvulcano.gvesb.gviamx.service.ExternalCredentialsManager" 
+			   		member-type="service-reference" availability="optional"/>
+  
+  <bean id="externalAccountController" class="it.greenvulcano.gvesb.gviamx.api.GVExternalAccountControllerRest">        
+        <property name="externalCredentialsManagers" ref="externalCredentialsManagerReferences"/>    
+  </bean>
+  
   <reference-list id="securityModulesReferences" interface="it.greenvulcano.gvesb.iam.modules.SecurityModule" 
 			   		member-type="service-reference" availability="mandatory"/>
 		
@@ -132,6 +140,7 @@
   <jaxrs:server address="/gviamx" id="gviamx">
        <jaxrs:serviceBeans>            
           <ref component-id="accountController" />
+          <ref component-id="externalAccountController"/>
           <ref component-id="swaggerController" />                   
        </jaxrs:serviceBeans> 
        <jaxrs:providers>

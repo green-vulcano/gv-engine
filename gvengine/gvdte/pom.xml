@@ -119,7 +119,7 @@
 						<Import-Package>
 							it.greenvulcano.configuration,
 							it.greenvulcano.gvesb.internal,
-							it.greenvulcano.util*,
+							it.greenvulcano.util*,							
 							org.apache.log4j,
 							org.slf4j;version="[1.6,2)";provider=paxlogging,
 							org.w3c.dom,
@@ -134,6 +134,7 @@
 						</Import-Package>
 						<Embed-Dependency>*;scope=compile;type=jar</Embed-Dependency>
 						<Embed-Transitive>true</Embed-Transitive>
+						<DynamicImport-Package>it.greenvulcano.*</DynamicImport-Package>
 					</instructions>
 				</configuration>
 			</plugin>

@@ -23,6 +23,7 @@ import it.greenvulcano.gvesb.iam.domain.Credentials;
 import it.greenvulcano.gvesb.iam.exception.CredentialsExpiredException;
 import it.greenvulcano.gvesb.iam.exception.InvalidCredentialsException;
 import it.greenvulcano.gvesb.iam.exception.PasswordMissmatchException;
+import it.greenvulcano.gvesb.iam.exception.UnverifiableUserException;
 import it.greenvulcano.gvesb.iam.exception.UserExpiredException;
 import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
 
@@ -35,7 +36,7 @@ import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
  */
 public interface CredentialsManager {
 	
-	Credentials create(String username, String password, String clientUsername, String clientPassword) throws UserNotFoundException, UserExpiredException, PasswordMissmatchException;
+	Credentials create(String username, String password, String clientUsername, String clientPassword) throws UserNotFoundException, UserExpiredException, PasswordMissmatchException, UnverifiableUserException;
 	
 	Credentials check(String accessToken) throws InvalidCredentialsException, CredentialsExpiredException;
 	

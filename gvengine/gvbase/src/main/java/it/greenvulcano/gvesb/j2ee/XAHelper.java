@@ -35,12 +35,12 @@ import org.w3c.dom.Node;
 /**
  * XAHelper class
  * 
- * @version 3.0.0 Feb 17, 2010
+ * @version 4.0.0 Mar 19, 2018
  * @author GreenVulcano Developer Team
  */
 public class XAHelper {
 	
-	public static final String DEFAULT_JDNI_NAME = "osgi:service/javax.transaction.Transaction";
+	public static final String DEFAULT_JDNI_NAME = "osgi:service/javax.transaction.TransactionManager";
     /**
      * The Logger instance must be provided by the caller.
      */
@@ -77,7 +77,12 @@ public class XAHelper {
     private String             transactionManagerJNDI;
    
     public XAHelper() {
+        initialContext = new JNDIHelper();        
+    }
+    
+    public XAHelper(String transactionManagerJNDIName) {
         initialContext = new JNDIHelper();
+        transactionManagerJNDI = transactionManagerJNDIName;
     }
     
     /**
@@ -110,6 +115,10 @@ public class XAHelper {
             initialContext = new JNDIHelper();
         }
     }
+    
+    public void setTransactionManagerJNDI(String transactionManagerJNDI) {
+		this.transactionManagerJNDI = transactionManagerJNDI;
+	}
 
     /**
      * Initialize the instance.
@@ -127,7 +136,7 @@ public class XAHelper {
 	        try {        	
 	        	tManager = (TransactionManager) initialContext.lookup(transactionManagerJNDI);
 	        } catch (NameNotFoundException|NoInitialContextException exc) {
-	        	logger.warn("TransactionManager lookup failed: "+transactionManagerJNDI);
+	        	logger.error("TransactionManager lookup failed: "+transactionManagerJNDI);
 	            noXA = true;
 	        } catch (Exception exc) {
 	            throw new XAHelperException("J2EE_XAHELPER_INIT_ERROR", new String[][]{{"cause", exc.getMessage()}}, exc);

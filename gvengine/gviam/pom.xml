@@ -12,23 +12,7 @@
     <artifactId>gviam</artifactId>
     <packaging>bundle</packaging>
 
-    <name>GreenVulcano IAM</name>
-    
-	<dependencies>
-		<dependency>
-			<groupId>org.apache.karaf.jaas</groupId>
-			<artifactId>org.apache.karaf.jaas.modules</artifactId>
-			<version>${version.karaf}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.karaf.jaas</groupId>
-			<artifactId>org.apache.karaf.jaas.boot</artifactId>
-			<version>${version.karaf}</version>
-			<scope>provided</scope>
-		</dependency>
-		
-	</dependencies>
+    <name>GreenVulcano IAM</name>	
 
     <build>
         <plugins>
@@ -52,7 +36,7 @@
                          		it.greenvulcano.gvesb.iam.modules.internal
                          </Private-Package>
                                         
-                        <Import-Package>org.apache.karaf.jaas.config,*</Import-Package>
+                        <Import-Package>*</Import-Package>
                     </instructions>
                 </configuration>
             </plugin>

@@ -8,12 +8,12 @@
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ *  
  * GreenVulcano ESB is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Lesser General Public License for more details.
- *
+ *  
  * You should have received a copy of the GNU Lesser General Public License
  * along with GreenVulcano ESB. If not, see <http://www.gnu.org/licenses/>.
  *******************************************************************************/
@@ -48,6 +48,7 @@ import org.slf4j.LoggerFactory;
 import it.greenvulcano.gvesb.iam.domain.Role;
 import it.greenvulcano.gvesb.iam.domain.User;
 import it.greenvulcano.gvesb.iam.exception.PasswordMissmatchException;
+import it.greenvulcano.gvesb.iam.exception.UnverifiableUserException;
 import it.greenvulcano.gvesb.iam.exception.UserExpiredException;
 import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
 import it.greenvulcano.gvesb.iam.service.UsersManager;
@@ -65,9 +66,7 @@ public class GVLoginModule extends AbstractKarafLoginModule{
 	static {
 		ENCRYPTION_SETTINGS.put("encryption.enabled","true");
 		ENCRYPTION_SETTINGS.put("encryption.name","basic");
-		ENCRYPTION_SETTINGS.put("encryption.algorithm","SHA-1");
-		ENCRYPTION_SETTINGS.put("encryption.prefix",".x#");
-		ENCRYPTION_SETTINGS.put("encryption.suffix","#x.");
+		ENCRYPTION_SETTINGS.put("encryption.algorithm","SHA-256");		
 		ENCRYPTION_SETTINGS.put("encryption.encoding","hexadecimal");
 		ENCRYPTION_SETTINGS.put(BundleContext.class.getName(), FrameworkUtil.getBundle(GVLoginModule.class).getBundleContext());
 		
@@ -87,10 +86,11 @@ public class GVLoginModule extends AbstractKarafLoginModule{
 
 	@Override
 	public boolean login() throws LoginException {
+		LOG.info("Login for user "+user);
 		Callback[] callbacks = new Callback[2];
 		callbacks[0] = new NameCallback("Username: ");
 		callbacks[1] = new PasswordCallback("Password: ", false);
-
+				
 		try {
 			callbackHandler.handle(callbacks);
 		} catch (IOException ioe) {
@@ -124,49 +124,28 @@ public class GVLoginModule extends AbstractKarafLoginModule{
 				principals.addAll(roles);
 			
 			} else {
+				LOG.warn("Login failed for user "+user+ ": disabled");
 	        	throw new LoginException("User disabled");	             
 	        }	
 	 
 			
 		} catch (UserNotFoundException userNotFoundException) {
+			LOG.warn("Login failed for user "+user+ ": "+userNotFoundException.getMessage());
 			throw new LoginException("User " + user + " does not exist");
-		} catch (PasswordMissmatchException passwordMissmatchException) {
+			
+		} catch (UnverifiableUserException|PasswordMissmatchException passwordMissmatchException) {
+			LOG.warn("Login failed for user "+user+ ": "+passwordMissmatchException.getMessage());
 			throw new LoginException("Password for " + user + " does not match");
+			
 		} catch (UserExpiredException e) {
-			updateUserPassword(user, password);
+			LOG.warn("Login failed for user "+user+ ": "+e.getMessage());
+			throw new LoginException("User expired");
 		}
 				
-		
+		LOG.info("Login succes for user "+user);
 		return true;
 	}	
-
-	private void updateUserPassword(String user, String password) throws LoginException {
-		Callback[] callbacks = new Callback[]{new PasswordCallback("Password expired, enter new password: ",false)};
-				
-		try {
-			callbackHandler.handle(callbacks);
-		} catch (IOException ioe) {
-			throw new LoginException(ioe.getMessage());
-		} catch (UnsupportedCallbackException uce) {
-			throw new LoginException(uce.getMessage() + " not available to obtain information from user");
-		}
-		
-		char[] tmpPassword = ((PasswordCallback) callbacks[0]).getPassword();
-		if (tmpPassword != null && String.valueOf(tmpPassword).matches(User.PASSWORD_PATTERN)) {
-		
-			String newPassword = new String(tmpPassword);
-								
-			try {
-				getUsersManager().changeUserPassword(user, password, newPassword);
-			} catch (Exception exception) {
-				LOG.error("Password update fail for user "+user, exception);
-				throw new LoginException("Failed  to update password"); 
-			}
-		} else {
-			throw new LoginException("Invalid password");
-		}
-		
-	}
+	
 
 	@Override
 	public boolean abort() throws LoginException {

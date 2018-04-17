@@ -21,12 +21,16 @@ package it.greenvulcano.gvesb.gviamx.service.internal;
 
 import java.security.SecureRandom;
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
@@ -37,6 +41,7 @@ import it.greenvulcano.gvesb.gviamx.domain.UserActionRequest;
 import it.greenvulcano.gvesb.gviamx.repository.UserActionRepository;
 import it.greenvulcano.gvesb.gviamx.service.CallBackManager;
 import it.greenvulcano.gvesb.gviamx.service.NotificationManager;
+import it.greenvulcano.gvesb.iam.domain.Role;
 import it.greenvulcano.gvesb.iam.exception.UserExistException;
 import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
 import it.greenvulcano.gvesb.iam.service.SearchCriteria;
@@ -55,7 +60,8 @@ public class SignUpManager {
 	private UserActionRepository signupRepository;
 	private UsersManager usersManager;
 	private Long expireTime = 60*60*1024L;
-	
+	private final Set<String> defaultRoles = new LinkedHashSet<>();
+			
 	public void setNotificationServices(List<NotificationManager> notificationServices){
 		this.notificationServices.clear();
 		if (notificationServices!=null && !notificationServices.isEmpty()) {
@@ -84,7 +90,28 @@ public class SignUpManager {
 	
 	public void setExpireTime(Long expireTime) {
 		this.expireTime = expireTime;
-	}	
+	}
+	
+	public void setDefaultRoles(String roles) {
+		Optional.ofNullable(roles).ifPresent(r -> {
+			
+			defaultRoles.clear();
+			
+			Stream.of(r.split(","))
+			      .map(String::trim)
+			      .filter(roleName -> roleName.matches(Role.ROLE_PATTERN))
+			      .forEach(defaultRoles::add);
+			
+		});
+	}
+	
+	public void setDefaultRoles(Set<String> roles) {
+		defaultRoles.addAll(roles);
+	}
+	
+	public Set<String> getDefaultRoles() {
+		return defaultRoles;
+	}
 	
 	public void createSignUpRequest(String email, byte[] request) throws UserExistException {		
 		

@@ -37,6 +37,7 @@ import it.greenvulcano.gvesb.gviamx.repository.UserActionRepository;
 import it.greenvulcano.gvesb.gviamx.service.NotificationManager;
 import it.greenvulcano.gvesb.iam.domain.User;
 import it.greenvulcano.gvesb.iam.domain.jpa.UserJPA;
+import it.greenvulcano.gvesb.iam.exception.UnverifiableUserException;
 import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
 import it.greenvulcano.gvesb.iam.service.UsersManager;
 
@@ -77,9 +78,11 @@ public class PasswordResetManager {
 		this.expireTime = expireTime;
 	}
 	
-	public void createPasswordResetRequest(String email) throws UserNotFoundException {		
+	public void createPasswordResetRequest(String email) throws UserNotFoundException, UnverifiableUserException {		
 			
 		User user = usersManager.getUser(email);			
+		
+		if (user.getPassword().isPresent()) {
 		
 	    PasswordResetRequest passwordResetRequest = repository.get(email, PasswordResetRequest.class).orElseGet(PasswordResetRequest::new);
 	    passwordResetRequest.setUser((UserJPA)user);
@@ -101,7 +104,9 @@ public class PasswordResetManager {
 							.map( n -> new NotificationManager.NotificationTask(n, passwordResetRequest, "reset"))
 							.forEach(executor::submit);
 		
-		
+		} else {
+			throw new UnverifiableUserException(email);
+		}
 	}
 	
 	public PasswordResetRequest retrievePasswordResetRequest(String email, String token) {

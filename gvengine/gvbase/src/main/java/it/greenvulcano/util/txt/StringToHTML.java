@@ -19,6 +19,9 @@
  *******************************************************************************/
 package it.greenvulcano.util.txt;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.StringTokenizer;
 
 /**
@@ -82,5 +85,31 @@ public class StringToHTML
             }
         }
         return ret.toString();
+    }
+    
+    public static String escapeToEntity(String text) {
+    	try {
+	    	byte[] original = text.getBytes("UTF-32");
+	    	
+	    	
+	    	StringBuilder escaped = new StringBuilder();
+	    	for (int index = 0; index<original.length;) {	    		
+		    	
+	    		byte[] character = Arrays.copyOfRange(original, index, index+=4);	    		
+	    		
+	    		int codepoint = ByteBuffer.wrap(character).getInt();
+	    		
+	    		if (codepoint>128 || codepoint==34 || codepoint==39|| codepoint==60|| codepoint==62) {
+	    			escaped.append("&#"+codepoint+";");
+	    		} else {
+	    			escaped.append(new String(character, "UTF-32"));   	
+	    		}				
+	    	}
+	    	return escaped.toString();
+    	} catch (UnsupportedEncodingException e) {			
+			e.printStackTrace();			
+		}
+    	
+    	return text;
     }
 }

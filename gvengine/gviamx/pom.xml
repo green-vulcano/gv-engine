@@ -152,6 +152,7 @@
                         	org.json,
                         	org.slf4j,
                             org.hibernate,
+                            org.hibernate.annotations,
                             org.hibernate.proxy,
                             org.hibernate.query,
                             org.osgi.service.cm,

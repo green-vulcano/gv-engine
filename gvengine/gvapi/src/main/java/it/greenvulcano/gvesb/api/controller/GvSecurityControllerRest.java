@@ -47,6 +47,7 @@ import it.greenvulcano.gvesb.iam.exception.InvalidPasswordException;
 import it.greenvulcano.gvesb.iam.exception.InvalidRoleException;
 import it.greenvulcano.gvesb.iam.exception.InvalidUsernameException;
 import it.greenvulcano.gvesb.iam.exception.PasswordMissmatchException;
+import it.greenvulcano.gvesb.iam.exception.UnverifiableUserException;
 import it.greenvulcano.gvesb.iam.exception.UserExistException;
 import it.greenvulcano.gvesb.iam.exception.UserExpiredException;
 import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
@@ -57,7 +58,7 @@ import it.greenvulcano.gvesb.iam.service.UsersManager;
 import it.greenvulcano.gvesb.iam.service.UsersManager.Authority;
 import it.greenvulcano.gvesb.iam.service.UsersManager.System;
 
-@CrossOriginResourceSharing(allowAllOrigins=true, allowCredentials=true, exposeHeaders={"Content-type", "Content-Range", "X-Auth-Status"} )
+@CrossOriginResourceSharing(allowAllOrigins=true, allowCredentials=true, exposeHeaders={"Content-Type", "Content-Range", "X-Auth-Status"} )
 public class GvSecurityControllerRest extends BaseControllerRest {
 			
 	private final static Logger LOG = LoggerFactory.getLogger(GvSecurityControllerRest.class);	
@@ -176,6 +177,9 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 		} catch (InvalidPasswordException e) {
 			LOG.error("GVAPI_Exception - Change password",e);
 			response = Response.status(Status.BAD_REQUEST).entity("Invalid password: "+newPassword).build();
+		} catch (UnverifiableUserException e) {
+			LOG.error("GVAPI_Exception - Change password",e);
+			response = Response.status(Status.CONFLICT).entity("Password change not allowed for external user  ").build();
 		}
 		
 		return response;
@@ -210,7 +214,7 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 			response = Response.status(Status.NOT_FOUND).entity(toJson(e)).build();
 		} catch (UserExpiredException e) {
 			response = Response.status(Status.FORBIDDEN).entity(toJson(e)).build();
-		} catch (PasswordMissmatchException e) {
+		} catch (PasswordMissmatchException|UnverifiableUserException e) {
 			response = Response.status(Status.UNAUTHORIZED).entity(toJson(e)).build();		
 		} catch (Exception e) {
 			LOG.error("GVAPI_Exception - OAuth2 token creation",e);
