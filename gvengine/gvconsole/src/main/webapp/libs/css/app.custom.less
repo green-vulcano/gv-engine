@@ -1,0 +1,1537 @@
+@blue-gvconsole: #164064;
+@black-gvconsole: #2d2d2d;
+@green-gvconsole: #228650;
+@red-gvconsole: #9b1a18;
+@red-hover-gvconsole: rgba(155, 26, 24, 0.7);
+@cyan-gvconsole: #009fc8;
+@white-gvconsole: #fff;
+@yellow-gvconsole: #f7931e;
+@grey90-gvconsole: rgba(218, 233, 239, 0.9);
+@grey50-gvconsole: rgba(218, 233, 239, 0.5);
+@grey30-gvconsole: rgba(218, 233, 239, 0.3);
+
+html {
+  font-family: 'Roboto', sans-serif !important;
+  font-size: 24px;
+}
+
+.normal-text {
+  color: transparent;
+}
+
+#propertiesLeft {
+  padding: 10px;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  background-color: @grey30-gvconsole;
+  height: 46px;
+}
+
+#propertiesRight {
+  padding: 10px;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  background-color: @grey30-gvconsole;
+  height: 46px;
+}
+
+input[type=number]::-webkit-inner-spin-button {
+  opacity: 1;
+}
+label{
+  display: inline-block !important;
+}
+
+input[type=number]::-moz-inner-spin-button {
+  opacity: 1;
+}
+
+#gaugeChart {
+    padding-top: 50px;
+  }
+  .has-error .form-control {
+      border-color: @red-gvconsole !important;
+      -webkit-box-shadow: none;
+      box-shadow: none;
+  }
+  .has-error .form-control:focus {
+      border-color: @red-gvconsole !important;
+      -webkit-box-shadow: none;
+      box-shadow: none;
+  }
+button,
+input,
+select,
+textarea {
+  line-height: normal !important;
+}
+.form-control[disabled] {
+  background-color: @white-gvconsole;
+  opacity: 1;
+  border-bottom-width: 0px !important;
+  color: @red-gvconsole;
+}
+.upload-drop-zone {
+  height: 300px;
+  margin-bottom: 20px;
+  margin-top: 20px;
+  color: #333;
+  width: 100%;
+  background-color: rgba(218, 233, 239, 0.5);
+  line-height: 300px;
+  text-align: center;
+  display: inline-block;
+  vertical-align: middle;
+  -webkit-transform: perspective(1px) translateZ(0);
+  transform: perspective(1px) translateZ(0);
+  box-shadow: 0 0 1px transparent;
+  -webkit-transition-duration: 0.3s;
+  transition-duration: 0.3s;
+  -webkit-transition-property: box-shadow;
+  transition-property: box-shadow;
+  box-shadow: inset 0 0 0 4px transparent, 0 0 1px transparent;
+  border-radius:5px;
+}
+.upload-drop-zone:hover, .upload-drop-zone:focus, .upload-drop-zone:active {
+  box-shadow: inset 0 0 0 4px @cyan-gvconsole, 0 0 1px transparent;
+}
+#configfile {
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  padding-top: 135px;
+  padding-bottom: 135px;
+  padding-left: 25%;
+  padding-right: 25%;
+  position: absolute;
+  opacity: 0;
+}
+.custom-file-upload {
+  cursor: pointer;
+  font-size: 20px;
+}
+.upload-drop-zone.drop {
+  color: #222;
+  border-color: #222;
+}
+
+.tdTableDivRight {
+  padding: 15px;
+  border-bottom-right-radius: 5px;
+  border-top-right-radius: 5px;
+  margin-bottom: 5px;
+  background: @white-gvconsole;
+  margin-top: 5px;
+  height: 60px;
+  overflow-x: auto;
+}
+
+.tdTableDivCentre {
+  padding: 15px;
+  margin-bottom: 5px;
+  background: @white-gvconsole;
+  margin-top: 5px;
+  height: 60px;
+  overflow-x: auto;
+}
+
+.tdTableDivLeft {
+  padding: 15px;
+  border-bottom-left-radius: 5px;
+  border-top-left-radius: 5px;
+  background: @white-gvconsole;
+  margin-bottom: 5px;
+  margin-top: 5px;
+  height: 60px;
+  overflow-x: auto;
+}
+.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
+  border:none;
+}
+#passwordModal {
+  padding-top: 50px;
+}
+
+
+.modal-header {
+  background-color: @grey30-gvconsole;
+  padding: 0;
+  border-bottom: none;
+  border-radius: 6px;
+}
+
+.modal-body {
+  text-align: center;
+  padding: 30px;
+  margin-bottom: 10px;
+}
+
+.footerModal {
+  background-color: @grey30-gvconsole;
+  border-radius: 6px;
+  padding: 15px;
+  width: 100% !important;
+  float: left !important;
+}
+
+.modal-footer {
+  padding: 0;
+  border: none;
+}
+
+.group {
+  position: relative;
+  margin-bottom: 45px;
+}
+
+.input {
+  font-size: 16px !important;
+  border: none !important;
+  border-bottom: 1px solid #757575 !important;
+  background-color: transparent;
+}
+
+.input:focus {
+  font-size: 16px !important;
+  border: none !important;
+  border-bottom: 1.2px solid @cyan-gvconsole !important;
+}
+
+.form-control {
+  display: block;
+  width: 100%;
+  height: 34px;
+  padding: 6px 12px;
+  font-size: 14px;
+  line-height: 1.42857143;
+  color: #555;
+  background-color: #fff;
+  background-image: none;
+  border: none;
+  border-radius: 0;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  -webkit-transition: none;
+  -o-transition: none;
+  transition: none;
+}
+
+.input-lg {
+  height: 46px;
+  padding: 10px 16px;
+  font-size: 18px;
+  line-height: 1.3333333;
+  background-color: transparent;
+}
+
+.input-lg:focus {
+  border: none !important;
+  border-bottom: 1.2px solid @cyan-gvconsole !important;
+  width: 100% !important;
+  box-shadow: none;
+  -webkit-box-shadow: none;
+}
+
+#configInfo {
+  padding-bottom:10px;
+}
+
+#login {
+  margin-top: 40px;
+}
+#img-login {
+  background-image: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url("assets/background_login.jpeg");
+  background-size: 1700px;
+}
+#form_login {
+  margin-top: 15%;
+  padding: 50px;
+  display: block;
+  border-radius: 10px;
+  background-color: @grey30-gvconsole;
+  left: 3%;
+}
+
+.input-form {
+  font-size: 16px !important;
+  border: none !important;
+  border-bottom: 1px solid #757575 !important;
+  width: 100% !important;
+  background-color: transparent;
+}
+
+.input-form:focus {
+  font-size: 16px !important;
+  border: none !important;
+  border-bottom: 1.2px solid @cyan-gvconsole !important;
+  width: 100% !important;
+  box-shadow: none;
+  -webkit-box-shadow: none;
+}
+
+.select {
+  margin-left: 10px;
+  font-family: inherit;
+  background-color: transparent;
+  padding: 1px;
+  font-size: 16px;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: 1px solid #757575 !important;
+  border-radius: 0px !important;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: transparent url(https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_keyboard_arrow_down_48px-128.png) no-repeat;
+  background-size: 20px;
+  background-position: right;
+  width: 150px;
+}
+
+.select-form {
+  font-family: inherit;
+  background-color: transparent;
+  padding: 1px;
+  font-size: 16px;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  width: 100%;
+  border-bottom: 1px solid #757575 !important;
+  border-radius: 0px !important;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: transparent url(https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_keyboard_arrow_down_48px-128.png) no-repeat;
+  background-size: 20px;
+  background-position: right;
+}
+
+#outputBackground {
+  background-color: @grey50-gvconsole;
+  padding-bottom: 10px;
+  padding-top:5px;
+}
+
+.radio-toolbar input[type="radio"] {
+  display: none;
+}
+
+.radio-toolbar label {
+  display: inline-block;
+  color: @black-gvconsole;
+  padding: 4px 7px;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 100px;
+}
+
+.radio-toolbar label:hover {
+  color: #fff;
+  background-color: #009fc8;
+}
+
+.radio-toolbar input[type="radio"]:checked+label {
+  background-color: @cyan-gvconsole;
+  color: @white-gvconsole;
+}
+
+hr {
+  width: 100px;
+  margin-bottom: 20px;
+  border: 0;
+  border-top: 3px solid @green-gvconsole;
+  margin: 0;
+}
+
+.nav-tabs > li > a {
+  margin-top: 10px;
+  margin-right: 2px;
+  line-height: 1.42857143;
+  border: 1px solid @grey50-gvconsole;
+  border-radius: 4px 4px 0 0;
+}
+
+.tableSpan {
+  vertical-align: -webkit-baseline-middle;
+  vertical-align: -moz-middle-with-baseline;
+}
+
+.alert2 {
+    top: 0;
+    position: relative;
+    z-index: 1000;
+    padding:15px;
+    font-size: 16px;
+    margin: 0;
+    width: 100%;
+}
+
+.alertTop{
+  z-index: 1000;
+  padding:0px;
+  margin:0px;
+}
+
+.footerButton {
+  position: fixed;
+  bottom: 0;
+}
+
+.progress {
+  margin-bottom: 0;
+}
+
+#configGroup {
+  background-color: @white-gvconsole;
+  margin-bottom: 5px;
+  margin-top: 15px;
+  padding: 5px;
+  border-radius: 5px;
+}
+#configGroupMonitoring {
+  background-color: @grey90-gvconsole;
+  margin-bottom: 5px;
+  margin-top: 15px;
+  padding: 5px;
+  border-radius: 5px;
+}
+#configGroupMonitoring2 {
+  background-color: @grey50-gvconsole;
+  margin-bottom: 5px;
+  margin-top: 15px;
+  padding: 5px;
+  border-radius: 5px;
+}
+#configGroupDeploy {
+  background-color: #228650;
+  margin-bottom: 5px;
+  margin-top: 15px;
+  padding: 5px;
+  border-radius: 5px;
+  color: #fff;
+}
+
+a:hover {
+  text-decoration: none !important;
+}
+
+#configOperation {
+  background-color: @grey90-gvconsole;
+  margin-bottom: 5px;
+  padding: 5px;
+  border-radius: 5px;
+}
+#configOperationMonitoring {
+  background-color: @grey30-gvconsole;
+  margin-bottom: 5px;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+#profileAction {
+  vertical-align: middle;
+}
+
+#profileAction:hover {
+  background-color: @blue-gvconsole;
+  color: @white-gvconsole;
+}
+
+#panelHead {
+  background-color: @white-gvconsole;
+}
+
+#table {
+  background-color: @grey50-gvconsole;
+  position: inherit;
+  display: block;
+  overflow-x: auto;
+}
+
+#graph {
+  border: 1px solid @grey50-gvconsole;
+}
+select {
+  border-radius:0px !important;
+}
+.tableTd {
+  background-color: @white-gvconsole;
+}
+
+.modal-open {
+  overflow: auto;
+  padding-right: 0 !important;
+}
+
+.buttondisable {
+  display: none;
+}
+
+.cron-select {
+  width: auto;
+  font-family: inherit;
+  background-color: transparent;
+  padding: 1px;
+  font-size: 16px;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  -webkit-transition: none;
+  color: @black-gvconsole;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: 1px solid #757575 !important;
+  border-radius: 0px !important;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: transparent url(https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_keyboard_arrow_down_48px-128.png) no-repeat;
+  background-size: 20px;
+  background-position: right;
+  width: 80px;
+}
+.hour-value, .minute-value {
+  width: 40px;
+}
+.month-value,.day-value {
+  width: 100px;
+}
+.day-of-month-value {
+  width: 50px;
+}
+.btn-success,
+.progress-bar-success,
+.label-success {
+  background-color: @green-gvconsole;
+}
+
+.btn-primary,
+.progress-bar-primary,
+.label-primary {
+  background-color: @blue-gvconsole;
+}
+
+.btn-info,
+.progress-bar-info,
+.label-info {
+  background-color: @cyan-gvconsole;
+}
+
+.btn-danger,
+.progress-bar-danger,
+.label-danger {
+  background-color: @red-gvconsole;
+}
+
+.btn-warning,
+.progress-bar-warning,
+.label-warning {
+  background-color: @yellow-gvconsole;
+}
+
+.text-danger {
+  color: @red-gvconsole;
+}
+
+.text-warning {
+  color: @yellow-gvconsole;
+}
+
+.text-info {
+  color: @cyan-gvconsole;
+}
+
+.text-success {
+  color: @green-gvconsole;
+}
+
+.text-primary {
+  color: @blue-gvconsole;
+}
+
+#headerTopic {
+  color: @blue-gvconsole;
+}
+
+.divAlign {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.intestazione {
+  padding-top: 20px;
+  background-color: @grey30-gvconsole;
+}
+
+.pagination > .active > a,
+.pagination > .active > a:focus,
+.pagination > .active > a:hover,
+.pagination > .active > span,
+.pagination > .active > span:focus,
+.pagination > .active > span:hover {
+  z-index: 3;
+  color: @white-gvconsole;
+  cursor: default;
+  background-color: @cyan-gvconsole;
+  border-color: @cyan-gvconsole;
+  border-radius: 100px;
+}
+
+.pagination-sm > li:first-child > a,
+.pagination-sm > li:first-child > span {
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
+}
+
+.pagination > li:first-child > a,
+.pagination > li:first-child > span {
+  margin-left: 0;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+.pagination > .disabled > a,
+.pagination > .disabled > a:focus,
+.pagination > .disabled > a:hover,
+.pagination > .disabled > span,
+.pagination > .disabled > span:focus,
+.pagination > .disabled > span:hover {
+  /* color: #777; */
+  cursor: not-allowed;
+  background-color: transparent;
+  border: 0;
+}
+
+.pagination > li > a,
+.pagination > li > span {
+  position: relative;
+  float: left;
+  padding: 6px 12px;
+  margin-left: -1px;
+  line-height: 1.42857143;
+  color: #337ab7;
+  text-decoration: none;
+  background-color: transparent;
+  border-radius: 100px;
+  border: 0;
+}
+
+.pagination > li > a:focus,
+.pagination > li > a:hover,
+.pagination > li > span:focus,
+.pagination > li > span:hover {
+  z-index: 2;
+  color: @white-gvconsole;
+  background-color: @cyan-gvconsole;
+  border-color: @cyan-gvconsole;
+}
+
+#crossClose {
+  color: #bdbdbd;
+}
+
+#crossClose:hover {
+  color: #333;
+}
+
+.serviceHead {
+  color: @white-gvconsole;
+  background-color: @green-gvconsole;
+  font-size: 18px;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+}
+
+.list-inline > li {
+  display: inline-block;
+  padding: 5px;
+}
+
+.table > tbody > tr > td,
+.table > tbody > tr > th,
+.table > tfoot > tr > td,
+.table > tfoot > tr > th,
+.table > thead > tr > td,
+.table > thead > tr > th {
+  padding: 8px 15px;
+}
+
+.positioninline {
+  display: inline-block;
+}
+
+#btnProp {
+  margin-top: 10px;
+}
+
+#areaProperties {
+  height: 900px;
+}
+
+body {
+  background-color: @white-gvconsole;
+  line-height: 1.42857143;
+  font-family: 'Roboto', sans-serif !important;
+}
+
+.fieldset-xmlconfig {
+  border: 1px solid #000 !important;
+  margin: 10px;
+  xmin-width: 0;
+  padding: 10px;
+  position: relative;
+  border-radius: 4px;
+  background-color: #f5f5f5;
+  padding-left: 10px!important;
+}
+
+legend {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 0;
+  width: 35%;
+  color: @white-gvconsole;
+  border: 1px solid #000;
+  border-radius: 4px;
+  padding: 5px 5px 5px 10px;
+  background-color: #4982ad;
+}
+
+.name {
+  vertical-align: middle;
+}
+
+.panel-title {
+  font-size: 18px;
+}
+
+#noTab {
+  border: 1px solid #757575;
+  border-radius: 6px;
+}
+.list-inline {
+ margin-left: 0px;
+}
+#outputArea {
+  background-color: @white-gvconsole;
+  color: @green-gvconsole;
+  margin-bottom: 20px;
+}
+@-webkit-keyframes blinker {
+  from {
+    opacity: 1.0;
+  }
+
+  to {
+    opacity: 0.0;
+  }
+}
+
+.modal-backdrop {
+  position: relative;
+  display: none;
+}
+
+.padding-box {
+  margin-bottom: 18px;
+}
+
+.noselect {
+  -webkit-touch-callout: none;
+  /* iOS Safari */
+  -webkit-user-select: none;
+  /* Safari */
+  -khtml-user-select: none;
+  /* Konqueror HTML */
+  -moz-user-select: none;
+  /* Firefox */
+  -ms-user-select: none;
+  /* Internet Explorer/Edge */
+  user-select: none;
+  /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+  cursor: pointer;
+}
+
+.paused {
+  color: #efc23b;
+  font-weight: bold;
+}
+
+.started {
+  color: @green-gvconsole;
+  font-weight: bold;
+}
+
+.optionForm {
+  padding-left: 0;
+}
+
+.input-group-addon {
+  background-color: @white-gvconsole;
+}
+.bottomAction {
+  position: sticky;
+  bottom: 0px;
+  background-color: @white-gvconsole;
+  padding: 12px;
+}
+#selctNum {
+  width: 56px;
+  height: 26px;
+  display: inline-block;
+  padding: 0 6px;
+}
+
+.off {
+  display: none;
+}
+
+.monitoringGraph {
+  width: 1000;
+  height: 1000;
+}
+
+:focus {
+  outline: none;
+}
+
+.row {
+  margin-right: 0;
+  margin-left: 0;
+}
+
+#showrole {
+  margin-top: 15px;
+}
+
+#fabuttonplus {
+  margin-left: 15px;
+  margin-top: 0;
+}
+
+#searchBarUser {
+  margin: 0;
+  padding: 0;
+  margin-bottom: 18px;
+}
+
+.container {
+  max-width: 100%;
+  padding-right: 0;
+  padding-left: 0;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.form.ng-pristine.ng-invalid.ng-invalid-required.ng-valid-pattern {
+  margin-top: 50px;
+}
+
+.input-group-btn {
+  z-index: 0;
+}
+
+#setNewPassword {
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
+#buttonInfo {
+  text-align: var(3.12px);
+  margin-bottom: 10px;
+}
+
+#demo {
+  text-align: left;
+}
+
+#newrole {
+  z-index: 0;
+}
+
+#profileName {
+  color: #124667;
+  font-weight: bold;
+}
+
+#rolesP {
+  font-size: 20px;
+  color: @green-gvconsole;
+  margin-left: 10px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+#formLeft {
+  text-align: left;
+  margin: 0;
+  font-size: 21px;
+  width: 90%;
+}
+
+#labelLeft {
+  text-align: left;
+}
+
+#panelHead {
+  line-height: 34px;
+  vertical-align: middle;
+}
+
+#addTableButton {
+  float: right;
+  font-size: 21px;
+}
+
+#loginLogo {
+  width: 100%;
+  margin-bottom: 20px;
+  right: 4%;
+}
+
+#text {
+  display: inherit;
+  font-size: 20px;
+  margin-bottom: 5px;
+}
+
+#setPassword {
+  width: 20%;
+}
+
+#formSetPassword {
+  margin-bottom: 10px;
+}
+/******* Start Nav-bar Style *******/
+.navbar-default .navbar-toggle {
+  border-color: @white-gvconsole;
+  background-color: @white-gvconsole;
+  width: 10%;
+}
+
+.navbar-brand {
+  height: auto;
+}
+/******* End Nav-bar Style *******/
+.rotate {
+  -moz-transition: all 0.3s linear;
+  -webkit-transition: all 0.3s linear;
+  transition: all 0.3s linear;
+}
+
+.rotate.down {
+  -moz-transform: rotate(180deg);
+  -webkit-transform: rotate(180deg);
+  transform: rotate(180deg);
+}
+/******* Start Nav-bar Option Style *******/
+#optionMenu {
+  vertical-align: middle;
+  /* border-color: @green-gvconsole; */
+}
+
+#optionMenu:hover {
+  background: @green-gvconsole;
+  color: #fdfdfd;
+}
+
+#logout:hover {
+  background: @red-hover-gvconsole;
+  color: @white-gvconsole;
+}
+#poolname {
+  line-height: 2;
+}
+#paddingPool {
+  margin-top: 20px;
+}
+#poolModal {
+  padding: 30px;
+}
+/******* End Nav-bar Option Style *******/
+/******* Start Panel Style *******/
+thead {
+  background: @white-gvconsole;
+}
+
+.panel-default {
+  border-color: #e7e7e7;
+  border-radius: 6px;
+}
+
+.panel-default > .panel-heading {
+  color: @black-gvconsole;
+  background-color: @grey50-gvconsole;
+  font-size: 18pm;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+}
+
+.panel-default > .panel-footer {
+  color: @black-gvconsole;
+  background-color: @grey50-gvconsole;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+/******* End Panel Style *******/
+/******* Start Logo and Brand *******/
+#logo {
+  width: 100%;
+}
+
+#gvesb_name {
+  font-size: 24px;
+  text-align: center;
+  font-family: 'Roboto', sans-serif;
+}
+/******* Start Logo and Brand *******/
+/******* Start Side Bar Style ******/
+.side-menu {
+  position: fixed;
+  width: 220px;
+  height: 100%;
+  background-color: @white-gvconsole;
+  border-right: 1px solid #e7e7e7;
+  overflow: auto;
+}
+
+.side-menu .navbar {
+  border: inherit;
+  background-color: @white-gvconsole;
+  height: 100%;
+  margin-bottom: 0;
+}
+.navbar {
+      min-height: 57px;
+}
+
+.side-menu .navbar-header {
+  width: 100%;
+}
+
+#logout {
+  color: @red-gvconsole;
+}
+
+#liLogout {
+  position: fixed;
+  bottom: 0;
+  width: 218px;
+  color: @white-gvconsole;
+  border: 1.5px solid @red-gvconsole;
+}
+
+.side-menu .navbar-nav .active a {
+  background-color: @green-gvconsole;
+  color: @white-gvconsole;
+}
+
+.side-menu .navbar-nav li {
+  display: block;
+  width: 100%;
+}
+
+.side-menu .navbar-nav li a {
+  font-size: 23px;
+}
+
+.side-menu .navbar-nav li a .glyphicon {
+  padding-right: 11px;
+}
+
+.side-menu .brand-name-wrapper {
+  min-height: 57px;
+}
+
+.side-menu .brand-name-wrapper .navbar-brand {
+  display: block;
+}
+/* Main body section */
+.side-body {
+  margin-left: 220px;
+}
+
+.container-fluid {
+  padding-right: 0;
+  padding-left: 0;
+}
+@media (max-height: 697px) {
+  #liLogout {
+    position: initial;
+    bottom: 0;
+    width: 203px;
+    color: @white-gvconsole;
+    border: 1.5px solid @red-gvconsole;
+  }
+}
+/******* End Side Bar Style ******/
+@media (max-width: 1065px) {
+  #fabuttonplus {
+    margin-left: 15px;
+    margin-top: 5px;
+  }
+  .modal-content {
+    width: 100%;
+  }
+}
+
+  @media (max-width: 991px) {
+
+    #form_login {
+      left: 0%;
+    }
+  }
+
+
+/******* Start Style for Small-Screen *******/
+@media (min-width: 768px){
+  .navbar>.container .navbar-brand, .navbar>.container-fluid .navbar-brand {
+  margin-left: 0px;
+  }
+}
+
+@media (max-width: 768px) {
+
+
+  #loginLogo {
+    right:0%;
+  }
+
+  .col-xs-3 {
+    padding-left: 5px;
+  }
+  #fa-btn {
+    padding: 10px;
+  }
+  .modal-footer .btn + .btn {
+    margin-bottom: 0;
+    margin-left: 5px;
+  }
+  .upload-drop-zone {
+    display: inline-block;
+    line-height: 150px;
+  }
+  .select {
+    margin-top: 20px;
+  }
+  .form-group {
+    margin-bottom: 25px;
+  }
+  #usertable {
+    display: block;
+    overflow-x: auto;
+  }
+  .navbar-nav > li > a {
+    padding: 15px;
+  }
+  .input-form {
+    padding: 7px;
+    margin-bottom: 10px;
+  }
+  #export {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+  #idschedule {
+    line-height: 3;
+  }
+  #descript {
+    line-height: 3;
+  }
+  #cronExpression {
+    line-height: 3;
+  }
+  #btnstat {
+    line-height: 3;
+  }
+  .select-form {
+    padding: 5px;
+  }
+  td.col-sm-4.ng-binding {
+    line-height: 3;
+  }
+
+  .connecting-line {
+    display: none;
+  }
+
+  #fabuttonplus {
+    margin-left: 15px;
+    margin-top: 5px;
+  }
+
+  .side-menu {
+    position: fixed;
+    width: 100%;
+    height: 0;
+    border-right: 0;
+    overflow: unset;
+    z-index: 2;
+  }
+
+  .side-menu .brand-name-wrapper .navbar-brand {
+    display: inline-block;
+  }
+
+  .side-menu .navbar-header {
+    border-bottom: none;
+  }
+
+  #gvesb_name,
+  #logo {
+    height: 50px;
+  }
+
+  #logo {
+    width: 100px;
+  }
+
+  .navbar-brand {
+    padding: 0;
+  }
+  @-moz-keyframes slidein {
+    0% {
+      left: -342px;
+    }
+
+    100% {
+      left: 11px;
+    }
+  }
+  @-webkit-keyframes slidein {
+    0% {
+      left: -342px;
+    }
+
+    100% {
+      left: 11px;
+    }
+  }
+  @keyframes slidein {
+    0% {
+      left: -342px;
+    }
+
+    100% {
+      left: 11px;
+    }
+  }
+  @-moz-keyframes slideout {
+    0% {
+      left: 0;
+    }
+
+    100% {
+      left: -342px;
+    }
+  }
+  @-webkit-keyframes slideout {
+    0% {
+      left: 0;
+    }
+
+    100% {
+      left: -342px;
+    }
+  }
+  @keyframes slideout {
+    0% {
+      left: 0;
+    }
+
+    100% {
+      left: -342px;
+    }
+  }
+
+  .side-menu-container > .navbar-nav.slide-in {
+    -moz-animation: slidein 300ms forwards;
+    -o-animation: slidein 300ms forwards;
+    -webkit-animation: slidein 300ms forwards;
+    animation: slidein 300ms forwards;
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+    overflow: auto;
+  }
+
+  .side-menu-container > .navbar-nav {
+    position: fixed;
+    left: -342px;
+    width: 220px;
+    top: 49px;
+    height: 100%;
+    border-right: 1px solid #e7e7e7;
+    background-color: @white-gvconsole;
+    -moz-animation: slideout 300ms forwards;
+    -o-animation: slideout 300ms forwards;
+    -webkit-animation: slideout 300ms forwards;
+    animation: slideout 300ms forwards;
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+    overflow: auto;
+  }
+  @-moz-keyframes bodyslidein {
+    0% {
+      left: 0;
+    }
+
+    100% {
+      left: 342px;
+    }
+  }
+  @-webkit-keyframes bodyslidein {
+    0% {
+      left: 0;
+    }
+
+    100% {
+      left: 342px;
+    }
+  }
+  @keyframes bodyslidein {
+    0% {
+      left: 0;
+    }
+
+    100% {
+      left: 342px;
+    }
+  }
+  @-moz-keyframes bodyslideout {
+    0% {
+      left: 342px;
+    }
+
+    100% {
+      left: 0;
+    }
+  }
+  @-webkit-keyframes bodyslideout {
+    0% {
+      left: 342px;
+    }
+
+    100% {
+      left: 0;
+    }
+  }
+  @keyframes bodyslideout {
+    0% {
+      left: 342px;
+    }
+
+    100% {
+      left: 0;
+    }
+  }
+
+  .side-body {
+    margin-left: 1px;
+    margin-top: 57px;
+    position: relative;
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+  }
+
+  h2 {
+    margin-top: 0;
+    padding-top: 15px;
+  }
+
+  .navbar-toggle {
+    height: 58px;
+    border: 0;
+    float: left;
+    padding: 19px;
+    margin: 0;
+    border-radius: 0;
+    background-color: #f3f3f3;
+  }
+}
+
+.preXML {
+  display: block;
+  padding: 9.5px;
+  text-align: left;
+  margin: 0 0 10px;
+  font-size: 13px;
+  line-height: 1.42857143;
+  height: 660px;
+  color: @black-gvconsole;
+  word-break: break-all;
+  word-wrap: break-word;
+  background-color: #f5f5f5;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding-top: 10px;
+}
+/******* Start Delete Confirm Window Style ******/
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  padding-top: 10%;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(255, 255, 255, 0.40);
+}
+
+.modalXML {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0,0,0);
+  background-color: rgba(0,0,0,0.4);
+}
+
+.modal-contentXML {
+  background-color: #fefefe;
+  margin: auto;
+  text-align: center;
+  padding: 10px 20px 20px;
+  border: 1px solid #888;
+  width: 80%;
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: auto;
+  text-align: center;
+  border: 1px solid #888;
+  width: 50%;
+}
+/******* End Delete Confirm Window Style ******/
+/******* End Style for Small-Screen *******/
+/******* XML Viewer *******/
+/* CSS Document */
+@charset "utf-8";
+
+.Utility {
+  color: black;
+}
+
+.NodeName {
+  font-weight: bold;
+  color: @green-gvconsole;
+}
+
+.AttributeName {
+  font-weight: bold;
+  color: black;
+}
+
+.AttributeValue {
+  color: @cyan-gvconsole;
+}
+
+.NodeValue {
+  color: black;
+}
+
+.Element {
+  border-left-color: @blue-gvconsole;
+  border-left-width: thin;
+  border-left-style: solid;
+  padding-top: 0;
+  margin-top: 10px;
+}
+
+.Clickable {
+  cursor: pointer;
+}
+/********* END XML Viewer *********/
+.wizard .nav-tabs {
+  position: relative;
+  margin-bottom: 0;
+  border-bottom: none;
+}
+
+.wizard > div.wizard-inner {
+  position: relative;
+}
+
+.connecting-line {
+  height: 2px;
+  background: #e0e0e0;
+  position: absolute;
+  width: 65%;
+  margin: 0 auto;
+  left: 0;
+  right: 0;
+  top: 50%;
+  z-index: 1;
+}
+
+.wizard .nav-tabs > li.active > a,
+.wizard .nav-tabs > li.active > a:focus,
+.wizard .nav-tabs > li.active > a:hover {
+  color: #555555;
+  cursor: default;
+  border: 0;
+  border-bottom-color: transparent;
+}
+
+span.round-tab {
+  width: 70px;
+  height: 70px;
+  line-height: 70px;
+  display: inline-block;
+  border-radius: 100px;
+  background: @white-gvconsole;
+  border: 2px solid #e0e0e0;
+  z-index: 1;
+  position: absolute;
+  left: 0;
+  text-align: center;
+  font-size: 25px;
+}
+
+span.round-tab i {
+  color: #555555;
+}
+
+.wizard li.active span.round-tab {
+  background: @white-gvconsole;
+  border: 2px solid @green-gvconsole;
+}
+
+.wizard li.active span.round-tab i {
+  color: @green-gvconsole;
+}
+
+span.round-tab:hover {
+  color: @black-gvconsole;
+  border: 2px solid @black-gvconsole;
+}
+
+.wizard .nav-tabs > li a {
+  width: 70px;
+  height: 70px;
+  margin: 20px auto;
+  border-radius: 100%;
+  padding: 0;
+}
+
+.wizard .nav-tabs > li a:hover {
+  background: transparent;
+}
+
+.wizard .tab-pane {
+  position: relative;
+  padding-top: 50px;
+}
+
+.wizard h3 {
+  margin-top: 0;
+}

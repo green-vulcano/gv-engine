@@ -1,4 +1,4 @@
-angular.module('gvconsole', ['ngCookies','ngRoute','angular-quartz-cron', 'ui.bootstrap'])
+angular.module('gvconsole', ['ngCookies','ngRoute','angular-quartz-cron', 'ui.bootstrap','angularjs-gauge', 'angular-toArrayFilter'])
 .constant('ENDPOINTS', getEndpoints())
 .config(['$httpProvider', function($httpProvider){
 	$httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
@@ -51,7 +51,7 @@ angular.module('gvconsole', ['ngCookies','ngRoute','angular-quartz-cron', 'ui.bo
 				templateUrl: 'topics/tools/tools.html'
 			}).
 			otherwise({
-    	        redirectTo: '/myprofile'
+    	        redirectTo: '/monitoring'
 			});
 }])
 .run(['$rootScope', '$location', '$cookieStore', '$http',
@@ -157,12 +157,6 @@ angular.module('gvconsole', ['ngCookies','ngRoute','angular-quartz-cron', 'ui.bo
                         return  $location.path().startsWith(route);
                       };
 }]);
-function gototab(reload)
-{
-window.location.hash = '#/monitoring';
-window.location.reload(true);
-};
-
 angular.element(document).ready(function() {
   angular.element('.navbar-toggle').click(function () {
       angular.element('.navbar-nav').toggleClass('slide-in');

@@ -1,75 +1,104 @@
 <div class="container-fluid">
-   <div class="side-body" data-ng-controller="profileController as ctrl">
-     <div class="container row">
-      <h1>Welcome in GVESB Console
-         <span id="profileName">{{globals.currentUser.username}}</span>!
-      </h1>
-      <div data-ng-repeat="alert in ctrl.alerts" class="fadeout2 alert alert-{{alert.type}}" role="alert" data-ng-class="{'off': error==true}">{{alert.msg}}</div>
-      <!-- Prova Style -->
-      <div class="panel panel-default" style="overflow-x:auto; font-size:15px">
-         <div class="panel-heading">
-            <i class="fa fa-user" aria-hidden="true"></i> Profile
+   <div class="side-body" data-ng-controller="profileController as ctrl" data-ng-init="ctrl.loadConfigInfo();">
+     <div class="row">
+       <div class="intestazione col-md-12 col-sm-12 col-xs-12">
+         <div id="headerTopic" class="col-md-6 col-sm-6 col-xs-6">
+         <h2><i class="fas fa-user"></i> Profile</h2>
+       </div>
+       <div id="configInfo" class="col-md-6 col-sm-6 col-xs-6">
+         <div class="col-md-12 col-sm-12 col-xs-12 text-right">
+           <h4 class="text-primary">Current version: <span class="text-info">{{ctrl.configInfo.id}}</span></h4>
          </div>
-         <div class="panel panel-body container-fluid">
-            <div class="col-sm-12">
-               <label id="labelLeft" class="control-label optionForm col-sm-2">Username:</label>
-               <p class="col-sm-2">{{globals.currentUser.username}}</p>
-            </div>
-            <div class="col-sm-12">
-               <label id="labelLeft" class="control-label optionForm col-sm-2">Full Name:</label>
-               <p class="col-sm-2">{{globals.currentUser.userInfo.fullname}}</p>
-            </div>
-            <div class="col-sm-12">
-               <label id="labelLeft" class="control-label optionForm col-sm-2">E-Mail:</label>
-               <p class="col-sm-2">{{globals.currentUser.userInfo.email}}</p>
-            </div>
+         <div class="col-md-12 col-sm-12 col-xs-12 text-right">
+           <h4 class="text-primary">Deployed on: <span class="text-info">{{ctrl.configInfo.time | date : 'd MMMM yyyy H:mm:ss'}}</span></h4>
          </div>
-         <table id="users" class="table table-hover">
-            <thead>
-               <tr>
-                  <th>Role Name</th>
-                  <th>Description</th>
-               </tr>
-            </thead>
-            <tbody>
-               <tr data-ng-repeat="role in roles">
-                  <td style="color:#961e24">{{role.name}}</td>
-                  <td style="color:#238650">{{role.description}}</td>
-               </tr>
-            </tbody>
-         </table>
-         <div class="panel-footer clearfix" style="text-align: center;">
-          <form id="passwordForm" name="renewForm" data-ng-submit="changePassword()">
-            <button type="reset" class="btn btn-primary pull-right" data-toggle="modal" data-target="#passwordModal{{$index}}">Change Password</button>
-              <div class="col-md-12">
-               <div id="passwordModal" class="modal fadeoutModal">
-                  <div class="modal-content">
-                        <h4>Set new password</h4>
-                        <div data-ng-repeat="alert in ctrl.alerts" class="fadeout2 alert alert-{{alert.type}}" role="alert" data-ng-class="{'off': error==false}">{{alert.msg}}</div>
-                        <div id="setNewPassword" class="input-group">
-                           <span class="input-group-addon">
-                           <i class="fa fa-key fa-fw"></i>
-                           </span>
-                           <input class="form-control" type="password" placeholder="Old Password" name="j_password" data-ng-model="oldPassword" required>
-                        </div>
-                        <div id="setNewPassword" class="input-group">
-                           <span class="input-group-addon">
-                           <i class="fa fa-key fa-fw"></i>
-                           </span>
-                           <input class="form-control" type="password" placeholder="New Password" data-ng-model="newPassword" name="new_password" pattern="(?=^.{4,28}$)^[a-zA-Z0-9._@&$#!?-]+$" required>
-                        </div>
-                        <span class="help-block small">
-                        Length: min 4, max 28
-                        <br> Valid chars: a-z A-Z 0-9 &#46; &#95; &#64; &amp; &#36; &#35; &#33; &#63; &#45; (no white space)
-                        </span>
-                        <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button>
-                        <button type="submit" id="prova" class="btn btn-success" data-ng-disabled="renewForm.new_password.$invalid">Confirm</button>
-                     </form>
-                  </div>
+       </div>
+       </div>
+       <div class="col-md-12 col-sm-12 col-xs-12 alertTop">
+     <div data-ng-repeat="alert in ctrl.alerts" class="fadeout2 alert2 alert-{{alert.type}}" role="alert" data-ng-class="{'off': error==true}">{{alert.msg}}</div>
+   </div>
+       <div class="col-md-12 col-sm-12 col-xs-12" style="padding:0px">
+               <div class="col-md-6 col-sm-6 col-xs-6" style="padding:0px">
+                 <div class="col-md-12 col-sm-12 col-xs-12">
+                   <h3 class="col-md-6 col-sm-6 col-xs-6" style="margin-top:15px">Username: </h3>
+                   <h3 class="col-md-6 col-sm-6 col-xs-6" style="margin-top:15px">{{globals.currentUser.username}}</h3></div>
+                 <div class="col-md-12 col-sm-12 col-xs-12">
+                   <h3 class="col-md-6 col-sm-6 col-xs-6" style="margin-top:15px">Full Name: </h3>
+                   <h3 class="col-md-6 col-sm-6 col-xs-6" style="margin-top:15px">{{globals.currentUser.userInfo.fullname}}</h3></div>
+                 <div class="col-md-12 col-sm-12 col-xs-12">
+                   <h3 class="col-md-6 col-sm-6 col-xs-6" style="margin-top:15px">E-Mail: </h3>
+                   <h3 class="col-md-6 col-sm-6 col-xs-6" style="margin-top:15px">{{globals.currentUser.userInfo.email}}</h3></div>
                </div>
-            </div>
-         </div>
+               <div class="divAlign col-md-6 col-xs-12 text-right" style="margin-top: 33px;margin-bottom: 33px;">
+                 <div class="col-md-9 col-xs-9">
+                   <form id="passwordForm" name="renewForm" data-ng-submit="changePassword()">
+                     <button type="reset" class="btn btn-info pull-right" data-toggle="modal" data-target="#passwordModal{{$index}}"><i class="fas fa-key"></i> Change Password</button>
+                     <div class="col-md-12">
+                       <div id="passwordModal" class="modal fade Modal fadeout">
+                         <div class="modal-content">
+                           <div class="intestazione col-md-12">
+                             <div id="headerTopic" class="pull-left">
+                               <h2 style="margin-top:0px"><i class="fas fa-key" aria-hidden="true"></i> Change Password</h2>
+                             </div>
+                           </div>
+                           <div class="col-md-12 col-sm-12 col-xs-12">
+                             <div class="col-sm-8 col-md-offset-2" id="marginFix">
+                               <div data-ng-repeat="alert in ctrl.alerts" style="text-align: left" class="fadeout2 alert alert-{{alert.type}}" role="alert" data-ng-class="{'off': error==false}">{{alert.msg}}
+                               </div>
+                             </div>
+                           </div>
+                           <div id="setNewPassword" class="col-md-12">
+                             <div class="col-sm-8 col-md-offset-2" id="marginFix">
+                               <input class="input-form ng-pristine ng-invalid ng-invalid-required ng-touched ng-untouched" type="password" placeholder="Old Password" name="j_password" data-ng-model="oldPassword" required="">
+                             </div>
+                           </div>
+                           <div id="setNewPassword" class="col-md-12">
+                             <div class="col-md-2"></div>
+                             <div class="col-md-8" id="marginFix">
+                               <input class="input-form ng-pristine ng-invalid ng-invalid-required ng-valid-pattern ng-touched" type="password" placeholder="New Password" data-ng-model="newPassword" name="new_password" pattern="(?=^.{4,28}$)^[a-zA-Z0-9._@&amp;$#!?-]+$" required="">
+                               <span class="help-block small pull-left">Length: min 4, max 28 Valid chars: a-z A-Z 0-9 . _ @ &amp; $ # ! ? - (no white space)</span>
+                             </div>
+                           </div>
+
+                           <div class="modal-footer">
+                             <div class="col-md-12 text-right footerModal">
+                           <button type="button" class="btn btn-warning" data-dismiss="modal"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button>
+                           <button type="submit" id="prova" class="btn btn-success" data-ng-disabled="renewForm.new_password.$invalid">Confirm</button>
+                         </div>
+                       </div>
+                   </form>
+                   </div>
+                   </div>
+                   </div>
+                 </div>
+                 <div class="col-md-3 col-xs-3">
+                   <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addModal{{$index}}"><i class="fas fa-pencil-alt"></i> Modify</button>
+                 </div>
+               </div>
+             </div>
+
+
+      <!-- Prova Style -->
+      <div>
+        <div class="col-md-12" id="table">
+          <table class="table table-hover col-md-12">
+             <thead style="background:transparent">
+                 <tr>
+                   <th class="col-md-4"><h4>Role Name</h4></th>
+                   <th class="col-md-8"><h4>Description</h4></th>
+                 </tr>
+              </thead>
+              <tbody>
+                 <tr class="tableTd" data-ng-repeat="role in roles" style="background:transparent;">
+                    <td class="col-md-4" style="padding:0px;background:transparent"><div class="col-md-12 tdTableDivLeft"><span class="tableSpan">{{role.name}}</span></div></td>
+                    <td class="col-md-8" style="padding:0px;background:transparent"><div class="col-md-12 tdTableDivRight"><span class="tableSpan">{{role.description}}</span></div></td>
+                 </tr>
+              </tbody>
+           </table>
+       </div>
+
       </div>
     </div>
    </div>
+</div>
 </div>

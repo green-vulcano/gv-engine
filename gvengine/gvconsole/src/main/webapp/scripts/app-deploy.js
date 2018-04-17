@@ -128,6 +128,7 @@ angular.module('gvconsole')
   		});
     };
 
+
 	this.addConfig = function(){
     if (instance.configInfo.id != instance.deploy.id) {
     	DeployService.addConfig(instance.deploy.id,instance.deploy.configfile)

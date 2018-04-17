@@ -1,157 +1,157 @@
 <html>
-	<head>
-		<meta charset="UTF-8">
-			<title>Excel To HTML using codebeautify.org</title>
-		</head>
-		<body>
-			<div class="container-fluid">
-				<div class="side-body">
-					<div class="container row" data-ng-controller="DeployConfigController as ctrl" data-ng-init="">
-					<h1>Deploy action</h1>
-						<div class="container col-sm-12">
-							<div class="row">
-								<div class="panel panel-default" style="overflow-x:auto;">
-									<div class="panel-heading">
-									   Deploy steps
-									</div>
-									<section>
-										<div class="wizard">
-											<div class="panel-body clearfix">
-												<div class="wizard-inner">
-													<ul class="nav nav-tabs col-sm-12" role="tablist">
-														<div class="connecting-line"></div>
-														<li role="presentation" class="col-sm-4" data-ng-class="{'active': step == 0, 'disable': step != 0 }">
-															<a data-toggle="tab" aria-controls="step1" role="tab" title="Step 1" data-target="#step1" style="pointer-events: none;">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Excel To HTML using codebeautify.org</title>
+</head>
+
+<body>
+	<div class="container-fluid">
+		<div class="side-body">
+			<div class="row" data-ng-controller="DeployConfigController as ctrl" data-ng-init="">
+				<div class="intestazione col-md-12">
+					<div id="headerTopic" class="col-md-6">
+						<h2><i class="fas fa-rocket"></i> Deploy action</h2>
+					</div>
+
+				</div>
+				<div class="container col-sm-12">
+					<div class="row">
+						<section>
+							<div class="wizard">
+								<div class="wizard-inner">
+									<ul class="nav nav-tabs col-sm-12" role="tablist">
+										<div class="connecting-line"></div>
+										<li role="presentation" class="col-sm-4" data-ng-class="{'active': step == 0, 'disable': step != 0 }">
+											<a data-toggle="tab" aria-controls="step1" role="tab" title="Step 1" data-target="#step1" style="pointer-events: none;">
 																<span class="round-tab">
 																	<i class="glyphicon glyphicon-open-file"></i>
 																</span>
 															</a>
-														</li>
-														<li role="presentation" class="col-sm-4" data-ng-class="{'active': step == 01, 'disable': step != 01 }">
-															<a data-toggle="tab" aria-controls="step2" role="tab" title="Step 2" data-target="#step2" style="pointer-events: none;">
+										</li>
+										<li role="presentation" class="col-sm-4" data-ng-class="{'active': step == 01, 'disable': step != 01 }">
+											<a data-toggle="tab" aria-controls="step2" role="tab" title="Step 2" data-target="#step2" style="pointer-events: none;">
 																<span class="round-tab">
 																	<i class="glyphicon glyphicon-tasks"></i>
 																</span>
 															</a>
-														</li>
-														<li role="presentation" class="col-sm-4" data-ng-class="{'active': step == 011, 'disable': step != 011 }">
-															<a data-toggle="tab" aria-controls="complete" role="tab" data-target="#complete" style="pointer-events: none;">
+										</li>
+										<li role="presentation" class="col-sm-4" data-ng-class="{'active': step == 011, 'disable': step != 011 }">
+											<a data-toggle="tab" aria-controls="complete" role="tab" data-target="#complete" style="pointer-events: none;">
 																<span class="round-tab">
 																	<i class="glyphicon glyphicon-ok"></i>
 																</span>
 															</a>
-														</li>
-													</ul>
+										</li>
+									</ul>
+								</div>
+
+								<div class="tab-content">
+									<div class="tab-pane active" role="tabpanel" id="step1">
+
+										<div class="tab-content">
+											<div class="col-sm-6">
+												<h3 style="padding-left:15px">Current Configuration:</h3>
+												<div class="col-sm-12">
+													<div class="col-md-12" data-ng-repeat="serviceCurrent in servicesCurrent | orderBy:'idService'">
+														<div id="configGroupDeploy" class="col-sm-12">
+															<span class="col-md-3">{{serviceCurrent.idService}}</span>
+														</div>
+														<div id="configOperation" class="col-sm-12" data-ng-repeat="operationCurrent in serviceCurrent.operations | orderBy:'name'">
+															<span class="col-md-3" style="padding-left:20px">{{operationCurrent.name}}</span>
+														</div>
+													</div>
 												</div>
-													<div class="tab-content">
-														<div class="tab-pane active" role="tabpanel" id="step1">
-															<h2 style="text-align:center;margin-bottom:40px"></h2>
+											</div>
+										</div>
+										<div class="tab-content">
+											<div class="col-sm-6">
+												<h3 style="padding-left:15px">New Configuration:</h3>
+												<div class="col-sm-12">
+													<div class="col-md-12" data-ng-repeat="serviceNew in servicesNew | orderBy:'idService' ">
+														<div id="configGroupDeploy" class="col-sm-12">
+															<span class="col-md-3">{{serviceNew.idService}} </span>
+														</div>
+														<div id="configOperation" class="col-sm-12" data-ng-repeat="operationNew in serviceNew.operations | orderBy:'name'">
+															<span class="col-md-3" style="padding-left:20px">{{operationNew.name}}</span>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
 
-																<div class="col-sm-6" style="margin-top:10px">
-																	<h3>Current Configuration:<button class="btn btn-default pull-right" type="button" data-toggle="modal" data-target="#myModalCurrent" data-dismiss="modal"><i class="fa fa-file-code-o" aria-hidden="true"></i></h3>
-																	<div id="myModalCurrent" class="modalXML">
-													                   <div class="modal-contentXML">
-													                   	 <h3>Current GVCore</h3>
-													                     <pre class="preXML">{{currentGVCore}}</pre>
-													                     <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button>
-													                   </div>
-													                 </div>
-												                  <div class="panel panel-default" style="margin-top:10px">
-												                    <div data-ng-repeat="serviceCurrent in servicesCurrent | orderBy:'idService'">
-												                    <div class="panel-heading Clickable serviceHead" data-toggle="collapse" data-target="#{{serviceCurrent.idService}}Current" style="border-radius: 0px" ng-click="OpenCurrentServiceList=!OpenCurrentServiceList">
-												                        <h3 class="panel-title">{{serviceCurrent.idService}} <i aria-hidden="true" data-ng-class="(OpenCurrentServiceList) ? 'fa fa-chevron-up pull-right' : 'fa fa-chevron-down pull-right'"></i></h3> <!-- Group -->
-												                    </div>
-												                    <div  class="panel-body collapse" style="padding:0px; border-radius: 0px" id="{{serviceCurrent.idService}}Current">
-												                      <table class="table table-hover col-sm-12" style="margin: 0px">
-												                        <tbody>
-												                           <tr data-ng-repeat="operationCurrent in serviceCurrent.operations | orderBy:'name'">
-												                            <td>{{operationCurrent.name}} </td>
-												                          </tr>
-												                       </tbody>
-												                      </table>
-												                    </div>
-												                  	</div>
-												                  </div>
-																</div>
 
-																<div class="col-sm-6" style="margin-top:10px">
-																<h3>New Configuration: <button class="btn btn-default pull-right" type="button" data-toggle="modal" data-target="#myModalNew" data-dismiss="modal"><i class="fa fa-file-code-o" aria-hidden="true"></i></h3>
+										<!-- <h3>New Configuration:
 																	<div id="myModalNew" class="modalXML">
 													                   <div class="modal-contentXML">
 													                   	<h3>New GVCore</h3>
 													                     <pre class="preXML">{{newGVCore}}</pre>
 													                     <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button>
 													                   </div>
-													                 </div>
-												                  <div class="panel panel-default" style="margin-top:10px; border-radius:5px">
-												                    <div data-ng-repeat="serviceNew in servicesNew | orderBy:'idService' ">
-												                    <div class="panel-heading Clickable serviceHead" data-toggle="collapse" data-target="#{{serviceNew.idService}}New" style="border-radius: 0px" ng-click="OpenNewServiceList=!OpenNewServiceList">
-												                        <h3 class="panel-title">{{serviceNew.idService}} <i data-ng-class="(OpenNewServiceList) ? 'fa fa-chevron-up pull-right' : 'fa fa-chevron-down pull-right'"></i></h3> <!-- Group -->
-												                    </div>
-												                    <div  class="panel-body collapse" style="padding:0px; border-radius: 0px" id="{{serviceNew.idService}}New">
-												                      <table class="table table-hover col-sm-12" style="margin: 0px">
-												                        <tbody>
-												                          <tr data-ng-repeat="operationNew in serviceNew.operations | orderBy:'name'">
-												                            <td>{{operationNew.name}}</td>
-												                          </tr>
-												                       </tbody>
-												                      </table>
-												                    </div>
-												                  	</div>
-												                  </div>
-																</div>
+													                 </div>-->
+										<div class="divAlign col-md-12 text-right bottomAction">
 
-																<div class="col-sm-12">
-																	<a href="#/deploy" type="button" class="btn btn-danger pull-left">Cancel</a>
-																<button type="button" id="stepValue" value="1" class="btn btn-primary pull-right" data-toggle="tab" data-target="#step2" data-ng-click="changeStep()">Next</button>
-															</div>
-														</div>
+											<a href="#/deploy"><button type="button" class="btn btn-warning"><i class="fas fa-times" aria-hidden="true"></i> Cancel</button></a>
 
-														<div class="tab-pane" role="tabpanel" id="step2">
-														<form role="form" name="propertiesForm" data-ng-submit="propertiesForm.$valid" novalidate>
-															<h2 style="text-align:center; margin:20px">Properties File</h2>
-															<div style="text-align: center;" class="alert alert-warning" data-ng-show="!propertiesForm.$valid" role="alert">All properties must be completed for proced to deploy with this configuration!</div>
+											<button type="button" id="stepValue" value="1" class="btn btn-success" data-toggle="tab" data-target="#step2" data-ng-click="changeStep()"><i class="fas fa-chevron-right"></i> Next</button>
 
-
-																<table class="table table-hover">
-											            <thead>
-											              <tr>
-											                <th class="col-sm-6">Key</th>
-											                <th class="col-sm-6">Value</th>
-											              </tr>
-											            </thead>
-											            <tbody>
-											              <tr data-ng-repeat="(key,value) in ctrl.properties">
-											                <td class="col-sm-6">{{key}}</td>
-											                <td class="col-sm-6"><div  class="form-group"  data-ng-class="{'has-error' : !ctrl.properties[key]}"><input name="{{key}}" type="text" class="form-control" data-ng-model="ctrl.properties[key]" name="value" required></div></td>
-											              </tr>
-											            </tbody>
-											          </table>
-
-															<div class="col-sm-6">
-																<a href="#/deploy" type="button" class="btn btn-danger pull-left">Cancel</a>
-															</div>
-															<div class="col-sm-6">
-																<button type="submit" data-ng-show="propertiesForm.$valid"  id="stepValue" value="1" class="btn btn-primary pull-right" data-toggle="tab" data-target="#complete"  data-ng-click="changeStep()">Next</button>
-																<button type="submit" data-ng-show="!propertiesForm.$valid"  id="stepValue" value="1" class="btn btn-primary pull-right" data-toggle="tab" data-target="#complete"  data-ng-click="changeStep()" disabled>Next</button>
-															</div>
-															</form>
-														</div>
-
-														<div class="tab-pane" role="tabpanel" id="complete">
-															<h3 style="text-align:center">Are you sure to change current configuration <span style="color:red">"{{currentConfigId}}"</span> <p>with configuration <span style="color:red">"{{newConfigId}}"</span>?</p></h3>
-															<div class="col-sm-6"><a href="#/deploy" type="button" class="btn btn-danger pull-left">Cancel</a></div>
-															<div class="col-sm-6"><a href="#/deploy" type="button" class="btn btn-success pull-right" data-ng-click="ctrl.deploy()">Proceed</a></div>
-														</div>
-													</div>
-											</div>
 										</div>
-									</section>
+
+									</div>
+
+									<div class="tab-pane" role="tabpanel" id="step2">
+										<form role="form" name="propertiesForm" data-ng-submit="propertiesForm.$valid" novalidate>
+											<h2 style="text-align:center; margin:20px">Properties File</h2>
+											<div class="col-sm-12" style="padding:0px">
+												<div style="text-align: center;" class="alert alert-warning" data-ng-show="!propertiesForm.$valid" role="alert">All properties must be completed for proced to deploy with this configuration!</div>
+											</div>
+											<div class="col-md-12" id="table">
+											<table class="table table-hover col-md-12">
+												<thead style="background:transparent">
+													<tr>
+														<th class="col-sm-6"><h4>Key</h4></th>
+														<th class="col-sm-6"><h4>Value</h4></th>
+													</tr>
+												</thead>
+												<tbody>
+													<tr class="tableTd" data-ng-repeat="(key,value) in ctrl.properties" style="background:transparent;">
+														<td class="col-sm-6" style="padding:0px;background:transparent"><div class="col-md-12 tdTableDivLeft">{{key}}</div></td>
+														<td class="col-sm-6" style="padding:0px;background:transparent">
+															<div class="col-md-12 tdTableDivLeft form-group" data-ng-class="{'has-error' : !ctrl.properties[key]}"><input name="{{key}}" type="text" class="input-form" data-ng-model="ctrl.properties[key]" name="value" required></div>
+														</td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+
+											<div class="divAlign col-md-12 text-right bottomAction">
+
+												<a href="#/deploy"><button type="button" class="btn btn-warning"><i class="fas fa-times" aria-hidden="true"></i> Cancel</button></a>
+
+												<button type="submit" data-ng-show="propertiesForm.$valid" id="stepValue" value="1" class="btn btn-success" data-toggle="tab" data-target="#complete" data-ng-click="changeStep()"><i class="fas fa-chevron-right"></i> Next</button>
+												<button type="submit" data-ng-show="!propertiesForm.$valid" id="stepValue" value="1" class="btn btn-success" data-toggle="tab" data-target="#complete" data-ng-click="changeStep()" disabled><i class="fas fa-chevron-right"></i> Next</button>
+
+											</div>
+
+										</form>
+									</div>
+
+									<div class="tab-pane" role="tabpanel" id="complete">
+										<h3 style="text-align:center">Are you sure to change current configuration <span style="color:red">"{{currentConfigId}}"</span> <p>with configuration <span style="color:red">"{{newConfigId}}"</span>?</p></h3>
+
+										<div class="divAlign col-md-12 text-right bottomAction">
+											<a href="#/deploy"><button type="button" class="btn btn-warning"><i class="fas fa-times" aria-hidden="true"></i> Cancel</button></a>
+											<a href="#/deploy"><button type="button" class="btn btn-success" data-ng-click="ctrl.deploy()"><i class="fas fa-rocket" aria-hidden="true"></i> Proceed</button></a>
+										</div>
+									</div>
 								</div>
 							</div>
-						</div>
+						</section>
 					</div>
 				</div>
 			</div>
-		</body>
-	</html>
+		</div>
+	</div>
+</body>
+
+</html>

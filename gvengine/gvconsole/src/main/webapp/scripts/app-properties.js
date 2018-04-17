@@ -34,9 +34,35 @@ angular.module('gvconsole')
 	$scope.properties = [];
 	this.Json = {};
 	this.alerts = [];
+	this.configInfo = {};
 	this.coreProperties = [];
 	this.check = {};
+	$scope.newKey = null;
+	$scope.newValue = null;
 	$scope.i = 0;
+
+
+
+  this.getConfigInfo = function () {
+		PropertiesService.getConfigInfo().then(
+				function(response){
+					instance.configInfo = response.data;
+				},
+				function(response){
+					switch (response.status) {
+
+							case 401: case 403:
+								$location.path('login');
+								break;
+
+							default:
+								instance.alerts.push({type: 'danger', msg: 'Data not available'});
+								break;
+					}
+		});
+
+	}
+
 
 	PropertiesService.getConfigInfo().then(function(response) {
 		$scope.currentConfiguration = response.data.id;
@@ -56,31 +82,34 @@ angular.module('gvconsole')
 		});
 	});
 
-	PropertiesService.getProperties().then(function(response){
-		$scope.properties = [];
-		angular.forEach(response.data, function(value, key) {
-				$scope.properties.push({key: key, value: value});
-			});
-	},function(response){
-		console.log("error: " + response.data);
-	});
+	$scope.getPropertiesList = function() {
+		PropertiesService.getProperties().then(function(response){
+			$scope.properties = [];
+			angular.forEach(response.data, function(value, key) {
+					$scope.properties.push({key: key, value: value});
+				});
+				console.log($scope.properties);
+		},function(response){
+			console.log("error: " + response.data);
+		});
+	};
 
+	$scope.getPropertiesList();
 
-	$scope.addProperties = function() {
-		$scope.properties.push({key: undefined, value: undefined});
-		instance.alerts.push({type: 'info', msg: 'Property has been added to the last position'});
+	$scope.search = "";
+
+	$scope.addProperties = function(newKey,newValue) {
+		$scope.properties.push({key: newKey, value: newValue});
+		instance.alerts.push({type: 'info', msg: 'Property has been added to the last position, remember to save!'});
+		setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
 	};
 
 	$scope.deleteProperty = function(key) {
+		console.log(key);
 		PropertiesService.deleteProperties(key).then(function(response){
 			instance.alerts.push({type: 'success', msg: 'Properties deleted'});
 			setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
-			PropertiesService.getProperties().then(function(response){
-				$scope.properties = [];
-				angular.forEach(response.data, function(value, key) {
-						$scope.properties.push({key: key, value: value});
-					});
-				});
+			$scope.getPropertiesList();
 		},function(response){
 			instance.alerts.push({type: 'danger', msg: 'Properties not deleted'});
 			setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
@@ -88,18 +117,6 @@ angular.module('gvconsole')
 			})
 
 	}
-
-	$scope.matchKey = function(){
-		if ($scope.key != undefined && $scope.key != "") {
-		PropertiesService.getPropertyValue($scope.key).then(function(response){
-			$scope.value = response.data;
-		},function(response){
-			$scope.value = "No match found";
-			})
-		}
-	}
-
-
 
 	$scope.modifyProperties = function(){
 		var j = 0;

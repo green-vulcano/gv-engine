@@ -1,66 +1,169 @@
 <div class="container-fluid">
    <div class="side-body">
-      <div class="container row" data-ng-controller="MonitoringController">
-        <h1>Monitoring</h1>
-         <div class="col-lg-6 col-md-6 col-xs-12" style="padding-left:0px">
-            <div class="col-lg-12 col-md-12 col-xs-12" style="padding-left:0px">
-               <div class="panel panel-default">
-                  <div class="panel-heading">
-                     <h4 class="panel-title">
-                     Memories Chart</h3>
-                  </div>
-                  <div class="panel-body" style="padding: 0">
-                     <div id="glove-chart-container" style="padding: 40px 0">
-                        <div id="glove-chart" style="height: 350px; z-index: 32">
-                        </div>
-                     </div>
-                  </div>
-               </div>
-            </div>
-            <div class="col-lg-12 col-md-12 col-xs-12" style="padding-left:0px">
-               <div class="panel panel-default">
-                  <div class="panel-heading">
-                     <h4 class="panel-title">
-                     Classes Chart</h3>
-                  </div>
-                  <div class="panel-body" style="padding: 0">
-                     <div id="glove-chart-container" style="padding: 40px 0">
-                        <div id="glove-chart2" style="height: 350px; z-index: 32">
-                        </div>
-                     </div>
-                  </div>
-               </div>
-            </div>
+      <div class="row" data-ng-controller="MonitoringController as ctrl" data-ng-init="ctrl.loadConfigInfo();init()">
+        <div class="intestazione col-md-12 col-sm-12 col-xs-12">
+          <div id="headerTopic" class="col-md-6 col-sm-6 col-xs-6">
+          <h2><i class="fas fa-chart-pie"></i> Dashboard</h2>
+        </div>
+        <div id="configInfo" class="col-md-6 col-sm-6 col-xs-6">
+          <div class="col-md-12 text-right">
+            <h4 class="text-primary">Current version: <span class="text-info">{{ctrl.configInfo.id}}</span></h4>
+          </div>
+          <div class="col-md-12 text-right">
+            <h4 class="text-primary">Deployed on: <span class="text-info">{{ctrl.configInfo.time | date : 'd MMMM yyyy H:mm:ss'}}</span></h4>
+          </div>
+        </div>
+      </div>
+      <div id="graph" class="col-md-4 col-sm-12 col-xs-12   " style="height:266px">
+        <div id="headerTopic">
+        <h3><i class="fas fa-archive text-success"></i> Memory <span class="pull-right">{{totalMemory}} MB</span></h3>
+        <hr>
+        </div>
+        <div class="col-md-12" style="text-align: center;">
+        <ng-gauge id="gaugeChart" size="200" type="semi" thick="5"
+          min="0" max="totalMemory" value="heapMemory"
+          cap="round" append="MB"
+          foreground-color="#009fc8" background-color="#EEE">
+          </ng-gauge>
+        </div>
+        </div>
+
+        <div id="graph" class="col-md-4 col-sm-12 col-xs-12" style="height:266px">
+          <div id="headerTopic">
+          <h3><i class="fas fa-microchip text-success"></i> CPU</h3>
+          <hr>
+          </div>
+          <div class="col-md-12" style="text-align: center;">
+          <ng-gauge id="gaugeChart" size="200" type="semi" thick="5"
+            min="0" max="100" value="cpuUse"
+            cap="round" append="%"
+            foreground-color="#009fc8" background-color="#EEE">
+            </ng-gauge>
+          </div>
          </div>
-         <div class="col-lg-6 col-md-6 col-xs-12" style="padding-left:0px">
-            <div class="col-lg-12 col-md-12 col-xs-12" style="padding-left:0px">
-               <div class="panel panel-default">
-                  <div class="panel-heading">
-                     <h4 class="panel-title">
-                     Threads Chart</h3>
-                  </div>
-                  <div class="panel-body" style="padding: 0">
-                     <div id="glove-chart-container" style="padding: 40px 0">
-                        <div id="glove-chart3" style="height: 350px; z-index: 32">
-                        </div>
-                     </div>
-                  </div>
+
+         <div id="graph" class="col-md-4 col-sm-12 col-xs-12"  style="height:266px; overflow-y:auto">
+           <div id="headerTopic">
+           <h3><i class="fas fa-list-alt text-success"></i> Pool <span class="pull-right">6</span></h3>
+           <hr>
+           </div>
+           <div class="col-md-12" style="padding:0px"><!-- data-ng-repeat -->
+                 <div id="configGroupMonitoring2" class="col-sm-12" style="margin-top: 10px">
+               <span class="col-md-2">Prova</span>
+               <span class="col-md-3 text-right">30/32</span>
+              <div class="progress col-md-7" style="padding:0px">
+                 <div class="progress-bar progress-bar-danger" style="width: 90%">
+                 </div>
                </div>
-            </div>
-            <div class="col-lg-12 col-md-12 col-xs-12" style="padding-left:0px">
-               <div class="panel panel-default">
-                  <div class="panel-heading">
-                     <h4 class="panel-title">
-                     CPU Usage</h3>
-                  </div>
-                  <div class="panel-body" style="padding: 0">
-                     <div id="glove-chart-container" style="padding: 40px 0">
-                        <div id="glove-chart4" style="height: 480px; z-index: 32">
-                        </div>
-                     </div>
-                  </div>
+             </div>
+           </div>
+           <div class="col-md-12 col-sm-12 col-xs-12" style="padding:0px"><!-- data-ng-repeat -->
+                 <div id="configGroupMonitoring2" class="col-sm-12" style="margin-top: 10px">
+               <span class="col-md-2">Prova</span>
+               <span class="col-md-3 text-right">1/32</span>
+              <div class="progress col-md-7" style="padding:0px">
+                 <div class="progress-bar progress-bar-success" style="width: 3%">
+                 </div>
                </div>
+             </div>
+           </div>
+           <div class="col-md-12 col-sm-12 col-xs-12" style="padding:0px"><!-- data-ng-repeat -->
+                 <div id="configGroupMonitoring2" class="col-sm-12" style="margin-top: 10px">
+               <span class="col-md-2">Prova</span>
+               <span class="col-md-3 text-right">12/32</span>
+              <div class="progress col-md-7" style="padding:0px">
+                 <div class="progress-bar progress-bar-warning" style="width: 40%">
+                 </div>
+               </div>
+             </div>
+           </div>
+           <div class="col-md-12 col-sm-12 col-xs-12" style="padding:0px"><!-- data-ng-repeat -->
+                 <div id="configGroupMonitoring2" class="col-sm-12" style="margin-top: 10px">
+               <span class="col-md-2">Prova</span>
+               <span class="col-md-3 text-right">2/32</span>
+              <div class="progress col-md-7" style="padding:0px">
+                 <div class="progress-bar progress-bar-success" style="width: 10%">
+                 </div>
+               </div>
+             </div>
+           </div>
+           <div class="col-md-12 col-sm-12 col-xs-12" style="padding:0px"><!-- data-ng-repeat -->
+                 <div id="configGroupMonitoring2" class="col-sm-12" style="margin-top: 10px">
+               <span class="col-md-2">Prova</span>
+               <span class="col-md-3 text-right">15/32</span>
+              <div class="progress col-md-7" style="padding:0px">
+                 <div class="progress-bar progress-bar-warning" style="width: 45%">
+                 </div>
+               </div>
+             </div>
+           </div>
+           <div class="col-md-12 col-sm-12 col-xs-12" style="padding:0px"><!-- data-ng-repeat -->
+                 <div id="configOperationMonitoring" class="col-sm-12" style="margin-top: 10px">
+               <span class="col-md-2">Prova</span>
+               <span class="col-md-3 text-right">32/32</span>
+              <div class="progress col-md-7" style="padding:0px">
+                 <div class="progress-bar progress-bar-danger" style="width: 100%">
+                 </div>
+               </div>
+             </div>
+           </div>
+          </div>
+          <div class="col-md-12 col-sm-12 col-xs-12">
+            <div id="headerTopic">
+            <h3><i class="fas fa-cogs text-success"></i> Configuration</h3>
+            <hr>
             </div>
+            <div class="tab-content">
+               <div class="col-sm-12" style="padding:0px">
+                   <!-- <div class="col-sm-12">
+                     <div class="col-md-6" data-ng-repeat="service in services">
+                       <div id="configGroupMonitoring" class="col-sm-12">
+                     <span class="col-md-4" style="overflow-x:auto">{{service.idService}}</span>
+                     <span class="col-md-1 text-right">{{totFailSucc[service.idService].Tot}}</span>
+                    <div class="progress col-md-7" style="padding:0px">
+                       <div class="progress-bar progress-bar-success" style="width: {{(totFailSucc[service.idService].Succ/totFailSucc[service.idService].Tot)*100}}%">
+                         <span class="pull-left" style="margin-left:10px;position: relative;">{{totFailSucc[service.idService].Succ}}</span>
+                       </div>
+                       <div class="progress-bar progress-bar-danger" style="width: {{(totFailSucc[service.idService].Fail/totFailSucc[service.idService].Tot)*100}}%">
+                         <span class="pull-right" style="margin-right:10px;position: relative;">{{totFailSucc[service.idService].Fail}}</span>
+                       </div>
+                     </div>
+                     </div>
+                     <div id="configOperationMonitoring" class="col-sm-12" data-ng-repeat="operation in service.operations">
+                       <span class="col-md-4" style="padding-left:20px; overflow-x:auto">{{operation.name}}</span>
+                       <span class="col-md-1 text-right" ng-init ="id_operation = service.idService+'/'+operation.name" >{{totExecutionOp[id_operation]}}</span>
+                      <div class="progress col-md-7" style="padding:0px">
+                         <div class="progress-bar progress-bar-success" style="width: {{(operation.successes/totExecutionOp[id_operation])*100}}%">
+                           <span class="pull-left" style="margin-left:10px;position: relative;">{{operation.successes}}</span>
+                         </div>
+                         <div class="progress-bar progress-bar-danger" style="width: {{(operation.failures/totExecutionOp[id_operation])*100}}%">
+                           <span class="pull-right" style="margin-right:10px;position: relative;">{{operation.failures}}</span>
+                         </div>
+                       </div>
+                     </div>
+                   </div>
+                 </div> -->
+                   <div class="col-md-4 col-sm-12 col-xs-12 panel-default" data-ng-repeat="service in services" >
+                     <div id="configGroupMonitoring2" class="col-sm-12 panel-body">
+                  <div class="col-sm-12"><h4 class="text-left col-sm-6" style="padding-left:0px">{{service.idService}}</h4><h4 class="text-right col-sm-6" style="padding-right:0px">Call: {{totFailSucc[service.idService].Tot}}</h4></div>
+                  <div class="progress col-sm-12" style="padding:0px">
+                     <div class="progress-bar progress-bar-success" style="width: {{(totFailSucc[service.idService].Succ/totFailSucc[service.idService].Tot)*100}}%">
+                       <span class="pull-left" style="margin-left:10px;position: relative;" data-ng-class="{'normal-text': totFailSucc[service.idService].Tot == 0}">{{totFailSucc[service.idService].Succ}}</span>
+                     </div>
+                     <div class="progress-bar progress-bar-danger" style="width: {{(totFailSucc[service.idService].Fail/totFailSucc[service.idService].Tot)*100}}%">
+                       <span class="pull-right" style="margin-right:10px;position: relative;" data-ng-class="{'normal-text': totFailSucc[service.idService].Tot == 0}">{{totFailSucc[service.idService].Fail}}</span>
+                     </div>
+                   </div>
+                   </div>
+                 </div>
+
+            </div>
+           </div>
+           <div class="col-md-12 col-sm-12 col-xs-12" style="padding-bottom: 15px;">
+             <div style="padding-left:5px">
+               <h4><a href="#/configuration">For full view go to <strong>Configuration</strong>  section ...</a></h4>
+             </div>
+           </div>
          </div>
       </div>
    </div>

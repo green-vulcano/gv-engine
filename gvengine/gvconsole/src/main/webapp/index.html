@@ -4,26 +4,26 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <title>GreenVulcano ESB Web Console</title>
+      <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
       <link rel="stylesheet" href="libs/css/bootstrap.min.css"/>
-      <link rel="stylesheet" href="libs/css/font-awesome.min.css"/>
+      <link rel="stylesheet" href="libs/css/fontawesome-all.min.css"/>
       <link rel="stylesheet" href="libs/css/angular-quartz-cron.css"/>
-      <link rel="stylesheet" href="libs/css/c3.min.css"/>
-      <script type="text/javascript" src="libs/js/d3.min.js"></script>
-      <script type="text/javascript" src="libs/js/c3.min.js"></script>
+
       <script type="text/javascript" src="libs/js/jquery-3.2.0.min.js"></script>
       <script type="text/javascript" src="libs/js/angular.js"></script>
+      <script type="text/javascript" src="libs/js/angularjs-gauge.js"></script>
       <script type="text/javascript" src="libs/js/angular-route.js"></script>
       <script type="text/javascript" src="libs/js/angular-cookies.js"></script>
       <script type="text/javascript" src="libs/js/bootstrap.js"></script>
       <script type="text/javascript" src="libs/js/ui-bootstrap.js"></script>
       <script type="text/javascript" src="libs/js/angular-quartz-cron.js"></script>
-      <script type="text/javascript" src="libs/js/smoothie.js"></script>
       <script type="text/javascript" src="libs/js/ui-bootstrap-tpls-0.14.3.js"></script>
       <script type="text/javascript" src="libs/js/mqttws31.js"></script>
       <script type="text/javascript" src="libs/js/XMLDisplay.js"></script>
+      <script type="text/javascript" src="libs/js/toArrayFilter.js"></script>
 
       <link rel="stylesheet" href="libs/css/app.custom.css"/>
-      <!-- API Registry function to use when webapp run out of API container
+      <!-- API Registry function to use when webapp run out of API container 
       <script type="text/javascript">
          function getEndpoints() {
            var basePath = 'http://localhost:8181/cxf';
@@ -42,7 +42,7 @@
 
 
 	  <!-- API Registry servlet to use when webapp run inside the same container of API -->
-	  <script type="text/javascript" src="registry"></script>
+	  <script type="text/javascript" src="registry"></script> 
       <script type="text/javascript" src="scripts/app.custom.js"></script>
       <script type="text/javascript" src="scripts/app-auth.js"></script>
       <script type="text/javascript" src="scripts/app-admin.js"></script>
@@ -60,13 +60,15 @@
       <div class="row" data-ng-show="globals.currentUser">
 		   <div class="side-menu">
 		      <nav class="navbar navbar-default" role="navigation">
-		         <div class="container">
+		         <div class="container" style="height: 100%">
 		            <!-- Hamburger -->
 		            <button type="button" class="navbar-toggle" data-ng-click="isNavCollapsed = !isNavCollapsed" >
 		            <span class="sr-only">Toggle navigation</span>
+                <i class="fas fa-bars" style="font-size: 21px"></i>
+		            <!--<span class="icon-bar"></span>
 		            <span class="icon-bar"></span>
 		            <span class="icon-bar"></span>
-		            <span class="icon-bar"></span>
+		            <span class="icon-bar"></span> -->
 		            </button>
 		           <!-- Brand and toggle get grouped for better mobile display -->
 		            <div class="navbar-header">
@@ -77,7 +79,7 @@
 		                     <img id="logo" src="assets/logo.png">
 		                     </a>
 		                     <div id="gvesb_name" class="col-xs-4 col-sm-12 col-md-12">
-		                        <span style="vertical-align: -webkit-baseline-middle">GVESB 4</span>
+		                        <span style="vertical-align: -webkit-baseline-middle">ESB v4.0</span>
 		                     </div>
 		                  </div>
 		               </div>
@@ -85,17 +87,17 @@
 		            <!-- Main Menu -->
 		            <div class="side-menu-container">
 		               <ul class="nav navbar-nav">
-		                  <li data-ng-class="{ active: routeIsIn('/users')}" data-ng-show="globals.currentUser.isAdministrator" ><a id="optionMenu" href="#/users" onClick="slideButtonMenu();"><i class="fa fa-user-circle" aria-hidden="true"></i> Users</a></li>
-		                  <li data-ng-class="{ active: routeIsIn('/schedule')}" data-ng-show="globals.currentUser.isAdministrator||globals.currentUser.isSchedulerManager"><a id="optionMenu" href="#/schedule" onClick="slideButtonMenu();"><i class="fa fa-clock-o" aria-hidden="true"></i> Scheduling</a></li>
-		                  <li data-ng-class="{ active: routeIsIn('/deploy')}" data-ng-show="globals.currentUser.isAdministrator||globals.currentUser.isConfigManager"><a id="optionMenu" href="#/deploy" onClick="slideButtonMenu();"><i class="fa fa-bolt" aria-hidden="true"></i> Deploy</a></li>
-                      <li data-ng-class="{ active: routeIsIn('/properties')}" data-ng-show="globals.currentUser.isAdministrator||globals.currentUser.isConfigManager"><a id="optionMenu" href="#/properties" onClick="slideButtonMenu();"><i class="fa fa-product-hunt" aria-hidden="true"></i> Properties</a></li>
-		                  <li data-ng-class="{ active: routeIsIn('/testing')}" data-ng-show="globals.currentUser.isAdministrator||globals.currentUser.isConfigManager"><a id="optionMenu" href="#/testing" onClick="slideButtonMenu();"><i class="fa fa-play-circle-o" aria-hidden="true"></i> Execute</a></li>
-		                  <li data-ng-class="{ active: routeIsIn('/monitoring')}"><a id="optionMenu" href="#/monitoring" onClick="gototab(); slideButtonMenu();"><i class="fa fa-area-chart" aria-hidden="true"></i> Monitoring</a></li>
+                      <li data-ng-class="{ active: routeIsIn('/monitoring')}"><a id="optionMenu" href="#/monitoring" onClick="slideButtonMenu();"><i class="fas fa-chart-pie" aria-hidden="true"></i> Dashboard</a></li>
+		                  <li data-ng-class="{ active: routeIsIn('/users')}" data-ng-show="globals.currentUser.isAdministrator" ><a id="optionMenu" href="#/users" onClick="slideButtonMenu();"><i class="fas fa-users" aria-hidden="true"></i> Users</a></li>
+		                  <li data-ng-class="{ active: routeIsIn('/schedule')}" data-ng-show="globals.currentUser.isAdministrator||globals.currentUser.isSchedulerManager"><a id="optionMenu" href="#/schedule" onClick="slideButtonMenu();"><i class="fas fa-clock" aria-hidden="true"></i> Scheduling</a></li>
+		                  <li data-ng-class="{ active: routeIsIn('/deploy')}" data-ng-show="globals.currentUser.isAdministrator||globals.currentUser.isConfigManager"><a id="optionMenu" href="#/deploy" onClick="slideButtonMenu();"><i class="fas fa-rocket" aria-hidden="true"></i> Deploy</a></li>
+                      <li data-ng-class="{ active: routeIsIn('/properties')}" data-ng-show="globals.currentUser.isAdministrator||globals.currentUser.isConfigManager"><a id="optionMenu" href="#/properties" onClick="slideButtonMenu();"><i class="fas fa-list-ul" aria-hidden="true"></i> Properties</a></li>
+		                  <li data-ng-class="{ active: routeIsIn('/testing')}" data-ng-show="globals.currentUser.isAdministrator||globals.currentUser.isConfigManager"><a id="optionMenu" href="#/testing" onClick="slideButtonMenu();"><i class="fas fa-play-circle" aria-hidden="true"></i> Execute</a></li>
                     <!--  <li data-ng-class="{ active: routeIsIn('/tools')}" data-ng-show="globals.currentUser.isAdministrator||globals.currentUser.isConfigManager"><a id="optionMenu" href="#/tools" onClick="slideButtonMenu();"><i class="fa fa-briefcase" aria-hidden="true"></i> Tools</a></li> -->
-                      <li data-ng-class="{ active: routeIsIn('/configuration')}" data-ng-show="globals.currentUser.isAdministrator||globals.currentUser.isConfigManager"><a id="optionMenu" href="#/configuration" onClick="slideButtonMenu();"><i class="fa fa-cogs" aria-hidden="true"></i> Configuration</a></li>
-                      <li data-ng-class="{ active: routeIsIn('/settings')}" data-ng-show="globals.currentUser.isAdministrator||globals.currentUser.isConfigManager"><a id="optionMenu" href="#/settings" onClick="slideButtonMenu();"><i class="fa fa-wrench" aria-hidden="true"></i> Settings</a></li>
-		                  <li class="sidebar_user" data-ng-class="{ active: routeIsIn('/myprofile')}"><a id="optionMenu" href="#/myprofile" onClick="slideButtonMenu();"><i class="fa fa-user" aria-hidden="true"></i> My profile</a></li>
-		                  <li><a id="logout" data-ng-click="app.logout()" href="#/login"><i class="fa fa-sign-out" aria-hidden="true"></i> Logout</a></li>
+                      <li data-ng-class="{ active: routeIsIn('/configuration')}" data-ng-show="globals.currentUser.isAdministrator||globals.currentUser.isConfigManager"><a id="optionMenu" href="#/configuration" onClick="slideButtonMenu();"><i class="fas fa-cogs" aria-hidden="true"></i> Configuration</a></li>
+                      <li data-ng-class="{ active: routeIsIn('/settings')}" data-ng-show="globals.currentUser.isAdministrator||globals.currentUser.isConfigManager"><a id="optionMenu" href="#/settings" onClick="slideButtonMenu();"><i class="fas fa-wrench" aria-hidden="true"></i> Settings</a></li>
+		                  <li class="sidebar_user" data-ng-class="{ active: routeIsIn('/myprofile')}"><a id="optionMenu" href="#/myprofile" onClick="slideButtonMenu();"><i class="fas fa-user" aria-hidden="true"></i> My profile</a></li>
+		                  <li id="liLogout"><a id="logout" data-ng-click="app.logout()" href="#/login"><i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout</a></li>
 		               </ul>
 		            </div>
 		         </div>

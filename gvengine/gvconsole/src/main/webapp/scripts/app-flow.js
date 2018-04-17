@@ -38,6 +38,10 @@ angular.module('gvconsole')
 		return $http.get(Endpoints.gvesb);
 	}
 
+	this.getConfigInfo = function() {
+		return $http.get(Endpoints.gvconfig + '/deploy')
+	}
+
 }]);
 
 angular.module('gvconsole')
@@ -46,6 +50,29 @@ angular.module('gvconsole')
 
     $scope.operations = [];
     $scope.service = {};
+		var instance = this;
+		this.configInfo = {};
+
+	  this.loadConfigInfo = function() {
+
+			FlowService.getConfigInfo().then(
+					function(response){
+						instance.configInfo = response.data;
+					},
+					function(response){
+						switch (response.status) {
+
+								case 401: case 403:
+									$location.path('login');
+									break;
+
+								default:
+									instance.alerts.push({type: 'danger', msg: 'Data not available'});
+									break;
+						}
+			});
+
+		}
 
     FlowService.getServices().then(
     function(response) {
@@ -72,11 +99,11 @@ angular.module('gvconsole')
     $scope.removeParameter=function(key){
   		 delete $scope.service.properties[key];
   	};
-  	
+
   	$scope.flag = true;
 
     $scope.run = function(){
-    	
+
     	$scope.flag = false;
 
 	      var auth;
@@ -89,18 +116,18 @@ angular.module('gvconsole')
 	                 .then(function(response){
 
 				    	  $scope.output = response.data;
-				    	  
+
 				    	  $scope.flag = true;
 
 				      }, function(response){
 
 				    	  $scope.output = response.data;
-				    	  
+
 				    	  $scope.flag = true;
 
 				      });
     }
-    
+
 
     angular.element("textarea").keydown(function(e) {
         if(e.keyCode === 9) { // tab was pressed

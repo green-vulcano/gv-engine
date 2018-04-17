@@ -1,7 +1,7 @@
 [![N|Solid](http://www.greenvulcanotechnologies.com/wp-content/uploads/2015/11/logo-green-vulcano-technologies-colour.png)](http://www.greenvulcanotechnologies.com)
 # GreenVulcano ESB 4: Quickstart guide
 Latest [GreenVulcano] instances work on [Apache Karaf] 4.1.3.
- 
+
 ## Installation
 Before to run karaf, you have to configure GreenVulcano Maven repository:
 update <karaf_home>/etc/**org.ops4j.pax.url.mvn.cfg** file and add to key **org.ops4j.pax.url.mvn.repositories** following row:
@@ -11,7 +11,7 @@ Then start karaf.
 
 Install feature repository and install gvegine
 ```sh
-gvadmin@root()> feature:repo-add mvn:it.greenvulcano.gvesb/features/4.0.alpha2/xml/features
+gvadmin@root()> feature:repo-add mvn:it.greenvulcano.gvesb/features/4.0.0-SNAPSHOT/xml/features
 gvadmin@root()> feature:install gvengine
 ```
 The list of karaf features, now also include those of GreenVulcano:
@@ -32,7 +32,7 @@ At the end of this process a folder will be created at **<karaf_home>/GreenV**, 
 It is necessary to restart karaf to properly load a new configuration.
 
 ### Plugins and adapters
-You can install specific plugins and adapters to extends GreenVulcano ESB v4 
+You can install specific plugins and adapters to extends GreenVulcano ESB v4
 ```sh
 
 gvadmin@root()> feature:install gvvcl-rest
@@ -67,7 +67,7 @@ Export a configuration from Developer studio. Then choose whether to use "Develo
     gvadmin@root()> gvesb:deploy Configuration-Id /path/to/vulcon/export.zip
      ```
  A folder named <Configuration-Id> will be created into <karaf_home>/GreenV, which contains GreenVulcano configuration.
- 
+
 ## Logging
 
 You can setup a fine-grained logging service configuring proprerly **log4j** in karaf.
@@ -107,7 +107,7 @@ log4j2.logger.greenvulcano.appenderRef.gv.ref = RoutingGVCore
 
 You can access to GV ESB v4 JMX infrastructure using jconsole connected to karaf.
 
-Use this url 
+Use this url
 
 ```service:jmx:rmi:///jndi/rmi://<karaf host>:1099/karaf-root```
 
