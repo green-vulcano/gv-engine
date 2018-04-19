@@ -22,7 +22,15 @@ angular.module('gvconsole')
 	}
 
 	this.getConfigInfo = function() {
-		return $http.get(Endpoints.gvconfig + '/deploy')
+		return $http.get(Endpoints.gvconfig + '/deploy');
+	}
+	
+	this.getSystemProperties = function() {
+		return $http.get(Endpoints.gvconfig + '/systemproperty');
+	}
+
+	this.getSystemProperty = function(key) {
+		return $http.get(Endpoints.gvconfig + '/systemproperty/' + key);
 	}
 
 }]);
@@ -40,9 +48,12 @@ angular.module('gvconsole')
 	$scope.newKey = null;
 	$scope.newValue = null;
 	$scope.i = 0;
-
-
-
+	
+	PropertiesService.getSystemProperty('it.greenvulcano.instance.name').then(
+			function(response){
+				$scope.instanceName = response.data;
+			});
+	
   this.getConfigInfo = function () {
 		PropertiesService.getConfigInfo().then(
 				function(response){
@@ -88,6 +99,7 @@ angular.module('gvconsole')
 			angular.forEach(response.data, function(value, key) {
 					$scope.properties.push({key: key, value: value});
 				});
+				console.log($scope.properties);
 		},function(response){
 			console.log("error: " + response.data);
 		});

@@ -594,4 +594,36 @@ public class GvConfigurationControllerRest extends BaseControllerRest {
 		}
 	 }	
 
+	 @GET
+	 @Path("/systemproperty")
+	 @Produces(MediaType.APPLICATION_JSON)
+	 @RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
+	 public Response getSystemProperties() {
+
+		Response response = null;
+
+		Properties systemProperties = System.getProperties();
+
+		JSONObject configJson = new JSONObject();
+		systemProperties.keySet().stream().map(Object::toString).forEach(k -> configJson.put(k, systemProperties.getProperty(k)));
+
+		response = Response.ok(configJson.toString()).build();
+
+		return response;
+
+	 }
+
+	 @GET
+	 @Path("/systemproperty/{key}")
+	 @Produces(MediaType.TEXT_PLAIN)
+	 @RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER})
+	 public String getSystemProperty(@PathParam("key") String key){
+	
+		 Properties systemProperties = System.getProperties();
+		 		 
+		 return Optional.ofNullable(systemProperties.getProperty(key))
+				        .orElseThrow(()-> new WebApplicationException(Response.status(Response.Status.NOT_FOUND).build()) );
+	 
+	 }
+
 }

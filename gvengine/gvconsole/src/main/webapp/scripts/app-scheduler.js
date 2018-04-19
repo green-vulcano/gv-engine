@@ -171,6 +171,7 @@ angular.module('gvconsole')
     $scope.alerts = [];
     $scope.operations = [];
 
+    var instance =  this;
 
     ConfigService.getServices().then(
     	function(response) {
