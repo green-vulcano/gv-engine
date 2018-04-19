@@ -54,7 +54,6 @@ angular.module('gvconsole')
 		ConfigService.getConfigInfo().then(
 				function(response){
 					$scope.Allconfig.push(response.data);
-					console.log($scope.Allconfig);
 				},
 				function(response){
 					switch (response.status) {
@@ -81,6 +80,7 @@ angular.module('gvconsole')
 	$scope.init = function() {
 		ConfigService.getServices().then(function(response){
 			$scope.services = response.data;
+			console.log($scope.services);
 			$scope.nServices = Object.keys($scope.services).length;
 			angular.forEach($scope.services, function(service,key) {
 				$scope.idS = service.idService;

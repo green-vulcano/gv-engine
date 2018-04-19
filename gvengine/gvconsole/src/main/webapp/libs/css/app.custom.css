@@ -225,6 +225,12 @@ textarea {
   background-color: rgba(218, 233, 239, 0.3);
   left: 3%;
 }
+.navbar-default .navbar-nav > .active > a,
+.navbar-default .navbar-nav > .active > a:focus,
+.navbar-default .navbar-nav > .active > a:hover {
+  background-color: #228650;
+  color: #fff;
+}
 .input-form {
   font-size: 16px !important;
   border: none !important;
@@ -794,7 +800,9 @@ legend {
 .navbar-default .navbar-toggle {
   border-color: #fff;
   background-color: #fff;
-  width: 10%;
+}
+.navbar-default .navbar-toggle:focus {
+  background-color: transparent;
 }
 .navbar-brand {
   height: auto;

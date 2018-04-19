@@ -144,9 +144,9 @@
                    </div>
                  </div> -->
                    <div class="col-md-4 col-sm-12 col-xs-12 panel-default" data-ng-repeat="service in services" >
-                     <div id="configGroupMonitoring2" class="col-sm-12 panel-body">
-                  <div class="col-sm-12"><h4 class="text-left col-sm-6" style="padding-left:0px">{{service.idService}}</h4><h4 class="text-right col-sm-6" style="padding-right:0px">Call: {{totFailSucc[service.idService].Tot}}</h4></div>
-                  <div class="progress col-sm-12" style="padding:0px">
+                     <div id="configGroupMonitoring2" class="col-sm-12 col-xs-12 panel-body">
+                  <div class="col-md-12 col-sm-12 col-xs-12"><h4 class="text-left col-sm-6 col-xs-6" style="padding-left:0px">{{service.idService}}</h4><h4 class="text-right col-sm-6" style="padding-right:0px">Call: {{totFailSucc[service.idService].Tot}}</h4></div>
+                  <div class="progress col-sm-12 col-xs-12" style="padding:0px">
                      <div class="progress-bar progress-bar-success" style="width: {{(totFailSucc[service.idService].Succ/totFailSucc[service.idService].Tot)*100}}%">
                        <span class="pull-left" style="margin-left:10px;position: relative;" data-ng-class="{'normal-text': totFailSucc[service.idService].Tot == 0}">{{totFailSucc[service.idService].Succ}}</span>
                      </div>

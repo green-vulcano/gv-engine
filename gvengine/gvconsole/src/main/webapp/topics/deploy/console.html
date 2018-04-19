@@ -56,11 +56,11 @@
                         <div class="col-sm-8 col-xs-12">
                           <!-- Drop Zone -->
                           <div class="upload-drop-zone" id="drop-zone" style="position: relative;">
+                              <input id="configfile" name="configfile" type="file"
+                              accept="application/zip" file-model="ctrl.deploy.configfile" required>
                             <label for="configfile" class="custom-file-upload">
                                 <span class="text-primary col-sm-12" data-ng-show="!ctrl.deploy.configfile.name"><i class="fas fa-upload"></i> Drop file here or click to open finder.</span>
                                 <span class="text-primary col-sm-12" data-ng-show="ctrl.deploy.configfile.name"><i class="fas fa-file-archive"></i> {{ctrl.deploy.configfile.name}}</span>
-                                <input id="configfile" name="configfile" type="file"
-                                   accept="application/zip" file-model="ctrl.deploy.configfile" required>
                               </label>
                           </div>
 

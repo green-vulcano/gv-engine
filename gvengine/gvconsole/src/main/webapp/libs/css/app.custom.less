@@ -252,6 +252,11 @@ textarea {
   left: 3%;
 }
 
+.navbar-default .navbar-nav>.active>a, .navbar-default .navbar-nav>.active>a:focus, .navbar-default .navbar-nav>.active>a:hover {
+  background-color: @green-gvconsole;
+  color: @white-gvconsole;
+}
+
 .input-form {
   font-size: 16px !important;
   border: none !important;
@@ -909,9 +914,10 @@ legend {
 .navbar-default .navbar-toggle {
   border-color: @white-gvconsole;
   background-color: @white-gvconsole;
-  width: 10%;
 }
-
+.navbar-default .navbar-toggle:focus {
+  background-color: transparent;
+}
 .navbar-brand {
   height: auto;
 }
