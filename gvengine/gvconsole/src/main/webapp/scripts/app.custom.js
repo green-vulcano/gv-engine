@@ -54,8 +54,13 @@ angular.module('gvconsole', ['ngCookies','ngRoute','angular-quartz-cron', 'ui.bo
     	        redirectTo: '/monitoring'
 			});
 }])
-.run(['$rootScope', '$location', '$cookieStore', '$http',
-    function ($rootScope, $location, $cookieStore, $http) {
+.service('GlobalService',['ENDPOINTS','$http', function(Endpoints, $http){
+	this.getSystemProperty = function(key) {
+		return $http.get(Endpoints.gvconfig + '/systemproperty/' + key);
+	}
+}])
+.run(['$rootScope', 'GlobalService', '$location', '$cookieStore', '$http',
+    function ($rootScope, GlobalService, $location, $cookieStore, $http) {
 
 			(function ($) {
 			    $.fn.floatLabels = function (options) {
@@ -139,6 +144,10 @@ angular.module('gvconsole', ['ngCookies','ngRoute','angular-quartz-cron', 'ui.bo
       }
 
       $rootScope.$on('$locationChangeStart', function (event, next, current) {
+		GlobalService.getSystemProperty('it.greenvulcano.instance.name').then(
+			function(response){
+				$rootScope.globals.instanceName = response.data;
+			});
           // redirect to login page if not logged in
           if ($location.path() !== '/login' && !$rootScope.globals.currentUser) {
               $location.path('/login');
@@ -155,7 +164,11 @@ angular.module('gvconsole', ['ngCookies','ngRoute','angular-quartz-cron', 'ui.bo
 
       $rootScope.routeIsIn = function(route){
                         return  $location.path().startsWith(route);
-                      };
+					  };
+					  
+	  
+
+			console.log($rootScope.globals);
 }]);
 angular.element(document).ready(function() {
   angular.element('.navbar-toggle').click(function () {
