@@ -1,6 +1,9 @@
 <div class="container-fluid">
    <div class="side-body">
       <div class="row" data-ng-controller="UsersListController as ctrl" data-ng-init="ctrl.loadConfigInfo();">
+        <div class="col-sm-12 col-md-12 col-xs-12 alertTop">
+          <div id="fadeout" data-ng-repeat="alert in ctrl.alerts" class="fadeout alert2 alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
+        </div>
         <div class="intestazione col-md-12 col-sm-12 col-xs-12">
           <div id="headerTopic" class="col-md-6 col-sm-6 col-xs-6">
           <h2><i class="fas fa-users"></i> Users</h2>
@@ -14,9 +17,6 @@
           </div>
         </div>
         </div>
-        <div class="col-sm-12 col-md-12 col-xs-12 alertTop">
-         <div id="fadeout" data-ng-repeat="alert in ctrl.alerts" class="fadeout alert2 alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
-       </div>
           <div id="panelHead" class="col-md-12 col-sm-12 col-xs-12">
             <div class="col-md-2">
             <h3  style="margin-top:15px">Users: {{totalItems}}</h3>

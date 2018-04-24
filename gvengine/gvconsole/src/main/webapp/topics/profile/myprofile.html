@@ -1,6 +1,9 @@
 <div class="container-fluid">
    <div class="side-body" data-ng-controller="profileController as ctrl" data-ng-init="ctrl.loadConfigInfo();">
      <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12 alertTop">
+            <div data-ng-repeat="alert in ctrl.alerts" class="fadeout2 alert2 alert-{{alert.type}}" role="alert" data-ng-class="{'off': error==true}">{{alert.msg}}</div>
+          </div>
        <div class="intestazione col-md-12 col-sm-12 col-xs-12">
          <div id="headerTopic" class="col-md-6 col-sm-6 col-xs-6">
          <h2><i class="fas fa-user"></i> Profile</h2>
@@ -14,9 +17,7 @@
          </div>
        </div>
        </div>
-       <div class="col-md-12 col-sm-12 col-xs-12 alertTop">
-     <div data-ng-repeat="alert in ctrl.alerts" class="fadeout2 alert2 alert-{{alert.type}}" role="alert" data-ng-class="{'off': error==true}">{{alert.msg}}</div>
-   </div>
+       
        <div class="col-md-12 col-sm-12 col-xs-12" style="padding:0px">
                <div class="col-md-6 col-sm-6 col-xs-6" style="padding:0px">
                  <div class="col-md-12 col-sm-12 col-xs-12">

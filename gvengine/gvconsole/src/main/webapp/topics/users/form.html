@@ -1,6 +1,9 @@
 <div class="container-fluid">
    <div class="side-body">
       <div class="row" data-ng-controller="UserFormController as ctrl">
+          <div class="col-sm-12 col-md-12 col-xs-12 alertTop">
+              <div data-ng-repeat="alert in ctrl.alerts" class="fadeout alert2 alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
+            </div>
         <div class="intestazione col-md-12 col-sm-12 col-xs-12">
           <div id="headerTopic" class="col-md-12 col-sm-12 col-xs-12">
           <h2 data-ng-hide="newUser"><i class="fas fa-user"></i> Modify User - {{ctrl.user.username}}</h2>
@@ -8,9 +11,7 @@
         </div>
         </div>
          <div  data-ng-switch="userDataStatus">
-           <div class="col-sm-12 col-md-12 col-xs-12 alertTop">
-            <div data-ng-repeat="alert in ctrl.alerts" class="fadeout alert2 alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
-          </div>
+           
             <p class="text-center text-success" data-ng-switch-when="loading">
                <i class="fa fa-spinner fa-5x fa-pulse" ></i>
             </p>
