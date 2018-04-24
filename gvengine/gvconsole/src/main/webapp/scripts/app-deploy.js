@@ -50,7 +50,15 @@ angular.module('gvconsole')
 			});
 		}
 
-	    this.getConfigHistory = function(){
+		this.exportHistoryConfig = function(id) {
+			return $http({
+				method: 'GET',
+			    url: Endpoints.gvconfig + '/deploy/export/' + id,
+		        responseType: 'arraybuffer'
+			}, id);
+		}
+
+		this.getConfigHistory = function(){
 	    	return $http.get(Endpoints.gvconfig + '/configuration');
 	    }
 
@@ -182,6 +190,42 @@ angular.module('gvconsole')
 	this.exportConfig = function () {
 		$scope.exportInProgress = true;
 		DeployService.exportConfig()
+			.then( function(response) {
+
+				var linkElement = document.createElement('a');
+
+				try {
+
+					var blob = new Blob([response.data], { type: 'application/zip' });
+					var url = window.URL.createObjectURL(blob);
+					linkElement.setAttribute('href', url);
+	                linkElement.setAttribute("download", instance.configInfo.id+'.zip');
+
+	                var clickEvent = new MouseEvent("click", {
+	                	"view": window,
+	                	"bubbles": true,
+	                	"cancelable": false
+	                });
+	                linkElement.dispatchEvent(clickEvent);
+
+				} catch (ex) {
+					instance.alerts.push({type: 'danger', msg: 'Configuration export failed'});
+					setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
+					console.log(ex);
+
+				}
+				$scope.exportInProgress = false;
+
+			}, function (responses) {
+				$scope.exportInProgress = false;
+				instance.alerts.push({type: 'danger', msg: 'Configuration export failed'});
+				setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
+			});
+		}
+
+	this.exportHistoryConfig = function (id) {
+		$scope.exportInProgress = true;
+		DeployService.exportHistoryConfig(id)
 			.then( function(response) {
 
 				var linkElement = document.createElement('a');

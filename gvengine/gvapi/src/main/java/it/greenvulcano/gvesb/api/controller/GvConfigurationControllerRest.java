@@ -431,6 +431,24 @@ public class GvConfigurationControllerRest extends BaseControllerRest {
 
 	}
 
+	@GET
+	@Path("/deploy/export/{configId}")
+	@Produces(MediaType.APPLICATION_OCTET_STREAM)
+	@RolesAllowed({ Authority.ADMINISTRATOR, Authority.MANAGER })
+	public Response exportConfiguration(@PathParam("configId") String id) {
+		try {
+			//String selectedConfig = id;
+			return Response.ok(gvConfigurationManager.export(id))
+					.header("Content-Disposition", "attachment; filename=" + id + ".zip").build();
+
+		} catch (IOException e) {
+			LOG.error("Export failed", e);
+			throw new WebApplicationException(
+					Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build());
+		}
+
+	}
+
 	@POST
 	@Path("/deploy/{configId}")
 	@RolesAllowed({ Authority.ADMINISTRATOR, Authority.MANAGER })
