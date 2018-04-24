@@ -327,7 +327,7 @@ hr {
 }
 .alert2 {
   top: 0;
-  position: relative;
+  position: sticky;
   z-index: 1000;
   padding: 15px;
   font-size: 16px;
@@ -504,7 +504,7 @@ select {
   margin-bottom: 10px;
 }
 .intestazione {
-  padding-top: 20px;
+  padding-top: 10px;
   background-color: rgba(218, 233, 239, 0.3);
 }
 .pagination > .active > a,
@@ -715,10 +715,6 @@ legend {
 }
 #showrole {
   margin-top: 15px;
-}
-#fabuttonplus {
-  margin-left: 15px;
-  margin-top: 0;
 }
 #searchBarUser {
   margin: 0;

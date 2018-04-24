@@ -333,8 +333,11 @@ angular.module('gvconsole')
 		}
 
     this.addExistRole = function(r){
-        console.log(r.name);
-        instance.user.roles[r.name] = r;
+		if(instance.user.roles[r.name]){
+		delete instance.user.roles[r.name];
+		} else {		
+			instance.user.roles[r.name] = r;
+			}
 		}
 
 

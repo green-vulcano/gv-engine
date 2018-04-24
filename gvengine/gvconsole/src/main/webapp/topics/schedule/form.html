@@ -1,14 +1,14 @@
 <div class="container-fluid">
    <div class="side-body">
       <div class="row " data-ng-controller="ScheduleFormController as ctrl">
+          <div class="col-sm-12 col-md-12 col-xs-12 alertTop">
+              <div id="fadeout" data-ng-repeat="alert in ctrl.alerts" class="fadeout alert2 alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
+            </div>
         <div class="intestazione col-md-12 col-sm-12 col-xs-12">
           <div id="headerTopic" class="col-md-12 col-sm-12 col-xs-12">
           <h2><i class="fas fa-calendar-plus"></i> New scheduled execution</h2>
         </div>
         </div>
-        <div class="col-sm-12 col-md-12 col-xs-12 alertTop">
-         <div id="fadeout" data-ng-repeat="alert in ctrl.alerts" class="fadeout alert2 alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
-       </div>
             <form name="taskForm" data-ng-submit="taskForm.$valid && save()" novalidate>
                   <div class="col-sm-12" style="margin-top:20px">
                      <label class="col-sm-2">Cron Expression</label>
