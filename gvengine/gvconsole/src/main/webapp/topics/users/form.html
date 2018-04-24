@@ -86,7 +86,7 @@
                      <div class="col-md-12" style="margin-bottom:20px">
                        <label id="labelLeft" class="col-md-2 control-label">Roles</label>
                        <div class="col-md-10">
-                         <label data-ng-repeat="(key,role) in ctrl.user.roles" data-ng-class="{'label label-success': role.description == 'Created by GV', 'label label-info': role.description != 'Created by GV'}" style="font-size:14px; margin-right:5px">{{role.name}}<button type="button" class="btn  btn-xs" data-ng-click="ctrl.removeRole(key)" style="background-color: transparent;"><i class="fa fa-times" aria-hidden="true" ></i></button></label>
+                         <label data-ng-repeat="(key,role) in ctrl.user.roles" data-ng-class="{'label label-success': role.description == 'Created by GV', 'label label-info': role.description != 'Created by GV'}" style="font-size:14px; margin-right:5px; margin-bottom: 0px">{{role.name}}<button type="button" class="btn  btn-xs" data-ng-click="ctrl.removeRole(key)" style="background-color: transparent;"><i class="fa fa-times" aria-hidden="true" ></i></button></label>
                        </div>
                      </div>
                        <div class="col-md-12" id="table" style="padding-top:10px">
@@ -121,8 +121,8 @@
                                     <td class="col-sm-9" style="padding:0px;background:transparent"><div class="col-md-12 tdTableDivCentre">{{role.description}}</div></td>
                                     <td class="col-sm-1"  style="padding:0px;background:transparent">
                                      <div class="col-md-12 tdTableDivRight text-right">
-                                       <button type="button" data-ng-class="{'btn btn-info': !ctrl.user.roles[role.name], 'btn btn-success': ctrl.user.roles[role.name]}" data-ng-click="ctrl.addExistRole(role)">
-                                         <i data-ng-class="{'fas fa-plus': !ctrl.user.roles[role.name], 'fas fa-check': ctrl.user.roles[role.name]}" aria-hidden="true"></i>
+                                       <button type="button" data-ng-class="{'btn btn-info': !ctrl.user.roles[role.name], 'btn btn-danger': ctrl.user.roles[role.name]}" data-ng-click="ctrl.addExistRole(role)">
+                                         <i data-ng-class="{'fas fa-plus': !ctrl.user.roles[role.name], 'fas fa-minus': ctrl.user.roles[role.name]}" aria-hidden="true"></i>
                                        </button>
                                       </div>
                                      </td>
