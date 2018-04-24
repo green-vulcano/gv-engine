@@ -235,7 +235,7 @@ angular.module('gvconsole')
 					var blob = new Blob([response.data], { type: 'application/zip' });
 					var url = window.URL.createObjectURL(blob);
 					linkElement.setAttribute('href', url);
-	                linkElement.setAttribute("download", instance.configInfo.id+'.zip');
+	                linkElement.setAttribute("download", id+'.zip');
 
 	                var clickEvent = new MouseEvent("click", {
 	                	"view": window,
