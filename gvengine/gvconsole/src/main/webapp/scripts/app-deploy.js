@@ -78,11 +78,11 @@ angular.module('gvconsole')
 	    	return $http.delete(Endpoints.gvconfig + '/configuration/' + id);
 	    }
 
-	    this.addConfig = function(id,config){
+	    this.addConfig = function(id,desc,config){
 	    	var fd = new FormData();
 	        fd.append('gvconfiguration', config);
 
-	        return $http.post(Endpoints.gvconfig+'/configuration/'+id, fd, {
+	        return $http.post(Endpoints.gvconfig+'/configuration/'+id+"/"+desc, fd, {
 	            transformRequest: angular.identity,
 	            headers: {'Content-Type': 'multipart/form-data'}
 	        });
@@ -131,16 +131,18 @@ angular.module('gvconsole')
 
 	this.addConfig = function(){
     if (instance.configInfo.id != instance.deploy.id) {
-    	DeployService.addConfig(instance.deploy.id,instance.deploy.configfile)
+    	console.log(instance.deploy);
+    	DeployService.addConfig(instance.deploy.id,instance.deploy.desc,instance.deploy.configfile)
 			.then(function(response){
 				instance.alerts.push({type: 'success', msg: 'Configuration added successfully'});
 				setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
-        angular.element(".fadeout2").modal('hide');
-        instance.loadList();
+		        angular.element(".fadeout2").modal('hide');
+		        instance.loadList();
 			},function(response){
-				instance.alerts.push({type: 'danger', msg: 'Configuration added failed'});
-        setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
-       angular.element(".fadeout2").modal('hide');
+				console.log(response);
+				instance.alerts.push({type: 'danger', msg: 'Configuration upload failed'});
+		        setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
+		        angular.element(".fadeout2").modal('hide');
 			});
     } else {
       instance.alertsAdd.push({type: 'danger', msg: 'ID already used for the current configuration'});
