@@ -325,6 +325,9 @@ hr {
   vertical-align: -webkit-baseline-middle;
   vertical-align: -moz-middle-with-baseline;
 }
+.alert {
+  border-radius: 0px;
+}
 .alert2 {
   top: 0;
   position: sticky;
