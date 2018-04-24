@@ -114,7 +114,6 @@ public class GvConfigurationControllerRest extends BaseControllerRest {
 						configEntry.put("id", id);
 						configEntry.put("time", f.lastModified());
 						configEntry.put("description", descriptions.getProperty(id));
-						LOG.debug(configEntry.toString(2));
 
 						return configEntry;
 					}).forEach(history::put);
@@ -423,6 +422,24 @@ public class GvConfigurationControllerRest extends BaseControllerRest {
 			String currentConfig = gvConfigurationManager.getCurrentConfigurationName();
 			return Response.ok(gvConfigurationManager.export(currentConfig))
 					.header("Content-Disposition", "attachment; filename=" + currentConfig + ".zip").build();
+
+		} catch (IOException e) {
+			LOG.error("Export failed", e);
+			throw new WebApplicationException(
+					Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build());
+		}
+
+	}
+
+	@GET
+	@Path("/deploy/export/{configId}")
+	@Produces(MediaType.APPLICATION_OCTET_STREAM)
+	@RolesAllowed({ Authority.ADMINISTRATOR, Authority.MANAGER })
+	public Response exportConfiguration(@PathParam("configId") String id) {
+		try {
+			//String selectedConfig = id;
+			return Response.ok(gvConfigurationManager.export(id))
+					.header("Content-Disposition", "attachment; filename=" + id + ".zip").build();
 
 		} catch (IOException e) {
 			LOG.error("Export failed", e);
