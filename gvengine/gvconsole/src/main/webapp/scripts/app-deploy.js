@@ -131,7 +131,9 @@ angular.module('gvconsole')
 
 	this.addConfig = function(){
     if (instance.configInfo.id != instance.deploy.id) {
-    	console.log(instance.deploy);
+    	if (!instance.deploy.desc){
+			instance.deploy.desc = "No description";
+		}
     	DeployService.addConfig(instance.deploy.id,instance.deploy.desc,instance.deploy.configfile)
 			.then(function(response){
 				instance.alerts.push({type: 'success', msg: 'Configuration added successfully'});

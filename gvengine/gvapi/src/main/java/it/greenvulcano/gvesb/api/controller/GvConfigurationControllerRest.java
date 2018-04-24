@@ -114,7 +114,6 @@ public class GvConfigurationControllerRest extends BaseControllerRest {
 						configEntry.put("id", id);
 						configEntry.put("time", f.lastModified());
 						configEntry.put("description", descriptions.getProperty(id));
-						LOG.debug(configEntry.toString(2));
 
 						return configEntry;
 					}).forEach(history::put);
