@@ -1,8 +1,7 @@
 [![N|Solid](http://www.greenvulcanotechnologies.com/wp-content/uploads/2015/11/logo-green-vulcano-technologies-colour.png)](http://www.greenvulcanotechnologies.com)
 # GreenVulcano ESB 4: Quickstart guide
 Before to start the quickstart guide check the status of the server:
-row:
-   > http://mvn.greenvulcano.com/nexus/content/groups/public, \
+   > http://mvn.greenvulcano.com/nexus/content/groups/public
 
 Latest [GreenVulcano] instances work on [Apache Karaf] 4.1.5. (don't work on 4.2.0)
 
