@@ -1,6 +1,10 @@
 [![N|Solid](http://www.greenvulcanotechnologies.com/wp-content/uploads/2015/11/logo-green-vulcano-technologies-colour.png)](http://www.greenvulcanotechnologies.com)
 # GreenVulcano ESB 4: Quickstart guide
-Latest [GreenVulcano] instances work on [Apache Karaf] 4.1.3.
+Before to start the quickstart guide check the status of the server:
+row:
+   > http://mvn.greenvulcano.com/nexus/content/groups/public, \
+
+Latest [GreenVulcano] instances work on [Apache Karaf] 4.1.5. (don't work on 4.2.0)
 
 ## Installation
 Before to run karaf, you have to configure GreenVulcano Maven repository:
@@ -52,6 +56,10 @@ For database connections (JNDI, JDBC), refer to [OPS4J Pax JDBC] framework i.e. 
 ```sh
 gvadmin@root()> feature:install pax-jdbc-oracle
 ```   
+or:
+```sh
+gvadmin@root()> feature:install pax-jdbc-mysql
+``` 
 
 ## Deploy
 
