@@ -1,9 +1,6 @@
 [![N|Solid](http://www.greenvulcanotechnologies.com/wp-content/uploads/2017/04/logo_gv_FLAT-300x138.png)](http://www.greenvulcanotechnologies.com)
 # GreenVulcano ESB 4: Quickstart guide
-Before to start the quickstart guide check the status of the server:
-   > http://mvn.greenvulcano.com/nexus/content/groups/public
-
-Latest [GreenVulcano] instances work on [Apache Karaf] 4.1.5. (don't work on 4.2.0)
+Latest [GreenVulcano] instances work on [Apache Karaf] 4.1.5.
 
 ## Installation
 Before to run karaf, you have to configure GreenVulcano Maven repository:
