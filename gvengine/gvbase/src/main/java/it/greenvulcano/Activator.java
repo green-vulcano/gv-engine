@@ -166,12 +166,12 @@ public class Activator implements BundleActivator {
 				     
 		 Configuration gvcfg = configurationAdmin.getConfiguration(XMLConfig.CONFIG_PID);
 		 	        
-	     return  Objects.nonNull(gvcfg.getProperties()) ? Optional.ofNullable(gvcfg.getProperties().get(configKey))
-					        											 .filter(Objects::nonNull)
-					        											 .map(c->c.toString().trim())
-					        											 .filter(c-> c.length()>0)
-					        											 .filter(c-> !c.equalsIgnoreCase("undefined"))
-					        							 : Optional.empty();
+	     return  Optional.ofNullable(gvcfg.getProperties()).map(p -> p.get(configKey))
+					        							   .filter(Objects::nonNull)
+					        							   .map(c->c.toString().trim())
+					        							   .filter(c-> c.length()>0)
+					        							   .filter(c-> !c.equalsIgnoreCase("undefined"));
+					        							
 		 
 	}
 	
