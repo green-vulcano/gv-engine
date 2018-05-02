@@ -1,4 +1,4 @@
-angular.module('gvconsole', ['ngCookies','ngRoute','angular-quartz-cron', 'ui.bootstrap'])
+angular.module('gvconsole', ['ngCookies','ngRoute','angular-quartz-cron', 'ui.bootstrap','angularjs-gauge', 'angular-toArrayFilter'])
 .constant('ENDPOINTS', getEndpoints())
 .config(['$httpProvider', function($httpProvider){
 	$httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
@@ -51,11 +51,16 @@ angular.module('gvconsole', ['ngCookies','ngRoute','angular-quartz-cron', 'ui.bo
 				templateUrl: 'topics/tools/tools.html'
 			}).
 			otherwise({
-    	        redirectTo: '/myprofile'
+    	        redirectTo: '/monitoring'
 			});
 }])
-.run(['$rootScope', '$location', '$cookieStore', '$http',
-    function ($rootScope, $location, $cookieStore, $http) {
+.service('GlobalService',['ENDPOINTS','$http', function(Endpoints, $http){
+	this.getSystemProperty = function(key) {
+		return $http.get(Endpoints.gvconfig + '/systemproperty/' + key);
+	}
+}])
+.run(['$rootScope', 'GlobalService', '$location', '$cookieStore', '$http',
+    function ($rootScope, GlobalService, $location, $cookieStore, $http) {
 
 			(function ($) {
 			    $.fn.floatLabels = function (options) {
@@ -139,6 +144,10 @@ angular.module('gvconsole', ['ngCookies','ngRoute','angular-quartz-cron', 'ui.bo
       }
 
       $rootScope.$on('$locationChangeStart', function (event, next, current) {
+		GlobalService.getSystemProperty('it.greenvulcano.instance.name').then(
+			function(response){
+				$rootScope.globals.instanceName = response.data;
+			});
           // redirect to login page if not logged in
           if ($location.path() !== '/login' && !$rootScope.globals.currentUser) {
               $location.path('/login');
@@ -155,14 +164,12 @@ angular.module('gvconsole', ['ngCookies','ngRoute','angular-quartz-cron', 'ui.bo
 
       $rootScope.routeIsIn = function(route){
                         return  $location.path().startsWith(route);
-                      };
-}]);
-function gototab(reload)
-{
-window.location.hash = '#/monitoring';
-window.location.reload(true);
-};
+					  };
+					  
+	  
 
+			console.log($rootScope.globals);
+}]);
 angular.element(document).ready(function() {
   angular.element('.navbar-toggle').click(function () {
       angular.element('.navbar-nav').toggleClass('slide-in');

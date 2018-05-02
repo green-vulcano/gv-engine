@@ -1,21 +1,29 @@
 <div class="container-fluid">
    <div class="side-body">
-      <div class="container row" data-ng-controller="FlowController as ctrl">
-        <h1>Flow execute</h1>
-         <div class="panel panel-default" style="overflow-x:auto;">
-            <div class="panel-heading">
-               <i class="fa fa-play-circle-o" aria-hidden="true"></i> Test
-            </div>
+      <div class="row" data-ng-controller="FlowController as ctrl" data-ng-init="ctrl.loadConfigInfo();">
+        <div class="intestazione col-sm-12 col-sm-12 col-xs-12">
+          <div id="headerTopic" class="col-md-6 col-sm-6 col-xs-6">
+          <h2><i class="fas fa-play-circle"></i> Execute</h2>
+        </div>
+        <div id="configInfo" class="col-md-6 col-sm-6 col-xs-6">
+          <div class="col-sm-12 text-right">
+            <h4 class="text-primary">Current version: <span class="text-info">{{ctrl.configInfo.id}}</span></h4>
+          </div>
+          <div class="col-sm-12 text-right">
+            <h4 class="text-primary">Deployed on: <span class="text-info">{{ctrl.configInfo.time | date : 'd MMMM yyyy H:mm:ss'}}</span></h4>
+          </div>
+        </div>
+        </div>
             <form id="testingForm" class="reset">
-              <div class="panel panel-body container-fluid">
+              <div class="col-sm-12" style="margin-top:10px">
                   <div class="form-group clearfix">
                      <label id="labelLeft" class="control-label optionForm col-sm-2">Operation</label>
                      <div class="col-sm-5">
                         <select id="flow" name="flow"
-                           class="form-control" data-ng-model="flow"
+                           class="select-form" data-ng-model="flow"
                            data-ng-options="entry.operation group by entry.service for entry in operations"
                            required>
-                           <option value="">------</option>
+                           <option value="">Choose operations</option>
                         </select>
                         <p style="margin: 0">
                            <span data-ng-show="taskForm.submitted && taskForm.flow.$error.required" class="text-warning">
@@ -25,54 +33,56 @@
                         </p>
                      </div>
                   </div>
-                  <hr>
                   <div class="form-group clearfix">
                      <label id="labelLeft" class="control-label optionForm col-sm-2">Body</label>
                      <div class="col-sm-10">
                         <textarea id="noTab" class="form-control" rows="5" data-ng-model="service.object"></textarea>
                      </div>
                   </div>
-                  <br></br>
                   <div class="form-group clearfix">
                      <label id="labelLeft" class="control-label optionForm col-sm-2">Credentials</label>
-                     <div class="col-sm-5"><input type="text" class="form-control" data-ng-model="username" placeholder="username"></div>
-                     <div class="col-sm-5"><input type="password" class="form-control" data-ng-model="password" placeholder="password"></div>
+                     <div class="col-sm-5"><input type="text" class="input-form" data-ng-model="username" placeholder="Username"></div>
+                     <div class="col-sm-4"><input type="password" class="input-form" data-ng-model="password" placeholder="Password"></div>
                   </div>
                   <br></br>
                   <div class="form-group clearfix">
                      <label class="control-label optionForm col-sm-2">Properties</label>
-                     <div class="col-sm-5"><input type="text" class="form-control" data-ng-model="key" placeholder="key"></div>
-                     <div class="col-sm-4"><input type="text" class="form-control" data-ng-model="value" placeholder="value"></div>
-                     <div class="col-sm-1"><button class="btn btn-default pull-right" type="button" id="fabuttonplus" data-ng-click="addParameter()"><i class="fa fa-plus"></i></button></div>
+                     <div class="col-sm-5"><input type="text" class="input-form" data-ng-model="key" placeholder="Key"></div>
+                     <div class="col-sm-4">
+                       <input type="text" class="input-form" data-ng-model="value" placeholder="Value"></div>
+                     <button class="btn btn-success pull-right" type="button" id="fabuttonplus" data-ng-click="addParameter()"><i class="fas fa-plus"></i> Add</button>
                   </div>
                   <div data-ng-repeat="(key,param) in service.properties">
-                     <div class="form-group clearfix">
-                        <div class="col-sm-offset-2 col-sm-5"><strong>{{key}}</strong></div>
-                        <div class="col-sm-4">{{param}}</div>
-                        <div class="col-sm-1"><a class="close pull-right" data-ng-click="removeParameter(key)">×</a></div>
+                     <div class="form-group clearfix col-sm-12">
+                        <div id="propertiesLeft" class="col-sm-offset-2 col-sm-5 col-xs-6"><strong>{{key}}</strong></div>
+                        <div id="propertiesRight" class="col-sm-5 col-xs-6">
+                          {{param}}
+                          <button type="button" class="pull-right btn-sm btn-danger " data-ng-click="removeParameter(key)"><i class="fas fa-times"></i></button>
+                        </div>
                      </div>
                   </div>
             </div>
-            <div id="panelPagination" class="panel-footer">
-               <div class="row">
-                  <div class="form-group">
-                     <div id="btnspace" >
-                        <button class="btn btn-danger pull-left reset" value="Reset" type="reset">
-                        <i class="fa fa-ban" aria-hidden="true"></i> Reset</button>
-                        <button type="submit" class="btn btn-primary pull-right" data-ng-click="run()" data-ng-show="flag == true">
-                        <i class="fa fa-play-circle" aria-hidden="true"></i> Run</button>
-                        <button type="submit" class="btn btn-primary pull-right" data-ng-click="run()" data-ng-show="flag == false" disabled>
-                        <i class="fa fa-play-circle" aria-hidden="true"></i> Run</button>
-                     </div>
-                  </div>
+            <div>
+              <div class="row col-sm-12" style="padding:0px;">
+                <div id="outputBackground" class="col-sm-12">
+                 <h2>Output</h2>
+                 <textarea id="outputArea" class="form-control col-md-10" rows="10" cols="50" readonly>{{output}}</textarea>
                </div>
+              </div>
+              <div class="divAlign col-sm-12 text-right bottomAction">
+
+                    <button class="btn btn-warning reset" value="Reset" type="reset">
+                    <i class="fas fa-times" aria-hidden="true"></i> Reset</button>
+
+
+                    <button type="submit" class="btn btn-success" data-ng-click="run()" data-ng-show="flag == true">
+                    <i class="fas fa-play-circle" aria-hidden="true"></i> Run</button>
+                    <button type="submit" class="btn btn-success" data-ng-click="run()" data-ng-show="flag == false" disabled>
+                    <i class="fas fa-play-circle" aria-hidden="true"></i> Run</button>
+
+                </div>
             </div>
           </form>
-         </div>
-         <div class="row">
-            <h2>Output</h2>
-            <textarea id="outputArea" class="form-control" rows="10" cols="50" readonly>{{output}}</textarea>
-         </div>
       </div>
    </div>
 </div>

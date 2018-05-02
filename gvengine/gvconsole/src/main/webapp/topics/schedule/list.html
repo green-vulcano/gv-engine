@@ -1,55 +1,94 @@
 <div class="container-fluid">
 <div class="side-body">
-   <div class="container row" data-ng-controller="ScheduleListController as ctrl">
-     <h1>Scheduling</h1>
-      <div id="fadeout" data-ng-repeat="alert in ctrl.alerts" class="fadeout alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
-      <div class="panel panel-default">
-         <div id="panelHead" class="panel-heading">
-            <i class="fa fa-clock-o"></i> Schedule Found: {{ctrl.list.length}}
-            <a href="#/schedule/add" onClick="slide();" class="btn btn-primary pull-right" data-ng-class="{'btn btn-primary pull-right disabled': dataNa == true || auth != true}">
-            <i class="fa fa-calendar-plus-o"></i>
-            </a>
+   <div class="row" data-ng-controller="ScheduleListController as ctrl" data-ng-init="ctrl.loadConfigInfo();">
+          <div class="col-sm-12 col-md-12 col-xs-12 alertTop">
+           <div data-ng-repeat="alert in ctrl.alerts" class="fadeout alert2 alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
          </div>
-         <div style="overflow-x: auto">
-         <table id="flows" class="table table-hover" style="margin-bottom:0px">
-            <thead>
+     <div class="intestazione col-md-12 col-sm-12 col-xs-12">
+       <div id="headerTopic" class="col-md-6 col-sm-6 col-xs-6">
+       <h2><i class="fas fa-clock"></i> Schedule</h2>
+     </div>
+     <div id="configInfo" class="col-md-6 col-sm-6 col-xs-6">
+       <div class="col-md-12 text-right">
+         <h4 class="text-primary">Current version: <span class="text-info">{{ctrl.configInfo.id}}</span></h4>
+       </div>
+       <div class="col-md-12 text-right">
+         <h4 class="text-primary">Deployed on: <span class="text-info">{{ctrl.configInfo.time | date : 'd MMMM yyyy H:mm:ss'}}</span></h4>
+       </div>
+     </div>
+     </div>
+      <div id="panelHead" class="col-md-12 col-sm-12 col-xs-12">
+        <h3 class="col-md-3 col-xs-6" style="margin-top:15px">Schedule: {{nSchedules}}</h3>
+        <form>
+        <div class="divAlign col-md-6 col-xs-6 text-right">
+          <div class="pull-right" style="margin-right:10px">
+          <i class="fas fa-search" aria-hidden="true"></i> <input class="input" type="text" placeholder="Search" data-ng-model="search">
+          <!-- <select class="select" data-ng-model="searchFor" style="width: 100px;">
+            <option value="id">Id</option>
+            <option value="description">Operation</option>
+          </select>
+          <button type="submit" class="btn btn-info" style="margin-left:10px" data-ng-click="search_order(search, searchFor)"><i class="fas fa-search" aria-hidden="true"></i> Search</button> -->
+        </div>
+        </div>
+      </form>
+        <div class="divAlign col-md-3 col-sm-12 col-xs-12 text-right">
+              <a href="#/schedule/add"><button data-ng-click="slide();" data-toggle="modal" data-target="#formModal" class="btn btn-success" data-ng-class="{'btn btn-primary disabled': dataNa == true || auth != true}">
+              <i class="fas fa-calendar-plus"></i> New Schedule</button>
+              </a>
+            </div>
+           </div>
+         <div class="col-md-12" id="table">
+         <table class="table table-hover col-md-12">
+            <thead style="background:transparent">
                <tr>
-                  <th>Id</th>
-                  <th>Operation</th>
-                  <th>Pattern</th>
-                  <th>Status</th>
-                  <th>Action</th>
+                  <th class="col-sm-4"><h4>Id</h4></th>
+                  <th class="col-sm-3"><h4>Operation</h4></th>
+                  <th class="col-sm-2"><h4>Pattern</h4></th>
+                  <th class="col-sm-1"><h4>Status</h4></th>
+                  <th class="col-sm-1 text-right"><h4>Action</h4></th>
                </tr>
             </thead>
             <tbody>
-               <tr data-ng-repeat="(id,entry) in ctrl.schedules">
-                  <td>{{entry.id}}</td>
-                  <td>{{entry.description}}</td>
-                  <td>{{entry.cronExpression}}</td>
-                  <td ng-class="{'paused' : entry.status=='PAUSED', 'started' : entry.status=='NORMAL'}">{{entry.status}}</td>
-                  <td class="text-left">
-                     <a class="btn btn-warning btn-sm" data-ng-show="entry.status == 'NORMAL'" data-ng-click="ctrl.pause(id)">
-                     <i class="fa fa-pause" aria-hidden="true" data-ng-class="{'btn btn-warning btn-sm disabled': auth != true}"></i>
-                     </a>
-                     <a class="btn btn-success btn-sm" data-ng-show="entry.status == 'PAUSED'" data-ng-click="ctrl.resume(id)">
-                     <i class="fa fa-play" aria-hidden="true" data-ng-class="{'btn btn-success btn-sm disabled': auth != true}"></i>
-                     </a>
-                     <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#myModal">
-                     <i class="fa fa-trash-o" aria-hidden="true" data-ng-class="{'btn btn-danger btn-sm disabled': auth != true}"></i>
+               <tr data-ng-repeat="(id,entry) in ctrl.schedules | toArray:false | filter: search" class="tableTd" style="background:transparent;">
+                  <td class="col-sm-4" style="padding:0px;background:transparent"><div class="col-md-12 tdTableDivLeft"><span class="tableSpan">{{entry.id}}</span></div></td>
+                  <td class="col-sm-3" style="padding:0px;background:transparent"><div class="col-md-12 tdTableDivCentre"><span class="tableSpan">{{entry.description}}</span></div></td>
+                  <td class="col-sm-2" style="padding:0px;background:transparent"><div class="col-md-12 tdTableDivCentre"><span class="tableSpan">{{entry.cronExpression}}</span></div></td>
+                  <td class="col-sm-1" style="padding:0px;background:transparent"><div class="col-md-12 tdTableDivCentre"><span class="tableSpan"><i ng-class="{'text-warning fas fa-pause' : entry.status=='PAUSED', 'text-success fas fa-play' : entry.status=='NORMAL'}"></i></span></div></td>
+                  <td class="col-sm-1  text-right" style="padding:0px;background:transparent">
+                    <div class="col-sm-12 col-xs-12 tdTableDivRight text-right" style="padding-right:15px; padding-left:0px; display: inline">
+                     <button class="btn btn-warning btn-sm" data-ng-show="entry.status == 'NORMAL'" data-ng-click="ctrl.pause(entry.id)">
+                     <i class="fas fa-pause" aria-hidden="true" data-ng-class="{'btn btn-warning btn-sm disabled': auth != true}"></i>
                    </button>
-                   <div id="myModal" class="modal fadeout">
-                     <div class="modal-content">
-                       <h4> Are you sure to delete this schedule ? </h4>
-                       <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button>
-                       <button type="button" class="btn btn-danger" data-ng-click="ctrl.delete(id)"><i class="fa fa-trash" aria-hidden="true"></i> Confirm</button>
+                     <button class="btn btn-success btn-sm" data-ng-show="entry.status == 'PAUSED'" data-ng-click="ctrl.resume(entry.id)">
+                     <i class="fas fa-play" aria-hidden="true" data-ng-class="{'btn btn-success btn-sm disabled': auth != true}"></i>
+                   </button>
+                     <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#myModal{{entry.id}}">
+                     <i class="fas fa-trash-alt" aria-hidden="true" data-ng-class="{'btn btn-danger btn-sm disabled': auth != true}"></i>
+                   </button>
+                 </div>
+                   <div id="myModal{{entry.id}}" class="deleteForm modal fadeout">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <div class="col-sm-3">
+                        <h3>Delete</h3>
+                      </div>
+                    </div>
+                    <div class="modal-body">
+                      <h4> Are you sure to delete <span class="text-danger">{{entry.id}}</span> ?</h4>
+                    </div>
+                    <div class="modal-footer">
+                      <div class="col-md-12 text-right footerModal">
+                        <button type=" button" class="btn btn-warning" data-dismiss="modal"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button>
+                        <button type="button" class="btn btn-danger" data-ng-click="ctrl.delete(entry.id)"><i class="fa fa-trash" aria-hidden="true"></i> Confirm</button>
                      </div>
-                   </div>
+                    </div>
+                  </div>
+                </div>
                   </td>
                </tr>
             </tbody>
          </table>
        </div>
-      </div>
    </div>
 </div>
 </div>

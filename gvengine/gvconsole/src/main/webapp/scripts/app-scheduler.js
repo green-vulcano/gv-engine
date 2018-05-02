@@ -24,6 +24,11 @@ angular.module('gvconsole')
  	this.create = function(service, operation, schedule) {
  		return $http.post(Endpoints.gvscheduler + '/schedule/'+ service + '/' + operation, schedule, {headers: {'Content-Type':'application/json'} });
  	}
+
+  this.getConfigInfo = function() {
+    return $http.get(Endpoints.gvconfig + '/deploy')
+  }
+
 }]);
 
 
@@ -31,6 +36,29 @@ angular.module('gvconsole')
 .controller('ScheduleListController',['SchedulerService','$rootScope', '$scope', '$location', function(SchedulerService,$rootScope, $scope, $http, $location){
 
   var instance = this;
+  this.configInfo = {};
+
+  this.loadConfigInfo = function() {
+
+    SchedulerService.getConfigInfo().then(
+        function(response){
+          instance.configInfo = response.data;
+        },
+        function(response){
+          switch (response.status) {
+
+              case 401: case 403:
+                $location.path('login');
+                break;
+
+              default:
+                instance.alerts.push({type: 'danger', msg: 'Data not available'});
+                break;
+          }
+    });
+
+  }
+
   for( prop in $rootScope.globals.currentUser.roles){
     if($rootScope.globals.currentUser.isAdministrator || $rootScope.globals.currentUser.isSchedulerManager){
       $scope.auth = true;
@@ -41,6 +69,7 @@ angular.module('gvconsole')
 
   this.schedules = {};
   this.currentPage = 1;
+  $scope.nSchedules = 0;
   this.loadList = function() {
 	  SchedulerService.getAll().then(
 
@@ -48,7 +77,7 @@ angular.module('gvconsole')
       function(response){
         instance.alerts = [];
         instance.schedules = response.data;
-
+        $scope.nSchedules = Object.keys(instance.schedules).length;
       },
       function(response){
         switch (response.status) {
@@ -76,6 +105,8 @@ angular.module('gvconsole')
   this.delete = function(id) {
 		SchedulerService.delete(id).then(function(response){
 			instance.loadList();
+      instance.alerts.push({type: 'success', msg: 'Schedule deleted'});
+      setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
 		},function(response){
 			instance.alerts.push({type: 'danger', msg: 'Error processing delete command'});
 		});
@@ -108,7 +139,24 @@ angular.module('gvconsole')
 		});
   }
 
-  instance.loadList();
+  instance.loadList();       // schedules[search]    schedules[search].description
+
+  $scope.searchFor = "id";
+  $scope.search = "";
+  $scope.params = { id: ""};
+
+  $scope.search_order = function(search, searchFor){
+
+
+    if(searchFor == "id") {
+      $scope.params = { id: search };
+    } else {
+      if (searchFor == "description") {
+        $scope.params = { description: search };
+        console.log($scope.params);
+      }
+    }
+  }
 
 }]);
 
@@ -122,6 +170,8 @@ angular.module('gvconsole')
 
     $scope.alerts = [];
     $scope.operations = [];
+
+    var instance =  this;
 
     ConfigService.getServices().then(
     	function(response) {

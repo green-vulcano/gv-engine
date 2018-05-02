@@ -1,17 +1,20 @@
 <div class="container-fluid">
    <div class="side-body">
-   	<div class="container row" data-ng-controller="PoolSettingsFormController">
-   	 <h1>Form GVPoolManager</h1>
+   	<div class="row" data-ng-controller="PoolSettingsFormController">
+        <div class="col-sm-12 col-md-12 col-xs-12 alertTop"><div data-ng-repeat="alert in alerts" class="fadeout alert2 alert-{{alert.type}}" role="alert">{{alert.msg}}</div></div>
+
+      <div class="intestazione col-sm-12 col-sm-12 col-xs-12">
+        <div id="headerTopic" class="col-md-12 col-sm-12 col-xs-12">
+        <h2><i class="fas fa-wrench"></i> GVPool <span data-ng-show="currentPoolIndex>=0" class="text-primary" >- {{currentPool.subsystem}}</span></h2>
+      </div>
+      </div>
    	 <form name="gvPoolManagerForm" data-ng-submit="gvPoolManagerForm.$valid && !subsystemInConflict && savePool()">
-   	 <div data-ng-repeat="alert in alerts" class="fadeout alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
-   	 <div class="panel panel-default">
-   	 	<div class="panel-heading"><i class="fa fa-list" aria-hidden="true"></i> GVPoolManager Form</div>
-   	 	<div class="panel-body" style="padding-top: 0px;">
-   	 		<div class="panel-body container-fluid">
+ <div class="col-sm-12" style="margin-top:20px">
+      <div class="col-sm-12">
    	 		<div class="form-group" data-ng-show="currentPoolIndex<0">
               <label id="labelLeft" class="col-sm-3 control-label">Name</label>
               <div class="col-sm-4">
-                <input id="name" class="form-control " name="name" type="text" data-ng-blur="checkSubsytem()" data-ng-model="currentPool.subsystem" required>
+                <input id="name" class="input-form" name="name" type="text" data-ng-blur="checkSubsytem()" data-ng-model="currentPool.subsystem" required>
                 <p style="margin: 0">
                    <span data-ng-show="subsystemInConflict"
                       class="text-warning">
@@ -23,71 +26,71 @@
    	 		  </div>
    	 		</div>
 
-   	 		<span data-ng-show="currentPoolIndex>=0" class="text-danger" style="font-size: 30px; font-weight: 500; padding-left:15px">{{currentPool.subsystem}}</span>
+
    	 		</div>
-   	 		  <div class="panel-body container-fluid">
-	 		<div class="form-group">
+	 		<div class="form-group col-sm-12">
 	 		  <label id="labelLeft" class="col-sm-3 control-label">Initial-size</label>
            	  <div class="col-sm-4">
-             <input type="number" data-ng-model="currentPool['initial-size']" min="1" max="{{currentPool['maximum-creation']}}" class="text-right form-control" required>
+             <input type="number" data-ng-model="currentPool['initial-size']" min="1" max="{{currentPool['maximum-creation']}}" class="text-right input-form" required>
 	 		  </div>
 	 		  </div>
-	 		</div>
-	 		<div class="panel-body container-fluid">
-   	 		<div class="form-group">
+
+   	 		<div class="form-group col-sm-12">
    	 			<label id="labelLeft" class="col-sm-3 control-label">maximum-size</label>
    	 			<div class="col-sm-4">
-   	 				<input type="number" class="text-right form-control" data-ng-model="currentPool['maximum-size']" max="{{currentPool['maximum-creation']}}">
+   	 				<input type="number" class="text-right input-form" data-ng-model="currentPool['maximum-size']" max="{{currentPool['maximum-creation']}}">
    	 			</div>
    	 		</div>
-   	 		</div>
-   	 		<div class="panel-body container-fluid">
-   	 		<div class="form-group">
+
+   	 		<div class="form-group col-sm-12">
    	 			<label id="labelLeft" class="col-sm-3 control-label">maximum-creation</label>
    	 			<div class="col-sm-4">
-   	 				<input type="number" class="text-right form-control" data-ng-model="currentPool['maximum-creation']" >
+   	 				<input type="number" class="text-right input-form" data-ng-model="currentPool['maximum-creation']" >
    	 			</div>
    	 		</div>
-   	 		</div>
-   	 		<div class="panel-body container-fluid">
-   	 		<div class="form-group">
+   	 		<div class="form-group col-sm-12">
    	 			<label id="labelLeft" class="col-sm-3 control-label">default-timeout(ms)</label>
    	 			<div class="col-sm-4">
-   	 				<input class="text-right form-control" data-ng-model="currentPool['default-timeout']">
+   	 				<input class="text-right input-form" data-ng-model="currentPool['default-timeout']">
    	 			</div>
    	 		</div>
-   	 		</div>
-   	 		<div class="panel-body container-fluid">
-   	 		<div class="form-group">
+   	 		<div class="form-group col-sm-12">
    	 			<label id="labelLeft" class="col-sm-3 control-label">shrink-timeout(ms)</label>
    	 			<div class="col-sm-4">
-   	 				<input class="text-right form-control" data-ng-model="currentPool['shrink-timeout']">
+   	 				<input class="text-right input-form" data-ng-model="currentPool['shrink-timeout']">
    	 			</div>
    	 		</div>
-   	 		</div>
-   	 	</div>
-      <div class="panel-footer">
-      <div class="row">
-      <div class="form-group">
-      <div>
-        <button type="button" class="btn btn-default pull-left" data-ng-click="go('settings')"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button>
-        <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-floppy-o" aria-hidden="true"></i> Save</button>
+      </div>
 
-        <!-- DELETE CONFIRM WINDOW -->
-         <button type="button" data-ng-show="currentPoolIndex>=0" data-toggle="modal" data-target="#myModal" data-backdrop="static" data-keyboard="false" class="btn btn-danger pull-right" style="margin-right: 3px;" id="myBtn"><i class="fa fa-trash" aria-hidden="true"></i> Delete</button>
-         <div id="myModal" class="modal fadeout">
-            <div class="modal-content">
-               <h4 style="margin-bottom:30px"> Are you sure to delete <span style="color:red">{{ctrl.user.username}}</span> ? </h4>
-               <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button>
-               <button type="button" class="btn btn-danger" data-ng-click="deletePool()"><i class="fa fa-trash" aria-hidden="true"></i> Confirm</button>
+
+        <div class="divAlign col-sm-12 text-right bottomAction">
+
+              <button type="button" class="btn btn-warning" data-ng-click="go('settings')"><i class="fas fa-times" aria-hidden="true"></i> Cancel</button>
+
+              <button type="button" data-ng-show="currentPoolIndex>=0" data-toggle="modal" data-target="#myModal" data-backdrop="static" data-keyboard="false" class="btn btn-danger" style="margin-right: 3px;" id="myBtn"><i class="fa fa-trash" aria-hidden="true"></i> Delete</button>
+
+              <div id="myModal" class="deleteForm modal fade">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <div class="col-sm-3">
+                    <h3>Delete</h3>
+                  </div>
+                </div>
+                <div class="modal-body">
+                  <h4> Are you sure to delete <span style="color:red">{{currentPool.subsystem}}</span> ? </h4>
+                </div>
+                <div class="modal-footer">
+                  <div class="col-md-12 text-right footerModal">
+                    <button type=" button" class="btn btn-warning" data-dismiss="modal"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button>
+                    <button type="button" class="btn btn-danger" data-ng-click="deletePool()"><i class="fa fa-trash" aria-hidden="true"></i> Confirm</button>
+                 </div>
+                </div>
+              </div>
             </div>
-         </div>
-      </div>
-      </div>
-      </div>
-      </div>
-   	 </div>
+
+              <button type="submit" class="btn btn-success"><i class="fas fa-save" aria-hidden="true"></i> Save</button>
+          </div>
    	 </form>
+     </div>
    	</div>
    </div>
-</div>

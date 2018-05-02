@@ -89,11 +89,11 @@ angular.module('gvconsole')
 .factory('AuthenticationService',
 	    ['ENDPOINTS', 'Base64', '$http', '$cookieStore', '$rootScope', '$timeout',
 	    function (Endpoints, Base64, $http, $cookieStore, $rootScope, $timeout) {
-	        
+
 	    	function mapsPrivileges(_response,_rootScope){
-	        	
+
 	        	angular.merge(_rootScope.globals.currentUser, _response.data);
-	        	
+
 	        	if (_response.data.roles) {
     	   			for ( var item in _response.data.roles) {
 
@@ -108,9 +108,9 @@ angular.module('gvconsole')
 
     	   			}
 	   			}
-	        	
+
 	        }
-	    	
+
 	    	var service = {};
 
 	        service.createContext = function (username, password, callback) {
@@ -129,7 +129,7 @@ angular.module('gvconsole')
 	           $http.defaults.headers.common['Authorization'] = 'Basic ' + authdata;
 
 	           $http.post(Endpoints.gviam +'/authenticate').then(function(response) {
-	        	   			
+
 	        	   			mapsPrivileges(response,$rootScope);
 	        	   			$cookieStore.put('globals', $rootScope.globals);
 	        	   			callback(response);
@@ -141,7 +141,7 @@ angular.module('gvconsole')
 	           		   });
 
 	        };
-	        
+
 	        service.changePassword = function (username, oldPassword, newPassword, callback) {
 
 	           var token = Base64.encode(username + ':' + oldPassword+ ':'+newPassword);
@@ -169,7 +169,7 @@ angular.module('gvconsole')
 				            $http.defaults.headers.common['Authorization'] = 'Basic ' + authdata;
 
 				            mapsPrivileges(response,$rootScope);
-				            
+
 	        	   			$cookieStore.put('globals', $rootScope.globals);
 	        	   			callback(response.status);
 	           			},
@@ -204,7 +204,7 @@ angular.module('gvconsole')
             	switch (response.status) {
 
             			case 200:
-		                    $location.path('/myprofile');
+		                    $location.path('/monitoring');
 		                    break;
 
 	                	case 401:
@@ -228,7 +228,7 @@ angular.module('gvconsole')
             	$scope.dataLoading = false;
             	switch (status) {
                 	case 200:
-	                    $location.path('/myprofile');
+	                    $location.path('/monitoring');
 	                    break;
 
                     default:

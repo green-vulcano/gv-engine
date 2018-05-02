@@ -33,10 +33,15 @@ function ($rootScope,Endpoints,$http,Base64,$cookieStore) {
     });
 
  };
- 
+
+
  service.getUser = function(id){
 		return $http.get(Endpoints.gviam + '/admin/users/' + id);
 	};
+
+  service.getConfigInfo = function() {
+    return $http.get(Endpoints.gvconfig + '/deploy')
+  }
 
 return service;
 
@@ -49,12 +54,33 @@ angular.module('gvconsole')
 
     var instance = this;
     this.alerts = [];
+    this.configInfo = {};
 
+    this.loadConfigInfo = function() {
+
+  		profileService.getConfigInfo().then(
+  				function(response){
+  					instance.configInfo = response.data;
+  				},
+  				function(response){
+  					switch (response.status) {
+
+  							case 401: case 403:
+  								$location.path('login');
+  								break;
+
+  							default:
+  								instance.alerts.push({type: 'danger', msg: 'Data not available'});
+  								break;
+  					}
+  		});
+
+  	}
 
   $scope.changePassword = function(){
 	  profileService.changePassword($rootScope.globals.currentUser.username, $scope.oldPassword, $scope.newPassword,
 	  function(status){
-	
+
 	  switch (status) {
 	        case 204:
 	            instance.alerts.length = 0;
@@ -65,7 +91,7 @@ angular.module('gvconsole')
 	            setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 0000);
 	            setTimeout(function(){ angular.element(".fadeout2").fadeOut(); }, 3000);
 	            break;
-	
+
 	        case 401:
 	            instance.alerts.length = 0;
 	            $scope.error = true;
@@ -73,12 +99,12 @@ angular.module('gvconsole')
 	            setTimeout(function(){ angular.element(".fadeout2").fadeOut(); }, 3000);
 	            break;
 	      };
-	
+
 	  });
   };
-  
-  
-  
+
+
+
   profileService.getUser($rootScope.globals.currentUser.id).then(function(response){
 	  $scope.roles = response.data.roles;
   },function(response){

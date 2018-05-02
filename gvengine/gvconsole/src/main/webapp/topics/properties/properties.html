@@ -1,8 +1,55 @@
 <div class="container-fluid">
-   <div class="side-body">
-      <div class="container row" data-ng-controller = "PropertiesController as ctrl">
-         <h1>File Properties</h1>
-         <div class="panel panel-default">
+  <div class="side-body">
+    <div class="row" data-ng-controller="PropertiesController as ctrl" data-ng-init="ctrl.loadConfigInfo(); ctrl.getConfigInfo()">
+        <div class="col-md-12 col-sm-12 col-xs-12 alertTop">
+            <div data-ng-repeat="alert in ctrl.alerts" class="fadeout alert2 alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
+          </div>
+      <div class="intestazione col-md-12 col-sm-12 col-xs-12">
+        <div id="headerTopic" class="col-md-6 col-sm-6 col-xs-6">
+          <h2><i class="fas fa-list-ul"></i> Properties</h2>
+        </div>
+        <div id="configInfo" class="col-md-6 col-sm-6 col-xs-6">
+          <div class="col-md-12 text-right">
+            <h4 class="text-primary">Current version: <span class="text-info">{{ctrl.configInfo.id}}</span></h4>
+          </div>
+          <div class="col-md-12 text-right">
+            <h4 class="text-primary">Deployed on: <span class="text-info">{{ctrl.configInfo.time | date : 'd MMMM yyyy H:mm:ss'}}</span></h4>
+          </div>
+        </div>
+      </div>
+      <div id="panelHead" class="col-md-12 col-sm-12 col-xs-12">
+       <div class="divAlign col-md-12 col-sm-12 col-xs-12">
+        <h3 class="col-md-3 col-xs-6" style="margin-top:15px">Properties: {{properties.length}}</h3>
+        <form>
+        <div class="divAlign col-md-9 col-xs-6">
+          <div class="text-right" style="margin-right:10px">
+            <i class="fas fa-search" aria-hidden="true"></i> <input class="input Search" type="text" placeholder="Search" data-ng-model="search">
+            <!-- <select class="select" data-ng-model="searchFor" style="width: 70px;">
+               <option value="key">Key</option>
+               <option value="value">Value</option>
+             </select>
+             <button type="submit" class="btn btn-info" style="margin-left:10px" data-ng-click="search_order(search, searchFor)"><i class="fas fa-search" aria-hidden="true"></i> Search</button> -->
+          </div>
+        </div>
+      </form>
+    </div>
+        <form name="newProperties" data-ng-submit="addProperties(newKey,newValue)">
+          <div class="divAlign col-md-12 col-sm-12 col-xs-12">
+            <div class="col-md-5">
+              <input type="text" class="input" name="Key" data-ng-model="newKey" required placeholder="Key" style="width:100%">
+            </div>
+            <div class="col-md-6">
+              <input type="text" class="input" name="Value" data-ng-model="newValue" required placeholder="Value" style="width:100%">
+            </div>
+            <div class="col-md-1 text-right">
+              <button class="btn btn-success" type="submit"><i class="fas fa-plus"></i> Add</button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+
+      <!-- <div class="panel panel-default">
             <div class="panel-heading clearfix">
                <i class="fa fa-list" aria-hidden="true"></i> Value Search
             </div>
@@ -18,56 +65,65 @@
                <button type="submit" data-ng-click="matchKey();" class="btn btn-primary pull-right" style="margin-right:5px"><i class="fa fa-search" aria-hidden="true"></i> Match</button>
             </div>
           </form>
-         </div>
-         <div data-ng-repeat="alert in ctrl.alerts" class="fadeout alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
-         <div class="panel panel-default">
-            <div id="panelHead" class="panel-heading clearfix">
-               <i class="fa fa-list" aria-hidden="true"></i> Properties list
-               <button class="btn btn-default pull-right" type="button" data-ng-click="addProperties()"><i class="fa fa-plus"></i></button>
-            </div>
-            <form name="propertiesForm" data-ng-submit="modifyProperties()">
-            <table class="table table-hover" style="margin-bottom:0px">
-               <thead>
-                  <tr>
-                     <th class="col-sm-5">
-                        Key <i aria-hidden="true"></i>
-                     </th>
-                     <th class="col-sm-5">
-                        Value
-                     </th>
-                     <th class="col-sm-2 text-right">
-                        Action
-                     </th>
-                  </tr>
-               </thead>
-               <tbody>
-                  <tr data-ng-repeat="property in properties">
-                     <td class="col-sm-6">
-                        <div data-ng-class="{'has-error' : !property.key}"><input ng-disabled="ctrl.check[property.key]" name="{{property.key}}" type="text" class="form-control" data-ng-model="property.key" name="key" required></div>
-                     </td>
-                     <td class="col-sm-6">
-                        <div data-ng-class="{'has-error' : !property.value}"><input name="{{property.key}}.value" type="text" class="form-control" data-ng-model="property.value" name="value" required></div>
-                     </td>
-                     <td>
-                       <button class="btn btn-danger pull-right" type="button" data-toggle="modal" data-target="#myModal{{$index}}" data-dismiss="modal" data-ng-class="{'buttondisable' : ctrl.check[property.key]}"><i class="fa fa-trash"></i></button>
-                       <div id="myModal{{$index}}" class="modal">
-                          <div class="modal-content">
-                             <h4> Are you sure to delete {{config.id}} ? </h4>
-                             <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button>
-                             <button type="button" class="btn btn-danger" data-dismiss="modal" data-ng-click="deleteProperty(property.key)"><i class="fa fa-trash" aria-hidden="true"></i> Confirm</button>
-                          </div>
-                       </div>
-                     </td>
-                  </tr>
-               </tbody>
-            </table>
-            <div class="panel-footer">
-              <div class="row">
-                <button type="submit" data-ng-show="propertiesForm.$valid" class="btn btn-primary pull-right"><i class="fa fa-floppy-o" aria-hidden="true"></i> Save</button>
-                <button type="submit" data-ng-show="!propertiesForm.$valid"  class="btn btn-primary pull-right" data-toggle="tab" disabled><i class="fa fa-floppy-o" aria-hidden="true"></i> Save</button>
-              </div>
-         </div>
-       </form>
+        </div> -->
+      
+      <form name="propertiesForm" data-ng-submit="modifyProperties()">
+        <div class="col-md-12" id="table">
+        <table class="table table-hover col-md-12">
+          <thead style="background:transparent">
+            <tr>
+              <th class="col-sm-5">
+                <h4>Key <i aria-hidden="true"></i></h4>
+              </th>
+              <th class="col-sm-5">
+                <h4>Value</4>
+              </th>
+              <th class="col-sm-2 text-right">
+                <h4>Action</h4>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="tableTd" data-ng-repeat="property in properties | filter: search" style="background:transparent;">
+              <td class="col-sm-6" style="padding:0px;background:transparent">
+                <div class="col-md-12 tdTableDivLeft" data-ng-class="{'has-error' : !property.key} " style="overflow-x:inherit"><input ng-disabled="ctrl.check[property.key]" name="{{property.key}}" type="text" class="form-control input-form" data-ng-model="property.key" name="key" required></div>
+              </td>
+              <td class="col-sm-6" style="padding:0px;background:transparent">
+                <div class="col-md-12 tdTableDivCentre" data-ng-class="{'has-error' : !property.value}" style="overflow-x:inherit"><input name="{{property.key}}.value" type="text" class="form-control input-form" data-ng-model="property.value" name="value" required></div>
+              </td>
+              <td style="padding:0px;background:transparent">
+                <div class="col-md-12 tdTableDivRight"><button class="btn btn-danger pull-right" type="button" data-toggle="modal" data-target="#myModal{{$index}}" data-dismiss="modal" data-ng-class="{'buttondisable' : ctrl.check[property.key]}"><i class="fas fa-trash-alt"></i></button></div>
+                <div id="myModal{{$index}}" class="modal fade col-md-12 col-sm-12 col-xs-12">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <div class="col-sm-3">
+                        <h3>Delete</h3>
+                      </div>
+                    </div>
+                    <div class="modal-body">
+                      <h4> Are you sure to delete <span class="text-danger"> {{property.key}} </span> ?</h4>
+                    </div>
+                    <div class="modal-footer">
+                      <div class="col-md-12 text-right footerModal">
+                        <button type="button" class="btn btn-warning" data-dismiss="modal"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button>
+                        <button type="button" class="btn btn-danger" data-ng-click="deleteProperty(property.key)"><i class="fa fa-trash" aria-hidden="true"></i> Confirm</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-   </div>
-</div>
+        <div class="divAlign col-md-12 text-right bottomAction">
+
+          <button type="button" class="btn btn-warning" data-ng-click="getPropertiesList()"><i class="fas fa-times" aria-hidden="true"></i> Cancel</button>
+
+          <button type="submit" data-ng-show="propertiesForm.$valid" class="btn btn-success"><i class="fas fa-save" aria-hidden="true"></i> Save</button>
+          <button type="submit" data-ng-show="!propertiesForm.$valid" class="btn btn-success" disabled><i class="fas fa-save" aria-hidden="true"></i> Save</button>
+
+        </div>
+      </form>
+    </div>
+  </div>

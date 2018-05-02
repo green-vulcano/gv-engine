@@ -1,10 +1,17 @@
 <div class="container-fluid">
    <div class="side-body">
-      <div class="container row" data-ng-controller="UserFormController as ctrl">
-         <h1 data-ng-hide="newUser">GVESB User: {{ctrl.user.username}}</h1>
-         <h1 data-ng-show="newUser">GVESB New user </h1>
+      <div class="row" data-ng-controller="UserFormController as ctrl">
+          <div class="col-sm-12 col-md-12 col-xs-12 alertTop">
+              <div data-ng-repeat="alert in ctrl.alerts" class="fadeout alert2 alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
+            </div>
+        <div class="intestazione col-md-12 col-sm-12 col-xs-12">
+          <div id="headerTopic" class="col-md-12 col-sm-12 col-xs-12">
+          <h2 data-ng-hide="newUser"><i class="fas fa-user"></i> Modify User - {{ctrl.user.username}}</h2>
+          <h2 data-ng-show="newUser"><i class="fas fa-user-plus"></i> New user </h2>
+        </div>
+        </div>
          <div  data-ng-switch="userDataStatus">
-            <div data-ng-repeat="alert in ctrl.alerts" class="fadeout alert alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
+           
             <p class="text-center text-success" data-ng-switch-when="loading">
                <i class="fa fa-spinner fa-5x fa-pulse" ></i>
             </p>
@@ -12,19 +19,13 @@
                <i class="fa fa-frown-o fa-5x" ></i>
                <button type="button" class="btn btn-link" data-ng-click="go('users')">users</button>
             </p>
-            <div class="panel panel-default" style="overflow-x:auto;">
-               <div id="panelHead"  class="panel-heading">
-                  <i class="fa fa-list" aria-hidden="true"></i>
-                  User Form
-               </div>
                <form name="userForm" class="form-horizontal" data-ng-switch-when="ready"
                   data-ng-submit="userForm.$valid && ctrl.saveUser()" novalidate>
-                  <div class="panel-body container-fluid">
-                     <div data-ng-show="newUser" class="form-group" data-ng-class="{ 'has-error':  userForm.submitted && userForm.username.$invalid }">
-                        <label id="labelLeft" for="username" class="col-sm-3 control-label">Username</label>
-                        <div class="col-sm-6">
+                     <div data-ng-show="newUser" class="col-md-12" data-ng-class="{ 'has-error':  userForm.submitted && userForm.username.$invalid }" style="margin-top:20px">
+                        <label id="labelLeft" for="username" class="col-md-2 control-label">Username</label>
+                        <div class="col-md-8">
                            <input id="username" name="username" type="text"
-                              class="form-control" placeholder="Username"
+                              class="input-form" placeholder="Username"
                               data-ng-model="ctrl.user.username"
                               data-ng-minlength="4" data-ng-maxlength="256" required>
                            <p style="margin: 0">
@@ -44,10 +45,10 @@
                            </p>
                         </div>
                      </div>
-                     <div class="form-group" data-ng-class="{ 'has-error': userForm.submitted && userForm.fullname.$invalid }">
-                        <label id="labelLeft" for="fullname" class="col-sm-3 control-label">Full name</label>
-                        <div class="col-sm-6">
-                           <input id="fullname" name="fullname" type="text" class="form-control" placeholder="Full name" data-ng-model="ctrl.user.userInfo.fullname">
+                     <div class="col-md-12" data-ng-class="{ 'has-error': userForm.submitted && userForm.fullname.$invalid }" style="margin-top:20px">
+                        <label id="labelLeft" for="fullname" class="col-md-2 control-label">Full name</label>
+                        <div class="col-md-8">
+                           <input id="fullname" name="fullname" type="text" class="input-form" placeholder="Full name" data-ng-model="ctrl.user.userInfo.fullname">
                            <p style="margin: 0">
                               <span data-ng-show="userForm.submitted && userForm.fullname.$invalid"
                                  class="text-warning">
@@ -58,10 +59,10 @@
                            </p>
                         </div>
                      </div>
-                     <div class="form-group" data-ng-class="{ 'has-error': userForm.submitted && userForm.email.$invalid }">
-                        <label id="labelLeft" for="email" class="col-sm-3 control-label">E-mail</label>
-                        <div class="col-sm-6">
-                           <input id="email" name="email" type="email" class="form-control" placeholder="E-mail" data-ng-model="ctrl.user.userInfo.email">
+                     <div class="col-md-12" data-ng-class="{ 'has-error': userForm.submitted && userForm.email.$invalid }">
+                        <label id="labelLeft" for="email" class="col-md-2 control-label">E-mail</label>
+                        <div class="col-md-8">
+                           <input id="email" name="email" type="email" class="input-form" placeholder="E-mail" data-ng-model="ctrl.user.userInfo.email">
                            <p style="margin: 0">
                               <span data-ng-show="userForm.submitted && userForm.email.$invalid" class="text-warning">
                               <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
@@ -71,9 +72,9 @@
                            </p>
                         </div>
                      </div>
-                     <div class="form-group" data-ng-hide="newUser">
-                        <label id="labelLeft" class="col-sm-3 control-label">Status</label>
-                        <div class="col-sm-6">
+                     <div class="col-md-12" data-ng-hide="newUser">
+                        <label id="labelLeft" class="col-md-2 control-label">Status</label>
+                        <div class="col-md-10">
                            <h4 style="margin: 0">
                               <label class="label label-success" data-ng-show="ctrl.user.enabled"><i class="fa fa-check"></i>&ensp;Active</label>
                               <label class="label label-danger" data-ng-hide="ctrl.user.enabled"><i class="fa fa-ban"></i>&ensp;Banned</label>
@@ -82,26 +83,57 @@
                            <p style="margin-top: 6px">&ensp;</p>
                         </div>
                      </div>
-                     <div class="form-group" >
-                        <label id="labelLeft" class="col-sm-3 control-label">Roles</label>
-                        <div class="col-sm-6">
-                           <div>
-                              <div class="input-group">
-                                 <input id="newrole" name="newrole" class="form-control" type="text" placeholder="Add..."
-                                    data-uib-typeahead="role.name for role in ctrl.roles | filter:$viewValue | limitTo:8"
-                                    data-ng-model="ctrl.newrole" pattern="(?=^.{3,28}$)^[a-zA-Z][a-zA-Z0-9._@-]*[a-zA-Z0-9]+$"/>
-                                 <span class="input-group-btn">
-                                 <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#showrole">
-                                 <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> Show Roles</button>
-                                 <button type="button" class="btn btn-default" data-ng-click="userForm.newrole.$valid && ctrl.addRole()">
-                                 <i class="fa fa-plus" aria-hidden="true"></i>
-                                 </button>
-                                 </span>
-                              </div>
-                              <!--Choose Role from the Dropdown list-->
+                     <div class="col-md-12" style="margin-bottom:20px">
+                       <label id="labelLeft" class="col-md-2 control-label">Roles</label>
+                       <div class="col-md-10">
+                         <label data-ng-repeat="(key,role) in ctrl.user.roles" data-ng-class="{'label label-success': role.description == 'Created by GV', 'label label-info': role.description != 'Created by GV'}" style="font-size:14px; margin-right:5px; margin-bottom: 0px">{{role.name}}<button type="button" class="btn  btn-xs" data-ng-click="ctrl.removeRole(key)" style="background-color: transparent;"><i class="fa fa-times" aria-hidden="true" ></i></button></label>
+                       </div>
+                     </div>
+                       <div class="col-md-12" id="table" style="padding-top:10px">
+                        <div class="col-md-2" style="padding-left:0px">
+                          <h4 >Create new role: </h4>
+                        </div>
+                        <div class="col-md-3">
+                          <!--  data-uib-typeahead="role.name for role in ctrl.roles | filter:$viewValue | limitTo:8" -->
+                          <input id="newrole" name="newrole" class="input-form" type="text" placeholder="Name"
+                             data-ng-model="ctrl.newrole" pattern="(?=^.{3,28}$)^[a-zA-Z][a-zA-Z0-9._@-]*[a-zA-Z0-9]+$" style="background-color: transparent;margin-top:10px;margin-bottom:10px"/>
+                        </div>
+                        <div class="col-md-5">
+                          <input type="text" id="newDescription" name="newDescription" data-ng-model="ctrl.newDescription" class="input-form" placeholder="Description" style="background-color: transparent;margin-top:10px;margin-bottom:10px"/>
+                        </div>
+                        <div class="col-md-2 text-right">
+                          <button type="button" class="btn btn-success" data-ng-click="userForm.newrole.$valid && userForm.newDescription.$valid && ctrl.addRole()" style="margin-top:10px;margin-bottom:10px"><i class="fas fa-plus"></i> Create</button>
+                        </div>
+                      </div>
+
+                           <div class="col-md-12" id="table">
+                             <table class="table table-hover col-md-12">
+                                <thead style="background:transparent">
+                                  <tr>
+                                    <th class="col-sm-2"><h4>Name</h4></th>
+                                    <th class="col-sm-9"><h4>Description</h4></th>
+                                    <th class="col-sm-1 text-right"><h4>Action</h4></th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr  class="tableTd" data-ng-repeat="(key,role) in ctrl.roles | filter: { name: ctrl.newrole}"  style="background:transparent;">
+                                    <td class="col-sm-2" id="newrole" style="padding:0px;background:transparent"><div class="col-md-12 tdTableDivLeft">{{role.name}}</div></td>
+                                    <td class="col-sm-9" style="padding:0px;background:transparent"><div class="col-md-12 tdTableDivCentre">{{role.description}}</div></td>
+                                    <td class="col-sm-1"  style="padding:0px;background:transparent">
+                                     <div class="col-md-12 tdTableDivRight text-right">
+                                       <button type="button" data-ng-class="{'btn btn-info': !ctrl.user.roles[role.name], 'btn btn-danger': ctrl.user.roles[role.name]}" data-ng-click="ctrl.addExistRole(role)">
+                                         <i data-ng-class="{'fas fa-plus': !ctrl.user.roles[role.name], 'fas fa-minus': ctrl.user.roles[role.name]}" aria-hidden="true"></i>
+                                       </button>
+                                      </div>
+                                     </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                            <!--
                               <div id="showrole" class="collapse">
                                  <div class="input-group-btn">
-                                    <select ng-model="ctrl.newrole" class="form-control">
+                                    <select ng-model="ctrl.newrole" class="input-form">
                                        <option value="" disabled selected >Choose role</option>
                                        <option id="newrole" class="list-group-item list-group-item-action list-group-item-info" data-ng-repeat="role in ctrl.roles">{{role.name}}</option>
                                     </select>
@@ -111,38 +143,50 @@
                               <span data-ng-show="userForm.newrole.$invalid" class="text-warning">
                               <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
                               Invalid role name
-                              </span>
-                              <ul class="list-group">
-                                 <li data-ng-repeat="(key,role) in ctrl.user.roles" class="list-group-item">
-                                    {{role.name}}
-                                    <button type="button" class="btn  btn-xs pull-right" data-ng-click="ctrl.removeRole(key)"><i class="fa fa-times" aria-hidden="true" ></i></button>
-                                 </li>
-                              </ul>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-                  <div id="panelPagination" class="panel-footer">
-                     <div class="row">
-                        <button type="button" class="btn btn-default pull-left" data-ng-click="go('users');"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button>
-                        <button type="submit" class="btn btn-primary pull-right" data-ng-click="userForm.submitted = true"><i class="fa fa-floppy-o" aria-hidden="true"></i> Save</button>
-                        <div class="pull-right" data-ng-hide="newUser">
-                           <button type="button" class="btn btn-info" data-ng-click="ctrl.switchUserStatus()"><i data-ng-class="{'fa fa-ban': ctrl.user.enabled == true, 'fa fa-check': ctrl.user.enabled == false}" aria-hidden="true"></i> {{ctrl.user.enabled?'Disable':'Enable'}}</button>
-                           <button type="button" class="btn btn-warning"  data-ng-hide="ctrl.user.expired" data-ng-click="ctrl.resetUserPassword()"><i class="fa fa-refresh" aria-hidden="true"></i> Reset</button>
-                           <!-- DELETE CONFIRM WINDOW -->
-                           <button type="button" data-toggle="modal" data-target="#myModal" data-backdrop="static" data-keyboard="false" class="btn btn-danger" style="margin-right: 3px;" id="myBtn"><i class="fa fa-trash" aria-hidden="true"></i> Delete</button>
-                           <div id="myModal" class="modal fadeout">
-                              <div class="modal-content">
-                                 <h4 style="margin-bottom:30px"> Are you sure to delete <span style="color:red">{{ctrl.user.username}}</span> ? </h4>
-                                 <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button>
-                                 <button type="button" class="btn btn-danger" data-ng-click="ctrl.deleteUser()"><i class="fa fa-trash" aria-hidden="true"></i> Confirm</button>
-                              </div>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
+                            </span>
+
+                          </div> -->
+                           <div class="divAlign col-md-12 text-right bottomAction" data-ng-show="newUser">
+
+                                 <button type="button" class="btn btn-warning" data-ng-click="go('users');"><i class="fas fa-times" aria-hidden="true"></i> Cancel</button>
+
+                                 <button type="submit" class="btn btn-success" data-ng-click="userForm.submitted = true"><i class="fas fa-save" aria-hidden="true"></i> Save</button>
+
+                             </div>
+
+                             <div class="divAlign col-md-12 text-right bottomAction" data-ng-hide="newUser">
+
+                                   <button type="button" class="btn btn-warning " data-ng-click="go('users');"><i class="fas fa-times" aria-hidden="true"></i> Cancel</button>
+
+                                   <button type="button" class="btn btn-info " data-ng-click="ctrl.switchUserStatus()"><i data-ng-class="{'fas fa-ban': ctrl.user.enabled == true, 'fas fa-check-circle': ctrl.user.enabled == false}" aria-hidden="true"></i> {{ctrl.user.enabled?'Disable':'Enable'}}</button>
+                                 <button data-ng-hide="ctrl.user.expired" type="button" class="btn btn-info " data-ng-click="ctrl.resetUserPassword()"><i class="fas fa-exclamation-circle" aria-hidden="true"></i> Reset</button>
+                               <button  data-ng-show="ctrl.user.expired" type="button" class="btn btn-info " data-ng-click="ctrl.resetUserPassword()" disabled><i class="fas fa-exclamation-circle" aria-hidden="true"></i> Reset</button>
+
+                               <button type="button" data-toggle="modal" data-target="#myModal" class="btn btn-danger" style="margin-right: 3px;" id="myBtn"><i class="fas fa-trash" aria-hidden="true"></i> Delete</button>
+
+
+                                   <button type="submit" class="btn btn-success" data-ng-click="userForm.submitted = true"><i class="fas fa-save" aria-hidden="true"></i> Save</button>
+
+                               </div>
+                               <div id="myModal" class="deleteForm modal fade">
+                               <div class="modal-content">
+                                 <div class="modal-header">
+                                   <div class="col-sm-3">
+                                     <h3>Delete</h3>
+                                   </div>
+                                 </div>
+                                 <div class="modal-body">
+                                   <h4> Are you sure to delete <span style="color:red">{{ctrl.user.username}}</span> ? </h4>
+                                 </div>
+                                 <div class="modal-footer">
+                                   <div class="col-md-12 text-right footerModal">
+                                     <button type=" button" class="btn btn-warning" data-dismiss="modal"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button>
+                                     <button type="button" class="btn btn-danger" data-ng-click="ctrl.deleteUser()"><i class="fa fa-trash" aria-hidden="true"></i> Confirm</button>
+                                  </div>
+                                 </div>
+                               </div>
+                             </div>
                </form>
-            </div>
          </div>
       </div>
    </div>

@@ -50,7 +50,15 @@ angular.module('gvconsole')
 			});
 		}
 
-	    this.getConfigHistory = function(){
+		this.exportHistoryConfig = function(id) {
+			return $http({
+				method: 'GET',
+			    url: Endpoints.gvconfig + '/deploy/export/' + id,
+		        responseType: 'arraybuffer'
+			}, id);
+		}
+
+		this.getConfigHistory = function(){
 	    	return $http.get(Endpoints.gvconfig + '/configuration');
 	    }
 
@@ -78,11 +86,11 @@ angular.module('gvconsole')
 	    	return $http.delete(Endpoints.gvconfig + '/configuration/' + id);
 	    }
 
-	    this.addConfig = function(id,config){
+	    this.addConfig = function(id,desc,config){
 	    	var fd = new FormData();
 	        fd.append('gvconfiguration', config);
 
-	        return $http.post(Endpoints.gvconfig+'/configuration/'+id, fd, {
+	        return $http.post(Endpoints.gvconfig+'/configuration/'+id+"/"+desc, fd, {
 	            transformRequest: angular.identity,
 	            headers: {'Content-Type': 'multipart/form-data'}
 	        });
@@ -128,18 +136,23 @@ angular.module('gvconsole')
   		});
     };
 
+
 	this.addConfig = function(){
     if (instance.configInfo.id != instance.deploy.id) {
-    	DeployService.addConfig(instance.deploy.id,instance.deploy.configfile)
+    	if (!instance.deploy.desc){
+			instance.deploy.desc = "No description";
+		}
+    	DeployService.addConfig(instance.deploy.id,instance.deploy.desc,instance.deploy.configfile)
 			.then(function(response){
 				instance.alerts.push({type: 'success', msg: 'Configuration added successfully'});
 				setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
-        angular.element(".fadeout2").modal('hide');
-        instance.loadList();
+		        angular.element(".fadeout2").modal('hide');
+		        instance.loadList();
 			},function(response){
-				instance.alerts.push({type: 'danger', msg: 'Configuration added failed'});
-        setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
-       angular.element(".fadeout2").modal('hide');
+				console.log(response);
+				instance.alerts.push({type: 'danger', msg: 'Configuration upload failed'});
+		        setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
+		        angular.element(".fadeout2").modal('hide');
 			});
     } else {
       instance.alertsAdd.push({type: 'danger', msg: 'ID already used for the current configuration'});
@@ -187,6 +200,42 @@ angular.module('gvconsole')
 					var url = window.URL.createObjectURL(blob);
 					linkElement.setAttribute('href', url);
 	                linkElement.setAttribute("download", instance.configInfo.id+'.zip');
+
+	                var clickEvent = new MouseEvent("click", {
+	                	"view": window,
+	                	"bubbles": true,
+	                	"cancelable": false
+	                });
+	                linkElement.dispatchEvent(clickEvent);
+
+				} catch (ex) {
+					instance.alerts.push({type: 'danger', msg: 'Configuration export failed'});
+					setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
+					console.log(ex);
+
+				}
+				$scope.exportInProgress = false;
+
+			}, function (responses) {
+				$scope.exportInProgress = false;
+				instance.alerts.push({type: 'danger', msg: 'Configuration export failed'});
+				setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
+			});
+		}
+
+	this.exportHistoryConfig = function (id) {
+		$scope.exportInProgress = true;
+		DeployService.exportHistoryConfig(id)
+			.then( function(response) {
+
+				var linkElement = document.createElement('a');
+
+				try {
+
+					var blob = new Blob([response.data], { type: 'application/zip' });
+					var url = window.URL.createObjectURL(blob);
+					linkElement.setAttribute('href', url);
+	                linkElement.setAttribute("download", id+'.zip');
 
 	                var clickEvent = new MouseEvent("click", {
 	                	"view": window,
