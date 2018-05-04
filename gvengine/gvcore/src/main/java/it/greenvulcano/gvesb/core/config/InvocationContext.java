@@ -25,8 +25,6 @@ import it.greenvulcano.gvesb.statistics.StatisticsDataManager;
 import it.greenvulcano.gvesb.virtual.VCLException;
 import it.greenvulcano.gvesb.virtual.pool.OperationManagerPool;
 
-import org.slf4j.Logger;
-
 /**
  * The InvocationContext GreenVulcano class.
  *
@@ -36,10 +34,8 @@ import org.slf4j.Logger;
  *
  *
  */
-public class InvocationContext extends it.greenvulcano.gvesb.internal.InvocationContext
-{
-    private static final Logger   logger                 = org.slf4j.LoggerFactory.getLogger(InvocationContext.class);
-
+public class InvocationContext extends it.greenvulcano.gvesb.internal.InvocationContext {
+   
     /**
      * Used to get an GVServiceConf of a specific service (SYSTEM + SERVICE).
      */
@@ -128,10 +124,7 @@ public class InvocationContext extends it.greenvulcano.gvesb.internal.Invocation
     @Override
     public void cleanup()
     {
-        super.cleanup();
-        if (opMgr != null) {
-            logger.debug(opMgr.toString());
-        }
+        super.cleanup();        
         opMgr = null;
     }
 
