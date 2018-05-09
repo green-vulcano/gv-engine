@@ -19,20 +19,21 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb.core.pool;
 
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.w3c.dom.NodeList;
+
 import it.greenvulcano.configuration.ConfigurationEvent;
 import it.greenvulcano.configuration.ConfigurationListener;
 import it.greenvulcano.configuration.XMLConfig;
 import it.greenvulcano.gvesb.core.jmx.GreenVulcanoPoolInfo;
 import it.greenvulcano.jmx.JMXEntryPoint;
 import it.greenvulcano.script.util.BaseContextManager;
-
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.Optional;
-
-import org.slf4j.Logger;
-import org.w3c.dom.NodeList;
 
 /**
  * @version 3.0.0 Feb 17, 2010
@@ -296,5 +297,10 @@ public final class GreenVulcanoPoolManager implements ConfigurationListener
         Hashtable<String, String> properties = new Hashtable<String, String>();
         properties.put("Subsystem", pool.getSubsystem());
         return properties;
+    }
+    
+    public Set<String> getActivePoolNames ()
+    {
+    	return greenVulcanoPools.keySet();
     }
 }
