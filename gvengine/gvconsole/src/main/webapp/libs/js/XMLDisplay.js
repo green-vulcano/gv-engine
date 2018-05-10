@@ -122,9 +122,9 @@ function ShowXML(xmlHolderElement,RootNode,indent)
 	}
 	else { // mo child nodes
 
-    //var ClickableElement = AddTextNode(TagEmptyElement,'+','Clickable') ;
-    //ClickableElement.onclick  = function() {ToggleElementVisibility(this); }
-    //ClickableElement.id = 'div_empty_' + IDCounter;
+    var ClickableElement = AddTextNode(TagEmptyElement,'+','Clickable') ;
+    ClickableElement.onclick  = function() {ToggleElementVisibility(this); }
+    ClickableElement.id = 'div_empty_' + IDCounter;
 
     AddTextNode(TagEmptyElement,'<','Utility') ;
     AddTextNode(TagEmptyElement,RootNode.nodeName ,'NodeName')
@@ -146,9 +146,9 @@ function ShowXML(xmlHolderElement,RootNode,indent)
     TagElement.className = 'Element';
     TagElement.style.position = 'relative';
     TagElement.style.left = NestingIndent+'px';
-    //ClickableElement = AddTextNode(TagElement,'-','Clickable') ;
-    //ClickableElement.onclick  = function() {ToggleElementVisibility(this); }
-    //ClickableElement.id = 'div_content_' + IDCounter;
+    ClickableElement = AddTextNode(TagElement,'-','Clickable') ;
+    ClickableElement.onclick  = function() {ToggleElementVisibility(this); }
+    ClickableElement.id = 'div_content_' + IDCounter;
     ++IDCounter;
     AddTextNode(TagElement,'<','Utility') ;
     AddTextNode(TagElement,RootNode.nodeName ,'NodeName') ;

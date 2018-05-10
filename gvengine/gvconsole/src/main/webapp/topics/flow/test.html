@@ -75,10 +75,9 @@
                     <i class="fas fa-times" aria-hidden="true"></i> Reset</button>
 
 
-                    <button type="submit" class="btn btn-success" data-ng-click="run()" data-ng-show="flag == true">
+                    <button type="submit" class="btn btn-success" data-ng-click="run()" ng-disabled="!flow || !flag">
                     <i class="fas fa-play-circle" aria-hidden="true"></i> Run</button>
-                    <button type="submit" class="btn btn-success" data-ng-click="run()" data-ng-show="flag == false" disabled>
-                    <i class="fas fa-play-circle" aria-hidden="true"></i> Run</button>
+                    
 
                 </div>
             </div>

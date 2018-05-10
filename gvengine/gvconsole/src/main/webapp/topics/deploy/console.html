@@ -1,6 +1,6 @@
-<div class="container-fluid">
+<div id="TOP" class="container-fluid">
    <div class="side-body">
-      <div class="row" data-ng-controller="DeployController as ctrl" data-ng-init="ctrl.loadConfigInfo(); ctrl.loadList(); ctrl.getFiles()">
+      <div class="row" data-ng-controller="DeployController as ctrl" data-ng-init="ctrl.loadConfigInfo(); ctrl.loadList();">
         <div class="col-md-12 col-sm-12 col-xs-12 alertTop">
           <div id="fadeout" data-ng-repeat="alert in ctrl.alerts" class="fadeout alert2 alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
         </div>
@@ -137,6 +137,9 @@
             <div data-ng-repeat="(id,file) in filesName" id="{{id}}" class="tab-pane fade collapse" ng-class="{'active in': id == 0}">
               <span class="col-md-12" id="{{file}}" style="overflow: auto;border: 1px solid #efefef;/* border-bottom-left-radius: 3px; */border-radius: 0 0 4px 4px;"> </span>
           </div>
+        </div>
+        <div class="col-md-offset-11 col-md-1 bottomAction" style="background-color:  transparent;">
+          <button class="pull-right btn btn-info" style="border-radius: 20px;" ng-click="gotoTop()"><i class="fas fa-angle-up fa-2x"></i></button>
         </div>
    </div>
 </div>

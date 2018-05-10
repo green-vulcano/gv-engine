@@ -88,7 +88,6 @@ angular.module('gvconsole')
 			angular.forEach(response.data, function(value, key) {
 					$scope.properties.push({key: key, value: value});
 				});
-				console.log($scope.properties);
 		},function(response){
 			console.log("error: " + response.data);
 		});

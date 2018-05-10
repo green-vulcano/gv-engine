@@ -138,21 +138,39 @@ angular.module('gvconsole', ['ngCookies','ngRoute','angular-quartz-cron', 'ui.bo
 			    });
 			})(jQuery);
       // keep user logged in after page refresh
-      $rootScope.globals = $cookieStore.get('globals') || {};
-      if ($rootScope.globals.currentUser) {
-          $http.defaults.headers.common['Authorization'] = 'Basic ' + $rootScope.globals.currentUser.authdata;
-      }
+	  $rootScope.globals = $cookieStore.get('globals') || {};
 
-      $rootScope.$on('$locationChangeStart', function (event, next, current) {
+	  $rootScope.getInstanceName = function () {
 		GlobalService.getSystemProperty('it.greenvulcano.instance.name').then(
 			function(response){
 				$rootScope.globals.instanceName = response.data;
-			});
+			},
+			function(response){
+				switch (response.status) {
+					case 404:
+						$rootScope.globals.instanceName = "ESB v.4.0";
+						break;
+
+					case 403:
+						$rootScope.globals.instanceName = "ESB v.4.0";
+						break;
+					}
+		});
+	}
+
+      if ($rootScope.globals.currentUser) {
+		  $rootScope.getInstanceName();
+		  $http.defaults.headers.common['Authorization'] = 'Basic ' + $rootScope.globals.currentUser.authdata;
+	  }
+	  
+
+      $rootScope.$on('$locationChangeStart', function (event, next, current) {
           // redirect to login page if not logged in
           if ($location.path() !== '/login' && !$rootScope.globals.currentUser) {
               $location.path('/login');
           }
-      });
+	  });
+	  
 
       $rootScope.go = function(path) {
 		    $location.path(path);
@@ -166,9 +184,6 @@ angular.module('gvconsole', ['ngCookies','ngRoute','angular-quartz-cron', 'ui.bo
                         return  $location.path().startsWith(route);
 					  };
 					  
-	  
-
-			console.log($rootScope.globals);
 }]);
 angular.element(document).ready(function() {
   angular.element('.navbar-toggle').click(function () {

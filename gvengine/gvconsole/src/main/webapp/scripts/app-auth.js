@@ -204,7 +204,8 @@ angular.module('gvconsole')
             	switch (response.status) {
 
             			case 200:
-		                    $location.path('/monitoring');
+							$location.path('/monitoring');
+							$rootScope.getInstanceName();
 		                    break;
 
 	                	case 401:
@@ -228,7 +229,8 @@ angular.module('gvconsole')
             	$scope.dataLoading = false;
             	switch (status) {
                 	case 200:
-	                    $location.path('/monitoring');
+						$location.path('/monitoring');
+						$rootScope.getInstanceName();
 	                    break;
 
                     default:

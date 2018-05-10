@@ -84,7 +84,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr class="tableTd" data-ng-repeat="property in properties | filter: search" style="background:transparent;">
+            <tr class="tableTd" data-ng-repeat="property in properties | filter: search | orderBy : 'key'" style="background:transparent;">
               <td class="col-sm-6" style="padding:0px;background:transparent">
                 <div class="col-md-12 tdTableDivLeft" data-ng-class="{'has-error' : !property.key} " style="overflow-x:inherit"><input ng-disabled="ctrl.check[property.key]" name="{{property.key}}" type="text" class="form-control input-form" data-ng-model="property.key" name="key" required></div>
               </td>
