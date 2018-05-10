@@ -10,9 +10,12 @@
 
 	 <bean id="gvMonitoring" class="it.greenvulcano.gvesb.monitoring.api.MonitoringRest">
 	 	<property name="systemMonitor" ref="systemMonitor" />
+	 	<property name="gvPoolMonitor" ref="gvPoolMonitor" />
 	 </bean>
 	 
 	 <bean id="systemMonitor" class="it.greenvulcano.gvesb.monitoring.service.runtime.SystemMonitorService"/>
+
+	 <bean id="gvPoolMonitor" class="it.greenvulcano.gvesb.monitoring.service.runtime.GVPoolMonitorService"/>
 
      <reference-list id="securityModulesReferences" interface="it.greenvulcano.gvesb.iam.modules.SecurityModule"
 			   		member-type="service-reference" availability="optional"/>

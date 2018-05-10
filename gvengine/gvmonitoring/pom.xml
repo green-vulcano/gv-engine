@@ -143,6 +143,7 @@
                             it.greenvulcano.gvesb.iam.modules,
                             it.greenvulcano.gvesb.api.docs,
                             it.greenvulcano.gvesb.api.security,
+              				it.greenvulcano.gvesb.core.pool,
                             com.fasterxml.jackson.core,
                             com.fasterxml.jackson.databind
                         </Import-Package>

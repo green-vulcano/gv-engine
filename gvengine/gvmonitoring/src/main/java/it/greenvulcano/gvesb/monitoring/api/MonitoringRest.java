@@ -23,9 +23,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.greenvulcano.gvesb.monitoring.model.CPUStatus;
 import it.greenvulcano.gvesb.monitoring.model.ClassesStatus;
+import it.greenvulcano.gvesb.monitoring.model.GVPoolStatus;
 import it.greenvulcano.gvesb.monitoring.model.MemoryStatus;
 import it.greenvulcano.gvesb.monitoring.model.ThreadsStatus;
+import it.greenvulcano.gvesb.monitoring.service.GVPoolMonitor;
 import it.greenvulcano.gvesb.monitoring.service.SystemMonitor;
+
+import java.util.Set;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -44,9 +48,16 @@ public class MonitoringRest {
 	
 	private SystemMonitor systemMonitor;
 	
+	private GVPoolMonitor gvPoolMonitor;
+	
 	public void setSystemMonitor(SystemMonitor systemMonitor) {
 		this.systemMonitor = systemMonitor;
 	}
+
+	public void setGvPoolMonitor(GVPoolMonitor gvPoolMonitor) {
+		this.gvPoolMonitor = gvPoolMonitor;
+	}
+
 	
 	@Path("/memory")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -98,5 +109,17 @@ public class MonitoringRest {
 		return response;
 	}
 	
+	
+	@Path("/pools")
+	@Produces(MediaType.APPLICATION_JSON)
+	@GET
+	public Response getActivePools() throws JsonProcessingException{
+		
+		Set<GVPoolStatus> gvPoolStatus = gvPoolMonitor.getGVPoolStatus();
+		
+		Response response = Response.ok(OBJECT_MAPPER.writeValueAsString(gvPoolStatus)).build();
+		
+		return response;
+	}
 	
 }
