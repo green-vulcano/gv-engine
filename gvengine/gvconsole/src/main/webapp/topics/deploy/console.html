@@ -42,7 +42,7 @@
                           <input type="text" class="input-form" placeholder="Configuration ID" pattern="(?=^.{1,64}$)^[a-zA-Z0-9._-]+$" data-ng-maxlength="64" data-ng-model="ctrl.deploy.id" required>
                         </div>
                       </div>
-                      <div class="col-sm-12 col-xs-12" id="marginFix">
+                      <div class="col-sm-12 col-xs-12 col-md-12" id="marginFix">
                         <label class="col-sm-2 col-xs-12" style="text-align:left">Description</label>
                         <div class="col-sm-8 col-xs-12">
                           <input id="descriptfile" maxlength="64" name="descriptfile" type="text" class="input-form" placeholder="Description Configuration" data-ng-model="ctrl.deploy.desc">
@@ -51,7 +51,7 @@
                                       </span>
                         </div>
                       </div>
-                      <div class="col-sm-12 col-xs-12" id="marginFix">
+                      <div class="col-sm-12 col-xs-12 col-md-12" id="marginFix">
                         <label class="col-sm-2 col-xs-12" style="text-align:left">File</label>
                         <div class="col-sm-8 col-xs-12">
                           <!-- Drop Zone -->
@@ -79,8 +79,8 @@
             </form>
             </div>
           </div>
-          <div class="col-md-12" id="table">
-            <table class="table table-hover col-md-12">
+          <div class="col-sm-12 col-xs-12 col-md-12" id="table">
+            <table class="table table-hover col-sm-12 col-xs-12 col-md-12">
                <thead style="background:transparent">
                   <tr>
                      <th class="col-sm-2 Clickable noselect" data-ng-click="historyOrderFunction('id')"><h4>Id <i class="text-info" aria-hidden="true" data-ng-class="{'fa fa-sort': propertyName != 'id', 'fas fa-sort-alpha-up': propertyName == 'id' && !reverse, 'fas fa-sort-alpha-down': propertyName == 'id' && reverse}"></i></h4></th>
@@ -95,7 +95,7 @@
                      <td class="col-sm-3" style="padding:0px;background:transparent"><div class="col-md-12 tdTableDivCentre"><span class="tableSpan">{{config.time | date : 'd MMMM yyyy H:mm:ss'}}</span></div></td>
                      <td class="col-sm-4" style="padding:0px;background:transparent"><div class="col-md-12 tdTableDivCentre"><span class="tableSpan">{{config.description}}</span></div></td>
                      <td class="text-right col-sm-3" style="padding:0px;background:transparent">
-                       <div class="col-md-12 tdTableDivRight">
+                       <div class="col-sm-12 col-xs-12 col-md-12 tdTableDivRight">
                         <button onClick="slide();" type="button" class="btn btn-success btn-sm" data-ng-click="go('/deploy/' + config.id)"><i class="fas fa-rocket"></i></button>
                         <a><button id="export" data-ng-click="ctrl.exportHistoryConfig(config.id)" class="btn btn-info btn-sm"><i class="fas fa-download"></i></button></a>
                         <button onClick="slide();" type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#myModal{{$index}}"><i class="fas fa-trash-alt" aria-hidden="true"></i></button>
@@ -111,7 +111,7 @@
                         <h4> Are you sure to delete <span  class="text-danger"> {{config.id}} </span>?</h4>
                       </div>
                       <div class="modal-footer">
-                        <div class="col-md-12 text-right footerModal">
+                        <div class="col-sm-12 col-xs-12 col-md-12 text-right footerModal">
                           <button type="button" class="btn btn-warning" data-dismiss="modal"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button>
                           <button type="button" class="btn btn-danger" data-ng-click="ctrl.deleteConfig(config.id)"><i class="fa fa-trash" aria-hidden="true"></i> Confirm</button>
                         </div>
@@ -123,10 +123,10 @@
                </tbody>
             </table>
           </div>
-          <div class="col-sm-12" style="padding:0px">
+          <div class="col-sm-12 col-xs-12 col-md-12" style="padding:0px">
             <div class="alert alert-warning" data-ng-hide="ctrl.history.length">No previously configuration found!</div>
           </div>
-            <div id="headerTopic" class="col-md-12">
+            <div id="headerTopic" class="col-sm-12 col-xs-12 col-md-12">
             <h3><i class="fas fa-cogs text-success"></i> Configuration files</h3>
             <hr>
             </div>
@@ -135,10 +135,10 @@
                <li data-ng-repeat="(id,file) in filesName" ng-class="{'active': id == 0}"><a data-toggle="tab" data-target="#{{id}}">{{file}}</a></li>
             </ul>
             <div data-ng-repeat="(id,file) in filesName" id="{{id}}" class="tab-pane fade collapse" ng-class="{'active in': id == 0}">
-              <span class="col-md-12" id="{{file}}" style="overflow: auto;border: 1px solid #efefef;/* border-bottom-left-radius: 3px; */border-radius: 0 0 4px 4px;"> </span>
+              <span class="col-sm-12 col-xs-12 col-md-12" id="{{file}}" style="overflow: auto;border: 1px solid #efefef;border-radius: 0 4px 4px 4px; border-top:none"> </span>
           </div>
         </div>
-        <div class="col-md-offset-11 col-md-1 bottomAction" style="background-color:  transparent;">
+        <div class="col-md-offset-11 col-md-1 col-sm-offset-11 col-sm-1 col-xs-offset-11 col-xs-1 bottomAction" style="background-color:  transparent;">
           <button class="pull-right btn btn-info" style="border-radius: 20px;" ng-click="gotoTop()"><i class="fas fa-angle-up fa-2x"></i></button>
         </div>
    </div>

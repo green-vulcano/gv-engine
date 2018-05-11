@@ -3,6 +3,19 @@ html {
   font-family: 'Roboto', sans-serif !important;
   font-size: 24px;
 }
+.nav-tabs {
+  border-bottom: 1px solid #efefef;
+  border-bottom-right-radius: 4px;
+}
+.nav-tabs > li.active > a,
+.nav-tabs > li.active > a:focus,
+.nav-tabs > li.active > a:hover {
+  color: #555;
+  cursor: default;
+  background-color: #fff;
+  border: 1px solid #efefef;
+  border-bottom-color: transparent;
+}
 .normal-text {
   color: transparent;
 }

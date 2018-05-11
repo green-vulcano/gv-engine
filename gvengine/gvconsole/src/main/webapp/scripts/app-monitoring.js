@@ -22,7 +22,11 @@ angular.module('gvconsole')
 
   this.getServices = function(){
 		return $http.get(Endpoints.gvesb);
-	};
+  };
+  
+  this.getActivePools = function(){
+    return $http.get(Endpoints.gvmonitoring + "/pools");
+  }
 
 }]);
 
@@ -31,6 +35,7 @@ angular.module('gvconsole')
  function($location, MonitoringServices, $scope, $http, $interval){
 
    var instance = this;
+   this.activePool = {};
    this.configInfo = {};
    $scope.services = [];
    $scope.totExecutionOp = {};
@@ -59,6 +64,16 @@ angular.module('gvconsole')
      });
 
    }
+
+   MonitoringServices.getActivePools().then(
+     function(response){
+      instance.activePool = response.data;
+      console.log(instance.activePool);
+     },
+     function(response){
+       console.log("Error");
+     }
+   )
 
 
    $scope.init = function() {
