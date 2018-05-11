@@ -68,7 +68,6 @@ angular.module('gvconsole')
    MonitoringServices.getActivePools().then(
      function(response){
       instance.activePool = response.data;
-      console.log(instance.activePool);
      },
      function(response){
        console.log("Error");

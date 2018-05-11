@@ -272,6 +272,7 @@ angular.module('gvconsole')
 				function(response){
 					instance.loadConfigInfo();
 					instance.loadList();
+					instance.getFiles();
 					instance.alerts.push({type: 'success', msg: 'Reload configuration success'});
 					setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
 				},
