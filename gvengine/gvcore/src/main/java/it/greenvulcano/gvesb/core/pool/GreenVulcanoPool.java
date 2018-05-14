@@ -66,7 +66,7 @@ public class GreenVulcanoPool implements ShutdownEventListener
     /**
      * Pool of GreenVulcano instances.
      */
-    private LinkedList<GreenVulcano> pool                      = new LinkedList<GreenVulcano>();
+    private final LinkedList<GreenVulcano> pool                      = new LinkedList<GreenVulcano>();
     /**
      * Set instance pool assigned.
      */
@@ -494,7 +494,7 @@ public class GreenVulcanoPool implements ShutdownEventListener
         }
         logger.debug("subsystem=" + subsystem + " - End destroying instances");
         assignedGV.clear();
-        pool = null;
+        pool.clear();
     }
 
     /**
