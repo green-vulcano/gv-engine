@@ -20,7 +20,7 @@ public class GVPoolMonitorService implements GVPoolMonitor {
 				.map(Optional::get)
 				.map(gvpool -> {
 					return new GVPoolStatus(Instant.now(), gvpool.getSubsystem(), gvpool.getMaximumSize(),
-						gvpool.getInUseCount());
+						gvpool.getInUseCount(), gvpool.getPooledCount());
 					})
 				.collect(Collectors.toSet());
 	}

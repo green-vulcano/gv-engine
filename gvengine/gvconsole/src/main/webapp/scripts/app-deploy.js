@@ -272,6 +272,7 @@ angular.module('gvconsole')
 				function(response){
 					instance.loadConfigInfo();
 					instance.loadList();
+					instance.getFiles();
 					instance.alerts.push({type: 'success', msg: 'Reload configuration success'});
 					setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
 				},
@@ -297,7 +298,6 @@ angular.module('gvconsole')
   this.getFiles = function() {
 	  DeployService.getConfigurationFileList().then(function(response){
 		$scope.filesName = response.data;
-		console.log(response);
 		angular.forEach($scope.filesName,function(value,key){
 			DeployService.getConfigurationFile(value).then(function(response){
 				LoadXMLString(value, response.data);

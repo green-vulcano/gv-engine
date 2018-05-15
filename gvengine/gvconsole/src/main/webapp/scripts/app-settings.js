@@ -51,7 +51,6 @@ angular.module('gvconsole')
   SettingsService.getSettings('GVPoolManager').then(
         function(response) {
         	$scope.poolSettings = response.data;
-          console.log($scope.poolSettings);
 
     		if (!angular.isArray($scope.poolSettings.GVPoolManager.GreenVulcanoPool)) {
     			$scope.poolSettings.GVPoolManager.GreenVulcanoPool = [$scope.poolSettings.GVPoolManager.GreenVulcanoPool];
