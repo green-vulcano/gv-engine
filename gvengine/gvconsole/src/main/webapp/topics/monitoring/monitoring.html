@@ -15,7 +15,7 @@
         </div>
       </div>
       <div id="graph" class="col-md-4 col-sm-12 col-xs-12   " style="height:266px">
-        <div id="headerTopic">
+        <div>
         <h3><i class="fas fa-archive text-success"></i> Memory <span class="pull-right">{{totalMemory}} MB</span></h3>
         <hr>
         </div>
@@ -29,7 +29,7 @@
         </div>
 
         <div id="graph" class="col-md-4 col-sm-12 col-xs-12" style="height:266px">
-          <div id="headerTopic">
+          <div >
           <h3><i class="fas fa-microchip text-success"></i> CPU</h3>
           <hr>
           </div>
@@ -43,13 +43,13 @@
          </div>
 
          <div id="graph" class="col-md-4 col-sm-12 col-xs-12"  style="height:266px;padding: 0px">
-           <div id="headerTopic" class="col-sm-12 col-xs-12 col-md-12">
+           <div  class="col-sm-12 col-xs-12 col-md-12">
            <h3><i class="fas fa-list-alt text-success"></i> Pool <span class="pull-right">{{ctrl.activePool.length}}</span></h3>
            <hr>
            </div>
            <div class="col-md-12 col-xs-12 col-sm-12" style="overflow-y:auto; height: 205px;">
            
-           <div class="col-md-12 col-sm-12 col-xs-12" style="padding:0px" data-ng-repeat="pool in ctrl.activePool">
+           <div class="col-md-12 col-sm-12 col-xs-12" style="padding:0px" data-ng-repeat="pool in ctrl.activePool | orderBy:pool.name">
                  <div id="configGroupMonitoring2" class="col-md-12 col-sm-12 col-xs-12" style="margin-top: 10px">
                <span class="col-md-4 col-sm-4 col-xs-4">{{pool.name}}</span>
                <span class="col-md-3 col-sm-2 col-xs-2 text-right">{{pool.pooledCount}}/{{pool.maximumSize}}</span>
@@ -63,40 +63,39 @@
           </div>
           </div>
           <div class="col-md-12 col-sm-12 col-xs-12">
-            <div id="headerTopic">
+            <div >
             <h3><i class="fas fa-cogs text-success"></i> Configuration</h3>
             <hr>
             </div>
             <div class="tab-content">
-               <div class="col-sm-12" style="padding:0px">
-                   <!-- <div class="col-sm-12">
-                     <div class="col-md-6" data-ng-repeat="service in services">
-                       <div id="configGroupMonitoring" class="col-sm-12">
-                     <span class="col-md-4" style="overflow-x:auto">{{service.idService}}</span>
-                     <span class="col-md-1 text-right">{{totFailSucc[service.idService].Tot}}</span>
-                    <div class="progress col-md-7" style="padding:0px">
-                       <div class="progress-bar progress-bar-success" style="width: {{(totFailSucc[service.idService].Succ/totFailSucc[service.idService].Tot)*100}}%">
-                         <span class="pull-left" style="margin-left:10px;position: relative;">{{totFailSucc[service.idService].Succ}}</span>
-                       </div>
-                       <div class="progress-bar progress-bar-danger" style="width: {{(totFailSucc[service.idService].Fail/totFailSucc[service.idService].Tot)*100}}%">
-                         <span class="pull-right" style="margin-right:10px;position: relative;">{{totFailSucc[service.idService].Fail}}</span>
-                       </div>
-                     </div>
-                     </div>
-                     <div id="configOperationMonitoring" class="col-sm-12" data-ng-repeat="operation in service.operations">
-                       <span class="col-md-4" style="padding-left:20px; overflow-x:auto">{{operation.name}}</span>
-                       <span class="col-md-1 text-right" ng-init ="id_operation = service.idService+'/'+operation.name" >{{totExecutionOp[id_operation]}}</span>
-                      <div class="progress col-md-7" style="padding:0px">
-                         <div class="progress-bar progress-bar-success" style="width: {{(operation.successes/totExecutionOp[id_operation])*100}}%">
-                           <span class="pull-left" style="margin-left:10px;position: relative;">{{operation.successes}}</span>
-                         </div>
-                         <div class="progress-bar progress-bar-danger" style="width: {{(operation.failures/totExecutionOp[id_operation])*100}}%">
-                           <span class="pull-right" style="margin-right:10px;position: relative;">{{operation.failures}}</span>
-                         </div>
-                       </div>
-                     </div>
-                   </div>
-                 </div> -->
+
+                    <table class="table table-hover col-sm-12 col-xs-12 col-md-12">
+                       <thead style="background:transparent">
+                          <tr>
+                             <th class="col-sm-6"><h4>Service</h4></th>
+                             <th class="col-sm-2"><h4>Call</h4></th>
+                             <th class="col-sm-4"><h4>Results</h4></th>
+                          </tr>
+                       </thead>
+                       <tbody>
+                          <tr  data-ng-repeat="service in services | orderBy:service.idService" style="background:transparent;">
+                             <td class="col-sm-6" style="padding:0px;background:transparent"><div class="col-md-12 tdService tdTableDivLeft "><span class="tableSpan">{{service.idService}}</span></div></td>
+                             <td class="col-sm-2" style="padding:0px;background:transparent"><div class="col-md-12 tdService tdTableDivCentre "><span class="tableSpan">{{totFailSucc[service.idService].Tot}}</span></div></td>
+                             <td class="col-sm-4" style="padding:0px;background:transparent"><div class="col-md-12 tdService tdTableDivRight" style="padding-top:20px">
+                                <div class="progress col-sm-12 col-xs-12" style="padding:0px">
+                                    <div class="progress-bar progress-bar-success" style="width: {{(totFailSucc[service.idService].Succ/totFailSucc[service.idService].Tot)*100}}%">
+                                      <span class="pull-left" style="margin-left:10px;position: relative;" data-ng-class="{'normal-text': totFailSucc[service.idService].Tot == 0}">{{totFailSucc[service.idService].Succ}}</span>
+                                    </div>
+                                    <div class="progress-bar progress-bar-danger" style="width: {{(totFailSucc[service.idService].Fail/totFailSucc[service.idService].Tot)*100}}%">
+                                      <span class="pull-right" style="margin-right:10px;position: relative;" data-ng-class="{'normal-text': totFailSucc[service.idService].Tot == 0}">{{totFailSucc[service.idService].Fail}}</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </td>
+                          </tr>
+                       </tbody>
+                    </table>
+               <!-- <div class="col-sm-12" style="padding:0px">
                    <div class="col-md-4 col-sm-12 col-xs-12 panel-default" data-ng-repeat="service in services" >
                      <div id="configGroupMonitoring2" class="col-sm-12 col-xs-12 panel-body">
                   <div class="col-md-12 col-sm-12 col-xs-12"><h4 class="text-left col-sm-6 col-xs-6" style="padding-left:0px">{{service.idService}}</h4><h4 class="text-right col-sm-6" style="padding-right:0px">Call: {{totFailSucc[service.idService].Tot}}</h4></div>
@@ -109,13 +108,13 @@
                      </div>
                    </div>
                    </div>
-                 </div>
+                 </div> -->
 
             </div>
            </div>
-           <div class="col-md-12 col-sm-12 col-xs-12" style="padding-bottom: 15px;">
+           <div class="col-md-12 col-sm-12 col-xs-12 bottomAction" style="padding-right:0px; padding-left:0px">
              <div style="padding-left:5px">
-               <h4><a href="#/configuration">For full view go to <strong>Configuration</strong>  section ...</a></h4>
+               <h4>For full view <a href="#/configuration"><strong>configuration list</strong></a> and <a href="#/settings"><strong>polls settings</strong></a> ...</h4>
              </div>
            </div>
          </div>

@@ -1,7 +1,13 @@
 @charset "utf-8";
 html {
-  font-family: 'Roboto', sans-serif !important;
+  font-family: 'Roboto Condensed', sans-serif !important;
   font-size: 24px;
+}
+.tdService {
+  background: rgba(218, 233, 239, 0.5) !important;
+}
+.navbar-default .navbar-nav > li > a {
+  color: #2d2d2d;
 }
 .progress {
   height: 20px;
@@ -626,7 +632,7 @@ select {
 body {
   background-color: #fff;
   line-height: 1.42857143;
-  font-family: 'Roboto', sans-serif !important;
+  font-family: 'Roboto Condensed', sans-serif !important;
 }
 .fieldset-xmlconfig {
   border: 1px solid #000 !important;

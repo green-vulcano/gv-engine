@@ -29,7 +29,7 @@
                <div class="tab-content">
                   <div class="col-sm-12 col-md-12 col-xs-12" id="table" style="padding-bottom: 15px;">
                       <div class="col-sm-12 col-md-12 col-xs-12">
-                        <div class="col-md-6 col-sm-12 col-xs-12" data-ng-repeat="service in services">
+                        <div class="col-md-6 col-sm-12 col-xs-12" data-ng-repeat="service in services | orderBy:service.idService">
                           <div id="configGroup" class="col-sm-12 col-md-12 col-xs-12">
                         <span class="col-md-4 col-sm-4 col-xs-4" style="overflow-x:auto;padding-left: 2px;"><i class="far fa-circle" style="font-size: 8px;vertical-align: middle;padding-bottom: 2px;"></i> {{service.idService}}</span>
                         <span class="col-md-1 col-sm-1 col-xs-1 text-right" style="padding-left:1px;">{{totFailSucc[service.idService].Tot}}</span>
@@ -42,7 +42,7 @@
                           </div>
                         </div>
                         </div>
-                        <div id="configOperation" class="col-sm-12 col-md-12 col-xs-12" data-ng-hide="totExecutionOp[id_operation] == 0 && !toggleView" data-ng-repeat="operation in service.operations" > <!--  -->
+                        <div id="configOperation" class="col-sm-12 col-md-12 col-xs-12" data-ng-hide="totExecutionOp[id_operation] == 0 && !toggleView" data-ng-repeat="operation in service.operations | orderBy:operation.name" > <!--  -->
                           <span class="col-md-4 col-sm-4 col-xs-4" style="padding-left:20px;overflow-x:auto" >{{operation.name}}</span>
                           <span class="col-md-1 col-sm-1 col-xs-1 text-right" style="padding-left:1px" ng-init ="id_operation = service.idService+'/'+operation.name">{{totExecutionOp[id_operation]}}</span>
                          <div class="progress col-md-7 col-sm-7 col-xs-7" style="padding:0px">
