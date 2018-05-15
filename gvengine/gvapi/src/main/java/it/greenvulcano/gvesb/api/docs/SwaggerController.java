@@ -82,25 +82,21 @@ public class SwaggerController {
 		this.specs = "swagger.json";		
 	}
 
-	private JsonNode getSpecs(String basePath) throws JsonProcessingException, IOException {
+	private JsonNode getSpecs(UriInfo uriInfo) throws JsonProcessingException, IOException {
+		String basePath = uriInfo.getBaseUri().getPath();
 		JsonNode jsonSpecs = OBJECT_MAPPER.readTree(Thread.currentThread().getContextClassLoader().getResourceAsStream(specs));		
 		((ObjectNode)jsonSpecs).put("basePath", basePath);
 		return jsonSpecs;
 	}
-	
-	private String getBasePath(UriInfo uriInfo){
 		
-		return uriInfo.getBaseUri().getPath();
-	}
-	
 	@GET 
 	@Path("swagger.json")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getJSON(@Context UriInfo uriInfo) {
 		
 		try {
-			String basePath = getBasePath(uriInfo);			
-			return Response.ok(OBJECT_MAPPER.writeValueAsString(getSpecs(basePath))).build();
+			JsonNode swaggerSpecs = getSpecs(uriInfo);			
+			return Response.ok(OBJECT_MAPPER.writeValueAsString(swaggerSpecs)).build();
 		} catch (Exception e) {
 			LOG.error("Failed to retrieve swager.json", e);
 			throw new NotFoundException(e);
@@ -114,8 +110,8 @@ public class SwaggerController {
 	public Response getYAML(@Context UriInfo uriInfo) {
 		
 		try  {
-			String basePath = getBasePath(uriInfo);			
-			return Response.ok(YAML_MAPPER.writeValueAsString(getSpecs(basePath))).build();
+			JsonNode swaggerSpecs = getSpecs(uriInfo);		
+			return Response.ok(YAML_MAPPER.writeValueAsString(swaggerSpecs)).build();
 		} catch (Exception e) {
 			LOG.error("Failed to retrieve swager.json", e);
 			throw new NotFoundException(e);
@@ -134,7 +130,7 @@ public class SwaggerController {
 		
 		
 		if (resourcePath==null || resourcePath.trim().isEmpty() || resourcePath.trim().equals("/")) {
-			String basePath = getBasePath(uriInfo);
+			String basePath = uriInfo.getBaseUri().getPath();
 			return Response.temporaryRedirect(URI.create("./api-docs/index.html?url="+basePath+"/swagger.json" )).build();           
         }
        
