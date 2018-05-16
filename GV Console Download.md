@@ -1,11 +1,11 @@
-## Download GV Console
+## Download
 
 ---
-* ### [Download GV Console plain](https://github.com/greenvulcano/gv-documentation)
+* ### [GV Console](https://github.com/greenvulcano/gv-documentation)
 ---
-* ### [Download GV Console featured](https://github.com/greenvulcano/gv-documentation)
+* ### [GV Console + feature](https://github.com/greenvulcano/gv-documentation)
 ---
 
-## GV Console manual install
+### GV Console manual install
 
-* [Download Karaf 4.1.5 (ready to install GV Console)](https://github.com/greenvulcano/gv-documentation)
+* [Karaf 4.1.5 (ready to install GV Console)](https://github.com/greenvulcano/gv-documentation)
