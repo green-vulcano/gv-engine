@@ -8,6 +8,6 @@
   (gvvcl-rest, gvhttp, gvdatahandler, gvscheduler, gvscheduler-conf)
 ---
 
-### GV Console manual install
+### GV Console manual installation
 
 * [Karaf 4.1.5 (ready to install GV Console)](https://github.com/greenvulcano/gv-documentation)
