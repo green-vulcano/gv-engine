@@ -2,10 +2,10 @@
 
 ---
 * ### [GV Console demo](https://github.com/greenvulcano/gv-documentation) 
-  (*Installed features:* gvvcl-rest, gvhttp, gvdatahandler, gvscheduler, gvscheduler-conf)
+  (**Installed features:** gvvcl-rest, gvhttp, gvdatahandler, gvscheduler, gvscheduler-conf)
 ---
 * ### [GV Console](https://github.com/greenvulcano/gv-documentation)
-  (*Console only*)
+  (**Console only**)
 ---
 
 
