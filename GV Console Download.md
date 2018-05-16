@@ -1,12 +1,13 @@
 ## Download
 
 ---
+* ### [GV Console demo](https://github.com/greenvulcano/gv-documentation) 
+  (gvvcl-rest, gvhttp, gvdatahandler, gvscheduler, gvscheduler-conf)
+---
 * ### [GV Console](https://github.com/greenvulcano/gv-documentation)
   (console only)
 ---
-* ### [GV Console + feature](https://github.com/greenvulcano/gv-documentation) 
-  (gvvcl-rest, gvhttp, gvdatahandler, gvscheduler, gvscheduler-conf)
----
+
 
 ### GV Console manual installation
 
