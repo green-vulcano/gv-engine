@@ -7,7 +7,9 @@
 * ### [GV Console](https://github.com/greenvulcano/gv-documentation)
   (**Console only**)
 ---
-
+* ### [Karaf 4.1.5](https://github.com/greenvulcano/gv-documentation)
+  (Karaf + mvn configuration)
+---
 
 ### GV Console manual installation
 
