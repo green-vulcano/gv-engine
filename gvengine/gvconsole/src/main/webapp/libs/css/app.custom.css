@@ -963,7 +963,7 @@ thead {
   #liLogout {
     position: initial;
     bottom: 0;
-    width: 203px;
+    width: 100%;
     color: #fff;
     border: 1.5px solid #9b1a18;
   }
