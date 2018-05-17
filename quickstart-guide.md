@@ -64,7 +64,7 @@ or:
 ```sh
 gvadmin@root()> feature:install pax-jdbc-mysql
 ``` 
-For ￼scheduled sevices also install:
+For ￼scheduled sevices install:
 ```sh
 Feature:install gvscheduler
 Feature:install gvscheduler-conf 
