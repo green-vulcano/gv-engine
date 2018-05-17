@@ -16,10 +16,6 @@ Install feature repository and install gvegine
 ```sh
 gvadmin@root()> feature:repo-add mvn:it.greenvulcano.gvesb/features/4.0.0-SNAPSHOT/xml/features
 gvadmin@root()> feature:install gvengine
-
-gvadmin@root()> feature:install gvscheduler
-gvadmin@root()> feature:install gvscheduler-conf 
-
 ```
 To open GV Console go to http://localhost:8181/gvconsole/#/login and log with *gvadmin gvadmin*
 
@@ -68,7 +64,12 @@ or:
 ```sh
 gvadmin@root()> feature:install pax-jdbc-mysql
 ``` 
-
+For ￼scheduled sevices also install:
+```sh
+Feature:install gvscheduler
+Feature:install gvscheduler-conf 
+```
+￼￼
 ## Deploy
 
 Export a configuration from Developer studio. Then choose whether to use "Developer Studio & GVConsole" or "Karaf" deploy.
