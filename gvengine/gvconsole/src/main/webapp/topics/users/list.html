@@ -1,6 +1,6 @@
 <div class="container-fluid">
    <div class="side-body">
-      <div class="row" data-ng-controller="UsersListController as ctrl" data-ng-init="ctrl.loadConfigInfo();">
+      <div class="row" data-ng-controller="UsersListController as ctrl">
         <div class="col-sm-12 col-md-12 col-xs-12 alertTop">
           <div id="fadeout" data-ng-repeat="alert in ctrl.alerts" class="fadeout alert2 alert-{{alert.type}}" role="alert">{{alert.msg}}</div>
         </div>
