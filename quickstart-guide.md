@@ -23,7 +23,7 @@ gvadmin@root()> feature:install gvscheduler-conf
 ```
 To open GV Console go to http://localhost:8181/gvconsole/#/login and log with *gvadmin gvadmin*
 
-If you want to stop Karaf and GV Console, insert *halt*
+If you want to stop Karaf and GV Console, insert *halt* into the terminal.
 
 ---
 
