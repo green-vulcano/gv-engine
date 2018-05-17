@@ -48,8 +48,8 @@ return service;
 }]);
 
 angular.module('gvconsole')
-.controller('profileController',['$scope','$rootScope','profileService',
-  function ($scope, $rootScope, profileService) {
+.controller('profileController',['$scope','$rootScope','profileService','$location',
+  function ($scope, $rootScope, profileService, $location) {
 
 
     var instance = this;

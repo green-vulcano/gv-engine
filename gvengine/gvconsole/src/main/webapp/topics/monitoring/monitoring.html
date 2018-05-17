@@ -1,11 +1,11 @@
 <div class="container-fluid">
    <div class="side-body">
-      <div class="row" data-ng-controller="MonitoringController as ctrl" data-ng-init="ctrl.loadConfigInfo();init()">
+      <div class="row" data-ng-controller="MonitoringController as ctrl" ng-init="init();">
         <div class="intestazione col-md-12 col-sm-12 col-xs-12">
           <div id="headerTopic" class="col-md-6 col-sm-6 col-xs-6">
           <h2><i class="fas fa-chart-pie"></i> Dashboard</h2>
         </div>
-        <div id="configInfo" class="col-md-6 col-sm-6 col-xs-6">
+        <div id="configInfo" class="col-md-6 col-sm-6 col-xs-6" data-ng-if="globals.currentUser.isAdministrator||globals.currentUser.isConfigManager"  data-ng-init="ctrl.loadConfigInfo();">
           <div class="col-md-12 text-right">
             <h4 class="text-primary">Current version: <span class="text-info">{{ctrl.configInfo.id}}</span></h4>
           </div>

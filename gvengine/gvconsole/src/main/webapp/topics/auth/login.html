@@ -10,33 +10,32 @@
           </div>
           <div class="col-md-6 col-xs-12" id="form_login">
             <h3 style="text-align:center"> Login </h3>
-            <form name="loginForm" class="form ng-invalid ng-invalid-required ng-dirty ng-valid-parse ng-pristine" data-ng-submit="login()" role="form" data-ng-hide="expired" style="margin-top: 64px">
+            <form name="loginForm" class="form" data-ng-submit="login()" role="form" data-ng-hide="expired" style="margin-top: 64px">
               <div id="error-message" class="alert alert-danger" role="alert"
                  data-ng-show="error">{{errorMessage}}</div>
               <div class="form-group">
-                <input type="text" name="j_username" class="form-control input-lg input autofocus ng-touched ng-dirty ng-valid-parse ng-invalid ng-invalid-required ng-pristine" placeholder="Username" data-ng-model="username" required="" autofocus="">
+                <input type="text" name="j_username" class="form-control input-lg input autofocus" placeholder="Username" data-ng-model="username" required autofocus>
               </div>
               <div class="form-group">
-                <input required="" data-ng-model="password" placeholder="Password" class="form-control input input-lg ng-pristine ng-invalid ng-invalid-required ng-touched" name="j_password" type="password">
+                <input data-ng-model="password" placeholder="Password" class="form-control input input-lg" name="j_password" type="password"  required>
 
               </div>
               <div class="form-group">
-                <button class="btn btn-info btn-lg btn-block" data-ng-click="loginForm.submitted = true" data-ng-disabled="loginForm.$invalid || dataLoading" disabled="disabled">Login</button>
-                <img data-ng-show="dataLoading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="
-                  class="ng-hide">
+                <button class="btn btn-info btn-lg btn-block" data-ng-click="loginForm.submitted = true" data-ng-disabled="loginForm.$invalid || dataLoading">Login</button>
+                <img data-ng-show="dataLoading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/>
               </div>
             </form>
-            <form name="renewForm" class="form ng-pristine ng-invalid ng-invalid-required ng-valid-pattern ng-hide" data-ng-submit="changePassword()" role="form" data-ng-show="expired">
+            <form name="renewForm" class="form" data-ng-submit="changePassword()" role="form" data-ng-show="expired">
               <h3 class="text-danger text-center">Your password is expired!</h3>
               <div class="form-group" data-ng-class="{ 'has-success': loginForm.new_password.$valid }">
                 <label for="new_password" class="control-label">Enter a new password</label>
-                <input type="password" name="new_password" class="form-control input input-lg ng-pristine ng-untouched ng-invalid ng-invalid-required ng-valid-pattern" placeholder="New password" data-ng-model="newPassword" pattern="(?=^.{4,28}$)^[a-zA-Z0-9._@&amp;$#!?-]+$"
-                  required="">
+                <input type="password" name="new_password" class="form-control input input-lg" placeholder="New password" data-ng-model="newPassword" pattern="(?=^.{4,28}$)^[a-zA-Z0-9._@&amp;$#!?-]+$"
+                  required>
                 <span class="help-block small">
                Length: min 4, max 28 <br> Valid chars: a-z A-Z 0-9 &#46; &#95; &#64; &amp; &#36; &#35; &#33; &#63; &#45; (no white space)
                </span>
               <div class="form-group">
-                <button class="btn btn-danger btn-block btn-lg" id="login" data-ng-disabled="renewForm.new_password.$invalid || dataLoading" disabled="disabled">Confirm</button>
+                <button class="btn btn-danger btn-block btn-lg" id="login" data-ng-disabled="renewForm.new_password.$invalid || dataLoading">Confirm</button>
               </div>
             </div>
             </form>
