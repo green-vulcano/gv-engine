@@ -27,6 +27,14 @@ If you want to stop Karaf and GV Console, insert *halt*
 
 ---
 
+At the end of this process a folder will be created at **<karaf_home>/GreenV**, which contains an empty GreenVulcano configuration. It is possibile to reference a different GreenVulcano configuration, simply by inserting the following line in the file **<karaf_home>/etc/it.greenvulcano.gvesb.cfg**
+
+> gv.app.home=<path_to_gv_configuration>
+
+It is necessary to restart karaf to properly load a new configuration.
+
+---
+
 The list of karaf features, now also include those of GreenVulcano:
 
 ```sh
@@ -37,12 +45,6 @@ To show GreenVulcano features only:
 ```sh
 gvadmin@root()> feature:list | grep Green
 ```
-
-At the end of this process a folder will be created at **<karaf_home>/GreenV**, which contains an empty GreenVulcano configuration. It is possibile to reference a different GreenVulcano configuration, simply by inserting the following line in the file **<karaf_home>/etc/it.greenvulcano.gvesb.cfg**
-
-> gv.app.home=<path_to_gv_configuration>
-
-It is necessary to restart karaf to properly load a new configuration.
 
 ### Plugins and adapters
 You can install specific plugins and adapters to extends GreenVulcano ESB v4
