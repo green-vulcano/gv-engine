@@ -19,7 +19,9 @@ gvadmin@root()> feature:install gvengine
 ```
 To open GV Console go to http://localhost:8181/gvconsole/#/login and log with gvadmin gvadmin
 
-To stop Karaf insert *halt*
+If you want to stop Karaf and GV Console, insert *halt*
+
+---
 
 The list of karaf features, now also include those of GreenVulcano:
 
