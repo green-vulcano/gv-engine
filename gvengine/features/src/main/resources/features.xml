@@ -90,7 +90,7 @@
 		<bundle start-level="92">mvn:it.greenvulcano.gvesb/gviam-db/${project.version}</bundle>
 	</feature>
 	
-	<feature name="gvengine" version="${project.version}" description="GreenVulcano Engine">		
+	<feature name="gvengine" version="${project.version}" description="GreenVulcano Evolution Engine">		
 		
 		<bundle start-level="80">mvn:com.fasterxml.jackson.core/jackson-core/2.7.9</bundle>
 		<bundle start-level="81">mvn:com.fasterxml.jackson.core/jackson-annotations/2.7.9</bundle>
@@ -113,6 +113,12 @@
 		<bundle start-level="99">mvn:it.greenvulcano.gvesb/gvcommands/${project.version}</bundle>
 		<bundle start-level="96">mvn:it.greenvulcano.gvesb/gvmonitoring/${project.version}</bundle>
 		<bundle start-level="99">mvn:it.greenvulcano.gvesb/gvconsole/${project.version}/war</bundle>
+	</feature>
+	
+	<feature name="gviamx" version="${project.version}" description="GreenVulcano IAM extensions">
+		<feature>gvengine</feature>
+		<feature>spring</feature>
+		<bundle start-level="94">mvn:it.greenvulcano.gvesb/gviamx/${project.version}</bundle>		
 	</feature>
 	
 	<feature name="gvscheduler-conf" version="${project.version}" description="GreenVulcano Scheduler configuration">				
@@ -142,7 +148,14 @@
 	<feature name="gvvcl-rest" description="GreenVulcano rest-call extension" version="${project.version}">		  
 				
 		<feature prerequisite="true">gvengine</feature>
+		<bundle start-level="92">mvn:it.greenvulcano.gvesb.adapter/oauth-utils/${project.version}</bundle>
 		<bundle start-level="96">mvn:it.greenvulcano.gvesb.adapter/gvrestx/${project.version}</bundle>		
+	</feature>
+	
+	<feature name="gvvcl-google" description="GreenVulcano google-authentication-call extension" version="${project.version}">		  
+				
+		<feature prerequisite="true">gvengine</feature>
+		<bundle start-level="96">mvn:it.greenvulcano.gvesb.adapter/gvvcl-google/${project.version}</bundle>		
 	</feature>
 	
 	<feature name="gvvcl-db" description="GreenVulcano exec-db-call query-db-call extensions" version="${project.version}">		  
@@ -155,18 +168,53 @@
 				
 		<feature prerequisite="true">gvengine</feature>
 		<bundle start-level="94">mvn:it.greenvulcano.gvesb.vcl/gvvcl-jms/${project.version}</bundle>		
-	</feature>	
+	</feature>
+	
+	<feature name="gvvcl-ws" description="GreenVulcano ws-call http-call extensions" version="${project.version}">		  
+				
+		<feature prerequisite="true">gvengine</feature>
+		<bundle start-level="94">mvn:it.greenvulcano.gvesb.vcl/gvvcl-ws/${project.version}</bundle>		
+	</feature>
+	
+	<feature name="gvvcl-excel" description="GreenVulcano excel-call excelreader-call extensions" version="${project.version}">		  
+				
+		<feature prerequisite="true">gvengine</feature>
+		<bundle start-level="94">mvn:it.greenvulcano.gvesb.vcl/gvvcl-excel/${project.version}</bundle>		
+	</feature>		
 	
 	<feature name="gvvcl-mqtt" description="GreenVulcano mqtt-publish-call mqtt-subscribe-listener extensions" version="${project.version}">		  
 				
 		<feature prerequisite="true">gvengine</feature>
 		<bundle start-level="94">mvn:it.greenvulcano.gvesb.adapter/gvmqttx/${project.version}</bundle>		
-	</feature>	
+	</feature>
+	
+	<feature name="gvvcl-qrcodex" description="GreenVulcano qr-encode-call extensions" version="${project.version}">		  
+				
+		<feature prerequisite="true">gvengine</feature>
+		<bundle start-level="94">mvn:it.greenvulcano.gvesb.adapter/gvqrcodex/${project.version}</bundle>		
+	</feature>		
 	
 	<feature name="gvvcl-mail" description="GreenVulcano smtp-call pop-call imap-call extensions" version="${project.version}">		  
 				
 		<feature prerequisite="true">gvengine</feature>
 		<bundle start-level="96">mvn:it.greenvulcano.gvesb.adapter/gvvcl-mail/${project.version}</bundle>		
+	</feature>
+	
+	<feature name="gvvcl-file" description="GreenVulcano filemanager-call filereader-call filewriter-call fsmonitor-call remotemanager-call directory-watcher extensions">
+		<bundle start-level="96">mvn:it.greenvulcano.gvesb.adapter/gvvcl-file/${project.version}</bundle>
+	</feature>
+	
+	<feature name="gv-kafka-adapter" description="GreenVulcano plugin for Apache Kafka" version="${project.version}">		  
+				
+		<feature prerequisite="true">gvengine</feature>
+		<bundle start-level="96">mvn:it.greenvulcano.gvesb.adapter/gv-adapter-kafka/${project.version}</bundle>		
+	</feature>
+	
+	<feature name="gv-cassandra-adapter" description="GreenVulcano ESB plugin for Apache Cassandra" version="${project.version}">		  
+				
+		<feature prerequisite="true">gvengine</feature>
+		<bundle start-level="82">mvn:it.greenvulcano.gvesb.adapter/gv-cassandra-connector/${project.version}</bundle>
+		<bundle start-level="96">mvn:it.greenvulcano.gvesb.adapter/gvvcl-cassandra/${project.version}</bundle>		
 	</feature>
 			
 	
