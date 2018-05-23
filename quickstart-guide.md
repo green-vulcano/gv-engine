@@ -70,8 +70,8 @@ gvadmin@root()> feature:install gvscheduler
 gvadmin@root()> feature:install gvscheduler-conf 
 ```
 
-For jms queues intall:
-￼￼```sh
+For jms queues intall:￼￼
+```sh
 gvadmin@root()> feature:install gvvcl-jms
 ```
 
