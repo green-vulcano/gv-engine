@@ -69,7 +69,13 @@ For ￼scheduled sevices install:
 gvadmin@root()> feature:install gvscheduler
 gvadmin@root()> feature:install gvscheduler-conf 
 ```
-￼￼
+
+For jms queues intall:
+￼￼```sh
+gvadmin@root()> feature:install jms
+gvadmin@root()> feature:install gvvcl-jms
+```
+```
 ## Deploy
 
 Export a configuration from Developer studio. Then choose whether to use "Developer Studio & GVConsole" or "Karaf" deploy.
