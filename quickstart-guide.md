@@ -1,6 +1,6 @@
 [![N|Solid](http://www.greenvulcanotechnologies.com/wp-content/uploads/2017/04/logo_gv_FLAT-300x138.png)](http://www.greenvulcanotechnologies.com)
 # GreenVulcano ESB 4: Quickstart guide
-Latest [GreenVulcano] instances work on [Apache Karaf] 4.1.5. (Don't work on 4.2.0).
+Latest [GreenVulcano] instances work on [Apache Karaf] 4.1.5.
 + [Download Karaf 4.1.5](http://karaf.apache.org/download.html) (Select *Binary Distribution* -> *tar.gz*)
 + Extract tar.gz into a folder in your file system. 
 + */apache-karaf-4.1.5* will be the **Karaf home**. 
@@ -111,8 +111,9 @@ log4j2.appender.gv.routes.service.appender.append = true
 log4j2.appender.gv.routes.service.appender.layout.type = PatternLayout
 log4j2.appender.gv.routes.service.appender.layout.pattern = [%d{ISO8601}][%-5.5p][%X{SERVICE}/%X{OPERATION}][%X{bundle.id} - %X{bundle.name}][%t] - %m%n
 log4j2.appender.gv.routes.service.appender.policies.type = Policies
-log4j2.appender.gv.routes.service.appender.policies.size.type =SizeBasedTriggeringPolicy
-log4j2.appender.gv.routes.service.appender.policies.size.size = 32MB
+log4j2.appender.gvcore.policies.time.type = TimeBasedTriggeringPolicy
+log4j2.appender.gvcore.policies.time.interval = 1
+log4j2.appender.gvcore.policies.time.modulate = true
 
 # GVESB Logger mapping service name
 log4j2.logger.greenvulcano.name = it.greenvulcano
