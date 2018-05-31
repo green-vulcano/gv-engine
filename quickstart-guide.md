@@ -111,9 +111,9 @@ log4j2.appender.gv.routes.service.appender.append = true
 log4j2.appender.gv.routes.service.appender.layout.type = PatternLayout
 log4j2.appender.gv.routes.service.appender.layout.pattern = [%d{ISO8601}][%-5.5p][%X{SERVICE}/%X{OPERATION}][%X{bundle.id} - %X{bundle.name}][%t] - %m%n
 log4j2.appender.gv.routes.service.appender.policies.type = Policies
-log4j2.appender.gvcore.policies.time.type = TimeBasedTriggeringPolicy
-log4j2.appender.gvcore.policies.time.interval = 1
-log4j2.appender.gvcore.policies.time.modulate = true
+log4j2.appender.gv.routes.service.appender.policies.time.type =TimeBasedTriggeringPolicy
+log4j2.appender.gv.routes.service.appender.policies.time.interval = 1
+log4j2.appender.gv.routes.service.appender.policies.time.modulate = true
 
 # GVESB Logger mapping service name
 log4j2.logger.greenvulcano.name = it.greenvulcano
