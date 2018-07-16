@@ -69,7 +69,12 @@ For ￼scheduled sevices install:
 gvadmin@root()> feature:install gvscheduler
 gvadmin@root()> feature:install gvscheduler-conf 
 ```
-￼￼
+
+For jms queues intall:￼￼
+```sh
+gvadmin@root()> feature:install gvvcl-jms
+```
+
 ## Deploy
 
 Export a configuration from Developer studio. Then choose whether to use "Developer Studio & GVConsole" or "Karaf" deploy.
@@ -106,8 +111,9 @@ log4j2.appender.gv.routes.service.appender.append = true
 log4j2.appender.gv.routes.service.appender.layout.type = PatternLayout
 log4j2.appender.gv.routes.service.appender.layout.pattern = [%d{ISO8601}][%-5.5p][%X{SERVICE}/%X{OPERATION}][%X{bundle.id} - %X{bundle.name}][%t] - %m%n
 log4j2.appender.gv.routes.service.appender.policies.type = Policies
-log4j2.appender.gv.routes.service.appender.policies.size.type =SizeBasedTriggeringPolicy
-log4j2.appender.gv.routes.service.appender.policies.size.size = 32MB
+log4j2.appender.gv.routes.service.appender.policies.time.type =TimeBasedTriggeringPolicy
+log4j2.appender.gv.routes.service.appender.policies.time.interval = 1
+log4j2.appender.gv.routes.service.appender.policies.time.modulate = true
 
 # GVESB Logger mapping service name
 log4j2.logger.greenvulcano.name = it.greenvulcano
