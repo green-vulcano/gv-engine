@@ -21,10 +21,11 @@
           <cm:property name="gviamx.mail.port" value="25"/>
           <cm:property name="gviamx.mail.username" value="username"/>
           <cm:property name="gviamx.mail.password" value="password"/>
-          <cm:property name="gviamx.mail.protocol" value="smpt"/>
+          <cm:property name="gviamx.mail.protocol" value="smtp"/>
           <cm:property name="gviamx.mail.auth" value="false"/>
           <cm:property name="gviamx.mail.ssl" value="false"/>
           <cm:property name="gviamx.mail.starttls" value="false"/>
+          <cm:property name="gviamx.mail.timeout" value="30000"/>
           <cm:property name="gviamx.signup.life" value="3600000"/>
           <cm:property name="gviamx.signup.callback.url" value="" />
           <cm:property name="gviamx.signup.callback.auth" value="" />
@@ -50,6 +51,12 @@
           <prop key="mail.smtps.auth">${gviamx.mail.auth}</prop>
           <prop key="mail.smtps.ssl.enable">${gviamx.mail.ssl}</prop>
           <prop key="mail.smtp.starttls.enable">${gviamx.mail.starttls}</prop>
+          <prop key="mail.smtp.connectiontimeout">${gviamx.mail.timeout}</prop>
+          <prop key="mail.smtp.timeout">${gviamx.mail.timeout}</prop>
+          <prop key="mail.smtp.writetimeout">${gviamx.mail.timeout}</prop>           
+          <prop key="mail.smtps.connectiontimeout">${gviamx.mail.timeout}</prop>
+          <prop key="mail.smtps.timeout">${gviamx.mail.timeout}</prop>
+          <prop key="mail.smtps.writetimeout">${gviamx.mail.timeout}</prop>                           
         </props>
       </property>
   </bean>  

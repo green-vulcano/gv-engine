@@ -20,7 +20,6 @@
 package it.greenvulcano.gvesb.gviamx.service.internal;
 
 import java.io.FileReader;
-import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Dictionary;
 import java.util.Hashtable;
@@ -41,6 +40,8 @@ import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
 
 import it.greenvulcano.gvesb.gviamx.domain.UserActionRequest;
+import it.greenvulcano.gvesb.gviamx.domain.UserActionRequest.NotificationStatus;
+import it.greenvulcano.gvesb.gviamx.repository.UserActionRepository;
 import it.greenvulcano.gvesb.gviamx.service.NotificationManager;
 
 public class EmailNotificatonManager implements NotificationManager {
@@ -58,10 +59,10 @@ public class EmailNotificatonManager implements NotificationManager {
 
 	public void setConfigAdmin(ConfigurationAdmin configAdmin) {
 		this.configAdmin = configAdmin;
-	}
+	}	
 
 	@Override
-	public void sendNotification(UserActionRequest userActionRequest, String event) {		
+	public void sendNotification(UserActionRequest userActionRequest, UserActionRepository userActionRepository, String event) {		
 		LOG.debug("Sending email for " + event + " request with id "+userActionRequest.getId());
 		MimeMessage message = mailSender.createMimeMessage();
 		MimeMessageHelper messageHelper = new MimeMessageHelper(message);
@@ -89,8 +90,15 @@ public class EmailNotificatonManager implements NotificationManager {
 						
 			mailSender.send(message);
 			LOG.debug("Email sent successfully for " + event	+ " request with id "+userActionRequest.getId());
-		} catch (MessagingException|IOException e) {
+			
+			userActionRequest.setNotificationStatus(NotificationStatus.SENT);
+			userActionRepository.add(userActionRequest);
+			
+		} catch (Throwable e) {
 			LOG.error("Fail to send email for " +event + " request with id "+userActionRequest.getId(),e);
+			
+			userActionRequest.setNotificationStatus(NotificationStatus.FAILED);
+			userActionRepository.add(userActionRequest);
 		} 		
 		
 	}

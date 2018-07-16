@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import it.greenvulcano.gvesb.gviamx.domain.PasswordResetRequest;
+import it.greenvulcano.gvesb.gviamx.domain.UserActionRequest.NotificationStatus;
 import it.greenvulcano.gvesb.gviamx.repository.UserActionRepository;
 import it.greenvulcano.gvesb.gviamx.service.NotificationManager;
 import it.greenvulcano.gvesb.iam.domain.User;
@@ -89,6 +90,7 @@ public class PasswordResetManager {
 	    passwordResetRequest.setEmail(email);
 	    passwordResetRequest.setIssueTime(new Date());
 	    passwordResetRequest.setExpireTime(expireTime);
+	    passwordResetRequest.setNotificationStatus(NotificationStatus.PENDING);
 			    
 		
 		byte[] token = new byte[4]; 
@@ -101,7 +103,7 @@ public class PasswordResetManager {
 		
 		passwordResetRequest.setToken(clearTextToken);
 		notificationServices.stream()
-							.map( n -> new NotificationManager.NotificationTask(n, passwordResetRequest, "reset"))
+							.map( n -> new NotificationManager.NotificationTask(n, passwordResetRequest, repository, "reset"))
 							.forEach(executor::submit);
 		
 		} else {

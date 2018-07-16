@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import it.greenvulcano.gvesb.gviamx.domain.EmailChangeRequest;
 import it.greenvulcano.gvesb.gviamx.domain.UserActionRequest;
+import it.greenvulcano.gvesb.gviamx.domain.UserActionRequest.NotificationStatus;
 import it.greenvulcano.gvesb.gviamx.repository.UserActionRepository;
 import it.greenvulcano.gvesb.gviamx.service.NotificationManager;
 import it.greenvulcano.gvesb.iam.domain.User;
@@ -91,6 +92,7 @@ public class EmailChangeManager {
 	    request.setEmail(newEmailAddress);
 	    request.setIssueTime(new Date());
 	    request.setExpireTime(expireTime);
+	    request.setNotificationStatus(NotificationStatus.PENDING);
 			    
 		
 		byte[] token = new byte[4]; 
@@ -103,7 +105,7 @@ public class EmailChangeManager {
 		
 		request.setToken(clearTextToken);
 		notificationServices.stream()
-							.map( n -> new NotificationManager.NotificationTask(n, request, "update"))
+							.map( n -> new NotificationManager.NotificationTask(n, request, repository, "update"))
 							.forEach(executor::submit);
 		
 		

@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 
 import it.greenvulcano.gvesb.gviamx.domain.SignUpRequest;
 import it.greenvulcano.gvesb.gviamx.domain.UserActionRequest;
+import it.greenvulcano.gvesb.gviamx.domain.UserActionRequest.NotificationStatus;
 import it.greenvulcano.gvesb.gviamx.repository.UserActionRepository;
 import it.greenvulcano.gvesb.gviamx.service.CallBackManager;
 import it.greenvulcano.gvesb.gviamx.service.NotificationManager;
@@ -134,6 +135,7 @@ public class SignUpManager {
 	    signUpRequest.setIssueTime(new Date());
 	    signUpRequest.setExpireTime(expireTime);
 		signUpRequest.setRequest(request);
+		signUpRequest.setNotificationStatus(NotificationStatus.PENDING);
 	    
 		
 		byte[] token = new byte[4]; 
@@ -145,7 +147,7 @@ public class SignUpManager {
 		signupRepository.add(signUpRequest);
 		
 		signUpRequest.setToken(clearTextToken);
-		notificationServices.stream().map(n-> new NotificationManager.NotificationTask(n, signUpRequest, "signup")).forEach(executor::submit);
+		notificationServices.stream().map(n-> new NotificationManager.NotificationTask(n, signUpRequest, signupRepository, "signup")).forEach(executor::submit);
 		
 		
 	}
