@@ -23,7 +23,7 @@ import java.security.Principal;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.net.util.SubnetUtils.SubnetInfo;
+import org.apache.commons.net.util.SubnetUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,15 +76,18 @@ public class HTTPIdentityInfo extends BaseIdentityInfo
     }
 
     @Override
-    protected boolean subMatchAddressMask(SubnetInfo addressMask)
-    {
-        if (addressMask == null) {
+    protected boolean subMatchAddressMask(String addressMask) {
+    	if (addressMask == null) {
             return false;
         }
+    	
+    	SubnetUtils subnet = new SubnetUtils(addressMask);
+        subnet.setInclusiveHostCount(true);       
+         	
         String address = request.getRemoteAddr();
-        boolean res = addressMask.isInRange(address);
+        boolean res = subnet.getInfo().isInRange(address);
         if (debug) {
-            logger.debug("HTTPIdentityInfo[" + getName() + "]: AddressMask[" + addressMask.getCidrSignature() + ": "
+            logger.debug("HTTPIdentityInfo[" + getName() + "]: AddressMask[" + subnet.getInfo().getCidrSignature() + ": "
                     + address + "] -> " + res);
         }
         return res;

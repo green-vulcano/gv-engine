@@ -23,7 +23,6 @@ import java.security.Principal;
 
 import javax.ejb.EJBContext;
 
-import org.apache.commons.net.util.SubnetUtils.SubnetInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +68,7 @@ public class EJBIdentityInfo extends BaseIdentityInfo
     }
 
     @Override
-    protected boolean subMatchAddressMask(SubnetInfo addressMask)
+    protected boolean subMatchAddressMask(String addressMask)
     {
         return false;
     }

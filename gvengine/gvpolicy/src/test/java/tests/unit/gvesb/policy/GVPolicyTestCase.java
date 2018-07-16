@@ -33,16 +33,14 @@ import java.util.Set;
 
 import junit.framework.TestCase;
 
-import org.apache.commons.net.util.SubnetUtils;
-
 /**
  * @version 3.2.0 Feb 02, 2012
  * @author GreenVulcano Developer Team
  */
 public class GVPolicyTestCase extends TestCase
 {
-    Set<SubnetUtils.SubnetInfo> addressLocal = null;
-    Set<SubnetUtils.SubnetInfo> addressEst   = null;
+    Set<String> addressLocal = null;
+    Set<String> addressEst   = null;
 
     @Override
     protected void setUp() throws Exception
@@ -50,14 +48,12 @@ public class GVPolicyTestCase extends TestCase
        
         super.setUp();
         XMLConfig.setBaseConfigPath(getClass().getClassLoader().getResource(".").getPath());
-        addressLocal = new HashSet<SubnetUtils.SubnetInfo>();
-        SubnetUtils sn = new SubnetUtils("127.0.0.1/32");
-        sn.setInclusiveHostCount(true);
-        addressLocal.add(sn.getInfo());
-        addressEst = new HashSet<SubnetUtils.SubnetInfo>();
-        sn = new SubnetUtils("192.168.100.0/30");
-        sn.setInclusiveHostCount(true);
-        addressEst.add(sn.getInfo());
+        addressLocal = new HashSet<>();
+       
+        addressLocal.add("127.0.0.1/32");
+        addressEst = new HashSet<>();
+      
+        addressEst.add("192.168.100.0/30");
     }
 
     /**
@@ -90,7 +86,7 @@ public class GVPolicyTestCase extends TestCase
         assertFalse(id.matchAddress((String[]) null));
         assertFalse(id.matchAddress((List<String>) null));
         assertFalse(id.matchAddress((Set<String>) null));
-        assertFalse(id.matchAddressMask((Set<SubnetUtils.SubnetInfo>) null));
+        assertFalse(id.matchAddressMask(null));
 
         List<String> rolesL = new ArrayList<String>();
         assertFalse(id.isInRole(rolesL));

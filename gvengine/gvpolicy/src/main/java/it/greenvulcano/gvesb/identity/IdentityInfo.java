@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.net.util.SubnetUtils;
 
 /**
  * @version 3.2.0 01/feb/2012
@@ -56,6 +55,6 @@ public interface IdentityInfo
 
     public boolean matchAddress(Set<String> addresses);
 
-    public boolean matchAddressMask(Set<SubnetUtils.SubnetInfo> addressMasks);
+    public boolean matchAddressMask(Set<String> addressMasks);
 
 }

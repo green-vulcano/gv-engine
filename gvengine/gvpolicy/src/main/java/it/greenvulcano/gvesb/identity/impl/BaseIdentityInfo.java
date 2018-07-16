@@ -26,8 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.net.util.SubnetUtils.SubnetInfo;
-
 /**
  * @version 3.2.0 02/feb/2012
  * @author GreenVulcano Developer Team
@@ -166,24 +164,15 @@ public abstract class BaseIdentityInfo implements IdentityInfo
         }
         return false;
     }
-
+    
     @Override
-    public final boolean matchAddressMask(Set<SubnetInfo> addressMasks)
-    {
-        if (addressMasks == null) {
-            return false;
-        }
-        for (SubnetInfo addressMask : addressMasks) {
-            if (subMatchAddressMask(addressMask)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
+    public boolean matchAddressMask(Set<String> addressMasks) {
+    	return addressMasks!=null && !addressMasks.isEmpty() && addressMasks.stream().anyMatch(this::subMatchAddressMask);    	
+    }        
+   
     protected abstract boolean subIsInRole(String role);
 
     protected abstract boolean subMatchAddress(String address);
 
-    protected abstract boolean subMatchAddressMask(SubnetInfo addressMask);
+    protected abstract boolean subMatchAddressMask(String addressMask);
 }

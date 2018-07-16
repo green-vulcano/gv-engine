@@ -22,7 +22,7 @@ package it.greenvulcano.gvesb.identity.impl;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.net.util.SubnetUtils.SubnetInfo;
+import org.apache.commons.net.util.SubnetUtils;
 
 /**
  * @version 3.2.0 02/feb/2012
@@ -81,23 +81,28 @@ public class DummyIdentityInfo extends BaseIdentityInfo
         return res;
     }
 
+    
     @Override
-    protected boolean subMatchAddressMask(SubnetInfo addressMask)
-    {
+    protected boolean subMatchAddressMask(String addressMask) {
+    	 
         if (addressMask == null) {
             return false;
         }
+    	
+    	SubnetUtils subnet = new SubnetUtils(addressMask);
+        subnet.setInclusiveHostCount(true); 
+       
         boolean res = false;
         String address = null;
         for (String a : addresses) {
             address = a;
-            res = addressMask.isInRange(address);
+            res = subnet.getInfo().isInRange(address);
             System.out.println("[" + address + "] -> " + addressMask + " : " + res);
             if (res) {
                 break;
             }
         }
-        System.out.println("DummyIdentityInfo[" + getName() + "]: AddressMask[" + addressMask.getCidrSignature() + ": "
+        System.out.println("DummyIdentityInfo[" + getName() + "]: AddressMask[" + subnet.getInfo().getCidrSignature() + ": "
                 + address + "] -> " + res);
         return res;
     }

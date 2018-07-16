@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 import javax.ws.rs.core.SecurityContext;
 
-import org.apache.commons.net.util.SubnetUtils.SubnetInfo;
+import org.apache.commons.net.util.SubnetUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,17 +78,22 @@ public class JaxRsIdentityInfo extends BaseIdentityInfo {
 	}
 
 	@Override
-	protected boolean subMatchAddressMask(SubnetInfo addressMask) {
-		if (addressMask == null) {
-			return false;
-		}
+	protected boolean subMatchAddressMask(String addressMask) {
+		boolean matches = false;
 		
-		boolean res = addressMask.isInRange(remoteAddress);
-		if (debug) {
-			logger.debug("JaxRsIdentityInfo[" + getName() + "]: AddressMask[" + addressMask.getCidrSignature() + ": "
-					+ remoteAddress + "] -> " + res);
+		if (addressMask != null) {
+		
+			SubnetUtils subnet = new SubnetUtils(addressMask);
+	        subnet.setInclusiveHostCount(true);  
+			
+	        matches = subnet.getInfo().isInRange(remoteAddress);
+			if (debug) {
+				logger.debug("JaxRsIdentityInfo[" + getName() + "]: AddressMask[" + subnet.getInfo().getCidrSignature() + ": "
+						+ remoteAddress + "] -> " + matches);
+			}
+		
 		}
-		return res;
+		return matches;
 	}
 
 	@Override

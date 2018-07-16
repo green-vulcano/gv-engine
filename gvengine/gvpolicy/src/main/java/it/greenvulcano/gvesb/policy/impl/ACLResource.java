@@ -29,7 +29,6 @@ import it.greenvulcano.gvesb.policy.ACLManager;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.net.util.SubnetUtils;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -39,9 +38,9 @@ import org.w3c.dom.NodeList;
  */
 public class ACLResource implements ACLEntry
 {
-    private Set<String>                 roles       = new HashSet<String>();
-    private Set<String>                 addresses   = new HashSet<String>();
-    private Set<SubnetUtils.SubnetInfo> addressMask = new HashSet<SubnetUtils.SubnetInfo>();
+    private Set<String>                 roles       = new HashSet<>();
+    private Set<String>                 addresses   = new HashSet<>();
+    private Set<String> 				addressMask = new HashSet<>();
 
     ACLResource()
     {
@@ -73,9 +72,8 @@ public class ACLResource implements ACLEntry
                     if (addr.indexOf("/") == -1) {
                         addr += "/32";
                     }
-                    SubnetUtils snet = new SubnetUtils(addr);
-                    snet.setInclusiveHostCount(true);
-                    addressMask.add(snet.getInfo());
+                    
+                    addressMask.add(addr);
                 }
             }
         }

@@ -25,8 +25,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
-import org.apache.commons.net.util.SubnetUtils;
-
 /**
  * @version 3.2.0 01/feb/2012
  * @author GreenVulcano Developer Team
@@ -130,7 +128,7 @@ public class GVIdentityHelper
         return (identity != null) ? identity.matchAddress(addresses) : false;
     }
 
-    public static boolean matchAddressMask(Set<SubnetUtils.SubnetInfo> addresses)
+    public static boolean matchAddressMask(Set<String> addresses)
     {
         IdentityInfo identity = peek();
         return (identity != null) ? identity.matchAddressMask(addresses) : false;
