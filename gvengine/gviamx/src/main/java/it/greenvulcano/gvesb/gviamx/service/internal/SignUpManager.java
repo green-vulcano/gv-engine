@@ -146,7 +146,7 @@ public class SignUpManager {
 		
 		signupRepository.add(signUpRequest);
 		
-		signUpRequest.setToken(clearTextToken);
+		signUpRequest.setClearToken(clearTextToken);
 		notificationServices.stream().map(n-> new NotificationManager.NotificationTask(n, signUpRequest, signupRepository, "signup")).forEach(executor::submit);
 		
 		

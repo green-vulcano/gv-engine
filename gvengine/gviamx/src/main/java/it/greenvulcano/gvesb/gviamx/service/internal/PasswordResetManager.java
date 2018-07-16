@@ -101,7 +101,7 @@ public class PasswordResetManager {
 		
 		repository.add(passwordResetRequest);
 		
-		passwordResetRequest.setToken(clearTextToken);
+		passwordResetRequest.setClearToken(clearTextToken);
 		notificationServices.stream()
 							.map( n -> new NotificationManager.NotificationTask(n, passwordResetRequest, repository, "reset"))
 							.forEach(executor::submit);

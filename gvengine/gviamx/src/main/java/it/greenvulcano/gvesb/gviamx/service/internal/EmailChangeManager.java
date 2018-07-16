@@ -103,7 +103,7 @@ public class EmailChangeManager {
 		
 		repository.add(request);
 		
-		request.setToken(clearTextToken);
+		request.setClearToken(clearTextToken);
 		notificationServices.stream()
 							.map( n -> new NotificationManager.NotificationTask(n, request, repository, "update"))
 							.forEach(executor::submit);

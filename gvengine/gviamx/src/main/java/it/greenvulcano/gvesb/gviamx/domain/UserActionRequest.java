@@ -36,6 +36,7 @@ import javax.persistence.InheritanceType;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -53,17 +54,20 @@ public abstract class UserActionRequest {
 	private Long id;
 	
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="issue_time", nullable=false, updatable=false)
+	@Column(name="issue_time", nullable=false)
 	private Date issueTime;
 	
-	@Column(name="expire_time", nullable=false, updatable=false)
+	@Column(name="expire_time", nullable=false)
 	private Long expireTime;
 	
 	@Column(length=320, nullable=false, updatable=false)
 	private String email;
 	
-	@Column(length=256, nullable=false, updatable=false)
+	@Column(length=256, nullable=false)
 	private String token;
+	
+	@Transient
+	private String clearToken;
 	
 	@Enumerated(EnumType.STRING)
 	@Column(name="notification_status", length=32, nullable=false)
@@ -95,12 +99,15 @@ public abstract class UserActionRequest {
 	}
 	
 	public String getToken() {
-		return token;
+		return clearToken!=null ? clearToken : token;
 	}
 	public void setToken(String token) {
 		this.token = token;
-	}	
-
+	}
+	public void setClearToken(String clearToken) {
+		this.clearToken = clearToken;
+	}
+	
 	public String getEmail() {
 		return email;
 	}
