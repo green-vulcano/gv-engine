@@ -81,13 +81,13 @@ public class PasswordResetManager {
 	
 	public void createPasswordResetRequest(String email) throws UserNotFoundException, UnverifiableUserException {		
 			
-		User user = usersManager.getUser(email);			
+		User user = usersManager.getUser(email.toLowerCase());			
 		
 		if (user.getPassword().isPresent()) {
 		
-	    PasswordResetRequest passwordResetRequest = repository.get(email, PasswordResetRequest.class).orElseGet(PasswordResetRequest::new);
+	    PasswordResetRequest passwordResetRequest = repository.get(email.toLowerCase(), PasswordResetRequest.class).orElseGet(PasswordResetRequest::new);
 	    passwordResetRequest.setUser((UserJPA)user);
-	    passwordResetRequest.setEmail(email);
+	    passwordResetRequest.setEmail(email.toLowerCase());
 	    passwordResetRequest.setIssueTime(new Date());
 	    passwordResetRequest.setExpireTime(expireTime);
 	    passwordResetRequest.setNotificationStatus(NotificationStatus.PENDING);
@@ -113,7 +113,7 @@ public class PasswordResetManager {
 	
 	public PasswordResetRequest retrievePasswordResetRequest(String email, String token) {
 		
-		PasswordResetRequest signupRequest = repository.get(email, PasswordResetRequest.class).orElseThrow(()->new IllegalArgumentException("No password reset request found for this email"));
+		PasswordResetRequest signupRequest = repository.get(email.toLowerCase(), PasswordResetRequest.class).orElseThrow(()->new IllegalArgumentException("No password reset request found for this email"));
 						
 		if (DigestUtils.sha256Hex(token).equals(signupRequest.getToken())) {
 			

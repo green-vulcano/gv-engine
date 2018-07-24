@@ -211,7 +211,7 @@ public class GVAccountControllerRest {
 		
 		try {
 			
-			email = Optional.ofNullable(email).orElseThrow(()->new IllegalArgumentException("Required parameter: email")).trim();
+			email = Optional.ofNullable(email).map(String::toLowerCase).orElseThrow(()->new IllegalArgumentException("Required parameter: email")).trim();
 			token = Optional.ofNullable(token).orElseThrow(()->new IllegalArgumentException("Required parameter: token")).trim();
 						
 			SignUpRequest signupRequest = signupManager.retrieveSignUpRequest(email, token);
@@ -344,7 +344,7 @@ public class GVAccountControllerRest {
 		JSONObject payload = new JSONObject();
 		try {
 			
-			email = Optional.ofNullable(email).orElseThrow(()->new IllegalArgumentException("Required parameter: email")).trim();
+			email = Optional.ofNullable(email).map(String::toLowerCase).orElseThrow(()->new IllegalArgumentException("Required parameter: email")).trim();
 			token = Optional.ofNullable(token).orElseThrow(()->new IllegalArgumentException("Required parameter: token")).trim();
 			password = Optional.ofNullable(password).orElseThrow(()->new IllegalArgumentException("Required parameter: password")).trim();
 			
@@ -441,7 +441,7 @@ public class GVAccountControllerRest {
 				throw new  SecurityException();
 			}
 			
-			email = Optional.ofNullable(email).orElseThrow(()->new IllegalArgumentException("Required parameter: email")).trim();
+			email = Optional.ofNullable(email).map(String::toLowerCase).orElseThrow(()->new IllegalArgumentException("Required parameter: email")).trim();
 			token = Optional.ofNullable(token).orElseThrow(()->new IllegalArgumentException("Required parameter: token")).trim();	
 			
 			

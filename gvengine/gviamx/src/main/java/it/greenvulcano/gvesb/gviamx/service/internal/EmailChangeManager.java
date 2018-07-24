@@ -39,7 +39,9 @@ import it.greenvulcano.gvesb.gviamx.repository.UserActionRepository;
 import it.greenvulcano.gvesb.gviamx.service.NotificationManager;
 import it.greenvulcano.gvesb.iam.domain.User;
 import it.greenvulcano.gvesb.iam.domain.jpa.UserJPA;
+import it.greenvulcano.gvesb.iam.exception.UserExistException;
 import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
+import it.greenvulcano.gvesb.iam.service.SearchCriteria;
 import it.greenvulcano.gvesb.iam.service.UsersManager;
 
 public class EmailChangeManager {
@@ -79,17 +81,27 @@ public class EmailChangeManager {
 		this.expireTime = expireTime;
 	}
 	
-	public void createEmailChangeRequest(String currentEmailAddress, String newEmailAddress) throws UserNotFoundException {		
+	public void createEmailChangeRequest(String currentEmailAddress, String newEmailAddress) throws UserNotFoundException, UserExistException {		
 		
 		if (newEmailAddress == null ||  !newEmailAddress.matches(UserActionRequest.EMAIL_PATTERN)) {
 			throw new IllegalArgumentException("Invalid email: "+newEmailAddress);
 		}
 		
-		User user = usersManager.getUser(currentEmailAddress);			
+		try {
+			usersManager.getUser(newEmailAddress.toLowerCase());
+			throw new UserExistException(newEmailAddress);
+		} catch (UserNotFoundException e) {
+			
+			if 	(usersManager.searchUsers(SearchCriteria.builder().byEmail(newEmailAddress.toLowerCase()).limitedTo(1).build()).getTotalCount()>0) {
+		    	throw new UserExistException(newEmailAddress);
+		    }		
+		}
 		
-	    EmailChangeRequest request = repository.get(newEmailAddress, EmailChangeRequest.class).orElseGet(EmailChangeRequest::new);
+		User user = usersManager.getUser(currentEmailAddress.toLowerCase());			
+		
+	    EmailChangeRequest request = repository.get(newEmailAddress.toLowerCase(), EmailChangeRequest.class).orElseGet(EmailChangeRequest::new);
 	    request.setUser((UserJPA) user);
-	    request.setEmail(newEmailAddress);
+	    request.setEmail(newEmailAddress.toLowerCase());
 	    request.setIssueTime(new Date());
 	    request.setExpireTime(expireTime);
 	    request.setNotificationStatus(NotificationStatus.PENDING);
@@ -113,7 +125,7 @@ public class EmailChangeManager {
 	
 	public EmailChangeRequest retrieveEmailChangeRequest(String email, String token) {
 		
-		EmailChangeRequest request = repository.get(email, EmailChangeRequest.class).orElseThrow(()->new IllegalArgumentException("No password reset request found for this email"));
+		EmailChangeRequest request = repository.get(email.toLowerCase(), EmailChangeRequest.class).orElseThrow(()->new IllegalArgumentException("No password reset request found for this email"));
 						
 		if (DigestUtils.sha256Hex(token).equals(request.getToken())) {
 			

@@ -121,17 +121,17 @@ public class SignUpManager {
 		}
 		
 		try {
-			usersManager.getUser(email);
+			usersManager.getUser(email.toLowerCase());
 			throw new UserExistException(email);
 		} catch (UserNotFoundException e) {
 			
-			if 	(usersManager.searchUsers(SearchCriteria.builder().byEmail(email).limitedTo(1).build()).getTotalCount()>0) {
+			if 	(usersManager.searchUsers(SearchCriteria.builder().byEmail(email.toLowerCase()).limitedTo(1).build()).getTotalCount()>0) {
 		    	throw new UserExistException(email);
 		    }		
 		}		
 		
-	    SignUpRequest signUpRequest = signupRepository.get(email, SignUpRequest.class).orElseGet(SignUpRequest::new);
-	    signUpRequest.setEmail(email);
+	    SignUpRequest signUpRequest = signupRepository.get(email.toLowerCase(), SignUpRequest.class).orElseGet(SignUpRequest::new);
+	    signUpRequest.setEmail(email.toLowerCase());
 	    signUpRequest.setIssueTime(new Date());
 	    signUpRequest.setExpireTime(expireTime);
 		signUpRequest.setRequest(request);
@@ -154,7 +154,7 @@ public class SignUpManager {
 	
 	public SignUpRequest retrieveSignUpRequest(String email, String token) {
 		
-		SignUpRequest signupRequest = signupRepository.get(email, SignUpRequest.class).orElseThrow(()->new IllegalArgumentException("No sign-up request found for this email"));
+		SignUpRequest signupRequest = signupRepository.get(email.toLowerCase(), SignUpRequest.class).orElseThrow(()->new IllegalArgumentException("No sign-up request found for this email"));
 						
 		if (DigestUtils.sha256Hex(token).equals(signupRequest.getToken())) {
 			
