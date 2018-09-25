@@ -19,11 +19,18 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb.iam.exception;
 
+import it.greenvulcano.gvesb.iam.domain.User;
+
 public class InvalidUsernameException extends GVSecurityException {
 	private static final long serialVersionUID = 1L;
-
+	
+	@Deprecated
 	public InvalidUsernameException(String username) {
-		super("Invalid username '"+username+"'");
+		this();
+	}
+
+	public InvalidUsernameException() {
+		super("The specified username does not match required regex pattern"+ User.USERNAME_PATTERN);
 		
 	}
 

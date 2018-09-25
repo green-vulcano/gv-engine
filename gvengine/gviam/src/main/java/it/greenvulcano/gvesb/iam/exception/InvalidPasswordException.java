@@ -19,11 +19,18 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb.iam.exception;
 
+import it.greenvulcano.gvesb.iam.domain.User;
+
 public class InvalidPasswordException extends GVSecurityException {
 	private static final long serialVersionUID = 1L;
 
-	public InvalidPasswordException(String password) {
-		super("Invalid password: "+password);
+	@Deprecated
+	public InvalidPasswordException(String password)  {
+		this();
+	}
+	
+	public InvalidPasswordException() {
+		super("The specified password does not match required regex pattern"+ User.PASSWORD_PATTERN);
 		
 	}
 
