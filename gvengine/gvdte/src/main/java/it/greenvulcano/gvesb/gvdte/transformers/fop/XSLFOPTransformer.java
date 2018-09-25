@@ -37,6 +37,7 @@ import it.greenvulcano.util.xml.XMLUtilsException;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -108,7 +109,10 @@ public class XSLFOPTransformer implements DTETransformer {
         logger.debug("Init start");
         try {
             this.dsf = dsf;
-            //fopFactory = FopFactory.newInstance();
+            String configPath = XMLConfig.get(nodo, "@config", "./fop.xconf");
+            File configFile = new File(configPath);
+                       
+            fopFactory = FopFactory.newInstance(configFile);
 
             name = XMLConfig.get(nodo, "@name", "NO_NAME");
             xslMapName = XMLConfig.get(nodo, "@XSLMapName");
