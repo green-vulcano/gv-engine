@@ -198,7 +198,6 @@
     <module>gviamx</module>
     <module>gviam-karaf</module>
     <module>gvmonitoring</module>
-    <module>gvpolicy</module>
     <module>gvscheduler</module>
     <module>gvstatistics</module>
     <module>gvvcl</module>
