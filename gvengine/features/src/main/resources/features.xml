@@ -36,7 +36,7 @@
 		<bundle start-level="80"><![CDATA[wrap:mvn:xml-resolver/xml-resolver/1.2$Bundle-SymbolicName=xml-resolver&Bundle-Version=1.2]]></bundle>
 
 		<bundle start-level="81">mvn:it.greenvulcano.gvesb/gvbase/${project.version}</bundle>
-		<bundle start-level="82">mvn:it.greenvulcano.gvesb/gvpolicy/${project.version}</bundle>		
+		
 	</feature>
 	
 	<feature name="gvdte" description="GreenVulcano Data Transformation Engine" version="${project.version}">
