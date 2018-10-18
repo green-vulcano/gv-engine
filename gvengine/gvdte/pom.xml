@@ -61,11 +61,7 @@
 			<groupId>org.apache.xmlgraphics</groupId>
 			<artifactId>fop</artifactId>
 			<version>2.1</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>commons-logging</artifactId>
-					<groupId>commons-logging</groupId>
-				</exclusion>
+			<exclusions>				
 				<exclusion>
 					<artifactId>commons-io</artifactId>
 					<groupId>commons-io</groupId>
@@ -120,8 +116,7 @@
 							it.greenvulcano.configuration,
 							it.greenvulcano.gvesb.internal,
 							it.greenvulcano.util*,							
-							org.apache.log4j,
-							org.apache.commons.logging,
+							org.apache.log4j,							
 							org.apache.commons.io,
 							org.slf4j;version="[1.6,2)";provider=paxlogging,
 							org.w3c.dom,
