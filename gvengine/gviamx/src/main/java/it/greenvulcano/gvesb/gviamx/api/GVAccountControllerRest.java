@@ -20,6 +20,8 @@
 package it.greenvulcano.gvesb.gviamx.api;
 
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
@@ -148,7 +150,7 @@ public class GVAccountControllerRest {
 		    		}
 		    		
 		    	} else {
-		    		throw new InvalidPasswordException(password.get());
+		    		throw new InvalidPasswordException();
 		    	}		    	
 		    }			
 		    
@@ -225,7 +227,7 @@ public class GVAccountControllerRest {
 				return "";
 			});
 			
-			if (!password.matches(User.PASSWORD_PATTERN)) throw new InvalidPasswordException(password);
+			if (!password.matches(User.PASSWORD_PATTERN)) throw new InvalidPasswordException();
 			
 			User user = signupManager.getUsersManager().createUser(email, password);			
 						
@@ -497,7 +499,7 @@ public class GVAccountControllerRest {
 	@POST
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER, Authority.CLIENT})
-	public void grantRole(@Context SecurityContext securityContext, @FormParam("email")String username, @FormParam("role")String role) {
+	public Response grantRole(@Context SecurityContext securityContext, @FormParam("email")String username, @FormParam("role")String role) {
 		
 		try {
 			
@@ -510,8 +512,22 @@ public class GVAccountControllerRest {
 			    ||(securityContext.isUserInRole(Authority.CLIENT) && !Authority.entries.contains(role))) {
 			
 				User user = signupManager.getUsersManager().getUser(username);
+				
+				Set<String> roles = user.getRoles().stream().map(Role::getName).collect(Collectors.toSet());
+				
+				if (roles.contains(role)) {
+					return Response.noContent().build();
+				} 
+				
 				checkSecurityContraint(securityContext, user);
 				signupManager.getUsersManager().addRole(username, role);
+				
+				roles.add(role);
+				JSONObject payload = new JSONObject();
+				payload.put("username", username);
+				payload.put("roles", roles.toArray());
+				
+				return Response.ok().entity(payload.toString()).build();
 								
 			} else {
 				throw new WebApplicationException(Response.status(Response.Status.FORBIDDEN).entity(String.format("Invalid role %s", role)).build());
@@ -535,7 +551,7 @@ public class GVAccountControllerRest {
 	@DELETE
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@RolesAllowed({Authority.ADMINISTRATOR, Authority.MANAGER, Authority.CLIENT})
-	public void revokeRole(@Context SecurityContext securityContext, @FormParam("email")String username, @FormParam("role")String role) {
+	public Response revokeRole(@Context SecurityContext securityContext, @FormParam("email")String username, @FormParam("role")String role) {
 		
 		try {
 			username = Optional.ofNullable(username).orElseThrow(()->new IllegalArgumentException("Required parameter: username")).trim();
@@ -547,8 +563,23 @@ public class GVAccountControllerRest {
 			}
 			
 			User user = signupManager.getUsersManager().getUser(username);
+			
+			Set<String> roles = user.getRoles().stream().map(Role::getName).collect(Collectors.toSet());
+			
+			if (!roles.contains(role)) {
+				return Response.noContent().build();
+			} 			
+			
 			checkSecurityContraint(securityContext, user);
 			signupManager.getUsersManager().revokeRole(username, role);
+			
+			roles.remove(role);
+			JSONObject payload = new JSONObject();
+			payload.put("username", username);
+			payload.put("roles", roles.toArray());
+			
+			return Response.ok().entity(payload.toString()).build();
+			
 		} catch (InvalidRoleException e) {
 			LOG.warn("Error performing revoke role", e);
 			throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(String.format("Invalid role %s", role)).build());	
