@@ -95,6 +95,7 @@
 		<bundle start-level="80">mvn:com.fasterxml.jackson.core/jackson-core/2.9.7</bundle>
 		<bundle start-level="81">mvn:com.fasterxml.jackson.core/jackson-annotations/2.9.7</bundle>
 		<bundle start-level="82">mvn:com.fasterxml.jackson.core/jackson-databind/2.9.7</bundle>
+		<bundle start-level="82">mvn:org.yaml/snakeyaml/1.23</bundle>
 		<bundle start-level="83">mvn:com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/2.9.7</bundle>
 				
 		<feature prerequisite="true">shell</feature>
