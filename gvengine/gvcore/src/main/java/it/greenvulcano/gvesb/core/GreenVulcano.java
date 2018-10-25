@@ -287,17 +287,17 @@ public class GreenVulcano
                 
                 GVFlow gvOp = gvsConfig.getGVOperation(gvBuffer, gvsOperation);
              
-                if (logger.isInfoEnabled()) {
+                if (logger.isDebugEnabled()) {
                     GVBufferDump dump = new GVBufferDump(gvBuffer, false);
-                    logger.info("INPUT GVBuffer: "+dump);                        
+                    logger.debug("INPUT GVBuffer: "+dump);                        
                 }
 
                 returnData = gvOp.recover(recoveryNode, environment);
                 gvsConfig.manageAliasOutput(returnData);
 
-                if (logger.isInfoEnabled()) {
+                if (logger.isDebugEnabled()) {
                     GVBufferDump dump = new GVBufferDump(returnData, false);
-                    logger.info("OUTPUT GVBuffer: "+dump);                        
+                    logger.debug("OUTPUT GVBuffer: "+dump);                        
                 }
                     
                 long endTime = System.currentTimeMillis();
@@ -493,17 +493,17 @@ public class GreenVulcano
 
                 GVFlow gvOp = gvsConfig.getGVOperation(gvBuffer, gvsOperation);
 
-                if (logger.isInfoEnabled()) {
+                if (logger.isDebugEnabled()) {
                     GVBufferDump dump = new GVBufferDump(gvBuffer, false);
-                    logger.info("INPUT GVBuffer: "+dump);                        
+                    logger.debug("INPUT GVBuffer: "+dump);                        
                 }
 
                 returnData = gvOp.perform(gvBuffer);
                 gvsConfig.manageAliasOutput(returnData);
 
-                if (logger.isInfoEnabled()) {
+                if (logger.isDebugEnabled()) {
                     GVBufferDump dump = new GVBufferDump(returnData, false);
-                    logger.info("OUTPUT GVBuffer: "+dump);
+                    logger.debug("OUTPUT GVBuffer: "+dump);
                 }                
     
                 long endTime = System.currentTimeMillis();
