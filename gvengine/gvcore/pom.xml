@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>it.greenvulcano.gvesb</groupId>
 		<artifactId>gvengine</artifactId>
-    <version>4.0.0-SNAPSHOT</version>
+    <version>4.0.0</version>
 	</parent>
 
 	<artifactId>gvcore</artifactId>
@@ -22,13 +22,7 @@
 			<type>bundle</type>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>it.greenvulcano.gvesb</groupId>
-			<artifactId>gvpolicy</artifactId>
-			<version>${project.version}</version>
-			<type>bundle</type>
-			<scope>provided</scope>
-		</dependency>
+
 		<dependency>
 			<groupId>it.greenvulcano.gvesb</groupId>
 			<artifactId>gvdte</artifactId>
