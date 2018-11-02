@@ -177,12 +177,6 @@
 		<bundle start-level="94">mvn:it.greenvulcano.gvesb.vcl/gvvcl-excel/${project.version}</bundle>		
 	</feature>		
 	
-	<feature name="gvvcl-mqtt" description="GreenVulcano mqtt-publish-call mqtt-subscribe-listener extensions" version="${project.version}">		  
-				
-		<feature prerequisite="true">gvengine</feature>
-		<bundle start-level="94">mvn:it.greenvulcano.gvesb.adapter/gvmqttx/${project.version}</bundle>		
-	</feature>
-	
 	<feature name="gvvcl-qrcodex" description="GreenVulcano qr-encode-call extensions" version="${project.version}">		  
 				
 		<feature prerequisite="true">gvengine</feature>
