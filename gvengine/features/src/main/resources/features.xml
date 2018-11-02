@@ -158,13 +158,7 @@
 		<feature prerequisite="true">gvengine</feature>
 		<bundle start-level="96">mvn:it.greenvulcano.gvesb.adapter/gvvcl-google/${project.version}</bundle>		
 	</feature>
-	
-	<feature name="gvvcl-db" description="GreenVulcano exec-db-call query-db-call extensions" version="${project.version}">		  
-				
-		<feature prerequisite="true">gvengine</feature>
-		<bundle start-level="96">mvn:it.greenvulcano.gvesb.adapter/gvdbx/${project.version}</bundle>		
-	</feature>
-	
+			
 	<feature name="gvvcl-jms" description="GreenVulcano jms-enqueue jms-dequeue extensions" version="${project.version}">		  
 				
 		<feature prerequisite="true">gvengine</feature>
@@ -203,19 +197,6 @@
 	
 	<feature name="gvvcl-file" description="GreenVulcano filemanager-call filereader-call filewriter-call fsmonitor-call remotemanager-call directory-watcher extensions">
 		<bundle start-level="96">mvn:it.greenvulcano.gvesb.adapter/gvvcl-file/${project.version}</bundle>
-	</feature>
-	
-	<feature name="gv-kafka-adapter" description="GreenVulcano plugin for Apache Kafka" version="${project.version}">		  
-				
-		<feature prerequisite="true">gvengine</feature>
-		<bundle start-level="96">mvn:it.greenvulcano.gvesb.adapter/gv-adapter-kafka/${project.version}</bundle>		
-	</feature>
-	
-	<feature name="gv-cassandra-adapter" description="GreenVulcano ESB plugin for Apache Cassandra" version="${project.version}">		  
-				
-		<feature prerequisite="true">gvengine</feature>
-		<bundle start-level="82">mvn:it.greenvulcano.gvesb.adapter/gv-cassandra-connector/${project.version}</bundle>
-		<bundle start-level="96">mvn:it.greenvulcano.gvesb.adapter/gvvcl-cassandra/${project.version}</bundle>		
 	</feature>
 			
 	
