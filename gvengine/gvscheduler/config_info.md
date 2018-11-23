@@ -1,4 +1,4 @@
-## How to configure a persist scheduler
+## How to configure a persistent gv-scheduler
 
 ### Step 1
 Copy datasource configuration file [org.ops4j.datasource-quartz.cfg](https://github.com/green-vulcano/gv-engine/raw/master/gvengine/gvscheduler/org.ops4j.datasource-quartz.cfg) into `<karaf_home>/etc`
