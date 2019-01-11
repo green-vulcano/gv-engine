@@ -162,7 +162,7 @@ public class GvSecurityControllerRest extends BaseControllerRest {
 					
 					response = Response.status(Status.NO_CONTENT).build();
 				} else {
-					throw new InvalidPasswordException(newPassword);
+					throw new InvalidPasswordException();
 				}				
 				
 			} else {
