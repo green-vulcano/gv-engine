@@ -73,6 +73,7 @@ import it.greenvulcano.configuration.XMLConfigException;
 import it.greenvulcano.gvesb.GVConfigurationManager;
 import it.greenvulcano.gvesb.GVConfigurationManager.Authority;
 import it.greenvulcano.gvesb.api.dto.ServiceDTO;
+import it.greenvulcano.util.txt.DateUtils;
 import it.greenvulcano.util.xml.XMLUtils;
 
 @CrossOriginResourceSharing(allowAllOrigins = true, allowCredentials = true, exposeHeaders = { "Content-Type",
@@ -128,10 +129,10 @@ public class GvConfigurationControllerRest extends BaseControllerRest {
 	}
 
 	@POST
-	@Path("/configuration/{configId}/{description}")
+	@Path("/configuration/{configId}")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@RolesAllowed({ Authority.ADMINISTRATOR, Authority.MANAGER })
-	public void installConfiguration(@PathParam("configId") String id, @PathParam("description") String description,
+	public void installConfiguration(@PathParam("configId") String id, @Multipart(value = "description", required=false) String description,
 			@Multipart(value = "gvconfiguration") Attachment config) {
 
 		try {
@@ -151,9 +152,9 @@ public class GvConfigurationControllerRest extends BaseControllerRest {
 			case "x-zip-compressed":
 
 				try (InputStream inputData = config.getDataHandler().getInputStream()) {
-
+                   
 					gvConfigurationManager.install(id, IOUtils.toByteArray(inputData));
-					descriptions.setProperty(id, description);
+					descriptions.setProperty(id, Optional.ofNullable(description).orElse("GV ESB configuration")+" "+DateUtils.nowToString(DateUtils.FORMAT_ISO_DATETIME_UTC));
 					saveConfDescriptionProperties(descriptions);
 
 				} catch (IllegalStateException e) {

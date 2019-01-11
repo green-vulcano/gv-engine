@@ -89,8 +89,9 @@ angular.module('gvconsole')
 	    this.addConfig = function(id,desc,config){
 	    	var fd = new FormData();
 	        fd.append('gvconfiguration', config);
+	        fd.append('description', desc)
 
-	        return $http.post(Endpoints.gvconfig+'/configuration/'+id+"/"+desc, fd, {
+	        return $http.post(Endpoints.gvconfig+'/configuration/'+id, fd, {
 	            transformRequest: angular.identity,
 	            headers: {'Content-Type': 'multipart/form-data'}
 	        });
