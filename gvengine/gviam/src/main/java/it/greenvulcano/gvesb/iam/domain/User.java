@@ -34,7 +34,7 @@ import java.util.Set;
  */
 public abstract class User {
 	
-	public static final String USERNAME_PATTERN = "(?=^.{4,256}$)^[a-zA-Z][a-zA-Z0-9._@-]*[a-zA-Z0-9]+$";
+	public static final String USERNAME_PATTERN = "(?=^.{4,256}$)^[a-zA-Z0-9][a-zA-Z0-9._@-]*[a-zA-Z0-9]+$";
 	public static final String PASSWORD_PATTERN = "(?=^.{4,128}$)^[a-zA-Z0-9._@&$#!?-]+$";		
 			        
 	public abstract Long getId();
