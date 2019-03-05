@@ -74,8 +74,8 @@ public class GVUsersManager implements UsersManager{
 	@Override
 	public User createUser(String username, String password)
 			throws InvalidUsernameException, InvalidPasswordException, UserExistException {		
-		if (!username.matches(User.USERNAME_PATTERN)) throwException(new InvalidUsernameException(username));
-		if (!password.matches(User.PASSWORD_PATTERN)) throwException(new InvalidPasswordException(password));
+		if (!username.matches(User.USERNAME_PATTERN)) throwException(new InvalidUsernameException());
+		if (!password.matches(User.PASSWORD_PATTERN)) throwException(new InvalidPasswordException());
 					
 		UserJPA user = new UserJPA();		
 		user.setUsername(username);
@@ -147,7 +147,7 @@ public class GVUsersManager implements UsersManager{
 	public User resetUserPassword(String username, String defaultPassword) throws UserNotFoundException, InvalidPasswordException, UnverifiableUserException {
 		User user = userRepository.get(username).orElseThrow(()->new UserNotFoundException(username));
 	
-		if (!Objects.requireNonNull(defaultPassword, "A default password is required").matches(User.PASSWORD_PATTERN)) throw new InvalidPasswordException(defaultPassword);		
+		if (!Objects.requireNonNull(defaultPassword, "A default password is required").matches(User.PASSWORD_PATTERN)) throw new InvalidPasswordException();		
 		if (!user.getPassword().isPresent()) throw new UnverifiableUserException(username);
 		
 		user.setPassword(DigestUtils.sha256Hex(defaultPassword));
@@ -163,7 +163,7 @@ public class GVUsersManager implements UsersManager{
 			throws UserNotFoundException, PasswordMissmatchException, InvalidPasswordException, UnverifiableUserException {
 		
 		User user = userRepository.get(username).orElseThrow(()->new UserNotFoundException(username));
-		if (!newPassword.matches(User.PASSWORD_PATTERN)) throw new InvalidPasswordException(newPassword);		
+		if (!newPassword.matches(User.PASSWORD_PATTERN)) throw new InvalidPasswordException();		
 		if (!user.getPassword().isPresent()) throw new UnverifiableUserException(username);			
 		
 		
@@ -344,7 +344,7 @@ public class GVUsersManager implements UsersManager{
 		if (username.matches(User.USERNAME_PATTERN)) {
 			user.setUsername(newUsername);
 		} else {
-			throw new InvalidUsernameException(newUsername);
+			throw new InvalidUsernameException();
 		}		
 		
 		userRepository.add(user);
