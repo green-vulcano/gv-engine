@@ -69,7 +69,7 @@ import it.greenvulcano.util.crypto.CryptoHelperException;
 import it.greenvulcano.util.crypto.CryptoUtilsException;
 
 @Path("/account")
-@CrossOriginResourceSharing
+@CrossOriginResourceSharing(allowAllOrigins=true, allowCredentials=true, exposeHeaders={"Content-Type", "Content-Range", "X-Auth-Status"})
 public class GVAccountControllerRest {
 	private final static Logger LOG = LoggerFactory.getLogger(GVAccountControllerRest.class);
 	
