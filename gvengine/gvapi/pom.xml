@@ -6,7 +6,7 @@
   <parent>
     <groupId>it.greenvulcano.gvesb</groupId>
     <artifactId>gvengine</artifactId>
-    <version>4.0.1-SNAPSHOT</version>
+    <version>4.0.1</version>
   </parent>
 
   <artifactId>gvapi</artifactId>

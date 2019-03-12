@@ -3,13 +3,13 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>it.greenvulcano.gvesb</groupId>
 	<artifactId>gv-adapter-archetype</artifactId>
-	<version>4.0.0</version>
+	<version>4.0.1</version>
 	<name>GreenVulcano ESB adapter archetype</name>
 	<url>http://maven.apache.org</url>
 
 	<properties>
 		<osgi.version>5.0.0</osgi.version>
-		<gvesb.version>4.0.0</gvesb.version>
+		<gvesb.version>4.0.1</gvesb.version>
 		<maven-compiler-plugin.version>2.5.1</maven-compiler-plugin.version>
 		<maven-bundle-plugin.version>3.0.1</maven-bundle-plugin.version>
 		<cloud.nexus.content>http://mvn.greenvulcano.com/nexus/content</cloud.nexus.content>
