@@ -64,13 +64,13 @@ or:
 ```sh
 gvadmin@root()> feature:install pax-jdbc-mysql
 ``` 
-For ￼scheduled sevices install:
+For scheduled sevices install:
 ```sh
 gvadmin@root()> feature:install gvscheduler
 gvadmin@root()> feature:install gvscheduler-conf 
 ```
 
-For jms queues intall:￼￼
+For jms queues intall:
 ```sh
 gvadmin@root()> feature:install gvvcl-jms
 ```
