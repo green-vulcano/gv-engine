@@ -1,9 +1,9 @@
 [![N|Solid](http://www.greenvulcanotechnologies.com/wp-content/uploads/2017/04/logo_gv_FLAT-300x138.png)](http://www.greenvulcanotechnologies.com)
 # GreenVulcano ESB 4: Quickstart guide
-Latest [GreenVulcano] instances work on [Apache Karaf] 4.1.5.
-+ [Download Karaf 4.1.5](http://karaf.apache.org/download.html) (Select *Binary Distribution* -> *tar.gz*)
+Latest [GreenVulcano] instances work on [Apache Karaf] 4.1.x.
++ [Download Karaf 4.1.x](http://karaf.apache.org/download.html) (Select *Binary Distribution* -> *tar.gz*)
 + Extract tar.gz into a folder in your file system. 
-+ */apache-karaf-4.1.5* will be the **Karaf home**. 
++ */apache-karaf-4.1.x* will be the **Karaf home**. 
 
 ## Installation
 Before to run karaf, you have to configure GreenVulcano Maven repository:
@@ -14,7 +14,7 @@ Then start Karaf (Open a terminal in **#KarafHome** */bin* and write *./karaf*)
 
 Install feature repository and install gvegine
 ```sh
-gvadmin@root()> feature:repo-add mvn:it.greenvulcano.gvesb/features/4.0.0/xml/features
+gvadmin@root()> feature:repo-add mvn:it.greenvulcano.gvesb/features/4.0.1/xml/features
 gvadmin@root()> feature:install gvengine
 ```
 To open GV Console go to http://localhost:8181/gvconsole/#/login and log with *gvadmin gvadmin*
