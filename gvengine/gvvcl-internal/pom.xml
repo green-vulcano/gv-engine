@@ -82,6 +82,7 @@
 										org.osgi.framework;version="[1.7,2)",
 										org.osgi.service.blueprint;version="[1.0.0,2.0.0)",
 										org.json,
+										org.xml.sax,
 										it.greenvulcano.configuration,
 										it.greenvulcano.gvesb.buffer,
 										it.greenvulcano.gvesb.gvdp,

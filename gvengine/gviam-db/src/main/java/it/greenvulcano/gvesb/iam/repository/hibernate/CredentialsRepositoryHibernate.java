@@ -25,10 +25,13 @@ public class CredentialsRepositoryHibernate extends RepositoryHibernate {
 		super.setSessionFactory(sessionFactory);
 	}
 
-	public Optional<Credentials> find(String username) {
-		return Optional.ofNullable((CredentialsJPA)getSession().createQuery("from CredentialsJPA where resourceOwner.username = :uname")
-				  .setParameter("uname", username)
-				  .uniqueResult());
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+        public Set<Credentials> getUserCredentials(String username) {
+		List userCredentials = getSession().createQuery("from CredentialsJPA where resourceOwner.username = :uname order by issueTime desc")
+		                                   .setParameter("uname", username)
+		                                   .list();
+				       
+		return new LinkedHashSet<Credentials>(userCredentials);
 	}
 	
 	public Optional<Credentials> get(String key) {		

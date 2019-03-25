@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <features xmlns="http://karaf.apache.org/xmlns/features/v1.3.0"	name="${project.artifactId}-${project.version}">
 	
-	<repository>mvn:org.apache.cxf.karaf/apache-cxf/3.1.13/xml/features</repository>
+	<repository>mvn:org.apache.cxf.karaf/apache-cxf/3.2.6/xml/features</repository>
 	<repository>mvn:org.ops4j.pax.jdbc/pax-jdbc-features/1.0.1/xml/features</repository>
 	
 	<feature name="gvbase" description="GreenVulcano Base Library" version="${project.version}">		  
@@ -12,6 +12,14 @@
 		<feature prerequisite="true">transaction</feature>
 		<feature prerequisite="true">jndi</feature>
 		<feature prerequisite="true">http</feature>
+		
+		<feature prerequisite="true">cxf-jaxrs</feature>
+        <feature prerequisite="true">cxf-rs-security-cors</feature>
+        <feature prerequisite="true">cxf-jaxws</feature>
+        <feature prerequisite="true">aries-blueprint</feature>
+        <feature prerequisite="true">cxf-jaxb</feature>
+        <feature prerequisite="true">cxf-ws-policy</feature>
+        <feature prerequisite="true">cxf-ws-security</feature>
 					
 		<bundle start-level="80">mvn:commons-codec/commons-codec/1.7</bundle>
 		<bundle start-level="80">mvn:commons-io/commons-io/2.4</bundle>
@@ -29,6 +37,7 @@
 		<bundle start-level="80">mvn:org.apache.geronimo.specs/geronimo-jaxrpc_1.1_spec/2.1</bundle>
 		<bundle start-level="80">mvn:org.apache.geronimo.specs/geronimo-jaxr_1.0_spec/2.1</bundle>
 
+        <bundle start-level="80">mvn:org.javassist/javassist/3.24.1-GA</bundle>
 		<bundle start-level="80">mvn:org.json/json/20160810</bundle>
 		<bundle start-level="80">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.axiom-api/1.2.13_2</bundle>
 		<bundle start-level="80">mvn:jaxen/jaxen/1.1.6</bundle>	
@@ -103,6 +112,10 @@
 		<feature prerequisite="true">cxf-jaxrs</feature>
 		<feature prerequisite="true">cxf-rs-security-cors</feature>
 		<feature prerequisite="true">cxf-jaxws</feature>
+		
+		<feature prerequisite="true">cxf-jaxb</feature>
+		<feature prerequisite="true">cxf-ws-policy</feature>
+		<feature prerequisite="true">cxf-ws-security</feature>
 				
 		<feature prerequisite="true">gvcore</feature>
 		<feature prerequisite="true">gvvcl-internal</feature>

@@ -35,6 +35,6 @@ public abstract class Credentials {
 	public abstract Long getLifeTime();
 	public abstract User getClient();	
 	public abstract User getResourceOwner();	
-	
+	public abstract boolean isValid();
 
 }
