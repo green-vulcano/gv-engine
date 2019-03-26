@@ -40,10 +40,10 @@ public class CredentialsJPA extends it.greenvulcano.gvesb.iam.domain.Credentials
 	
 	private static final long serialVersionUID = 1L;
 
-	@Id @Column(name="access_token", nullable=false, length=64, unique=true, updatable=false)
+	@Id @Column(name="access_token", nullable=false, length=640, unique=true, updatable=false)
 	private String accessToken;
 	
-	@Column(name="refresh_token", nullable=false, length=64, updatable=false)
+	@Column(name="refresh_token", nullable=false, length=640, updatable=false)
 	private String refreshToken;
 	
 	@Temporal(TemporalType.TIMESTAMP)

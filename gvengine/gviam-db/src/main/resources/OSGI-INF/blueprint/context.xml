@@ -38,7 +38,8 @@
         
 	<cm:property-placeholder persistent-id="it.greenvulcano.gvesb.security" update-strategy="none">
 			<cm:default-properties>
-				<cm:property name="token.lifetime" value="43200000" />				
+				<cm:property name="token.lifetime" value="43200000" />
+				<cm:property name="token.expired.max" value="2" />				
 			</cm:default-properties>
 	</cm:property-placeholder>	
 	
@@ -46,6 +47,7 @@
 		<property name="usersManager" ref="gvUsersManager"/>
     	<property name="credentialsRepository" ref="credentialsRepositoryHibernate"/>
     	<property name="tokenLifeTime" value="${token.lifetime}"/>
+    	<property name="maxExpiredTokens" value="${token.expired.max}"/>
 	</bean>
 	
 	<service id="credentialsManager" ref="gvCredentialsManager" interface="it.greenvulcano.gvesb.iam.service.CredentialsManager"/>

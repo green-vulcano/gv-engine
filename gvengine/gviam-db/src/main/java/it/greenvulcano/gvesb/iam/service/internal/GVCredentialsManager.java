@@ -4,11 +4,7 @@ import java.security.SecureRandom;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.stream.IntStream;
-
-import org.apache.commons.codec.digest.DigestUtils;
 
 import it.greenvulcano.gvesb.iam.domain.Credentials;
 import it.greenvulcano.gvesb.iam.domain.User;
@@ -23,6 +19,9 @@ import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
 import it.greenvulcano.gvesb.iam.repository.hibernate.CredentialsRepositoryHibernate;
 import it.greenvulcano.gvesb.iam.service.CredentialsManager;
 import it.greenvulcano.gvesb.iam.service.UsersManager;
+import it.greenvulcano.util.crypto.CryptoHelper;
+import it.greenvulcano.util.crypto.CryptoHelperException;
+import it.greenvulcano.util.crypto.CryptoUtilsException;
 
 public class GVCredentialsManager implements CredentialsManager {
 
@@ -32,10 +31,9 @@ public class GVCredentialsManager implements CredentialsManager {
 
     private UsersManager usersManager;
     private CredentialsRepositoryHibernate credentialsRepository;
-
-    private ConcurrentMap<String, String> tokenCache = new ConcurrentHashMap<>();
-
+  
     private long tokenLifeTime = 24 * 60 * 60 * 1000;
+    private int maxExpiredTokens = 2;
 
     public void setUsersManager(UsersManager usersManager) {
 
@@ -51,6 +49,12 @@ public class GVCredentialsManager implements CredentialsManager {
 
         this.tokenLifeTime = tokenLifeTime;
     }
+    
+    
+    public void setMaxExpiredTokens(int maxExpiredTokens) {
+
+        this.maxExpiredTokens = maxExpiredTokens;
+    }
 
     @Override
     public Credentials create(String username, String password, String clientUsername, String clientPassword)
@@ -65,17 +69,14 @@ public class GVCredentialsManager implements CredentialsManager {
 
         String accessToken = generateToken();
         String refreshToken = generateToken();
-
-        credentials.setAccessToken(DigestUtils.sha256Hex(accessToken));
-        credentials.setRefreshToken(DigestUtils.sha256Hex(refreshToken));
+        
+        credentials.setAccessToken(encryptToken(accessToken));
+        credentials.setRefreshToken(encryptToken(refreshToken));
 
         credentials.setIssueTime(new Date());
         credentials.setLifeTime(tokenLifeTime);
 
         credentialsRepository.add(credentials);
-
-        tokenCache.put(credentials.getAccessToken(), accessToken);
-        tokenCache.put(credentials.getRefreshToken(), refreshToken);
 
         credentials.setAccessToken(accessToken);
         credentials.setRefreshToken(refreshToken);
@@ -86,7 +87,7 @@ public class GVCredentialsManager implements CredentialsManager {
     @Override
     public Credentials check(String accessToken) throws InvalidCredentialsException, CredentialsExpiredException {
 
-        Credentials credentials = credentialsRepository.get(DigestUtils.sha256Hex(accessToken)).orElseThrow(InvalidCredentialsException::new);
+        Credentials credentials = credentialsRepository.get(encryptToken(accessToken)).orElseThrow(InvalidCredentialsException::new);
 
         long tokenLife = System.currentTimeMillis() - credentials.getIssueTime().getTime();
         if (tokenLife > credentials.getLifeTime()) {
@@ -99,9 +100,9 @@ public class GVCredentialsManager implements CredentialsManager {
     @Override
     public Credentials refresh(String refreshToken, String accessToken) throws InvalidCredentialsException {
 
-        Credentials lastCredentials = credentialsRepository.get(DigestUtils.sha256Hex(accessToken)).orElseThrow(InvalidCredentialsException::new);
+        Credentials lastCredentials = credentialsRepository.get(encryptToken(accessToken)).orElseThrow(InvalidCredentialsException::new);
 
-        if (lastCredentials.getRefreshToken().equals(DigestUtils.sha256Hex(refreshToken))) {
+        if (lastCredentials.getRefreshToken().equals(encryptToken(refreshToken))) {
 
             /*
              * Exprired credentilas can be used multiple times, returning last valid token
@@ -111,8 +112,7 @@ public class GVCredentialsManager implements CredentialsManager {
             // find current valid credentials
             CredentialsJPA credentials = userCredentials.stream()
                                                         .filter(Credentials::isValid)
-                                                        .filter(existing -> !existing.equals(lastCredentials))
-                                                        .filter(c -> tokenCache.containsKey(c.getAccessToken()) && tokenCache.containsKey(c.getRefreshToken()))
+                                                        .filter(existing -> !existing.equals(lastCredentials))                                                     
                                                         .map(CredentialsJPA.class::cast)
                                                         .findFirst()
                                                         .orElseGet(() -> {
@@ -124,11 +124,8 @@ public class GVCredentialsManager implements CredentialsManager {
                                                             String newAccessToken = generateToken();
                                                             String newRefreshToken = generateToken();
 
-                                                            newcredentials.setAccessToken(DigestUtils.sha256Hex(newAccessToken));
-                                                            newcredentials.setRefreshToken(DigestUtils.sha256Hex(newRefreshToken));
-
-                                                            tokenCache.put(newcredentials.getAccessToken(), accessToken);
-                                                            tokenCache.put(newcredentials.getRefreshToken(), refreshToken);
+                                                            newcredentials.setAccessToken(encryptToken(newAccessToken));
+                                                            newcredentials.setRefreshToken(encryptToken(newRefreshToken));
 
                                                             newcredentials.setIssueTime(new Date());
                                                             newcredentials.setLifeTime(tokenLifeTime);
@@ -139,18 +136,15 @@ public class GVCredentialsManager implements CredentialsManager {
 
                                                         });
 
-            String plainAccessToken = tokenCache.get(credentials.getAccessToken());
-            String plainRefreshToken = tokenCache.get(credentials.getRefreshToken());
+            String plainAccessToken = decryptToken(credentials.getAccessToken());
+            String plainRefreshToken = decryptToken(credentials.getRefreshToken());
 
             credentials.setAccessToken(plainAccessToken);
             credentials.setRefreshToken(plainRefreshToken);
 
-            while (userCredentials.stream().filter(c -> !c.isValid()).count() > 2) {
+            while (userCredentials.stream().filter(c -> !c.isValid()).count() > maxExpiredTokens) {
 
-                Credentials expired = userCredentials.stream()
-                                                     .filter(c -> !c.isValid()).sorted((c1, c2) -> c2.getIssueTime().compareTo(c1.getIssueTime()))
-                                                     .findFirst()
-                                                     .get();
+                Credentials expired = userCredentials.stream().filter(c -> !c.isValid()).sorted((c1, c2) -> c1.getIssueTime().compareTo(c2.getIssueTime())).findFirst().get();
                 userCredentials.remove(expired);
                 credentialsRepository.remove(expired);
 
@@ -161,6 +155,23 @@ public class GVCredentialsManager implements CredentialsManager {
             throw new InvalidCredentialsException();
         }
 
+    }
+
+    private String encryptToken(String token) {
+
+        try {
+            return CryptoHelper.encrypt(CryptoHelper.DEFAULT_KEY_ID, token, false);
+        } catch (CryptoHelperException | CryptoUtilsException e) {
+            throw new IllegalArgumentException("Encryption failed", e);
+        }
+    }
+
+    private String decryptToken(String token) {
+        try {
+            return CryptoHelper.decrypt(CryptoHelper.DEFAULT_KEY_ID, token, true);
+        } catch (CryptoHelperException | CryptoUtilsException e) {
+            throw new IllegalArgumentException("Encryption failed", e);
+        }
     }
 
     private String generateToken() {
