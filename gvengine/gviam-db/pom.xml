@@ -96,7 +96,7 @@
 										it.greenvulcano.gvesb.iam.domain;version="[4.0,5)",						
 										it.greenvulcano.gvesb.iam.exception;version="[4.0,5)",
 										it.greenvulcano.gvesb.iam.service;version="[4.0,5)",
-										it.greenvulcano.util.crypto,
+										it.greenvulcano.util.crypto;version="[4.0,5)",
 										javax.persistence;version="[2.1,3)",
 										org.apache.commons.codec.digest,
 										org.hibernate;version="[5.2,6)",
