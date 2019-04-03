@@ -293,6 +293,7 @@
 									org.apache.commons.net.util;version="[2.2,3)",
 									org.apache.commons.pool;version=" [1.5,2)",
 									org.apache.commons.pool.impl;version="[1.5,2)",
+									org.apache.felix.utils.properties,
 									org.apache.karaf.config.core,
 									org.apache.log4j;version="[1.2.15,2)",
 									org.apache.xml.resolver,
