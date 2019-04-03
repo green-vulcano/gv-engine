@@ -32,11 +32,11 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Dictionary;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
@@ -297,8 +297,9 @@ public class BaseConfigurationManager implements GVConfigurationManager {
 	
 	private void setXMLConfigBasePath(String path) throws IOException, InvalidSyntaxException{
 		@SuppressWarnings("unchecked")
-		Dictionary<String, Object> gvesbCfg = Optional.of(configRepository.getConfigProperties(XMLConfig.CONFIG_PID))
-													  .orElse(new Hashtable<>());
+		Map<String, Object> gvesbCfg = Optional.ofNullable(configRepository.getConfig(XMLConfig.CONFIG_PID))
+		                                                                  .map(Map.class::cast)
+									          .orElse(new HashMap<String, Object>());
 		
 		gvesbCfg.put(XMLConfig.CONFIG_KEY_HOME, path);
 		configRepository.update(XMLConfig.CONFIG_PID, gvesbCfg);
