@@ -38,7 +38,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
@@ -296,10 +295,7 @@ public class BaseConfigurationManager implements GVConfigurationManager {
 	}
 	
 	private void setXMLConfigBasePath(String path) throws IOException, InvalidSyntaxException{
-		@SuppressWarnings("unchecked")
-		Map<String, Object> gvesbCfg = Optional.ofNullable(configRepository.getConfig(XMLConfig.CONFIG_PID))
-		                                                                  .map(Map.class::cast)
-									          .orElse(new HashMap<String, Object>());
+		Map<String, Object> gvesbCfg = new HashMap<String, Object>();
 		
 		gvesbCfg.put(XMLConfig.CONFIG_KEY_HOME, path);
 		configRepository.update(XMLConfig.CONFIG_PID, gvesbCfg);
