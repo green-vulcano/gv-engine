@@ -60,7 +60,7 @@ public class GVOperationJob implements Job {
 				xaHelper.begin();
 			}
 			
-			gv.forward(input, operation);
+			gv.forward(new GVBuffer(input), operation);
 			
 			if (xaHelper!=null) {
 				xaHelper.commit();
