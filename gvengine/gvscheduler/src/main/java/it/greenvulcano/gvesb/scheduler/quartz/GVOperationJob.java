@@ -35,50 +35,61 @@ import it.greenvulcano.gvesb.j2ee.XAHelperException;
 @DisallowConcurrentExecution
 public class GVOperationJob implements Job {
 
-	public static final String GVBUFFER = "gvbuffer";
-	public static final String OPERATION_NAME = "gvoperation";
-		
-	@Override
-	public void execute(JobExecutionContext context) throws JobExecutionException {
-		
-		XAHelper xaHelper = null;
-		
-		try {
-			
-			GVBuffer input = (GVBuffer) Objects.requireNonNull(context.getJobDetail().getJobDataMap().get(GVBUFFER));
-			String operation = Objects.requireNonNull(context.getJobDetail().getJobDataMap().getString(OPERATION_NAME));
-			
-			if (context.getJobDetail().getJobDataMap().getBoolean("transactional")) {
-				xaHelper = new XAHelper(XAHelper.DEFAULT_JDNI_NAME);
-			} 
-			
-			GreenVulcanoPool gv = GreenVulcanoPoolManager.instance()
-														 .getGreenVulcanoPool("gvscheduler")
-														 .orElseGet(GreenVulcanoPoolManager::getDefaultGreenVulcanoPool);
-			
-			if (xaHelper!=null) {
-				xaHelper.begin();
-			}
-			
-			gv.forward(new GVBuffer(input), operation);
-			
-			if (xaHelper!=null) {
-				xaHelper.commit();
-			}
-			
-		} catch (Exception e) {
-			
-			if (xaHelper!=null) {
-				try {
-					xaHelper.rollback();
-				} catch (XAHelperException xaHelperException) {
-					throw new JobExecutionException(xaHelperException);
-				}
-			}
-			
-			throw new JobExecutionException(e);
-		}
+    public static final String GVBUFFER = "gvbuffer";
+    public static final String OPERATION_NAME = "gvoperation";
 
-	}
+    @Override
+    public void execute(JobExecutionContext context) throws JobExecutionException {
+
+        XAHelper xaHelper = null;
+
+        try {
+
+            GVBuffer input = (GVBuffer) Objects.requireNonNull(context.getJobDetail().getJobDataMap().get(GVBUFFER));
+            String operation = Objects.requireNonNull(context.getJobDetail().getJobDataMap().getString(OPERATION_NAME));
+
+            if (context.getJobDetail().getJobDataMap().getBoolean("transactional")) {
+                xaHelper = new XAHelper(XAHelper.DEFAULT_JDNI_NAME);
+            }
+
+            GreenVulcanoPool gv = GreenVulcanoPoolManager.instance().getGreenVulcanoPool("gvscheduler").orElseGet(GreenVulcanoPoolManager::getDefaultGreenVulcanoPool);
+
+            if (xaHelper != null) {
+                xaHelper.begin();
+            }
+
+            /*
+             * Build a brand new GVBuffer to avoid gvbuffer id duplication
+             * 
+             */
+            GVBuffer gvBuffer = new GVBuffer();
+            gvBuffer.setService(input.getService());
+            gvBuffer.setSystem(input.getSystem());
+            gvBuffer.setObject(input.getObject());
+
+            for (String k : gvBuffer.getPropertyNamesSet()) {
+                gvBuffer.setProperty(k, gvBuffer.getProperty(k));
+            }
+
+            gv.forward(gvBuffer, operation);
+
+            if (xaHelper != null) {
+                xaHelper.commit();
+            }
+
+        } catch (Exception e) {
+
+            if (xaHelper != null) {
+                try {
+                    xaHelper.rollback();
+                } catch (XAHelperException xaHelperException) {
+                    throw new JobExecutionException(xaHelperException);
+                }
+            }
+
+            throw new JobExecutionException(e);
+        }
+
+    }
 
 }
