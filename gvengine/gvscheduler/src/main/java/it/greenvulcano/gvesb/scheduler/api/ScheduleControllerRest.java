@@ -133,7 +133,7 @@ public class ScheduleControllerRest {
 			                		 responseData.put("properties",new JSONObject(props));
 			                	 }
 			                	 			                	 
-			                     responseData.put("object", Optional.of(data.get("object")).orElse(JSONObject.NULL));
+			                     responseData.put("object", Optional.ofNullable(data.get("object")).orElse(JSONObject.NULL));
 			                     
 			                	 responseData.put("transactional", (boolean)data.get("transactional"));
 			                 });
