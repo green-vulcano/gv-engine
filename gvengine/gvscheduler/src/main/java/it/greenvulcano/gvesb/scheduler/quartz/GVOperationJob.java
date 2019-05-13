@@ -67,8 +67,8 @@ public class GVOperationJob implements Job {
             gvBuffer.setSystem(input.getSystem());
             gvBuffer.setObject(input.getObject());
 
-            for (String k : gvBuffer.getPropertyNamesSet()) {
-                gvBuffer.setProperty(k, gvBuffer.getProperty(k));
+            for (String k : input.getPropertyNamesSet()) {
+                gvBuffer.setProperty(k, input.getProperty(k));
             }
 
             gv.forward(gvBuffer, operation);
