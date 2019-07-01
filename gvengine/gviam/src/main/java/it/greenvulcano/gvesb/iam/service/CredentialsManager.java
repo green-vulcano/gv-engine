@@ -42,6 +42,6 @@ public interface CredentialsManager {
 
     Credentials refresh(String refreshToken, String accessToken) throws InvalidCredentialsException, CredentialsExpiredException;
 
-    Credentials create(String username, String provider) throws UserNotFoundException, UserExpiredException, PasswordMissmatchException, UnverifiableUserException;
+    Credentials create(String accessToken, String authenticationProvider) throws UserNotFoundException, UserExpiredException, PasswordMissmatchException, UnverifiableUserException;
 
 }

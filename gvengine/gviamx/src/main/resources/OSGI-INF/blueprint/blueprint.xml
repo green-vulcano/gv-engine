@@ -116,11 +116,11 @@
   		<property name="emailChangeManager" ref="emailChangeManager"/>
   </bean>
   
-  <reference-list id="externalCredentialsManagerReferences" interface="it.greenvulcano.gvesb.gviamx.service.ExternalCredentialsManager" 
-			   		member-type="service-reference" availability="optional"/>
+  <reference id="gvCredentialsManager" interface="it.greenvulcano.gvesb.iam.service.CredentialsManager" activation="eager" availability="optional" timeout="500"/>
   
   <bean id="externalAccountController" class="it.greenvulcano.gvesb.gviamx.api.GVExternalAccountControllerRest">        
-        <property name="externalCredentialsManagers" ref="externalCredentialsManagerReferences"/>    
+        <property name="credentialsManager" ref="gvCredentialsManager"/>
+        <property name="signupManager" ref="signupManager"/>    
   </bean>
   
   <reference-list id="securityModulesReferences" interface="it.greenvulcano.gvesb.iam.modules.SecurityModule" 

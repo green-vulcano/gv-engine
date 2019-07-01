@@ -36,17 +36,12 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-<<<<<<< Updated upstream
-            <groupId>it.greenvulcano.gvesb</groupId>
-            <artifactId>gvbase</artifactId>
-            <version>${project.version}</version>
-=======
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>20160810</version>
->>>>>>> Stashed changes
-            <scope>provided</scope>
-        </dependency>
+			<groupId>it.greenvulcano.gvesb</groupId>
+			<artifactId>gvbase</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		
 		<dependency>
 			<groupId>it.greenvulcano.gvesb</groupId>
 			<artifactId>gviam</artifactId>
@@ -99,24 +94,25 @@
 							it.greenvulcano.gvesb.iam.service.internal,
 						</Private-Package>
 						<Import-Package>
-										it.greenvulcano.gvesb.iam.domain;version="[4.0,5)",						
-										it.greenvulcano.gvesb.iam.exception;version="[4.0,5)",
-										it.greenvulcano.gvesb.iam.service;version="[4.0,5)",
-										it.greenvulcano.util.crypto;version="[4.0,5)",
-										javax.persistence;version="[2.1,3)",
-										org.apache.commons.codec.digest,
-										org.hibernate;version="[5.2,6)",
-										org.hibernate.annotations;version="[5.2,6)",
-										org.hibernate.exception;version="[5.2,6)",
-										org.hibernate.query;version="[5.2,6)",
-										org.osgi.service.blueprint;version="[1.0.0,2.0.0)",
-										org.slf4j;version="[1.6,2)",
-				                        org.hibernate.proxy;version="[5.2,6)",
-				                        javassist.util.proxy;version="[3.20,4)",
-				                        org.apache.karaf.jaas.config;version="[4.1,5)"						
+							it.greenvulcano.gvesb.iam.domain;version="[4.0,5)",
+							it.greenvulcano.gvesb.iam.exception;version="[4.0,5)",
+							it.greenvulcano.gvesb.iam.service;version="[4.0,5)",
+							it.greenvulcano.util.crypto;version="[4.0,5)",
+							javax.persistence;version="[2.1,3)",
+							org.apache.commons.codec.digest,
+							org.hibernate;version="[5.2,6)",
+							org.hibernate.annotations;version="[5.2,6)",
+							org.hibernate.exception;version="[5.2,6)",
+							org.hibernate.query;version="[5.2,6)",
+							org.osgi.service.blueprint;version="[1.0.0,2.0.0)",
+							org.osgi.framework,
+							org.slf4j;version="[1.6,2)",
+							org.hibernate.proxy;version="[5.2,6)",
+							javassist.util.proxy;version="[3.20,4)",
+							org.apache.karaf.jaas.config;version="[4.1,5)"
 						</Import-Package>
 						<Embed-Dependency>*;scope=compile;type=jar</Embed-Dependency>
-                        <Embed-Transitive>true</Embed-Transitive>
+						<Embed-Transitive>true</Embed-Transitive>
 					</instructions>
 				</configuration>
 			</plugin>

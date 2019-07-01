@@ -50,11 +50,8 @@
 		<property name="usersManager" ref="gvUsersManager"/>
     	<property name="credentialsRepository" ref="credentialsRepositoryHibernate"/>
     	<property name="tokenLifeTime" value="${token.lifetime}"/>
-<<<<<<< Updated upstream
     	<property name="maxExpiredTokens" value="${token.expired.max}"/>
-=======
-    	<property name="externalCredentialsManagers" value="externalAuthenticationServiceReferences"/>
->>>>>>> Stashed changes
+    	<property name="externalAuthenticationServices" ref="externalAuthenticationServiceReferences"/>
 	</bean>
 	
 	<service id="credentialsManager" ref="gvCredentialsManager" interface="it.greenvulcano.gvesb.iam.service.CredentialsManager"/>

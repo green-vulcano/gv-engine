@@ -7,12 +7,8 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.stream.IntStream;
 
-<<<<<<< Updated upstream
-=======
-import org.apache.commons.codec.digest.DigestUtils;
 import org.osgi.framework.ServiceReference;
 
->>>>>>> Stashed changes
 import it.greenvulcano.gvesb.iam.domain.Credentials;
 import it.greenvulcano.gvesb.iam.domain.User;
 import it.greenvulcano.gvesb.iam.domain.jpa.CredentialsJPA;
@@ -41,25 +37,18 @@ public class GVCredentialsManager implements CredentialsManager {
 
     private final SecureRandom secureRandom = new SecureRandom();
 
-<<<<<<< Updated upstream
     private UsersManager usersManager;
     private CredentialsRepositoryHibernate credentialsRepository;
-  
+
     private long tokenLifeTime = 24 * 60 * 60 * 1000;
     private int maxExpiredTokens = 2;
-=======
+
     private List<ServiceReference<ExternalAuthenticationService>> externalAuthenticationServices;
 
-    private UsersManager usersManager;
-    private CredentialsRepositoryHibernate credentialsRepository;
-
-    private long tokenLifeTime = 24 * 60 * 60 * 1000;
-
-    public void setExternalCredentialsManagers(List<ServiceReference<ExternalAuthenticationService>> externalAuthenticationServices) {
+    public void setExternalAuthenticationServices(List<ServiceReference<ExternalAuthenticationService>> externalAuthenticationServices) {
 
         this.externalAuthenticationServices = externalAuthenticationServices;
     }
->>>>>>> Stashed changes
 
     public void setUsersManager(UsersManager usersManager) {
 
@@ -75,15 +64,11 @@ public class GVCredentialsManager implements CredentialsManager {
 
         this.tokenLifeTime = tokenLifeTime;
     }
-<<<<<<< Updated upstream
-    
-    
+
     public void setMaxExpiredTokens(int maxExpiredTokens) {
 
         this.maxExpiredTokens = maxExpiredTokens;
     }
-=======
->>>>>>> Stashed changes
 
     @Override
     public Credentials create(String username, String password, String clientUsername, String clientPassword)
@@ -97,18 +82,10 @@ public class GVCredentialsManager implements CredentialsManager {
         credentials.setResourceOwner(UserJPA.class.cast(resourceOwner));
 
         String accessToken = generateToken();
-<<<<<<< Updated upstream
         String refreshToken = generateToken();
-        
+
         credentials.setAccessToken(encryptToken(accessToken));
         credentials.setRefreshToken(encryptToken(refreshToken));
-=======
-
-        String refreshToken = generateToken();
-
-        credentials.setAccessToken(DigestUtils.sha256Hex(accessToken));
-        credentials.setRefreshToken(DigestUtils.sha256Hex(refreshToken));
->>>>>>> Stashed changes
 
         credentials.setIssueTime(new Date());
         credentials.setLifeTime(tokenLifeTime);
@@ -122,11 +99,12 @@ public class GVCredentialsManager implements CredentialsManager {
     }
 
     @Override
-<<<<<<< Updated upstream
     public Credentials check(String accessToken) throws InvalidCredentialsException, CredentialsExpiredException {
 
         Credentials credentials = credentialsRepository.get(encryptToken(accessToken)).orElseThrow(InvalidCredentialsException::new);
 
+        if (!credentials.getResourceOwner().isEnabled()) throw new InvalidCredentialsException();
+        
         long tokenLife = System.currentTimeMillis() - credentials.getIssueTime().getTime();
         if (tokenLife > credentials.getLifeTime()) {
             throw new CredentialsExpiredException();
@@ -140,7 +118,7 @@ public class GVCredentialsManager implements CredentialsManager {
 
         Credentials lastCredentials = credentialsRepository.get(encryptToken(accessToken)).orElseThrow(InvalidCredentialsException::new);
 
-        if (lastCredentials.getRefreshToken().equals(encryptToken(refreshToken))) {
+        if (lastCredentials.getResourceOwner().isEnabled() && lastCredentials.getRefreshToken().equals(encryptToken(refreshToken))) {
 
             /*
              * Exprired credentilas can be used multiple times, returning last valid token
@@ -150,7 +128,7 @@ public class GVCredentialsManager implements CredentialsManager {
             // find current valid credentials
             CredentialsJPA credentials = userCredentials.stream()
                                                         .filter(Credentials::isValid)
-                                                        .filter(existing -> !existing.equals(lastCredentials))                                                     
+                                                        .filter(existing -> !existing.equals(lastCredentials))
                                                         .map(CredentialsJPA.class::cast)
                                                         .findFirst()
                                                         .orElseGet(() -> {
@@ -187,8 +165,15 @@ public class GVCredentialsManager implements CredentialsManager {
                 credentialsRepository.remove(expired);
 
             }
-=======
-    public Credentials create(String username, String provider) throws UserNotFoundException, UserExpiredException, PasswordMissmatchException, UnverifiableUserException {
+
+            return credentials;
+        } else {
+            throw new InvalidCredentialsException();
+        }
+
+    }
+
+    public Credentials create(String token, String provider) throws UserNotFoundException, UserExpiredException, PasswordMissmatchException, UnverifiableUserException {
 
         ExternalAuthenticationService authenticator = externalAuthenticationServices.stream()
                                                                                     .map(sr -> sr.getBundle().getBundleContext().getService(sr))
@@ -196,28 +181,29 @@ public class GVCredentialsManager implements CredentialsManager {
                                                                                     .findFirst()
                                                                                     .orElseThrow(() -> new IllegalArgumentException("Provider not supported: " + provider));
 
-        ExternalAutheticatedUser extUser = authenticator.authenticate(username);
+        ExternalAutheticatedUser extUser = authenticator.authenticate(token);
 
         User internalUser = null;
 
         try {
-            internalUser = usersManager.createUser(extUser.getEmail(), generateToken());
-        } catch (UserExistException e) {
             internalUser = usersManager.getUser(extUser.getEmail());
-        } catch (InvalidUsernameException | InvalidPasswordException e) {
-            throw new UnverifiableUserException(username);
-        }
-
+            if (!internalUser.isEnabled()) throw new UserNotFoundException(extUser.getEmail());
+        } catch (UserNotFoundException userNotFound) {
+            try {
+                internalUser = usersManager.createUser(extUser.getEmail(), generateToken());
+            } catch (InvalidUsernameException | InvalidPasswordException | UserExistException e) {
+                throw new UnverifiableUserException(token, e);
+            }
+        } 
         CredentialsJPA credentials = new CredentialsJPA();
         credentials.setClient(UserJPA.class.cast(internalUser));
         credentials.setResourceOwner(UserJPA.class.cast(internalUser));
 
         String accessToken = generateToken();
-
         String refreshToken = generateToken();
 
-        credentials.setAccessToken(DigestUtils.sha256Hex(accessToken));
-        credentials.setRefreshToken(DigestUtils.sha256Hex(refreshToken));
+        credentials.setAccessToken(encryptToken(accessToken));
+        credentials.setRefreshToken(encryptToken(refreshToken));
 
         credentials.setIssueTime(new Date());
         credentials.setLifeTime(tokenLifeTime);
@@ -230,54 +216,6 @@ public class GVCredentialsManager implements CredentialsManager {
         return credentials;
     }
 
-    @Override
-    public Credentials check(String accessToken) throws InvalidCredentialsException, CredentialsExpiredException {
-
-        Credentials credentials = credentialsRepository.get(DigestUtils.sha256Hex(accessToken)).orElseThrow(InvalidCredentialsException::new);
-
-        long tokenLife = System.currentTimeMillis() - credentials.getIssueTime().getTime();
-        if (tokenLife > credentials.getLifeTime()) {
-            throw new CredentialsExpiredException();
-        }
-
-        return credentials;
-    }
-
-    @Override
-    public Credentials refresh(String refreshToken, String accessToken) throws InvalidCredentialsException {
-
-        Credentials lastCredentials = credentialsRepository.get(DigestUtils.sha256Hex(accessToken)).orElseThrow(InvalidCredentialsException::new);
-
-        if (lastCredentials.getRefreshToken().equals(DigestUtils.sha256Hex(refreshToken))) {
-            CredentialsJPA credentials = new CredentialsJPA();
-            credentials.setClient(UserJPA.class.cast(lastCredentials.getClient()));
-            credentials.setResourceOwner(UserJPA.class.cast(lastCredentials.getResourceOwner()));
-
-            String newAccessToken = generateToken();
-            String newRefreshToken = generateToken();
-
-            credentials.setAccessToken(DigestUtils.sha256Hex(newAccessToken));
-            credentials.setRefreshToken(DigestUtils.sha256Hex(newRefreshToken));
-
-            credentials.setIssueTime(new Date());
-            credentials.setLifeTime(tokenLifeTime);
-
-            credentialsRepository.add(credentials);
-
-            credentialsRepository.remove(lastCredentials);
-
-            credentials.setAccessToken(newAccessToken);
-            credentials.setRefreshToken(newRefreshToken);
->>>>>>> Stashed changes
-
-            return credentials;
-        } else {
-            throw new InvalidCredentialsException();
-        }
-
-    }
-
-<<<<<<< Updated upstream
     private String encryptToken(String token) {
 
         try {
@@ -288,6 +226,7 @@ public class GVCredentialsManager implements CredentialsManager {
     }
 
     private String decryptToken(String token) {
+
         try {
             return CryptoHelper.decrypt(CryptoHelper.DEFAULT_KEY_ID, token, true);
         } catch (CryptoHelperException | CryptoUtilsException e) {
@@ -295,8 +234,6 @@ public class GVCredentialsManager implements CredentialsManager {
         }
     }
 
-=======
->>>>>>> Stashed changes
     private String generateToken() {
 
         byte[] token = new byte[16];

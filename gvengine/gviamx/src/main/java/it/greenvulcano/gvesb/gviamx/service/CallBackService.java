@@ -8,30 +8,37 @@
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ *  
  * GreenVulcano ESB is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Lesser General Public License for more details.
- *
+ *  
  * You should have received a copy of the GNU Lesser General Public License
  * along with GreenVulcano ESB. If not, see <http://www.gnu.org/licenses/>.
  *******************************************************************************/
-package it.greenvulcano.gvesb.iam.exception;
+package it.greenvulcano.gvesb.gviamx.service;
 
-import java.security.GeneralSecurityException;
+public interface CallBackService {
 
-public abstract class GVSecurityException extends GeneralSecurityException {
+	public void performCallBack(byte[] payload);
 	
-	private static final long serialVersionUID = 1L;
-	
-	public GVSecurityException(String message) {
-		super(message);
+	public static class CallBackTask implements Runnable {
+
+		private final CallBackService callback;
+		private final byte[] payload;
+				
+		public CallBackTask(CallBackService callback, byte[] payload) {			
+			this.callback = callback;
+			this.payload = payload;
+		}
+		
+		@Override
+		public void run() {
+			callback.performCallBack(payload);
+			
+		}
+		
 	}
 	
-	public GVSecurityException(String message, Exception cause) {
-            super(message, cause);
-        }
-
-
 }
