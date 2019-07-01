@@ -36,9 +36,15 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+<<<<<<< Updated upstream
             <groupId>it.greenvulcano.gvesb</groupId>
             <artifactId>gvbase</artifactId>
             <version>${project.version}</version>
+=======
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20160810</version>
+>>>>>>> Stashed changes
             <scope>provided</scope>
         </dependency>
 		<dependency>

@@ -19,7 +19,7 @@ import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import it.greenvulcano.gvesb.gviamx.service.ExternalCredentialsManager;
+import it.greenvulcano.gvesb.gviamx.service.ExternalAuthenticationService;
 import it.greenvulcano.gvesb.iam.domain.Credentials;
 import it.greenvulcano.gvesb.iam.exception.PasswordMissmatchException;
 import it.greenvulcano.gvesb.iam.exception.UnverifiableUserException;
@@ -31,11 +31,7 @@ import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
 public class GVExternalAccountControllerRest {
 	private final static Logger LOG = LoggerFactory.getLogger(GVExternalAccountControllerRest.class);
 	
-	private List<ServiceReference<ExternalCredentialsManager>> externalCredentialsManagers;
 	
-	public void setExternalCredentialsManagers(List<ServiceReference<ExternalCredentialsManager>> externalCredentialsManagers) {
-		this.externalCredentialsManagers = externalCredentialsManagers;
-	}
 		
 	@POST
 	@Path("/exchange_token")
@@ -45,11 +41,11 @@ public class GVExternalAccountControllerRest {
 		Response response = null;
 		
 		try {
-			ExternalCredentialsManager manager = externalCredentialsManagers.stream()
-																		.map(sr -> sr.getBundle().getBundleContext().getService(sr))
-																		.filter(m->m.getID().equals(externalCredentialsManagerID))
-																		.findFirst()
-																		.orElseThrow(() -> new IllegalArgumentException("Provider not supported: "+externalCredentialsManagerID));
+			ExternalAuthenticationService manager = externalAuthenticationServices.stream()
+						                                        .map(sr -> sr.getBundle().getBundleContext().getService(sr))
+											.filter(m->m.getID().equals(externalCredentialsManagerID))
+											.findFirst()
+											.orElseThrow(() -> new IllegalArgumentException("Provider not supported: "+externalCredentialsManagerID));
 			
 			Credentials internalCredentials = manager.create(externalCredentials);
 			

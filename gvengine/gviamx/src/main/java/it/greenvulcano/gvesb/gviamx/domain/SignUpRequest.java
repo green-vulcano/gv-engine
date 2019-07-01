@@ -21,7 +21,6 @@ package it.greenvulcano.gvesb.gviamx.domain;
 
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -35,57 +34,85 @@ import org.hibernate.annotations.Type;
 import org.json.JSONObject;
 
 @Entity
-@DiscriminatorValue(value="SIGNUP")
-public class SignUpRequest extends UserActionRequest implements Serializable{
-	private static final long serialVersionUID = 1L;
-	
-	@Column(nullable=true)
-	@Lob() @Type(type = "org.hibernate.type.BinaryType") 
-	@Basic(fetch=FetchType.LAZY)
-	private byte[] request;
-	
-	@Transient
-	private JSONObject requestObject;
-		
-	public byte[] getRequest() {
-		return request;
-	}
-	public void setRequest(byte[] request) {
-		this.request = request;
-	}
-	
-	@Transient
-	public Map<String, Object> getActionData() {
-		if (requestObject==null) {
-			try {
-				requestObject = new JSONObject(new String(request));
-			} catch (Exception e) {
-				return new HashMap<>();
-			}
-		}
-		return requestObject.toMap();
-	}
-			
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + Arrays.hashCode(request);
-		return result;
-	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!super.equals(obj))
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		SignUpRequest other = (SignUpRequest) obj;
-		if (!Arrays.equals(request, other.request))
-			return false;
-		return true;
-	}	
+@DiscriminatorValue(value = "SIGNUP")
+public class SignUpRequest extends UserActionRequest implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    @Column(nullable = true)
+    @Lob()
+    @Type(type = "org.hibernate.type.BinaryType")
+    @Basic(fetch = FetchType.LAZY)
+    private byte[] request;
+
+    @Transient
+    private JSONObject requestObject;
+
+    public byte[] getRequest() {
+
+        return request;
+    }
+
+    public void setRequest(byte[] request) {
+
+        this.request = request;
+    }
+
+    @Transient
+    @Override
+    public JSONObject toJSONObject() {
+
+        JSONObject userRequest = super.toJSONObject()
+                   .put("action", new JSONObject().put("type", "signup")
+                                                  .put("data", getRequestObject()) ); 
+        
+        return userRequest;
+    }
+
+    @Transient
+    public JSONObject getRequestObject() {
+
+        synchronized (this) {
+            if (requestObject == null) {
+                try {
+                    requestObject = new JSONObject(new String(request, "UTF-8"));
+                } catch (Exception e) {
+                    requestObject = new JSONObject();
+                }
+            }
+        }
+        
+        return requestObject;
+    }
+
+    @Transient
+    public Map<String, Object> getActionData() {
+       
+        return getRequestObject().toMap();
+    }
+
+    @Override
+    public int hashCode() {
+
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + Arrays.hashCode(request);
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        SignUpRequest other = (SignUpRequest) obj;
+        if (!Arrays.equals(request, other.request))
+            return false;
+        return true;
+    }
 
 }

@@ -43,11 +43,18 @@
 			</cm:default-properties>
 	</cm:property-placeholder>	
 	
+	<reference-list id="externalAuthenticationServiceReferences" interface="it.greenvulcano.gvesb.iam.service.ExternalAuthenticationService" 
+                    member-type="service-reference" availability="optional"/>
+	
 	<bean id="gvCredentialsManager" class="it.greenvulcano.gvesb.iam.service.internal.GVCredentialsManager">
 		<property name="usersManager" ref="gvUsersManager"/>
     	<property name="credentialsRepository" ref="credentialsRepositoryHibernate"/>
     	<property name="tokenLifeTime" value="${token.lifetime}"/>
+<<<<<<< Updated upstream
     	<property name="maxExpiredTokens" value="${token.expired.max}"/>
+=======
+    	<property name="externalCredentialsManagers" value="externalAuthenticationServiceReferences"/>
+>>>>>>> Stashed changes
 	</bean>
 	
 	<service id="credentialsManager" ref="gvCredentialsManager" interface="it.greenvulcano.gvesb.iam.service.CredentialsManager"/>

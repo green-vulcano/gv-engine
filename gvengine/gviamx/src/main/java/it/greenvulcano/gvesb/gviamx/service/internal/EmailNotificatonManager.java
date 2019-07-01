@@ -42,9 +42,9 @@ import com.github.mustachejava.MustacheFactory;
 import it.greenvulcano.gvesb.gviamx.domain.UserActionRequest;
 import it.greenvulcano.gvesb.gviamx.domain.UserActionRequest.NotificationStatus;
 import it.greenvulcano.gvesb.gviamx.repository.UserActionRepository;
-import it.greenvulcano.gvesb.gviamx.service.NotificationManager;
+import it.greenvulcano.gvesb.gviamx.service.NotificationService;
 
-public class EmailNotificatonManager implements NotificationManager {
+public class EmailNotificatonManager implements NotificationService {
 
 	private final static Logger LOG = LoggerFactory.getLogger(EmailNotificatonManager.class);
 	
@@ -63,7 +63,7 @@ public class EmailNotificatonManager implements NotificationManager {
 
 	@Override
 	public void sendNotification(UserActionRequest userActionRequest, UserActionRepository userActionRepository, String event) {		
-		LOG.debug("Sending email for " + event + " request with id "+userActionRequest.getId());
+		LOG.info("Sending email for " + event + " request with id "+userActionRequest.getId());
 		MimeMessage message = mailSender.createMimeMessage();
 		MimeMessageHelper messageHelper = new MimeMessageHelper(message);
 	
@@ -89,7 +89,7 @@ public class EmailNotificatonManager implements NotificationManager {
 			messageHelper.setTo(userActionRequest.getEmail());
 						
 			mailSender.send(message);
-			LOG.debug("Email sent successfully for " + event	+ " request with id "+userActionRequest.getId());
+			LOG.info("Email sent successfully for " + event	+ " request with id "+userActionRequest.getId());
 			
 			userActionRequest.setNotificationStatus(NotificationStatus.SENT);
 			userActionRepository.add(userActionRequest);

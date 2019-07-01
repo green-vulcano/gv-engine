@@ -36,7 +36,7 @@ import it.greenvulcano.gvesb.gviamx.domain.EmailChangeRequest;
 import it.greenvulcano.gvesb.gviamx.domain.UserActionRequest;
 import it.greenvulcano.gvesb.gviamx.domain.UserActionRequest.NotificationStatus;
 import it.greenvulcano.gvesb.gviamx.repository.UserActionRepository;
-import it.greenvulcano.gvesb.gviamx.service.NotificationManager;
+import it.greenvulcano.gvesb.gviamx.service.NotificationService;
 import it.greenvulcano.gvesb.iam.domain.User;
 import it.greenvulcano.gvesb.iam.domain.jpa.UserJPA;
 import it.greenvulcano.gvesb.iam.exception.UserExistException;
@@ -52,13 +52,13 @@ public class EmailChangeManager {
 	private final SecureRandom secureRandom = new SecureRandom();
 		
 	
-	private final List<NotificationManager> notificationServices = new ArrayList<>();
+	private final List<NotificationService> notificationServices = new ArrayList<>();
 	
 	private UserActionRepository repository;
 	private UsersManager usersManager;
 	private Long expireTime = 60*60*1024L;
 	
-	public void setNotificationServices(List<NotificationManager> notificationServices){
+	public void setNotificationServices(List<NotificationService> notificationServices){
 		this.notificationServices.clear();
 		if (notificationServices!=null && !notificationServices.isEmpty()) {
 			this.notificationServices.addAll(notificationServices);
@@ -117,7 +117,7 @@ public class EmailChangeManager {
 		
 		request.setClearToken(clearTextToken);
 		notificationServices.stream()
-							.map( n -> new NotificationManager.NotificationTask(n, request, repository, "update"))
+							.map( n -> new NotificationService.NotificationTask(n, request, repository, "update"))
 							.forEach(executor::submit);
 		
 		

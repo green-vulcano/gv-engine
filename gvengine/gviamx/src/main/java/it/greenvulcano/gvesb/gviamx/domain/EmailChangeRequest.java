@@ -27,53 +27,72 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
+
+import org.json.JSONObject;
 
 import it.greenvulcano.gvesb.iam.domain.jpa.UserJPA;
 
 @Entity
-@DiscriminatorValue(value="EMAIL_CHANGE")
-public class EmailChangeRequest extends UserActionRequest implements Serializable{
-	private static final long serialVersionUID = 1L;
-		
-	@ManyToOne(optional=true, fetch=FetchType.EAGER, targetEntity=UserJPA.class)
-	@JoinColumn(name="user_id", nullable=true)
-	private UserJPA user;			
-	
-	public UserJPA getUser() {
-		return user;
-	}
-	public void setUser(UserJPA user) {
-		this.user = user;	
-	}
-		
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((user == null) ? 0 : user.hashCode());
-		return result;
-	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!super.equals(obj))
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		EmailChangeRequest other = (EmailChangeRequest) obj;
-		if (user == null) {
-			if (other.user != null)
-				return false;
-		} else if (!user.equals(other.user))
-			return false;
-		return true;
-	}
-	@Override
-	public Map<String, Object> getActionData() {		
-		return null;
-	}
-	
+@DiscriminatorValue(value = "EMAIL_CHANGE")
+public class EmailChangeRequest extends UserActionRequest implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    @ManyToOne(optional = true, fetch = FetchType.EAGER, targetEntity = UserJPA.class)
+    @JoinColumn(name = "user_id", nullable = true)
+    private UserJPA user;
+
+    public UserJPA getUser() {
+
+        return user;
+    }
+
+    public void setUser(UserJPA user) {
+
+        this.user = user;
+    }
+
+    @Transient
+    @Override
+    public JSONObject toJSONObject() {
+
+        JSONObject userRequest = super.toJSONObject().put("action", new JSONObject().put("type", "emailChange").put("data", JSONObject.NULL));
+
+        return userRequest;
+    }
+
+    @Override
+    public int hashCode() {
+
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((user == null) ? 0 : user.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        EmailChangeRequest other = (EmailChangeRequest) obj;
+        if (user == null) {
+            if (other.user != null)
+                return false;
+        } else if (!user.equals(other.user))
+            return false;
+        return true;
+    }
+
+    @Override
+    public Map<String, Object> getActionData() {
+
+        return null;
+    }
 
 }

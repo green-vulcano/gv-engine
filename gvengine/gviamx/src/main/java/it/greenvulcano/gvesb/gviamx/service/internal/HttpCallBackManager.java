@@ -34,9 +34,9 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import it.greenvulcano.gvesb.gviamx.service.CallBackManager;
+import it.greenvulcano.gvesb.gviamx.service.CallBackService;
 
-public class HttpCallBackManager implements CallBackManager {
+public class HttpCallBackManager implements CallBackService {
 	private final static Logger LOG = LoggerFactory.getLogger(HttpCallBackManager.class);
 	
 	

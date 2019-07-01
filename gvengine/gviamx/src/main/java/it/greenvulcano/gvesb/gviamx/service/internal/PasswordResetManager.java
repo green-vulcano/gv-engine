@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 import it.greenvulcano.gvesb.gviamx.domain.PasswordResetRequest;
 import it.greenvulcano.gvesb.gviamx.domain.UserActionRequest.NotificationStatus;
 import it.greenvulcano.gvesb.gviamx.repository.UserActionRepository;
-import it.greenvulcano.gvesb.gviamx.service.NotificationManager;
+import it.greenvulcano.gvesb.gviamx.service.NotificationService;
 import it.greenvulcano.gvesb.iam.domain.User;
 import it.greenvulcano.gvesb.iam.domain.jpa.UserJPA;
 import it.greenvulcano.gvesb.iam.exception.UnverifiableUserException;
@@ -50,13 +50,13 @@ public class PasswordResetManager {
 	private final SecureRandom secureRandom = new SecureRandom();
 		
 	
-	private final List<NotificationManager> notificationServices = new ArrayList<>();
+	private final List<NotificationService> notificationServices = new ArrayList<>();
 	
 	private UserActionRepository repository;
 	private UsersManager usersManager;
 	private Long expireTime = 60*60*1024L;
 	
-	public void setNotificationServices(List<NotificationManager> notificationServices){
+	public void setNotificationServices(List<NotificationService> notificationServices){
 		this.notificationServices.clear();
 		if (notificationServices!=null && !notificationServices.isEmpty()) {
 			this.notificationServices.addAll(notificationServices);
@@ -103,7 +103,7 @@ public class PasswordResetManager {
 		
 		passwordResetRequest.setClearToken(clearTextToken);
 		notificationServices.stream()
-							.map( n -> new NotificationManager.NotificationTask(n, passwordResetRequest, repository, "reset"))
+							.map( n -> new NotificationService.NotificationTask(n, passwordResetRequest, repository, "reset"))
 							.forEach(executor::submit);
 		
 		} else {
