@@ -77,6 +77,8 @@ public class GVCredentialsManager implements CredentialsManager {
 		
 		Credentials credentials = credentialsRepository.get(DigestUtils.sha256Hex(accessToken)).orElseThrow(InvalidCredentialsException::new);
 		
+		if (!credentials.getResourceOwner().isEnabled()) throw new InvalidCredentialsException();
+		
 		long tokenLife = System.currentTimeMillis() - credentials.getIssueTime().getTime();
 		if (tokenLife>credentials.getLifeTime()){
 			throw new CredentialsExpiredException();
@@ -90,7 +92,7 @@ public class GVCredentialsManager implements CredentialsManager {
 		Credentials lastCredentials = credentialsRepository.get(DigestUtils.sha256Hex(accessToken)).orElseThrow(InvalidCredentialsException::new);
 		
 		
-		if (lastCredentials.getRefreshToken().equals(DigestUtils.sha256Hex(refreshToken))) {
+		if (lastCredentials.getResourceOwner().isEnabled() && lastCredentials.getRefreshToken().equals(DigestUtils.sha256Hex(refreshToken))) {
 			CredentialsJPA credentials = new CredentialsJPA();
 			credentials.setClient(UserJPA.class.cast(lastCredentials.getClient()));
 			credentials.setResourceOwner(UserJPA.class.cast(lastCredentials.getResourceOwner()));
