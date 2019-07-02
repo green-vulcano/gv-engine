@@ -17,8 +17,6 @@ import it.greenvulcano.gvesb.iam.domain.jpa.CredentialsJPA;
  * 
  */
 public class CredentialsRepositoryHibernate extends RepositoryHibernate {
-
-	
 	
 	@Override
 	public void setSessionFactory(SessionFactory sessionFactory) {	
@@ -51,5 +49,11 @@ public class CredentialsRepositoryHibernate extends RepositoryHibernate {
 		getSession().delete(CredentialsJPA.class.cast(entity));
 		getSession().flush();		
 	}
+	
+	public void removeByUser(Long userId) {
+            getSession().createQuery("delete from CredentialsJPA where resourceOwner.id = :userId")
+                        .setParameter("userId", userId)
+                        .executeUpdate();
+        }
 
 }
