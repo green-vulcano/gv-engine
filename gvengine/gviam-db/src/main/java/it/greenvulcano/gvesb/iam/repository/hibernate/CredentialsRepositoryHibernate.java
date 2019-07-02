@@ -54,5 +54,11 @@ public class CredentialsRepositoryHibernate extends RepositoryHibernate {
 		getSession().delete(CredentialsJPA.class.cast(entity));
 		getSession().flush();		
 	}
+	
+	public void removeByUser(Long userId) {
+	    getSession().createQuery("delete from CredentialsJPA where resourceOwner.id = :userId")
+                        .setParameter("userId", userId)
+                        .executeUpdate();
+	}
 
 }

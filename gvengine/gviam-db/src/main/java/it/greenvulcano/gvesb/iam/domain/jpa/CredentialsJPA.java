@@ -32,6 +32,10 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import javax.persistence.ForeignKey;
 
 @Entity
@@ -55,10 +59,12 @@ public class CredentialsJPA extends it.greenvulcano.gvesb.iam.domain.Credentials
 	
 	@ManyToOne(optional=false, fetch=FetchType.EAGER)
 	@JoinColumn(name="client_id", nullable=false, foreignKey=@ForeignKey(name = "CLIENT_FK"))
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	private UserJPA client;
 	
 	@ManyToOne(optional=false, fetch=FetchType.EAGER)
 	@JoinColumn(name="resource_owner_id", nullable=false, foreignKey=@ForeignKey(name = "OWNER_FK"))
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	private UserJPA resourceOwner;
 	
 	@Override

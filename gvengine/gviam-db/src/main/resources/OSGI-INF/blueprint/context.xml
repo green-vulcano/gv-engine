@@ -27,7 +27,8 @@
     
     <bean id="gvUsersManager" class="it.greenvulcano.gvesb.iam.service.internal.GVUsersManager">
 		<property name="userRepository" ref="userRepositoryHibernate"/>
-    	<property name="roleRepository" ref="roleRepositoryHibernate"/>    
+    	<property name="roleRepository" ref="roleRepositoryHibernate"/>
+    	<property name="credentialsRepository" ref="credentialsRepositoryHibernate"/>    
 	</bean>    
     
     <service id="usersManager" ref="gvUsersManager" interface="it.greenvulcano.gvesb.iam.service.UsersManager">
