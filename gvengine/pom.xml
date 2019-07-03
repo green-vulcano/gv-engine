@@ -144,6 +144,7 @@
 		<module>gviam</module>
 		<module>gviam-db</module>
 		<module>gviamx</module>
+		<module>gviamx-auth-fb</module>
 		<module>gviam-karaf</module>
 		<module>gvmonitoring</module>
 		<module>gvscheduler</module>
