@@ -24,12 +24,11 @@ import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.IntStream;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.codec.digest.DigestUtils;
@@ -143,10 +142,7 @@ public class SignUpManager {
         signUpRequest.setRequest(request);
         signUpRequest.setNotificationStatus(NotificationStatus.PENDING);
 
-        byte[] token = new byte[4];
-        secureRandom.nextBytes(token);
-
-        String clearTextToken = String.format(Locale.US, "%02x%02x%02x%02x", IntStream.range(0, token.length).mapToObj(i -> Byte.valueOf(token[i])).toArray());
+        String clearTextToken = secureRandom.ints(3, 11, 99).mapToObj(Integer::toString).collect(Collectors.joining());
         signUpRequest.setToken(DigestUtils.sha256Hex(clearTextToken));
 
         signupRepository.add(signUpRequest);
