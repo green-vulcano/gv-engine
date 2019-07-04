@@ -398,6 +398,78 @@
           }
         }
       }
+    },
+    "/sts/exchange_token": {
+      "post": {
+        "tags": [
+          "STS"
+        ],
+        "summary": "Exchanges an externally issued authentication token for an access token",
+        "operationId": "exchangeToken",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "formData",
+            "description": "A valid authentication token issued by an external authorization provider",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "provider",
+            "in": "formData",
+            "description": "External authorization provider id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "token_type": {
+                  "type": "string",
+                  "example": "Bearer"
+                },
+                "access_token": {
+                  "type": "string",
+                  "example": "f43a1-12e1-44t5-098a"
+                },
+                "refresh_token": {
+                  "type": "string",
+                  "example": "5433-c512-8f81-9999"
+                },
+                "expires_in": {
+                  "type": "integer",
+                  "description": "token life in milliseconds",
+                  "example": 36000
+                },
+                "issue_date": {
+                  "type": "string",
+                  "format": "dateTime",
+                  "example": "2019-06-30T12:00:35.0+02:00"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
     }
   },
   "securityDefinitions": {

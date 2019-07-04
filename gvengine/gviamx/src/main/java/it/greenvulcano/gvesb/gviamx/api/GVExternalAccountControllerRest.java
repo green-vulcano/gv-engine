@@ -25,8 +25,8 @@ import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
 import it.greenvulcano.gvesb.iam.service.CredentialsManager;
 import it.greenvulcano.gvesb.iam.service.UsersManager.Authority;
 
-@Path("/oauth2")
-@CrossOriginResourceSharing
+@Path("/sts")
+@CrossOriginResourceSharing(allowAllOrigins=true, allowCredentials=true, exposeHeaders={"Content-Type", "Content-Range", "X-Auth-Status"})
 public class GVExternalAccountControllerRest {
 
     private final static Logger LOG = LoggerFactory.getLogger(GVExternalAccountControllerRest.class);
