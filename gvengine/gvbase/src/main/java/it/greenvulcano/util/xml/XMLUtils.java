@@ -44,6 +44,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
@@ -1444,7 +1445,7 @@ public class XMLUtils
             return arrOut.toByteArray();
         }
         catch (Throwable exc) {
-            exc.printStackTrace();
+            LoggerFactory.getLogger(getClass()).error("Critical exception serializing DOM", exc);            
             throw new XMLUtilsException(exc.getMessage(), exc);
         }
     }
