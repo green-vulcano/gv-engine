@@ -160,6 +160,9 @@ public class GVUsersManager implements UsersManager{
 		user.setPasswordTime(new Date());
 		user.setExpired(true);
 		userRepository.add(user);
+		
+		credentialsRepository.removeByUser(user.getId());
+		
 		return user;
 
 	}
@@ -179,6 +182,8 @@ public class GVUsersManager implements UsersManager{
 		user.setExpired(false);
 		
 		userRepository.add(user);
+		
+		credentialsRepository.removeByUser(user.getId());
 		
 		return user;
 	}
