@@ -1,6 +1,6 @@
 # HOW TO USE:
 
-Open a terminal in the current folder, then run:
+Open a terminal in the same folder that contains **gv-karaf-conf**, then run:
  ```sh
 ./gv-karaf-conf <KARAF_HOME>
 ```
