@@ -9,9 +9,9 @@ Latest [GreenVulcano] instances work on [Apache Karaf] 4.2.x.
 
 ## Method 1: Use GV Karaf Installer
 
-Make sure your JAVA_HOME is correctly set as an environment variable to avoid issues in the configuration.
+Make sure your JAVA_HOME is correctly set as an environment variable to avoid issues in the configuration. If it's not set, the installer will warn you. In that case, please refer to this page: https://docs.oracle.com/cd/E19182-01/820-7851/inst_cli_jdk_javahome_t/
 
-Download **gv-karaf-conf** from https://github.com/Kylan11/gv-engine/tree/master/gv-karaf-autoconfigurator.
+Once you've done that, download **gv-karaf-conf** from [this page](https://github.com/Kylan11/gv-engine/tree/master/gv-karaf-autoconfigurator).
 Open a terminal in the same folder you've downloaded gv-karaf-conf, then run (use sudo privileges if needed):
  ```sh
 ./gv-karaf-conf <KARAF_HOME>
@@ -25,11 +25,16 @@ update <karaf_home>/etc/**org.ops4j.pax.url.mvn.cfg** file and add to key **org.
 
 Then start Karaf (Open a terminal in **#KarafHome** */bin* and write *./karaf*)
 
-Install feature repository and install gvegine
+Add our feature repository and install gvegine:
 ```sh
 gvadmin@root()> feature:repo-add mvn:it.greenvulcano.gvesb/features/4.1.0-SNAPSHOT/xml/features
 gvadmin@root()> feature:install gvengine
 ```
+At the end of this process a folder will be created at **<karaf_home>/GreenV**, which contains an empty GreenVulcano configuration. It is possibile to reference a different GreenVulcano configuration, simply by inserting the following line in the file **<karaf_home>/etc/it.greenvulcano.gvesb.cfg**
+
+> gv.app.home=<path_to_gv_configuration>
+
+It is necessary to restart karaf to properly load a new configuration.
 
 ## Usage
 Make sure your Karaf instance is running (You can make sure of that by doing in your Karaf/bin folder and executing "./status").
@@ -40,7 +45,7 @@ If you want to stop Karaf and GV Console, insert *halt* into the terminal.
 
 ---
 
-The list of karaf features, now also include those of GreenVulcano:
+If you've installed gvengine correctly, the list of karaf features should now also include those of GreenVulcano:
 
 ```sh
 gvadmin@root()> feature:list
@@ -48,13 +53,8 @@ gvadmin@root()> feature:list
 To show GreenVulcano features only:
 
 ```sh
-gvadmin@root()> feature:list | grep Green
+gvadmin@root()> feature:list | grep GreenVulcano
 ```
-At the end of this process a folder will be created at **<karaf_home>/GreenV**, which contains an empty GreenVulcano configuration. It is possibile to reference a different GreenVulcano configuration, simply by inserting the following line in the file **<karaf_home>/etc/it.greenvulcano.gvesb.cfg**
-
-> gv.app.home=<path_to_gv_configuration>
-
-It is necessary to restart karaf to properly load a new configuration.
 
 ### Plugins and adapters
 You can install specific plugins and adapters to extends GreenVulcano ESB v4
@@ -92,9 +92,11 @@ For jms queues intall:
 gvadmin@root()> feature:install gvvcl-jms
 ```
 
+To extend database compatibility to MongoDB platforms, please refer to [this tutorial](https://github.com/Kylan11/gv-adapter-mongodb).
+
 ## Deploy
 
-Export a configuration from Developer studio. Then choose whether to use "Developer Studio & GVConsole" or "Karaf" deploy.
+Export a configuration from Developer Studio. Then choose whether to use "Developer Studio & GVConsole" or "Karaf" deploy.
 
 - Developer Studio & GVConsole
  -- GVConsole -> Configuration
