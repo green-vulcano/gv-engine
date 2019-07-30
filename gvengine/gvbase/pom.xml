@@ -308,6 +308,7 @@
 									org.w3c.dom.traversal,
 									org.xml.sax
 						</Import-Package>
+						<DynamicImport-Package>it.greenvulcano.*</DynamicImport-Package>
 						<Embed-Dependency>*;scope=compile;type=jar</Embed-Dependency>
 						<Embed-Transitive>true</Embed-Transitive>
 					</instructions>
