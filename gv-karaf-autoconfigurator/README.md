@@ -7,3 +7,5 @@ Open a terminal in the same folder that contains **gv-karaf-conf**, then run:
 Where **KARAF_HOME** is your karaf main folder (e.g. /home/username/apache-karaf4.2.6/)
 
 In case it wouldn't run, use sudo privileges.
+
+**WARNING: Tested for Linux distributions. For Windows, refer to the manual configuration in the quickstart.md tutorial.**
