@@ -130,7 +130,8 @@ public class JSONUtils
                     for (int i = 0; i < len; i++) {
                         Node att = attrs.item(i);
                         String name = att.getLocalName();
-                        if (!name.equals("xmlns") && !"xmlns".equals(att.getPrefix())) {
+                        if (name!=null && !name.isBlank() &&    
+                            !name.equals("xmlns") && !"xmlns".equals(att.getPrefix())) {
                             usableAttribute = true;
                             String value = parser.getNodeContent(att);
                             if (forceString || forceStringValue.contains(name)) {
