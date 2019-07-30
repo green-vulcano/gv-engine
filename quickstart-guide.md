@@ -57,7 +57,7 @@ To show GreenVulcano features only:
 gvadmin@root()> feature:list | grep GreenVulcano
 ```
 
-### Plugins and adapters
+## Plugins and adapters
 You can install specific plugins and adapters to extends GreenVulcano ESB v4
 ```sh
 
