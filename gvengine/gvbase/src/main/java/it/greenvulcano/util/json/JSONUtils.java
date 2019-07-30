@@ -96,7 +96,7 @@ public class JSONUtils {
 
             String name = el.getLocalName();
 
-            if (name != null && !name.isBlank()) {
+            if (name != null && name.trim().length()>0) {
                 if (forceElementsArray.contains(name)) {
                     result.append(name, processElement(parser, el, forceElementsArray, forceStringValue));
                 } else {
@@ -131,7 +131,7 @@ public class JSONUtils {
                     for (int i = 0; i < len; i++) {
                         Node att = attrs.item(i);
                         String name = att.getLocalName();
-                        if (name != null && !name.isBlank() && !name.equals("xmlns") && !"xmlns".equals(att.getPrefix())) {
+                        if (name != null && name.trim().length()>0 && !name.equals("xmlns") && !"xmlns".equals(att.getPrefix())) {
                             usableAttribute = true;
                             String value = parser.getNodeContent(att);
                             if (forceString || forceStringValue.contains(name)) {
