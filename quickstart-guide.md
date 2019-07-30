@@ -7,7 +7,7 @@ Latest [GreenVulcano] instances work on [Apache Karaf] 4.2.x.
 
 ## Installation
 
-## Method 1: Use GV Karaf Installer
+### Method 1: Use GV Karaf Installer
 
 Make sure your JAVA_HOME is correctly set as an environment variable to avoid issues in the configuration. If it's not set, the installer will warn you. In that case, please refer to this page: https://docs.oracle.com/cd/E19182-01/820-7851/inst_cli_jdk_javahome_t/
 
@@ -18,8 +18,9 @@ Open a terminal in the same folder you've downloaded gv-karaf-conf, then run (us
 ```
 Where KARAF_HOME is your karaf main folder. This simple program will automatically configure your Karaf instance to work with GreenVulcano ESB, and should install gv-engine automatically. Having done that, all you need to do is manually download the additional plugins you wish to use alongside your GV instance.
 
-## Method 2: Configure Karaf manually
-Before running karaf, you have to configure GreenVulcano Maven repository:
+### Method 2: Configure Karaf manually
+
+Before you can run karaf, you have to configure GreenVulcano Maven repository:
 update <karaf_home>/etc/**org.ops4j.pax.url.mvn.cfg** file and add to key **org.ops4j.pax.url.mvn.repositories** following row:
    > http://mvn.greenvulcano.com/nexus/content/groups/public@id=gv@snapshots, \
 
