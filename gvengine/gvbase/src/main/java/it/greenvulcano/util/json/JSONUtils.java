@@ -96,7 +96,7 @@ public class JSONUtils {
 
             String name = el.getLocalName();
 
-            if (name != null && name.trim().length()>0) {
+            if (name != null && name.trim().length() > 0) {
                 if (forceElementsArray.contains(name)) {
                     result.append(name, processElement(parser, el, forceElementsArray, forceStringValue));
                 } else {
@@ -131,7 +131,7 @@ public class JSONUtils {
                     for (int i = 0; i < len; i++) {
                         Node att = attrs.item(i);
                         String name = att.getLocalName();
-                        if (name != null && name.trim().length()>0 && !name.equals("xmlns") && !"xmlns".equals(att.getPrefix())) {
+                        if (name != null && name.trim().length() > 0 && !name.equals("xmlns") && !"xmlns".equals(att.getPrefix())) {
                             usableAttribute = true;
                             String value = parser.getNodeContent(att);
                             if (forceString || forceStringValue.contains(name)) {
@@ -151,10 +151,11 @@ public class JSONUtils {
                     for (int i = 0; i < len; i++) {
                         Node n = nl.item(i);
                         String name = n.getLocalName();
-                        if (name != null) {
-                            short nodeType = n.getNodeType();
-                            switch (nodeType) {
-                            case Node.ELEMENT_NODE:
+
+                        short nodeType = n.getNodeType();
+                        switch (nodeType) {
+                        case Node.ELEMENT_NODE:
+                            if (name != null) {
                                 if (forceElementsArray.contains(name)) {
                                     if (n.hasChildNodes() || n.hasAttributes()) {
                                         current.append(name, processElement(parser, (Element) n, forceElementsArray, forceStringValue));
@@ -164,29 +165,30 @@ public class JSONUtils {
                                 } else {
                                     current.accumulate(name, processElement(parser, (Element) n, forceElementsArray, forceStringValue));
                                 }
-                                hasElementChild = true;
-                                break;
-                            case Node.CDATA_SECTION_NODE:
-                            case Node.TEXT_NODE:
-                                if (hasElementChild) {
-                                    break;
-                                }
-                                if (!"".equals(n.getTextContent().trim())) {
-                                    String valStr = parser.getNodeContent(el);
-                                    Object value = valStr;
-                                    if (!(forceString || forceStringValue.contains(Optional.ofNullable(el.getLocalName()).orElse("")))) {
-                                        value = stringToValue(valStr);
-                                    }
-                                    if (hasAttributes) {
-                                        current.put("contentText", value);
-                                        return current;
-                                    }
-
-                                    return value;
-                                }
-                            default:
                             }
+                            hasElementChild = true;
+                            break;
+                        case Node.CDATA_SECTION_NODE:
+                        case Node.TEXT_NODE:
+                            if (hasElementChild) {
+                                break;
+                            }
+                            if (!"".equals(n.getTextContent().trim())) {
+                                String valStr = parser.getNodeContent(el);
+                                Object value = valStr;
+                                if (!(forceString || forceStringValue.contains(Optional.ofNullable(el.getLocalName()).orElse("")))) {
+                                    value = stringToValue(valStr);
+                                }
+                                if (hasAttributes) {
+                                    current.put("contentText", value);
+                                    return current;
+                                }
+
+                                return value;
+                            }
+                        default:
                         }
+
                     }
                 }
                 return (current.length() > 0) ? current : "";
@@ -428,7 +430,7 @@ public class JSONUtils {
                         return d;
                     }
                 } else {
-                    Long myLong =Long.valueOf(string);
+                    Long myLong = Long.valueOf(string);
                     if (string.equals(myLong.toString())) {
                         if (myLong == myLong.intValue()) {
                             return myLong.intValue();
@@ -505,7 +507,7 @@ public class JSONUtils {
                  * current.put("@" + name, value);
                  * }
                  */
-                if (name!=null && !name.equals("xmlns") && !"xmlns".equals(att.getPrefix())) {
+                if (name != null && !name.equals("xmlns") && !"xmlns".equals(att.getPrefix())) {
                     current.putOnce("@" + name, value);
                 }
             }
