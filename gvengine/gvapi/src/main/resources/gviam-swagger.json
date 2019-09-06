@@ -466,7 +466,141 @@
           }
         }
       }
-
+    },
+    "/token": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Get an authentication token",
+        "description": "Retrieve a valid authentication token for the current authenticated user ",
+        "operationId": "selfCreateAccessToken",
+        "security": [
+          {
+            "gviam": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "token_type": {
+                  "type": "string",
+                  "example": "Bearer"
+                },
+                "access_token": {
+                  "type": "string",
+                  "example": "f43a1-12e1-44t5-098a"
+                },
+                "refresh_token": {
+                  "type": "string",
+                  "example": "5433-c512-8f81-9999"
+                },
+                "expires_in": {
+                  "type": "integer",
+                  "description": "token life in milliseconds",
+                  "example": 36000
+                },
+                "issue_date": {
+                  "type": "string",
+                  "format": "dateTime",
+                  "example": "2017-01-30T12:00:35.0+02:00"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Refresh an authentication token",
+        "description": "Refresh an Oauth2 authentication token",
+        "operationId": "refreshAccessToken",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "access_token",
+            "in": "body",
+            "description": "A valid access token with refresh token",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "token_type": {
+                  "type": "string",
+                  "example": "Bearer"
+                },
+                "access_token": {
+                  "type": "string",
+                  "example": "5433-c512-8f81-9999"
+                },
+                "refresh_token": {
+                  "type": "string",
+                  "example": "5433-c512-8f81-9999"
+                },
+                "expires_in": {
+                  "type": "integer",
+                  "example": 36000
+                },
+                "issue_date": {
+                  "type": "string",
+                  "format": "dateTime",
+                  "example": "2017-01-30T12:00:35.0+02:00"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "token_type": {
+                  "type": "string",
+                  "example": "Bearer"
+                },
+                "access_token": {
+                  "type": "string",
+                  "example": "5433-c512-8f81-9999"
+                },
+                "refresh_token": {
+                  "type": "string",
+                  "example": "5433-c512-8f81-9999"
+                },
+                "expires_in": {
+                  "type": "integer",
+                  "example": 36000
+                },
+                "issue_date": {
+                  "type": "string",
+                  "format": "dateTime",
+                  "example": "2017-01-30T12:00:35.0+02:00"
+                }
+              }
+            }
+          }
+        }
+      }
     },
     "/oauth2/access_token": {
       "post": {
@@ -702,7 +836,7 @@
             }
           }
         },
-       "roles": {
+        "roles": {
           "type": "object",
           "additionalProperties": {
             "$ref": "#/definitions/role"
