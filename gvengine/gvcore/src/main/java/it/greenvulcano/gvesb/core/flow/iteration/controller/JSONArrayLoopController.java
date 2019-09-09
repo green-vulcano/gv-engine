@@ -19,6 +19,7 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb.core.flow.iteration.controller;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
@@ -34,7 +35,7 @@ import it.greenvulcano.gvesb.core.flow.iteration.LoopController;
  *
  * The results are returned in a {@link JSONArray} using the same order in the input object
  * 
- * @version 4.0.0 20160606
+ * @version 4.1.0 20190909
  * @author GreenVulcano Developer Team
  * 
  */
@@ -71,12 +72,14 @@ public class JSONArrayLoopController extends JSONObjectLoopController {
 	private Optional<JSONArray> parseGVBuffer(GVBuffer gvBuffer) {
 		JSONArray jsonArray =  null;
 		try {
-			if (gvBuffer.getObject() instanceof JSONArray) {
-				jsonArray = (JSONArray) gvBuffer.getObject();			
+		        if (Objects.isNull(gvBuffer.getObject())) {
+                             return Optional.empty();		    
+		        } else if (gvBuffer.getObject() instanceof JSONArray) {
+			     jsonArray = (JSONArray) gvBuffer.getObject();			
 			} else if (gvBuffer.getObject() instanceof String)  {
-				jsonArray = new JSONArray(gvBuffer.getObject().toString());
+			     jsonArray = new JSONArray(gvBuffer.getObject().toString());
 			} else {
-				jsonArray = (JSONArray) JSONObject.wrap(gvBuffer.getObject());
+			     throw new IllegalArgumentException();
 			}
 			
 		} catch (Exception e) {
