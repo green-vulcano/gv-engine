@@ -266,7 +266,7 @@ public class GVAccountControllerRest {
 			}		
 			
 			signupManager.consumeSignUpRequest(signupRequest);
-			
+			LOG.info("Confirmed signup for user {}", user.getId());
 			response = Response.created(uriInfo.getBaseUri().resolve("gviam/admin/users/"+user.getId())).build();
 		} catch (IllegalArgumentException|SecurityException e) {
 			LOG.warn("Error performing signup", e);
@@ -356,6 +356,8 @@ public class GVAccountControllerRest {
 			passwordResetManager.getUsersManager().setUserExpiration(email, false);
 			
 			passwordResetManager.consumePasswordResetRequest(passwordResetRequest);
+			
+			LOG.info("Confirmed password reset for user {}", passwordResetRequest.getUser().getId());
 			payload.put("email", email);
 			payload.put("status", "CONFIRMED");
 			response = Response.ok().entity(payload.toString()).build();
@@ -466,8 +468,10 @@ public class GVAccountControllerRest {
 				}
 				
 				emailChangeManager.consumeEmailChangeRequest(request);
+				LOG.info("Confirmed email change for user {}", request.getUser().getId());
 				payload.put("email", email);
 				payload.put("status", "CONFIRMED");
+				
 				response = Response.ok().entity(payload.toString()).build();
 			} else {
 				response = Response.status(Status.FORBIDDEN).build();
@@ -522,6 +526,8 @@ public class GVAccountControllerRest {
 				checkSecurityContraint(securityContext, user);
 				signupManager.getUsersManager().addRole(username, role);
 				
+				LOG.info("Granted role {} to user {}",role, user.getId() );
+				
 				roles.add(role);
 				JSONObject payload = new JSONObject();
 				payload.put("username", username);
@@ -572,6 +578,8 @@ public class GVAccountControllerRest {
 			
 			checkSecurityContraint(securityContext, user);
 			signupManager.getUsersManager().revokeRole(username, role);
+			
+			LOG.info("Removed role {} to user {}", role, user.getId() );
 			
 			roles.remove(role);
 			JSONObject payload = new JSONObject();
