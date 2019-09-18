@@ -15,6 +15,8 @@
         <property name="gvSecurityModulesReferences" ref="securityModulesReferences"/>    
     </bean>
 	
+	<bean id="correlation-filter" class="it.greenvulcano.gvesb.api.controller.CorrelationFilter"/>
+	
 	<bean id="cors-filter" class="org.apache.cxf.rs.security.cors.CrossOriginResourceSharingFilter"/>
 
 	<bean id="servicesController" class="it.greenvulcano.gvesb.api.controller.GvServicesControllerRest"/>
@@ -31,6 +33,7 @@
         <jaxrs:providers>
 	       <ref component-id="gvAuthenticationFilter"/>
 	       <ref component-id="cors-filter" />
+	       <ref component-id="correlation-filter" />
 	    </jaxrs:providers>       
     </jaxrs:server>
     
@@ -64,7 +67,8 @@
         <jaxrs:providers>
 	       	<ref component-id="gvAuthenticationFilter"/>
 	       	<ref component-id="gviamAuthorizationFilter"/>	
-	       	<ref component-id="cors-filter" />     
+	       	<ref component-id="cors-filter" />
+	       	<ref component-id="correlation-filter" />     
 	    </jaxrs:providers>       
     </jaxrs:server>    
     	
@@ -105,7 +109,8 @@
 	       	<ref component-id="gvAuthenticationFilter"/>
 	       	<ref component-id="configAuthorizationFilter"/>	
 	       	<ref component-id="settingsAuthorizationFilter"/>	
-	       	<ref component-id="cors-filter" />     
+	       	<ref component-id="cors-filter" />
+	       	<ref component-id="correlation-filter" />     
 	    </jaxrs:providers>        
     </jaxrs:server>
     
