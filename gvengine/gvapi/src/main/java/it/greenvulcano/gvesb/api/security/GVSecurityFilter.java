@@ -45,71 +45,73 @@ import it.greenvulcano.gvesb.iam.modules.SecurityModule;
 
 @Priority(Priorities.AUTHENTICATION)
 public class GVSecurityFilter implements ContainerRequestFilter {
-	
-	private final static Logger LOG = LoggerFactory.getLogger(GVSecurityFilter.class);
 
-	private List<ServiceReference<SecurityModule>> securityModulesReferences;
-	
-	public void setGvSecurityModulesReferences(List<ServiceReference<SecurityModule>> securityModulesReferences) {
-		this.securityModulesReferences = securityModulesReferences;		
-	}
-	
-	@Override
-	public void filter(ContainerRequestContext requestContext) throws IOException {
-		
-		String authorization = Optional.ofNullable(requestContext.getHeaderString("Authorization")).orElse("");
-		
-		if (securityModulesReferences!=null && !securityModulesReferences.isEmpty()) {				
-			LOG.debug("SecurityManager found, handling authentication");
-			
-			String wwwAuthenticate = "unknown";
-			Optional<String> xRequestedWith = Optional.ofNullable(requestContext.getHeaderString("X-Requested-With"));
-			try {
-				
-				for (ServiceReference<SecurityModule> securityModuleRef :  securityModulesReferences) {
-					
-					SecurityModule securityModule = securityModuleRef.getBundle().getBundleContext().getService(securityModuleRef);
-					wwwAuthenticate = securityModule.getSchema() + " realm="+ securityModule.getRealm();
-					if (xRequestedWith.isPresent()) {
-						wwwAuthenticate = xRequestedWith.get() + "+" + wwwAuthenticate;
-					}
-					
-					Optional<SecurityContext> securityContext = securityModule.resolve(authorization).map(GVSecurityContext::new);
-					
-					if (securityContext.isPresent()) {
-						
-		        		JAXRSUtils.getCurrentMessage().put(SecurityContext.class, securityContext.get());
-		        		LOG.debug("User authenticated: "+securityContext.get().getUserPrincipal().getName());
-		        		
-		        		break;
-					}					
-					
-				}
-			} catch (UserExpiredException|CredentialsExpiredException userExpiredException) {
-				
-				Response expiredResponse = Response.status(Response.Status.UNAUTHORIZED)
-						                 .header("X-Auth-Status", "Expired")
-						                 .header("WWW-Authenticate", wwwAuthenticate)
-						                 .entity("Credentials expired").build();
-				
-        		requestContext.abortWith(expiredResponse);
-			} catch (PasswordMissmatchException|UserNotFoundException|InvalidCredentialsException|UnverifiableUserException unauthorizedException){
-				
-				Response errorResponse = Response.status(Response.Status.UNAUTHORIZED)
-		                 .header("X-Auth-Status", "Denied")
-		                 .header("WWW-Authenticate", wwwAuthenticate)
-		                 .entity("Access denied").build();
+    private final static Logger LOG = LoggerFactory.getLogger(GVSecurityFilter.class);
 
-				LOG.warn("Failed to authenticate user", unauthorizedException);
-				requestContext.abortWith(errorResponse);
-				
-        	} catch (Exception e) {
-        		LOG.warn("Authentication process failed", e);
-        		requestContext.abortWith(Response.status(Response.Status.INTERNAL_SERVER_ERROR).build());
-			}
-		}
-		
-	}	
-	
+    private List<ServiceReference<SecurityModule>> securityModulesReferences;
+
+    public void setGvSecurityModulesReferences(List<ServiceReference<SecurityModule>> securityModulesReferences) {
+
+        this.securityModulesReferences = securityModulesReferences;
+    }
+
+    @Override
+    public void filter(ContainerRequestContext requestContext) throws IOException {
+
+        String authorization = Optional.ofNullable(requestContext.getHeaderString("Authorization")).orElse("");
+
+        if (securityModulesReferences != null && !securityModulesReferences.isEmpty()) {
+            LOG.debug("SecurityManager found, handling authentication");
+
+            String wwwAuthenticate = "unknown";
+            Optional<String> xRequestedWith = Optional.ofNullable(requestContext.getHeaderString("X-Requested-With"));
+            try {
+
+                for (ServiceReference<SecurityModule> securityModuleRef : securityModulesReferences) {
+
+                    SecurityModule securityModule = securityModuleRef.getBundle().getBundleContext().getService(securityModuleRef);
+                    wwwAuthenticate = securityModule.getSchema() + " realm=" + securityModule.getRealm();
+                    if (xRequestedWith.isPresent()) {
+                        wwwAuthenticate = xRequestedWith.get() + "+" + wwwAuthenticate;
+                    }
+
+                    Optional<SecurityContext> securityContext = securityModule.resolve(authorization).map(GVSecurityContext::new);
+
+                    if (securityContext.isPresent()) {
+
+                        JAXRSUtils.getCurrentMessage().put(SecurityContext.class, securityContext.get());
+                        LOG.debug("User authenticated: " + securityContext.get().getUserPrincipal().getName());
+
+                        break;
+                    }
+
+                }
+            } catch (UserExpiredException | CredentialsExpiredException userExpiredException) {
+
+                Response expiredResponse = Response.status(Response.Status.UNAUTHORIZED)
+                                                   .header("X-Auth-Status", "Expired")
+                                                   .header("WWW-Authenticate", wwwAuthenticate)
+                                                   .entity("Credentials expired")
+                                                   .build();
+
+                requestContext.abortWith(expiredResponse);
+            } catch (PasswordMissmatchException | UserNotFoundException | InvalidCredentialsException | UnverifiableUserException unauthorizedException) {
+
+                Response errorResponse = Response.status(Response.Status.UNAUTHORIZED)
+                                                 .header("X-Auth-Status", "Denied")
+                                                 .header("WWW-Authenticate", wwwAuthenticate)
+                                                 .entity("Access denied")
+                                                 .build();
+
+                LOG.warn("Failed to authenticate user", unauthorizedException);
+                requestContext.abortWith(errorResponse);
+
+            } catch (Exception e) {
+                LOG.warn("Authentication process failed", e);
+                requestContext.abortWith(Response.status(Response.Status.INTERNAL_SERVER_ERROR).build());
+            }
+        }
+
+    }
 
 }

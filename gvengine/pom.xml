@@ -153,6 +153,7 @@
 		<module>gvvcl-internal</module>
 		<module>features</module>
     <module>gviamx-jms</module>
+    <module>gvcluster-manager</module>
   </modules>
 
 </project>
