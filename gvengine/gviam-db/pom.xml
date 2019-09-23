@@ -36,12 +36,18 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-envers</artifactId>
+			<version>5.2.8.Final</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>it.greenvulcano.gvesb</groupId>
 			<artifactId>gvbase</artifactId>
 			<version>${project.version}</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>it.greenvulcano.gvesb</groupId>
 			<artifactId>gviam</artifactId>
@@ -105,6 +111,10 @@
 							org.hibernate.exception;version="[5.2,6)",
 							org.hibernate.query;version="[5.2,6)",
 							org.osgi.service.blueprint;version="[1.0.0,2.0.0)",
+							org.hibernate.envers,
+							org.hibernate.envers.boot.internal,
+							org.hibernate.integrator.spi,
+							org.hibernate.event.service.spi,
 							org.osgi.framework,
 							org.slf4j;version="[1.6,2)",
 							org.hibernate.proxy;version="[5.2,6)",

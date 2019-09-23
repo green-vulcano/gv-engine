@@ -28,7 +28,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-@Entity
+import org.hibernate.envers.Audited;
+
+@Entity @Audited
 @Table(name="roles")
 public class RoleJPA extends it.greenvulcano.gvesb.iam.domain.Role implements Serializable {
 	private static final long serialVersionUID = 1L;

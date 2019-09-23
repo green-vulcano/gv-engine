@@ -49,10 +49,11 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.envers.Audited;
 
 import it.greenvulcano.gvesb.iam.domain.Role;
 
-@Entity
+@Entity @Audited
 @Table(name="users")
 public class UserJPA extends it.greenvulcano.gvesb.iam.domain.User implements Serializable {
 	private static final long serialVersionUID = 1L;   	        
