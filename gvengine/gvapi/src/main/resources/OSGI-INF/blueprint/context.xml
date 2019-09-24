@@ -81,7 +81,7 @@
 	<bean id="settingsController" class="it.greenvulcano.gvesb.api.controller.GvSettingsControllerRest"/>
 		
 	<bean id="configAuthorizationInterceptor" class="org.apache.cxf.interceptor.security.SecureAnnotationsInterceptor">
-   		<property name="allowAnonymousUsers" value="false" />
+   		<property name="allowAnonymousUsers" value="true" />
    		<property name="checkConfiguredRolesOnly" value="false" />
    		<property name="securedObject" ref="configurationController"/>   		
 	</bean>
@@ -91,7 +91,7 @@
 	</bean>	
 	
 	<bean id="settingsAuthorizationInterceptor" class="org.apache.cxf.interceptor.security.SecureAnnotationsInterceptor">
-   		<property name="allowAnonymousUsers" value="false" />
+   		<property name="allowAnonymousUsers" value="true" />
    		<property name="checkConfiguredRolesOnly" value="false" />   		
    		<property name="securedObject" ref="settingsController"/>
 	</bean>

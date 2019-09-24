@@ -14,15 +14,6 @@
 
     <name>GreenVulcano IAM</name>
     
-    <dependencies>
-        <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>20160810</version>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>	
-
     <build>
         <plugins>
             <plugin>
