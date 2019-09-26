@@ -64,7 +64,7 @@ public class JNDIBuilderManager implements ConfigurationListener, ShutdownEventL
             String name = XMLConfig.get(n, "@name");
             try {
                 Class<?> cls = Class.forName(className);
-                JNDIBuilder builder = (JNDIBuilder) cls.newInstance();
+                JNDIBuilder builder = (JNDIBuilder) cls.getConstructor().newInstance();
                 builder.init(n);
                 jndiBuilders.add(builder);
                 builder.build();

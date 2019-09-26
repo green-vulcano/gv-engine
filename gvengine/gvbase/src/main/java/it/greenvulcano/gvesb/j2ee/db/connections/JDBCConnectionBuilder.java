@@ -82,7 +82,7 @@ public class JDBCConnectionBuilder implements ConfigurationListener, ShutdownEve
                         Node node = nodeList.item(i);
                         String className = XMLConfig.get(node, "@class");
                         String name = XMLConfig.get(node, "@name");
-                        ConnectionBuilder cBuilder = (ConnectionBuilder) Class.forName(className).newInstance();
+                        ConnectionBuilder cBuilder = (ConnectionBuilder) Class.forName(className).getConstructor().newInstance();
                         cBuilder.init(node);
                         connBuilders.put(name, cBuilder);
                     }

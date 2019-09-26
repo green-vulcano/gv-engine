@@ -181,7 +181,7 @@ public class RegistryManager
 
             String className = XMLConfig.get(registryConf, "@class");
             Class<?> regImpl = Class.forName(className);
-            registry = (Registry) regImpl.newInstance();
+            registry = (Registry) regImpl.getConstructor().newInstance();
             registry.init(registryConf, proxy);
             logger.debug("Create id_registry '" + registry.getRegistryID() + "' - urli '"
                     + registry.getRegistryURLInquiry() + "'");

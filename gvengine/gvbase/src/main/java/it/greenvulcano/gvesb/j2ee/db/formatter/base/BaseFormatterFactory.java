@@ -63,7 +63,7 @@ public final class BaseFormatterFactory
         try {
             className = XMLConfig.get(confNode, "@class");
             logger.debug("create BaseFormatter: " + className);
-            baseFormatter = (BaseFormatter) Class.forName(className).newInstance();
+            baseFormatter = (BaseFormatter) Class.forName(className).getConstructor().newInstance();
             logger.debug("init BaseFormatter...");
             baseFormatter.init(confNode);
         }

@@ -54,7 +54,7 @@ public final class CacheDataManager
                 Node chN = chNl.item(i);
                 String subSystem = XMLConfig.get(chN, "@sub-system");
                 String clazz = XMLConfig.get(chN, "@class");
-                CacheHandler cacheHandler = (CacheHandler) Class.forName(clazz).newInstance();
+                CacheHandler cacheHandler = (CacheHandler) Class.forName(clazz).getConstructor().newInstance();
                 cacheHandler.init(chN);
 
                 cacheHandlers.put(subSystem, cacheHandler);

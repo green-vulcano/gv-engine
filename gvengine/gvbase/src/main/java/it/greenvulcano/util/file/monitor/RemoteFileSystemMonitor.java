@@ -95,11 +95,11 @@ public class RemoteFileSystemMonitor extends LocalFileSystemMonitor
             }
 
             Node nm = XMLConfig.getNode(node, "*[@type='remote-manager']");
-            manager = (RemoteManager) Class.forName(XMLConfig.get(nm, "@class")).newInstance();
+            manager = (RemoteManager) Class.forName(XMLConfig.get(nm, "@class")).getConstructor().newInstance();
             manager.init(nm);
 
             Node fsStatus = XMLConfig.getNode(node, "*[@type='fs-monitor-status']");
-            monitorStatus = (FileSystemStatus) Class.forName(XMLConfig.get(fsStatus, "@class")).newInstance();
+            monitorStatus = (FileSystemStatus) Class.forName(XMLConfig.get(fsStatus, "@class")).getConstructor().newInstance();
             monitorStatus.init(fsStatus, "RemoteFileSystemMonitor#" + manager.getManagerKey() + "#" + localAnalisysDir
                     + "#" + filePattern + "||" + fileType);
 

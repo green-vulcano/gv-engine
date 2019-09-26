@@ -184,7 +184,7 @@ public final class DomainManager implements DomainManagerInt, ConfigurationListe
         try {
             Node node = XMLConfig.getNode(CFG_FILE, "/DomainManager/*[@type='domain-manager']");
             String className = XMLConfig.get(node, "@class");
-            manager = (DomainManagerInt) Class.forName(className).newInstance();
+            manager = (DomainManagerInt) Class.forName(className).getConstructor().newInstance();
             manager.init(node);
         }
         catch (DomainManagerException exc) {

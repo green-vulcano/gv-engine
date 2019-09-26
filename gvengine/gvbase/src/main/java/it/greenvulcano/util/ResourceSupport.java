@@ -167,7 +167,7 @@ public class ResourceSupport
      */
     public static float getFloat(String name)
     {
-        return (new Float(getString(name))).floatValue();
+        return Float.parseFloat(getString(name));
     }
 
     /**
@@ -176,6 +176,6 @@ public class ResourceSupport
      */
     public static double getDouble(String name)
     {
-        return (new Double(getString(name))).doubleValue();
+        return Double.parseDouble(getString(name));
     }
 }

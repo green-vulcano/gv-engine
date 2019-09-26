@@ -64,7 +64,7 @@ public final class ResolverFactory
         try {
             className = XMLConfig.get(confNode, "@class");
             logger.debug("create param resolver: " + className);
-            paramResolver = (ParamResolver) Class.forName(className).newInstance();
+            paramResolver = (ParamResolver) Class.forName(className).getConstructor().newInstance();
             logger.debug("init param resolver...");
             paramResolver.init(confNode);
         }
