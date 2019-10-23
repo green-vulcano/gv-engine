@@ -47,6 +47,17 @@ public class ACLManager implements ConfigurationListener
         }
         return false;
     }
+    
+    public static boolean requiresAuthentication(ResourceKey key) {
+        
+        try {
+            return ACLManager.instance().getACL().requiresAuthentication(key);
+        } catch (Exception e) {            
+            e.printStackTrace();
+        }
+        
+        return false;
+    }
 
     private ACLManager() throws ACLException
     {

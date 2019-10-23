@@ -127,6 +127,11 @@ public class ACLGreenVulcano implements ACL
         
         return canAccess;
     }
+    
+    @Override
+    public boolean requiresAuthentication(ResourceKey key) {           
+        return keys.stream().anyMatch(k -> k.match(key));        
+    }
 
     @Override
     public void destroy()
