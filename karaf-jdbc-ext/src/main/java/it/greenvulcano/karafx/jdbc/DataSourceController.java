@@ -63,7 +63,7 @@ public class DataSourceController {
     public Response create(String configuration) {
 
         Response response = null;
-
+        java.nio.file.Path dspath = null;
         Properties connectionProperties = new Properties();
 
         try {
@@ -98,9 +98,8 @@ public class DataSourceController {
             connectionProperties.put("jdbc.factory.validationQuery", VALIDATION_QUERIES.get(driverKey));
 
             LOG.debug("Creating datasource config file in path: " + ETC_PATH);
-            connectionProperties.store(Files.newOutputStream(ETC_PATH.resolve(String.format(CONFIG_FILENAME, dataSourceName)), StandardOpenOption.WRITE, StandardOpenOption.CREATE,
-                                                             StandardOpenOption.TRUNCATE_EXISTING),
-                                       null);
+            dspath = ETC_PATH.resolve(String.format(CONFIG_FILENAME, dataSourceName));
+            connectionProperties.store(Files.newOutputStream(dspath, StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING),null);
 
             Thread.sleep(3000);
 
@@ -118,6 +117,14 @@ public class DataSourceController {
         } catch (Exception e) {
             LOG.error("Fail to create datasource ", e);
 
+            Optional.ofNullable(dspath).ifPresent(p -> {
+                try {
+                    Files.deleteIfExists(p);
+                } catch (IOException e1) {
+                   
+                }
+            });
+            
             JSONObject reply = new JSONObject().put("message", e.getMessage());
             response = Response.status(Status.INTERNAL_SERVER_ERROR).entity(reply.toString()).type(MediaType.APPLICATION_JSON).build();
 
