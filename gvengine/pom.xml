@@ -6,7 +6,7 @@
 
 	<groupId>it.greenvulcano.gvesb</groupId>
 	<artifactId>gvengine</artifactId>
-	<version>4.1.0-SNAPSHOT</version>
+	<version>4.1.0</version>
 	<packaging>pom</packaging>
 
 	<name>GreenVulcano Engine</name>
@@ -178,7 +178,6 @@
 		<module>gvvcl</module>
 		<module>gvvcl-internal</module>
 		<module>features</module>
-		<module>gviamx-jms</module>
 		<module>gvcluster-manager</module>
 	</modules>
 

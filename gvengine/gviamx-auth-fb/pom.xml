@@ -23,7 +23,7 @@
     <parent>
         <artifactId>gvengine</artifactId>
         <groupId>it.greenvulcano.gvesb</groupId>
-        <version>4.1.0-SNAPSHOT</version>
+        <version>4.1.0</version>
     </parent>
 
     
