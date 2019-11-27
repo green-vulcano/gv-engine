@@ -177,15 +177,16 @@ public class FTPManager extends RemoteManager
         if (!isConnected) {
             int reply = 0;
             boolean errorsOccurred = true;
-            String localHostname = hostname;
+            String localHostname = null;
             try {
                 Map<String, Object> localProps = MapUtils.convertToHMStringObject(optProperties);
                 String localUsername = PropertiesHandler.expand(username, localProps);
                 String localPassword = XMLConfig.getDecrypted(PropertiesHandler.expand(password, localProps));
                 localHostname = PropertiesHandler.expand(hostname, localProps);
+                String localPort = PropertiesHandler.expand(port, localProps);
 
                 logger.debug("Connecting to FTP server " + localHostname + ":" + port + "...");
-                ftpClient.connect(localHostname, port);
+                ftpClient.connect(localHostname, Integer.valueOf(localPort));
                 reply = ftpClient.getReplyCode();
                 if (!FTPReply.isPositiveCompletion(reply)) {
                     throw new RemoteManagerException("FTP server (" + getManagerKey(optProperties)
