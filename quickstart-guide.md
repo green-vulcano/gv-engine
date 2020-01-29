@@ -23,13 +23,13 @@ If you want to stop Karaf and GV Console, insert *halt* into the terminal.
 
 ## Using the Docker image
 
-You can run GreenVulcano GAIA ESB on Docker simlpy by typing
+You can run GreenVulcano GAIA ESB on Docker simply by typing
 
 ```
 docker run greenvulcano/gaia:latest
 ```
 
-or specifing more options like:
+or specifying more options like:
  - http port mapping (8181)
  - ssh port mapping (8081)
  - environment variable GAIA_FEATURES with the list of features you want to be installed  
@@ -41,7 +41,7 @@ docker run --name mygaia \
            greenvulcano/gaia:latest
 ```
 
-To access into karaf console use ssh
+To access into Karaf console use ssh
 ```
 ssh -p 18101 gvadmin@127.0.0.1
 ```
