@@ -41,7 +41,7 @@ docker run --name mygaia \
            greenvulcano/gaia:latest
 ```
 
-To access into Karaf console use ssh
+To access into Karaf console use ssh:
 ```
 ssh -p 18101 gvadmin@127.0.0.1
 ```
