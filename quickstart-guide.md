@@ -1,9 +1,9 @@
 [![N|Solid](http://www.greenvulcanotechnologies.com/wp-content/uploads/2017/04/logo_gv_FLAT-300x138.png)](http://www.greenvulcanotechnologies.com)
-# GreenVulcano ESB 4: Quickstart guide
+# GreenVulcano GAIA ESB: Quickstart guide
 Latest [GreenVulcano] instances work on [Apache Karaf] 4.2.x.
 + [Download Karaf 4.2.x](http://karaf.apache.org/download.html) (Select *Binary Distribution* -> *tar.gz*)
-+ Extract tar.gz into a folder in your file system. 
-+ */apache-karaf-4.2.x* will be the **Karaf home**. 
++ Extract tar.gz into a folder in your file system.
++ */apache-karaf-4.2.x* will be the **Karaf home**.
 
 ## Installation
 Before to run karaf, you have to configure GreenVulcano Maven repository:
@@ -21,8 +21,32 @@ To open GV Console go to http://localhost:8181/gvconsole/#/login and log with *g
 
 If you want to stop Karaf and GV Console, insert *halt* into the terminal.
 
----
+## Using the Docker image
 
+You can run GreenVulcano GAIA ESB on Docker simlpy by typing
+
+```
+docker run greenvulcano/gaia:latest
+```
+
+or specifing more options like:
+ - http port mapping (8181)
+ - ssh port mapping (8081)
+ - environment variable GAIA_FEATURES with the list of features you want to be installed  
+
+```
+docker run --name mygaia \
+           -p 18181:8181 -p 18101:8101 \
+           -e GAIA_FEATURES="gvvcl-rest, gvdatahandler, gvhttp" \
+           greenvulcano/gaia:latest
+```
+
+To access into karaf console use ssh
+```
+ssh -p 18101 gvadmin@127.0.0.1
+```
+
+---
 The list of karaf features, now also include those of GreenVulcano:
 
 ```sh
@@ -40,7 +64,7 @@ At the end of this process a folder will be created at **<karaf_home>/GreenV**, 
 It is necessary to restart karaf to properly load a new configuration.
 
 ### Plugins and adapters
-You can install specific plugins and adapters to extends GreenVulcano ESB v4
+You can install specific plugins and adapters to extends GreenVulcano GAIA ESB
 ```sh
 
 gvadmin@root()> feature:install gvvcl-rest
@@ -63,11 +87,11 @@ gvadmin@root()> feature:install pax-jdbc-oracle
 or:
 ```sh
 gvadmin@root()> feature:install pax-jdbc-mysql
-``` 
+```
 For scheduled sevices install:
 ```sh
 gvadmin@root()> feature:install gvscheduler
-gvadmin@root()> feature:install gvscheduler-conf 
+gvadmin@root()> feature:install gvscheduler-conf
 ```
 
 For jms queues intall:
@@ -128,7 +152,7 @@ log4j2.logger.greenvulcano.appenderRef.gv.ref = RoutingGVCore
 ```
 ## Monitoring
 
-You can access to GV ESB v4 JMX infrastructure using jconsole connected to karaf.
+You can access to GV GAIA ESB v4 JMX infrastructure using jconsole connected to karaf.
 
 Use this url
 
