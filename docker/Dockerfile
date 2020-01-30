@@ -1,6 +1,7 @@
 FROM adoptopenjdk/openjdk11:x86_64-debian-jdk-11.0.6_10
 
 ENV GAIA_VERSION 4.1.0
+ENV GAIA_CONFIG /etc/gaia
 ENV GAIA_FEATURES "gvvcl-rest, gvdatahandler, gvhttp"
 ENV KARAF_VERSION 4.2.7
 
@@ -16,7 +17,8 @@ RUN mkdir -p /home/gaia \
  && tar xzf /tmp/apache-karaf-${KARAF_VERSION}.tar.gz -C /home/gaia \
  && mv /home/gaia/apache-karaf-${KARAF_VERSION} ${KARAF_HOME} \
  && rm /tmp/apache-karaf-${KARAF_VERSION}.tar.gz \
- && mkdir -p ${MAVEN_REPOSITORY}
+ && mkdir -p ${MAVEN_REPOSITORY} \
+ && mkdir -p ${GAIA_CONFIG}
 
 COPY ./log.cfg /home/gaia
 COPY ./setup.sh /home/gaia
@@ -26,10 +28,12 @@ RUN groupadd -r gaia -g 433 \
  && useradd -u 431 -r -g gaia -c "GreenVulcano user" gaia \
  && chown -R gaia:gaia /home/gaia \
  && chmod 740 /home/gaia/start.sh \
- && chmod 740 /home/gaia/setup.sh
+ && chmod 740 /home/gaia/setup.sh \
+ && chown -R gaia:gaia ${GAIA_CONFIG}
 
 USER gaia
 VOLUME $KARAF_HOME
+VOLUME $GAIA_CONFIG
 
 EXPOSE 8181
 EXPOSE 8101
