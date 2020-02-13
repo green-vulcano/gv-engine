@@ -10,6 +10,12 @@ Before to run karaf, you have to configure GreenVulcano Maven repository:
 update <karaf_home>/etc/**org.ops4j.pax.url.mvn.cfg** file and add to key **org.ops4j.pax.url.mvn.repositories** following row:
    > http://mvn.greenvulcano.com/nexus/content/groups/public@id=gv@snapshots, \
 
+You also have to update the row:
+   > http://repo1.maven.org/maven2@id=central, \
+   
+In:
+   > https://repo1.maven.org/maven2@id=central, \
+
 Then start Karaf (Open a terminal in **#KarafHome** */bin* and write *./karaf*)
 
 Install feature repository and install gvegine
