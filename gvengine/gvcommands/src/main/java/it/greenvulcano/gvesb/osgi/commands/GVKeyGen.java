@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.SecureRandom;
 import java.util.Optional;
 
 import javax.crypto.SecretKey;
@@ -44,8 +45,10 @@ public class GVKeyGen implements Action {
 												   KeyStoreUtils.DEFAULT_KEYSTORE_PROVIDER);
 			
 			KeyID defaultKeyid = new KeyID(CryptoHelper.DEFAULT_KEY_ID, CryptoUtils.TRIPLE_DES_TYPE, defaultKeyStoreID, CryptoHelper.SECRET_KEY_NAME, CryptoHelper.SECRET_KEY_PWD);
-						
-			SecretKey secretKey = CryptoUtils.generateSecretKey(CryptoUtils.TRIPLE_DES_TYPE, CryptoHelper.SECRET_KEY_PWD.getBytes());
+				
+			byte[] secret = new byte[128];
+	                new SecureRandom().nextBytes(secret);
+			SecretKey secretKey = CryptoUtils.generateSecretKey(CryptoUtils.TRIPLE_DES_TYPE, secret);
 						
 			KeyStoreUtils.writeKey(destination.toAbsolutePath().toString(), defaultKeyid, secretKey, null);
 			
