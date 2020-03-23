@@ -33,6 +33,8 @@ import org.bson.types.ObjectId;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.mongodb.util.JSON;
+
 import it.greenvulcano.gvesb.iam.domain.Role;
 
 public class UserBSON extends it.greenvulcano.gvesb.iam.domain.User {
@@ -58,10 +60,10 @@ public class UserBSON extends it.greenvulcano.gvesb.iam.domain.User {
     
     public UserBSON(Document user) {
         
-        this.objectId = user.getObjectId("_id");
+        this.objectId = new ObjectId(user.getString("_id"));
         
-        JSONObject userJson = new JSONObject(user.toString());
-    
+        JSONObject userJson = new JSONObject(JSON.serialize(user));
+        
         this.id = (Long) userJson.opt("userid");        
         this.username = (String) userJson.opt("username");
         this.password = (String) userJson.opt("password");

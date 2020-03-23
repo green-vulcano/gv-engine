@@ -8,23 +8,16 @@
 							   http://aries.apache.org/xmlns/transactions/v1.0.0 http://aries.apache.org/xmlns/transactions/v1.0.0							  
 							   http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd">
 	
-	<reference id="hibernateSessionFactory" interface="org.hibernate.SessionFactory" activation="eager" availability="mandatory"/>
 	
-	<bean id="userRepositoryHibernate" class="it.greenvulcano.gvesb.iam.repository.hibernate.UserRepositoryHibernate">
-		<property name="sessionFactory" ref="hibernateSessionFactory"/>
-		<tx:transaction method="*" value="Required"/>
-	</bean>
 	
-	<bean id="roleRepositoryHibernate" class="it.greenvulcano.gvesb.iam.repository.hibernate.RoleRepositoryHibernate">
-		<property name="sessionFactory" ref="hibernateSessionFactory"/>
-		<tx:transaction method="*" value="Required"/>
-	</bean>
+	<cm:property-placeholder persistent-id="it.greenvulcano.gvesb.security" update-strategy="none">
+            <cm:default-properties>
+                <cm:property name="token.lifetime" value="43200000" />
+                <cm:property name="token.expired.max" value="2" />              
+            </cm:default-properties>
+    </cm:property-placeholder>
 	
-	<bean id="credentialsRepositoryHibernate" class="it.greenvulcano.gvesb.iam.repository.hibernate.CredentialsRepositoryHibernate">
-		<property name="sessionFactory" ref="hibernateSessionFactory"/>
-		<tx:transaction method="*" value="Required"/>
-	</bean>
-    
+	    
     <bean id="gvUsersManager" class="it.greenvulcano.gvesb.iam.service.internal.GVUsersManager">
 		<property name="userRepository" ref="userRepositoryHibernate"/>
     	<property name="roleRepository" ref="roleRepositoryHibernate"/>
@@ -37,12 +30,8 @@
     	</service-properties>
     </service>
         
-	<cm:property-placeholder persistent-id="it.greenvulcano.gvesb.security" update-strategy="none">
-			<cm:default-properties>
-				<cm:property name="token.lifetime" value="43200000" />
-				<cm:property name="token.expired.max" value="2" />				
-			</cm:default-properties>
-	</cm:property-placeholder>	
+	
+	<!--  	
 	
 	<reference-list id="externalAuthenticationServiceReferences" interface="it.greenvulcano.gvesb.iam.service.ExternalAuthenticationService" 
                     member-type="service-reference" availability="optional"/>
@@ -56,5 +45,5 @@
 	</bean>
 	
 	<service id="credentialsManager" ref="gvCredentialsManager" interface="it.greenvulcano.gvesb.iam.service.CredentialsManager"/>
-		
+	-->	
 </blueprint>

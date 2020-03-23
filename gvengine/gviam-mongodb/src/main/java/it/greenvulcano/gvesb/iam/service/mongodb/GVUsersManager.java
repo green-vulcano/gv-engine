@@ -19,27 +19,21 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb.iam.service.mongodb;
 
-import java.time.Instant;
 import java.util.Arrays;
 import java.util.ConcurrentModificationException;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
 import org.apache.commons.codec.digest.DigestUtils;
 import org.bson.Document;
-import org.json.JSONObject;
+import org.bson.conversions.Bson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,9 +67,19 @@ import it.greenvulcano.gvesb.iam.service.UsersManager;
 
 public class GVUsersManager implements UsersManager {
 
+    final Logger logger = LoggerFactory.getLogger(getClass());
     private MongoClient mongoClient;
-
-    private String gviamDatabaseName;
+    private String databaseName;
+    
+    
+    public void setMongoClient(MongoClient mongoClient) {
+        this.mongoClient = mongoClient;
+    }
+    
+    
+    public void setDatabaseName(String gviamDatabaseName) {
+        this.databaseName = gviamDatabaseName;
+    }
 
     @Override
     public User createUser(String username, String password) throws InvalidUsernameException, InvalidPasswordException, UserExistException {
@@ -92,7 +96,7 @@ public class GVUsersManager implements UsersManager {
         UserBSON user = UserBSON.newUser(username, DigestUtils.sha256Hex(password), false, true, null);
 
         try {
-            mongoClient.getDatabase(gviamDatabaseName)
+            mongoClient.getDatabase(databaseName)
                        .getCollection(UserBSON.COLLECTION_NAME)
                        .insertOne(Document.parse(user.toString()));
 
@@ -133,7 +137,7 @@ public class GVUsersManager implements UsersManager {
             }
         }         
 
-        UpdateResult result = mongoClient.getDatabase(gviamDatabaseName)
+        UpdateResult result = mongoClient.getDatabase(databaseName)
                                          .getCollection(UserBSON.COLLECTION_NAME)
                                          .updateOne( Filters.and(Filters.eq("username", username), Filters.eq("version", originalVersion)), Document.parse(user.toString()));
 
@@ -146,7 +150,7 @@ public class GVUsersManager implements UsersManager {
     @Override
     public User getUser(Long id) throws UserNotFoundException {
 
-        Document user = mongoClient.getDatabase(gviamDatabaseName)
+        Document user = mongoClient.getDatabase(databaseName)
                                    .getCollection(UserBSON.COLLECTION_NAME)
                                    .find(Filters.eq("userid", id)).first();
 
@@ -158,7 +162,7 @@ public class GVUsersManager implements UsersManager {
     @Override
     public User getUser(String username) throws UserNotFoundException {
 
-        Document user = mongoClient.getDatabase(gviamDatabaseName)
+        Document user = mongoClient.getDatabase(databaseName)
                                    .getCollection(UserBSON.COLLECTION_NAME)
                                    .find(Filters.eq("username", username)).first();
 
@@ -170,7 +174,7 @@ public class GVUsersManager implements UsersManager {
     @Override
     public void deleteUser(String username) {
 
-        mongoClient.getDatabase(gviamDatabaseName)
+        mongoClient.getDatabase(databaseName)
                    .getCollection(UserBSON.COLLECTION_NAME)
                    .findOneAndDelete(Filters.eq("username", username));
                    
@@ -197,7 +201,7 @@ public class GVUsersManager implements UsersManager {
         user.setExpired(true);
         user.setVersion(version.incrementAndGet());
         
-        UpdateResult result = mongoClient.getDatabase(gviamDatabaseName)
+        UpdateResult result = mongoClient.getDatabase(databaseName)
                 .getCollection(UserBSON.COLLECTION_NAME)
                 .updateOne( Filters.and(Filters.eq("username", username), Filters.eq("version", originalVersion)), Document.parse(user.toString()));
 
@@ -237,7 +241,7 @@ public class GVUsersManager implements UsersManager {
         user.setExpired(false);
         user.setVersion(version.incrementAndGet());
 
-        UpdateResult result = mongoClient.getDatabase(gviamDatabaseName)
+        UpdateResult result = mongoClient.getDatabase(databaseName)
                 .getCollection(UserBSON.COLLECTION_NAME)
                 .updateOne( Filters.and(Filters.eq("username", username), Filters.eq("version", originalVersion)), Document.parse(user.toString()));
 
@@ -269,7 +273,7 @@ public class GVUsersManager implements UsersManager {
     @Override
     public void deleteRole(String roleName) {
 
-        mongoClient.getDatabase(gviamDatabaseName)
+        mongoClient.getDatabase(databaseName)
                    .getCollection(UserBSON.COLLECTION_NAME)
                    .updateMany(new Document(), Updates.pull("roles", Filters.eq("name", roleName)));
 
@@ -280,7 +284,7 @@ public class GVUsersManager implements UsersManager {
 
         Set<Role> roles = new HashSet<>();
         
-        mongoClient.getDatabase(gviamDatabaseName)
+        mongoClient.getDatabase(databaseName)
                    .getCollection(UserBSON.COLLECTION_NAME)
                    .aggregate(Arrays.asList(Aggregates.unwind("$roles"), 
                                             Aggregates.project(Projections.fields(Projections.excludeId(), Projections.include("roles"))), 
@@ -300,13 +304,13 @@ public class GVUsersManager implements UsersManager {
     public Role getRole(String name) {
 
 
-        mongoClient.getDatabase(gviamDatabaseName)
+        mongoClient.getDatabase(databaseName)
                    .getCollection(UserBSON.COLLECTION_NAME)
                    .aggregate(Arrays.asList(Aggregates.match(Filters.eq("roles.name", name)),
-                                 Aggregates.unwind("$roles"), 
-                                 Aggregates.project(Projections.fields(Projections.excludeId(), Projections.include("roles"))), 
-                                 Aggregates.group("$roles.name", Accumulators.first("role", "$roles")),
-                                 Aggregates.replaceRoot("role")))
+                                            Aggregates.unwind("$roles"), 
+                                            Aggregates.project(Projections.fields(Projections.excludeId(), Projections.include("roles"))), 
+                                            Aggregates.group("$roles.name", Accumulators.first("role", "$roles")),
+                                            Aggregates.replaceRoot("role")))
                    .first();
         
         return null;
@@ -316,7 +320,7 @@ public class GVUsersManager implements UsersManager {
 
         Set<User> users = new LinkedHashSet<>(); 
 
-        mongoClient.getDatabase(gviamDatabaseName)
+        mongoClient.getDatabase(databaseName)
                    .getCollection(UserBSON.COLLECTION_NAME)
                    .find()
                    .sort(Sorts.ascending("username"))
@@ -331,13 +335,38 @@ public class GVUsersManager implements UsersManager {
 
         SearchResult result = new SearchResult();
 
+        List<Bson> filters = new LinkedList<>();
         
-        result.setTotalCount(userRepository.count(parameters));
-        if (criteria.getOffset() > result.getTotalCount()) {
-            result.setFounds(new HashSet<>());
-        } else {
-            result.setFounds(userRepository.find(parameters, order, criteria.getOffset(), criteria.getLimit()));
+        Optional.ofNullable(criteria.getParameters().get("username")).ifPresent(username-> filters.add(Filters.eq("username", username)) );
+        Optional.ofNullable(criteria.getParameters().get("enabled")).ifPresent(enabled-> filters.add(Filters.eq("enabled", enabled)) );
+        Optional.ofNullable(criteria.getParameters().get("expired")).ifPresent(expired-> filters.add(Filters.eq("expired", expired)) );
+        
+        
+        List<Bson> pipeline = new LinkedList<>();
+        
+        //  match stage
+        if (!filters.isEmpty()) {
+            pipeline.add(Aggregates.match(Filters.and(filters)));
         }
+        
+        pipeline.add(Aggregates.sort(Sorts.orderBy(Sorts.ascending("username"))));
+        
+        pipeline.add(Aggregates.skip(criteria.getOffset()));
+        pipeline.add(Aggregates.limit(criteria.getLimit()));
+        
+        result.setTotalCount(criteria.getLimit());
+        
+        Set<User> resultset = new LinkedHashSet<>();
+        
+        mongoClient.getDatabase(databaseName)
+                   .getCollection(UserBSON.COLLECTION_NAME)
+                   .aggregate(pipeline)
+                   .iterator()
+                   .forEachRemaining(d ->  resultset.add(new UserBSON(d)));
+        
+        
+        result.setFounds(resultset);
+        
 
         return result;
     }
@@ -392,45 +421,47 @@ public class GVUsersManager implements UsersManager {
     @Override
     public void checkManagementRequirements() {
 
-        final Logger logger = LoggerFactory.getLogger(getClass());
+        long admins = mongoClient.getDatabase(databaseName)
+                               .getCollection(UserBSON.COLLECTION_NAME)
+                               .countDocuments(Filters.and(Filters.eq("roles.name", Authority.ADMINISTRATOR), Filters.eq("enabled", Boolean.TRUE)));
+                   
 
-        Map<UserRepositoryHibernate.Parameter, Object> parameters = new HashMap<>(2);
-        parameters.put(UserRepositoryHibernate.Parameter.role, Authority.ADMINISTRATOR);
-        parameters.put(UserRepositoryHibernate.Parameter.enabled, Boolean.TRUE);
-
-        int admins = userRepository.count(parameters);
         /**
          * Adding default user 'gvadmin' if no present
          */
         if (admins == 0) {
             logger.info("Creating a default 'gvadmin'");
-            User admin;
+            
             try {
                 createUser("gvadmin", "gvadmin");
             } catch (SecurityException | InvalidUsernameException | InvalidPasswordException | UserExistException e) {
                 logger.info("A user named 'gvadmin' exist: restoring his default settings", e);
 
-                admin = userRepository.get("gvadmin").get();
-                admin.setPassword(DigestUtils.sha256Hex("gvadmin"));
-                admin.setPasswordTime(new Date());
-                admin.setExpired(true);
-                userRepository.add(admin);
+                try {
+                    resetUserPassword("gvadmin", "gvadmin");
+                    changeUserPassword("gvadmin", "gvadmin", "gvadmin");
+                } catch (UserNotFoundException | InvalidPasswordException | UnverifiableUserException | PasswordMissmatchException e1) {
+                    logger.error("Failed to restore credentials for the default user 'gvadmin'", e);
+                }                
+                
 
             }
 
-            admin = userRepository.get("gvadmin").get();
-            admin.setEnabled(true);
-            admin.clearRoles();
-            admin.addRole(new RoleBSON(Authority.ADMINISTRATOR, "Created by GV"));
+            Set<Role> roles = new HashSet<>();
+            roles.add(new RoleBSON(Authority.ADMINISTRATOR, "Created by GV"));
 
             // roles required to use karaf
-            admin.addRole(new RoleBSON("admin", "Created by GV"));
-            admin.addRole(new RoleBSON("manager", "Created by GV"));
-            admin.addRole(new RoleBSON("viewer", "Created by GV"));
-            admin.addRole(new RoleBSON("systembundles", "Created by GV"));
-            admin.addRole(new RoleBSON("ssh", "Created by GV"));
+            roles.add(new RoleBSON("admin", "Created by GV"));
+            roles.add(new RoleBSON("manager", "Created by GV"));
+            roles.add(new RoleBSON("viewer", "Created by GV"));
+            roles.add(new RoleBSON("systembundles", "Created by GV"));
+            roles.add(new RoleBSON("ssh", "Created by GV"));
 
-            userRepository.add(admin);
+            try {
+                updateUser("gvadmin", null, roles, true, false);
+            } catch (UserNotFoundException | InvalidRoleException e) {
+                logger.error("Failed to restore settings for the default user 'gvadmin'", e);
+            }
         }
 
     }
@@ -447,7 +478,7 @@ public class GVUsersManager implements UsersManager {
             user.setUpdateTime(new Date());
             user.setVersion(version.incrementAndGet());
                 
-            UpdateResult result = mongoClient.getDatabase(gviamDatabaseName)
+            UpdateResult result = mongoClient.getDatabase(databaseName)
                                              .getCollection(UserBSON.COLLECTION_NAME)
                                              .updateOne( Filters.and(Filters.eq("username", username), Filters.eq("version", originalVersion)), Document.parse(user.toString()));
 
