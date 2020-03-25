@@ -23,7 +23,6 @@ import org.json.JSONObject;
 
 public class RoleBSON extends it.greenvulcano.gvesb.iam.domain.Role {
 
-    private String id;
     private String name;
     private String description;
 
@@ -46,16 +45,11 @@ public class RoleBSON extends it.greenvulcano.gvesb.iam.domain.Role {
     @Override
     public Integer getId() {
 
-        if (id != null) {
-            return id.hashCode();
+        if (name != null) {
+            return name.hashCode();
         }
 
         return null;
-    }
-
-    public void setId(String id) {
-
-        this.id = id;
     }
 
     @Override

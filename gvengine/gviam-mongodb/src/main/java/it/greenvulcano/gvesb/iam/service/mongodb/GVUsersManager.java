@@ -30,14 +30,16 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Predicate;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.bson.BsonArray;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mongodb.MongoClient;
+import com.mongodb.client.MongoClient;
 import com.mongodb.MongoCommandException;
 import com.mongodb.client.model.Accumulators;
 import com.mongodb.client.model.Aggregates;
@@ -115,31 +117,30 @@ public class GVUsersManager implements UsersManager {
     @Override
     public void updateUser(String username, UserInfo userInfo, Set<Role> grantedRoles, boolean enabled, boolean expired) throws UserNotFoundException, InvalidRoleException {
 
-        UserBSON user = (UserBSON) getUser(username);
-        
+        UserBSON user = (UserBSON) getUser(username);        
         AtomicInteger version = new AtomicInteger(user.getVersion());
-        int originalVersion = version.get();
         
-        user.setUserInfo(userInfo);
-        user.setEnabled(enabled);
-        user.setExpired(expired);
-        user.clearRoles();
-        user.setUpdateTime(new Date());
-        user.setVersion(version.incrementAndGet());
-        
+        JSONArray userRoles = new JSONArray();
         if (grantedRoles != null) {
-
-            Predicate<Role> roleIsValid = role -> Optional.ofNullable(role.getName()).orElse("").matches(Role.ROLE_PATTERN);
-
-            Optional<Role> notValidRole = grantedRoles.stream().filter(roleIsValid.negate()).findAny();
-            if (notValidRole.isPresent()) {
-                throw new InvalidRoleException(notValidRole.get().getName());
-            }
+            for (Role r: grantedRoles) {
+                if (Optional.ofNullable(r.getName()).orElse("").matches(Role.ROLE_PATTERN)) {
+                    userRoles.put(new JSONObject().put("name", r.getName()).put("description", r.getDescription()));
+                } else {
+                    throw new InvalidRoleException(r.getName());
+                }
+                
+            }   
         }         
 
         UpdateResult result = mongoClient.getDatabase(databaseName)
                                          .getCollection(UserBSON.COLLECTION_NAME)
-                                         .updateOne( Filters.and(Filters.eq("username", username), Filters.eq("version", originalVersion)), Document.parse(user.toString()));
+                                         .updateOne( Filters.and(Filters.eq("username", username), Filters.eq("version", version.get())), 
+                                                     Updates.combine(Updates.set("userInfo", Document.parse(userInfo.toString())),
+                                                                     Updates.set("enabled", enabled),
+                                                                     Updates.set("expired", expired),
+                                                                     Updates.set("roles", BsonArray.parse(userRoles.toString())),
+                                                                     Updates.set("updateTime", new Date().getTime()),
+                                                                     Updates.set("version", version.incrementAndGet()) ));
 
         if ( result.getModifiedCount()== 0) {
              new ConcurrentModificationException("Persistence state changed in the meanwhile");
@@ -183,27 +184,25 @@ public class GVUsersManager implements UsersManager {
     @Override
     public User resetUserPassword(String username, String defaultPassword) throws UserNotFoundException, InvalidPasswordException, UnverifiableUserException {
 
-        UserBSON user = (UserBSON) getUser(username);
-        
+        UserBSON user = (UserBSON) getUser(username);        
         AtomicInteger version = new AtomicInteger(user.getVersion());
-        int originalVersion = version.get();
-
+        
         if (!Objects.requireNonNull(defaultPassword, "A default password is required").matches(User.PASSWORD_PATTERN))
             throw new InvalidPasswordException();
         if (!user.getPassword().isPresent())
             throw new UnverifiableUserException(username);
 
-        user.setPassword(DigestUtils.sha256Hex(defaultPassword));
         
         Date editTime = new Date();
-        user.setPasswordTime(editTime);
-        user.setUpdateTime(editTime);
-        user.setExpired(true);
-        user.setVersion(version.incrementAndGet());
         
         UpdateResult result = mongoClient.getDatabase(databaseName)
                 .getCollection(UserBSON.COLLECTION_NAME)
-                .updateOne( Filters.and(Filters.eq("username", username), Filters.eq("version", originalVersion)), Document.parse(user.toString()));
+                .updateOne( Filters.and(Filters.eq("username", username), Filters.eq("version", version.get())), 
+                            Updates.combine(Updates.set("password", DigestUtils.sha256Hex(defaultPassword)),
+                                            Updates.set("expired", true),                                            
+                                            Updates.set("passwordTime", editTime.getTime()),
+                                            Updates.set("updateTime", editTime.getTime()),
+                                            Updates.set("version", version.incrementAndGet()) ));
 
         if ( result.getModifiedCount()== 0) {
             new ConcurrentModificationException("Persistence state changed in the meanwhile");
@@ -217,11 +216,9 @@ public class GVUsersManager implements UsersManager {
     public User changeUserPassword(String username, String oldPassword, String newPassword)
             throws UserNotFoundException, PasswordMissmatchException, InvalidPasswordException, UnverifiableUserException {
 
-        UserBSON user = (UserBSON) getUser(username);
-        
+        UserBSON user = (UserBSON) getUser(username);        
         AtomicInteger version = new AtomicInteger(user.getVersion());
-        int originalVersion = version.get();
-        
+               
         if (!user.getPassword().isPresent()) {
             throw new UnverifiableUserException(username);
         }
@@ -235,15 +232,14 @@ public class GVUsersManager implements UsersManager {
         }
         
         Date editTime = new Date();
-        user.setPassword(DigestUtils.sha256Hex(newPassword));
-        user.setPasswordTime(editTime);
-        user.setUpdateTime(editTime);
-        user.setExpired(false);
-        user.setVersion(version.incrementAndGet());
-
+        
         UpdateResult result = mongoClient.getDatabase(databaseName)
                 .getCollection(UserBSON.COLLECTION_NAME)
-                .updateOne( Filters.and(Filters.eq("username", username), Filters.eq("version", originalVersion)), Document.parse(user.toString()));
+                .updateOne( Filters.and(Filters.eq("username", username), Filters.eq("version", version.get())), 
+                            Updates.combine(Updates.set("password", DigestUtils.sha256Hex(newPassword)),
+                                            Updates.set("passwordTime", editTime.getTime()),
+                                            Updates.set("updateTime", editTime.getTime()),
+                                            Updates.set("version", version.incrementAndGet()) ));
 
         if ( result.getModifiedCount()== 0) {
             new ConcurrentModificationException("Persistence state changed in the meanwhile");
@@ -289,7 +285,7 @@ public class GVUsersManager implements UsersManager {
                    .aggregate(Arrays.asList(Aggregates.unwind("$roles"), 
                                             Aggregates.project(Projections.fields(Projections.excludeId(), Projections.include("roles"))), 
                                             Aggregates.group("$roles.name", Accumulators.first("role", "$roles")),
-                                            Aggregates.replaceRoot("role")))
+                                            Aggregates.replaceRoot("$role")))
                    .iterator()
                    .forEachRemaining(d -> {                   
                        roles.add( new RoleBSON(d.getString("name"), d.getString("description")) );
@@ -304,15 +300,18 @@ public class GVUsersManager implements UsersManager {
     public Role getRole(String name) {
 
 
-        mongoClient.getDatabase(databaseName)
-                   .getCollection(UserBSON.COLLECTION_NAME)
-                   .aggregate(Arrays.asList(Aggregates.match(Filters.eq("roles.name", name)),
+       Document role = mongoClient.getDatabase(databaseName)
+                                  .getCollection(UserBSON.COLLECTION_NAME)
+                                  .aggregate(Arrays.asList(Aggregates.match(Filters.eq("roles.name", name)),
                                             Aggregates.unwind("$roles"), 
                                             Aggregates.project(Projections.fields(Projections.excludeId(), Projections.include("roles"))), 
                                             Aggregates.group("$roles.name", Accumulators.first("role", "$roles")),
-                                            Aggregates.replaceRoot("role")))
-                   .first();
-        
+                                            Aggregates.replaceRoot("$role")))
+                                  .first();
+        if (role!=null) {
+            return new RoleBSON(role.getString("name"), role.getString("description"));
+        }
+     
         return null;
     }
 
@@ -472,15 +471,13 @@ public class GVUsersManager implements UsersManager {
         UserBSON user = (UserBSON) getUser(username);
         if (username.matches(User.USERNAME_PATTERN)) {
             AtomicInteger version = new AtomicInteger(user.getVersion());
-            int originalVersion = version.get();
-            
-            user.setUsername(newUsername);
-            user.setUpdateTime(new Date());
-            user.setVersion(version.incrementAndGet());
-                
+                          
             UpdateResult result = mongoClient.getDatabase(databaseName)
                                              .getCollection(UserBSON.COLLECTION_NAME)
-                                             .updateOne( Filters.and(Filters.eq("username", username), Filters.eq("version", originalVersion)), Document.parse(user.toString()));
+                                             .updateOne( Filters.and(Filters.eq("username", username), Filters.eq("version", version.get())), 
+                                                         Updates.combine(Updates.set("username", newUsername),                                                                       
+                                                                         Updates.set("updateTime", new Date().getTime()),
+                                                                         Updates.set("version", version.incrementAndGet()) ));
 
             if ( result.getModifiedCount()== 0) {
                  new ConcurrentModificationException("Persistence state changed in the meanwhile");

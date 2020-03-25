@@ -29,18 +29,18 @@ import java.util.Set;
 import java.util.stream.IntStream;
 
 import org.bson.Document;
+import org.bson.json.JsonMode;
+import org.bson.json.JsonWriterSettings;
 import org.bson.types.ObjectId;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import com.mongodb.util.JSON;
 
 import it.greenvulcano.gvesb.iam.domain.Role;
 
 public class UserBSON extends it.greenvulcano.gvesb.iam.domain.User {
 
     public static final String COLLECTION_NAME = "users";
-    
+    private static final JsonWriterSettings JSON_SETTINGS = JsonWriterSettings.builder().outputMode(JsonMode.RELAXED).build();
     
     private ObjectId objectId;
     
@@ -62,7 +62,7 @@ public class UserBSON extends it.greenvulcano.gvesb.iam.domain.User {
         
         this.objectId = new ObjectId(user.getString("_id"));
         
-        JSONObject userJson = new JSONObject(JSON.serialize(user));
+        JSONObject userJson = new JSONObject(user.toJson(JSON_SETTINGS));
         
         this.id = (Long) userJson.opt("userid");        
         this.username = (String) userJson.opt("username");
@@ -95,7 +95,7 @@ public class UserBSON extends it.greenvulcano.gvesb.iam.domain.User {
         Instant creationInstant = Instant.now();
         
         newuser.objectId = ObjectId.get();
-        newuser.id = Long.parseUnsignedLong(newuser.objectId.toHexString().substring(8), 16);
+        newuser.id = Long.parseLong(newuser.objectId.toHexString().substring(10), 16);
         newuser.username = username;
         newuser.password = password;
         newuser.expired = expired;
