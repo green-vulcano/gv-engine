@@ -13,20 +13,20 @@ import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.process.runtime.Network;
 import it.greenvulcano.gvesb.iam.domain.Role;
 import it.greenvulcano.gvesb.iam.domain.User;
-import it.greenvulcano.gvesb.iam.domain.mongodb.UserBSON;
+import it.greenvulcano.gvesb.iam.domain.mongodb.UserBson;
+import it.greenvulcano.gvesb.iam.repository.mongodb.Repository;
 
 import static org.junit.Assert.fail;
 
 import java.util.Set;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.bson.Document;
 import org.junit.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class UserManagerTest {
-	
-	private final static Logger LOG = LoggerFactory.getLogger(UserManagerTest.class);
 	
 	private static MongodExecutable mongodExecutable;
 	private static MongodProcess mongod;
@@ -51,8 +51,12 @@ public class UserManagerTest {
 			
 		mongoClient = MongoClients.create();
 		
-		userManager.setMongoClient(mongoClient);
-		userManager.setDatabaseName("gviam");
+		Repository mongodbRepository = new Repository();
+		mongodbRepository.setDatabaseName("gviam");
+		mongodbRepository.setMongodbURI("mongodb://localhost:27017");
+		mongodbRepository.init();
+		
+		userManager.setMongodbRepository(mongodbRepository);
 				
 	}
 	
@@ -64,7 +68,7 @@ public class UserManagerTest {
 	
 	@Before
 	public void cleanup() {
-	    mongoClient.getDatabase("gviam").getCollection(UserBSON.COLLECTION_NAME).deleteMany(new Document());
+	    mongoClient.getDatabase("gviam").getCollection(UserBson.COLLECTION_NAME).deleteMany(new Document());
 	}
 		
 	@Test
@@ -77,8 +81,6 @@ public class UserManagerTest {
 	    
 	        Assert.assertNotNull(testuser.getId());
 	        Assert.assertEquals("testuser", testuser.getUsername() );
-	        
-	        System.out.println("******** CREATED User: "+ testuser.toString());
 	        	        
 	        Set<User> users = userManager.getUsers();	        
 	        Assert.assertEquals(1, users.size());	        
@@ -105,38 +107,33 @@ public class UserManagerTest {
                 userManager.createUser("testuser", "testuser");            
                 userManager.addRole("testuser", "TESTER_A");
                 
-                User testuser = (UserBSON) userManager.getUser("testuser");
+                User testuser = (UserBson) userManager.getUser("testuser");
                 
-                System.out.println("******** EDITED User: "+ testuser.toString());
-                Assert.assertEquals(1, ((UserBSON)testuser).getVersion());
+                Assert.assertEquals(1, ((UserBson)testuser).getVersion());
                 Assert.assertEquals(1, testuser.getRoles().size());                
                 Assert.assertEquals("TESTER_A", testuser.getRoles().iterator().next().getName());
                 
                 Role testerA = userManager.getRole("TESTER_A");
-                System.out.println("******** ROLE: "+ testerA.toString());
                 Assert.assertTrue(testuser.getRoles().contains(testerA));
                 
                 userManager.addRole("testuser", "TESTER_B");
-                testuser = (UserBSON) userManager.getUser("testuser");
+                testuser = (UserBson) userManager.getUser("testuser");
                 
-                System.out.println("******** EDITED User: "+ testuser.toString());
-                Assert.assertEquals(2, ((UserBSON)testuser).getVersion());
+                Assert.assertEquals(2, ((UserBson)testuser).getVersion());
                 Assert.assertEquals(2, testuser.getRoles().size());
                 Assert.assertEquals(2, userManager.getRoles().size());
                 
                 userManager.addRole("testuser", "TESTER_A");
-                testuser = (UserBSON) userManager.getUser("testuser");
+                testuser = (UserBson) userManager.getUser("testuser");
                 
-                System.out.println("******** EDITED User: "+ testuser.toString());
-                Assert.assertEquals(3, ((UserBSON)testuser).getVersion());
+                Assert.assertEquals(3, ((UserBson)testuser).getVersion());
                 Assert.assertEquals(2, testuser.getRoles().size());                
                 Assert.assertEquals(2, userManager.getRoles().size());
                 
                 userManager.deleteRole("TESTER_A");
-                testuser = (UserBSON) userManager.getUser("testuser");
+                testuser = (UserBson) userManager.getUser("testuser");
                 
-                System.out.println("******** EDITED User: "+ testuser.toString());
-                Assert.assertEquals(3, ((UserBSON)testuser).getVersion());
+                Assert.assertEquals(3, ((UserBson)testuser).getVersion());
                 Assert.assertEquals(1, testuser.getRoles().size());                
                 Assert.assertEquals(1, userManager.getRoles().size());
                 
@@ -144,10 +141,9 @@ public class UserManagerTest {
                 Assert.assertNull(testerA);
                 
                 userManager.revokeRole("testuser", "TESTER_B");
-                testuser = (UserBSON) userManager.getUser("testuser");
+                testuser = (UserBson) userManager.getUser("testuser");
                 
-                System.out.println("******** EDITED User: "+ testuser.toString());
-                Assert.assertEquals(4, ((UserBSON)testuser).getVersion());
+                Assert.assertEquals(4, ((UserBson)testuser).getVersion());
                 Assert.assertEquals(0, testuser.getRoles().size());
                 Assert.assertEquals(0, userManager.getRoles().size());
                 
@@ -158,6 +154,38 @@ public class UserManagerTest {
             }
             
         }
+	
+	@Test
+        public void testPassword()  {
+	    Assert.assertTrue(userManager.getUsers().isEmpty());   
+            
+	    try {    
+                userManager.createUser("testuser", "testuser");            
+                
+                User testuser = userManager.getUser("testuser");
+                Assert.assertEquals(DigestUtils.sha256Hex("testuser"), testuser.getPassword().get());
+                
+                userManager.resetUserPassword("testuser", "defaultPassword");
+                
+                testuser = userManager.getUser("testuser");
+                Assert.assertEquals(DigestUtils.sha256Hex("defaultPassword"), testuser.getPassword().get());
+                Assert.assertTrue(testuser.isExpired());
+                
+                userManager.setUserExpiration("testuser", false);
+                
+                userManager.changeUserPassword("testuser", "defaultPassword", "password1");
+                testuser = userManager.getUser("testuser");
+                Assert.assertEquals(DigestUtils.sha256Hex("password1"), testuser.getPassword().get());
+                Assert.assertFalse(testuser.isExpired());
+                
+            } catch (Exception e) {
+                
+                e.printStackTrace();            
+                fail(e.getMessage());
+            }
+            
+            
+	}
 
 
 }

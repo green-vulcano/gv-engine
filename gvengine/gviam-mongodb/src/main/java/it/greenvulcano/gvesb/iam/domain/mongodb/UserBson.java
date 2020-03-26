@@ -37,7 +37,7 @@ import org.json.JSONObject;
 
 import it.greenvulcano.gvesb.iam.domain.Role;
 
-public class UserBSON extends it.greenvulcano.gvesb.iam.domain.User {
+public class UserBson extends it.greenvulcano.gvesb.iam.domain.User {
 
     public static final String COLLECTION_NAME = "users";
     private static final JsonWriterSettings JSON_SETTINGS = JsonWriterSettings.builder().outputMode(JsonMode.RELAXED).build();
@@ -54,11 +54,11 @@ public class UserBSON extends it.greenvulcano.gvesb.iam.domain.User {
     private Long creationTime;
     private Long updateTime;
 
-    private final Set<RoleBSON> roles = new HashSet<>();
+    private final Set<RoleBson> roles = new HashSet<>();
 
-    private UserInfoBSON userInfo;
+    private UserInfoBson userInfo;
     
-    public UserBSON(Document user) {
+    public UserBson(Document user) {
         
         this.objectId = new ObjectId(user.getString("_id"));
         
@@ -72,7 +72,7 @@ public class UserBSON extends it.greenvulcano.gvesb.iam.domain.User {
         this.passwordTime = (Long) userJson.opt("passwordTime");        
         this.creationTime = (Long) userJson.opt("creationTime");
         this.updateTime = (Long) userJson.opt("updateTime");
-        this.userInfo = Optional.ofNullable(userJson.optJSONObject("userInfo")).map(UserInfoBSON::new).orElseGet(UserInfoBSON::new);
+        this.userInfo = Optional.ofNullable(userJson.optJSONObject("userInfo")).map(UserInfoBson::new).orElseGet(UserInfoBson::new);
         this.version = userJson.optInt("version");
         
         Optional.ofNullable(userJson.optJSONArray("roles")).ifPresent(r -> { 
@@ -80,7 +80,7 @@ public class UserBSON extends it.greenvulcano.gvesb.iam.domain.User {
                      .mapToObj(i -> Optional.ofNullable(r.optJSONObject(i)) )
                      .filter(Optional::isPresent)
                      .map(Optional::get)
-                     .map(RoleBSON::new)
+                     .map(RoleBson::new)
                      .forEach(roles::add);
                      
                     
@@ -88,9 +88,9 @@ public class UserBSON extends it.greenvulcano.gvesb.iam.domain.User {
         });
     }
     
-    public static UserBSON newUser(String username, String password, boolean expired, boolean enabled, UserInfoBSON userInfo) {
+    public static UserBson newUser(String username, String password, boolean expired, boolean enabled, UserInfoBson userInfo) {
 
-        UserBSON newuser = new UserBSON();
+        UserBson newuser = new UserBson();
         
         Instant creationInstant = Instant.now();
         
@@ -110,7 +110,7 @@ public class UserBSON extends it.greenvulcano.gvesb.iam.domain.User {
         return newuser;
     } 
 
-    public UserBSON() {
+    public UserBson() {
         
     }
 
@@ -179,7 +179,7 @@ public class UserBSON extends it.greenvulcano.gvesb.iam.domain.User {
     @Override
     public it.greenvulcano.gvesb.iam.domain.UserInfo getUserInfo() {
         if (userInfo == null) {
-            userInfo = new UserInfoBSON();
+            userInfo = new UserInfoBson();
         }
         return userInfo;
     }
@@ -187,7 +187,7 @@ public class UserBSON extends it.greenvulcano.gvesb.iam.domain.User {
     @Override
     public void setUserInfo(it.greenvulcano.gvesb.iam.domain.UserInfo userInfo) {
         if (userInfo != null) {
-            this.userInfo = new UserInfoBSON();
+            this.userInfo = new UserInfoBson();
             this.userInfo.setEmail(userInfo.getEmail());
             this.userInfo.setFullname(userInfo.getFullname());
         } else {
@@ -249,7 +249,7 @@ public class UserBSON extends it.greenvulcano.gvesb.iam.domain.User {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        UserBSON other = (UserBSON) obj;
+        UserBson other = (UserBson) obj;
         if (creationTime == null) {
             if (other.creationTime != null)
                 return false;
@@ -317,8 +317,8 @@ public class UserBSON extends it.greenvulcano.gvesb.iam.domain.User {
             .put("expired", expired)
             .put("enabled", enabled)
             .put("version", version)
-            .put("userInfo",  UserInfoBSON.class.cast(getUserInfo()).toJSONObject())
-            .put("roles", roles.stream().map(RoleBSON::toJSONObject)
+            .put("userInfo",  UserInfoBson.class.cast(getUserInfo()).toJSONObject())
+            .put("roles", roles.stream().map(RoleBson::toJSONObject)
                                         .collect(JSONArray::new, (a, r)-> a.put(r), (a1, a2) ->  {}));
         
            return user;
@@ -328,7 +328,7 @@ public class UserBSON extends it.greenvulcano.gvesb.iam.domain.User {
     public void addRole(Role role) {
 
         if (role != null) {
-            RoleBSON r = new RoleBSON(role.getName(), role.getDescription());
+            RoleBson r = new RoleBson(role.getName(), role.getDescription());
             roles.add(r);
         }
 

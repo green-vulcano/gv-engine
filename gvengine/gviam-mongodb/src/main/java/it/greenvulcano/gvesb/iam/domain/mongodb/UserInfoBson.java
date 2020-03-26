@@ -21,62 +21,48 @@ package it.greenvulcano.gvesb.iam.domain.mongodb;
 
 import org.json.JSONObject;
 
-public class RoleBSON extends it.greenvulcano.gvesb.iam.domain.Role {
+public class UserInfoBson extends it.greenvulcano.gvesb.iam.domain.UserInfo {
 
-    private String name;
-    private String description;
-
-    public RoleBSON() {
-
-    }
+    private String fullname;
+    private String email;
     
-    public RoleBSON(JSONObject role) {        
-        this.name = role.optString("name", null);
-        this.description = role.optString("description", null);
+    public UserInfoBson() {
 
     }
 
-    public RoleBSON(String name, String description) {
+    public UserInfoBson(JSONObject info) {
+        this.fullname = info.optString("fullname", null);
+        this.email = info.optString("email", null);
+        
+    }
 
-        this.name = name;
-        this.description = description;
+    
+    @Override
+    public String getFullname() {
+        return fullname;
+    }
+
+    public void setFullname(String fullname) {
+        this.fullname = fullname;
     }
 
     @Override
-    public Integer getId() {
-
-        if (name != null) {
-            return name.hashCode();
-        }
-
-        return null;
+    public String getEmail() {
+        return email;
     }
 
-    @Override
-    public String getName() {
-
-        return name;
-    }
-
-    public void setName(String name) {
-
-        this.name = name;
-    }
-
-    @Override
-    public String getDescription() {
-
-        return description;
-    }
-
-    public void setDescription(String description) {
-
-        this.description = description;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     @Override
     public int hashCode() {
-        return (name == null) ? 0 : name.hashCode();
+
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((email == null) ? 0 : email.hashCode());
+        result = prime * result + ((fullname == null) ? 0 : fullname.hashCode());
+        return result;
     }
 
     @Override
@@ -88,11 +74,16 @@ public class RoleBSON extends it.greenvulcano.gvesb.iam.domain.Role {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        RoleBSON other = (RoleBSON) obj;        
-        if (name == null) {
-            if (other.name != null)
+        UserInfoBson other = (UserInfoBson) obj;
+        if (email == null) {
+            if (other.email != null)
                 return false;
-        } else if (!name.equals(other.name))
+        } else if (!email.equals(other.email))
+            return false;
+        if (fullname == null) {
+            if (other.fullname != null)
+                return false;
+        } else if (!fullname.equals(other.fullname))
             return false;
         return true;
     }
@@ -104,12 +95,11 @@ public class RoleBSON extends it.greenvulcano.gvesb.iam.domain.Role {
     }
     
     public JSONObject toJSONObject() {
-        JSONObject role = new JSONObject();
-        role.put("id", getId())
-            .put("name", name)
-            .put("description", description);
+        JSONObject info = new JSONObject();
+        info.put("fullname", fullname)
+            .put("email", email);
         
-        return role;
+        return info;
     }
 
 }

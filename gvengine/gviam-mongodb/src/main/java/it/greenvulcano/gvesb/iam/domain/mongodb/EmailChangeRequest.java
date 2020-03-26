@@ -24,20 +24,20 @@ import java.util.Map;
 
 import org.json.JSONObject;
 
-import it.greenvulcano.gvesb.iam.domain.mongodb.UserBSON;
+import it.greenvulcano.gvesb.iam.domain.mongodb.UserBson;
 
 public class EmailChangeRequest extends UserActionRequest implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private UserBSON user;
+    private UserBson user;
 
-    public UserBSON getUser() {
+    public UserBson getUser() {
 
         return user;
     }
 
-    public void setUser(UserBSON user) {
+    public void setUser(UserBson user) {
 
         this.user = user;
     }

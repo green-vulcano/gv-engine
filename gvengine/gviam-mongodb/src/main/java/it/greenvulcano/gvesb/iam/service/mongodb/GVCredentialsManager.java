@@ -11,8 +11,8 @@ import org.osgi.framework.ServiceReference;
 
 import it.greenvulcano.gvesb.iam.domain.Credentials;
 import it.greenvulcano.gvesb.iam.domain.User;
-import it.greenvulcano.gvesb.iam.domain.mongodb.CredentialsBSON;
-import it.greenvulcano.gvesb.iam.domain.mongodb.UserBSON;
+import it.greenvulcano.gvesb.iam.domain.mongodb.CredentialsBson;
+import it.greenvulcano.gvesb.iam.domain.mongodb.UserBson;
 import it.greenvulcano.gvesb.iam.exception.CredentialsExpiredException;
 import it.greenvulcano.gvesb.iam.exception.InvalidCredentialsException;
 import it.greenvulcano.gvesb.iam.exception.InvalidPasswordException;
@@ -71,9 +71,9 @@ public class GVCredentialsManager implements CredentialsManager {
         User client = usersManager.validateUser(clientUsername, clientPassword);
         User resourceOwner = usersManager.validateUser(username, password);
 
-        CredentialsBSON credentials = new CredentialsBSON();
-        credentials.setClient(UserBSON.class.cast(client));
-        credentials.setResourceOwner(UserBSON.class.cast(resourceOwner));
+        CredentialsBson credentials = new CredentialsBson();
+        credentials.setClient(UserBson.class.cast(client));
+        credentials.setResourceOwner(UserBson.class.cast(resourceOwner));
 
         String accessToken = generateToken();
         String refreshToken = generateToken();
@@ -120,16 +120,16 @@ public class GVCredentialsManager implements CredentialsManager {
             Set<Credentials> userCredentials =  null; //credentialsRepository.getUserCredentials(lastCredentials.getResourceOwner().getUsername());
 
             // find current valid credentials
-            CredentialsBSON credentials = userCredentials.stream()
+            CredentialsBson credentials = userCredentials.stream()
                                                         .filter(Credentials::isValid)
                                                         .filter(existing -> !existing.equals(lastCredentials))
-                                                        .map(CredentialsBSON.class::cast)
+                                                        .map(CredentialsBson.class::cast)
                                                         .findFirst()
                                                         .orElseGet(() -> {
 
-                                                            CredentialsBSON newcredentials = new CredentialsBSON();
-                                                            newcredentials.setClient(UserBSON.class.cast(lastCredentials.getClient()));
-                                                            newcredentials.setResourceOwner(UserBSON.class.cast(lastCredentials.getResourceOwner()));
+                                                            CredentialsBson newcredentials = new CredentialsBson();
+                                                            newcredentials.setClient(UserBson.class.cast(lastCredentials.getClient()));
+                                                            newcredentials.setResourceOwner(UserBson.class.cast(lastCredentials.getResourceOwner()));
 
                                                             String newAccessToken = generateToken();
                                                             String newRefreshToken = generateToken();
@@ -189,9 +189,9 @@ public class GVCredentialsManager implements CredentialsManager {
                 throw new UnverifiableUserException(token, e);
             }
         } 
-        CredentialsBSON credentials = new CredentialsBSON();
-        credentials.setClient(UserBSON.class.cast(internalUser));
-        credentials.setResourceOwner(UserBSON.class.cast(internalUser));
+        CredentialsBson credentials = new CredentialsBson();
+        credentials.setClient(UserBson.class.cast(internalUser));
+        credentials.setResourceOwner(UserBson.class.cast(internalUser));
 
         String accessToken = generateToken();
         String refreshToken = generateToken();

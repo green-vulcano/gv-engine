@@ -39,7 +39,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mongodb.client.MongoClient;
 import com.mongodb.MongoCommandException;
 import com.mongodb.client.model.Accumulators;
 import com.mongodb.client.model.Aggregates;
@@ -52,8 +51,8 @@ import com.mongodb.client.result.UpdateResult;
 import it.greenvulcano.gvesb.iam.domain.Role;
 import it.greenvulcano.gvesb.iam.domain.User;
 import it.greenvulcano.gvesb.iam.domain.UserInfo;
-import it.greenvulcano.gvesb.iam.domain.mongodb.RoleBSON;
-import it.greenvulcano.gvesb.iam.domain.mongodb.UserBSON;
+import it.greenvulcano.gvesb.iam.domain.mongodb.RoleBson;
+import it.greenvulcano.gvesb.iam.domain.mongodb.UserBson;
 import it.greenvulcano.gvesb.iam.exception.GVSecurityException;
 import it.greenvulcano.gvesb.iam.exception.InvalidPasswordException;
 import it.greenvulcano.gvesb.iam.exception.InvalidRoleException;
@@ -63,6 +62,7 @@ import it.greenvulcano.gvesb.iam.exception.UnverifiableUserException;
 import it.greenvulcano.gvesb.iam.exception.UserExistException;
 import it.greenvulcano.gvesb.iam.exception.UserExpiredException;
 import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
+import it.greenvulcano.gvesb.iam.repository.mongodb.Repository;
 import it.greenvulcano.gvesb.iam.service.SearchCriteria;
 import it.greenvulcano.gvesb.iam.service.SearchResult;
 import it.greenvulcano.gvesb.iam.service.UsersManager;
@@ -70,19 +70,15 @@ import it.greenvulcano.gvesb.iam.service.UsersManager;
 public class GVUsersManager implements UsersManager {
 
     final Logger logger = LoggerFactory.getLogger(getClass());
-    private MongoClient mongoClient;
-    private String databaseName;
+    
+    private Repository mongodbRepository;
     
     
-    public void setMongoClient(MongoClient mongoClient) {
-        this.mongoClient = mongoClient;
-    }
-    
-    
-    public void setDatabaseName(String gviamDatabaseName) {
-        this.databaseName = gviamDatabaseName;
-    }
+    public void setMongodbRepository(Repository mongodbRepository) {
 
+        this.mongodbRepository = mongodbRepository;
+    }
+    
     @Override
     public User createUser(String username, String password) throws InvalidUsernameException, InvalidPasswordException, UserExistException {
 
@@ -95,12 +91,11 @@ public class GVUsersManager implements UsersManager {
         }
             
 
-        UserBSON user = UserBSON.newUser(username, DigestUtils.sha256Hex(password), false, true, null);
+        UserBson user = UserBson.newUser(username, DigestUtils.sha256Hex(password), false, true, null);
 
         try {
-            mongoClient.getDatabase(databaseName)
-                       .getCollection(UserBSON.COLLECTION_NAME)
-                       .insertOne(Document.parse(user.toString()));
+            mongodbRepository.getUserCollection()
+                             .insertOne(Document.parse(user.toString()));
 
         } catch (MongoCommandException constraintViolationException) {
             throwException(new UserExistException(username));
@@ -117,7 +112,7 @@ public class GVUsersManager implements UsersManager {
     @Override
     public void updateUser(String username, UserInfo userInfo, Set<Role> grantedRoles, boolean enabled, boolean expired) throws UserNotFoundException, InvalidRoleException {
 
-        UserBSON user = (UserBSON) getUser(username);        
+        UserBson user = (UserBson) getUser(username);        
         AtomicInteger version = new AtomicInteger(user.getVersion());
         
         JSONArray userRoles = new JSONArray();
@@ -132,8 +127,7 @@ public class GVUsersManager implements UsersManager {
             }   
         }         
 
-        UpdateResult result = mongoClient.getDatabase(databaseName)
-                                         .getCollection(UserBSON.COLLECTION_NAME)
+        UpdateResult result = mongodbRepository.getUserCollection()
                                          .updateOne( Filters.and(Filters.eq("username", username), Filters.eq("version", version.get())), 
                                                      Updates.combine(Updates.set("userInfo", Document.parse(userInfo.toString())),
                                                                      Updates.set("enabled", enabled),
@@ -151,32 +145,29 @@ public class GVUsersManager implements UsersManager {
     @Override
     public User getUser(Long id) throws UserNotFoundException {
 
-        Document user = mongoClient.getDatabase(databaseName)
-                                   .getCollection(UserBSON.COLLECTION_NAME)
+        Document user = mongodbRepository.getUserCollection()
                                    .find(Filters.eq("userid", id)).first();
 
         return Optional.ofNullable(user)
-                       .map(UserBSON::new)
+                       .map(UserBson::new)
                        .orElseThrow(() -> new UserNotFoundException(id.toString()));
     }
 
     @Override
     public User getUser(String username) throws UserNotFoundException {
 
-        Document user = mongoClient.getDatabase(databaseName)
-                                   .getCollection(UserBSON.COLLECTION_NAME)
+        Document user = mongodbRepository.getUserCollection()
                                    .find(Filters.eq("username", username)).first();
 
         return Optional.ofNullable(user)
-                       .map(UserBSON::new)
+                       .map(UserBson::new)
                        .orElseThrow(() -> new UserNotFoundException(username));
     }
 
     @Override
     public void deleteUser(String username) {
 
-        mongoClient.getDatabase(databaseName)
-                   .getCollection(UserBSON.COLLECTION_NAME)
+        mongodbRepository.getUserCollection()
                    .findOneAndDelete(Filters.eq("username", username));
                    
     }
@@ -184,7 +175,7 @@ public class GVUsersManager implements UsersManager {
     @Override
     public User resetUserPassword(String username, String defaultPassword) throws UserNotFoundException, InvalidPasswordException, UnverifiableUserException {
 
-        UserBSON user = (UserBSON) getUser(username);        
+        UserBson user = (UserBson) getUser(username);        
         AtomicInteger version = new AtomicInteger(user.getVersion());
         
         if (!Objects.requireNonNull(defaultPassword, "A default password is required").matches(User.PASSWORD_PATTERN))
@@ -195,8 +186,7 @@ public class GVUsersManager implements UsersManager {
         
         Date editTime = new Date();
         
-        UpdateResult result = mongoClient.getDatabase(databaseName)
-                .getCollection(UserBSON.COLLECTION_NAME)
+        UpdateResult result = mongodbRepository.getUserCollection()
                 .updateOne( Filters.and(Filters.eq("username", username), Filters.eq("version", version.get())), 
                             Updates.combine(Updates.set("password", DigestUtils.sha256Hex(defaultPassword)),
                                             Updates.set("expired", true),                                            
@@ -216,7 +206,7 @@ public class GVUsersManager implements UsersManager {
     public User changeUserPassword(String username, String oldPassword, String newPassword)
             throws UserNotFoundException, PasswordMissmatchException, InvalidPasswordException, UnverifiableUserException {
 
-        UserBSON user = (UserBSON) getUser(username);        
+        UserBson user = (UserBson) getUser(username);        
         AtomicInteger version = new AtomicInteger(user.getVersion());
                
         if (!user.getPassword().isPresent()) {
@@ -233,8 +223,7 @@ public class GVUsersManager implements UsersManager {
         
         Date editTime = new Date();
         
-        UpdateResult result = mongoClient.getDatabase(databaseName)
-                .getCollection(UserBSON.COLLECTION_NAME)
+        UpdateResult result = mongodbRepository.getUserCollection()
                 .updateOne( Filters.and(Filters.eq("username", username), Filters.eq("version", version.get())), 
                             Updates.combine(Updates.set("password", DigestUtils.sha256Hex(newPassword)),
                                             Updates.set("passwordTime", editTime.getTime()),
@@ -269,8 +258,7 @@ public class GVUsersManager implements UsersManager {
     @Override
     public void deleteRole(String roleName) {
 
-        mongoClient.getDatabase(databaseName)
-                   .getCollection(UserBSON.COLLECTION_NAME)
+        mongodbRepository.getUserCollection()
                    .updateMany(new Document(), Updates.pull("roles", Filters.eq("name", roleName)));
 
     }
@@ -280,15 +268,14 @@ public class GVUsersManager implements UsersManager {
 
         Set<Role> roles = new HashSet<>();
         
-        mongoClient.getDatabase(databaseName)
-                   .getCollection(UserBSON.COLLECTION_NAME)
+        mongodbRepository.getUserCollection()
                    .aggregate(Arrays.asList(Aggregates.unwind("$roles"), 
                                             Aggregates.project(Projections.fields(Projections.excludeId(), Projections.include("roles"))), 
                                             Aggregates.group("$roles.name", Accumulators.first("role", "$roles")),
                                             Aggregates.replaceRoot("$role")))
                    .iterator()
                    .forEachRemaining(d -> {                   
-                       roles.add( new RoleBSON(d.getString("name"), d.getString("description")) );
+                       roles.add( new RoleBson(d.getString("name"), d.getString("description")) );
                        
                    });
          
@@ -300,8 +287,7 @@ public class GVUsersManager implements UsersManager {
     public Role getRole(String name) {
 
 
-       Document role = mongoClient.getDatabase(databaseName)
-                                  .getCollection(UserBSON.COLLECTION_NAME)
+       Document role = mongodbRepository.getUserCollection()
                                   .aggregate(Arrays.asList(Aggregates.match(Filters.eq("roles.name", name)),
                                             Aggregates.unwind("$roles"), 
                                             Aggregates.project(Projections.fields(Projections.excludeId(), Projections.include("roles"))), 
@@ -309,7 +295,7 @@ public class GVUsersManager implements UsersManager {
                                             Aggregates.replaceRoot("$role")))
                                   .first();
         if (role!=null) {
-            return new RoleBSON(role.getString("name"), role.getString("description"));
+            return new RoleBson(role.getString("name"), role.getString("description"));
         }
      
         return null;
@@ -319,12 +305,11 @@ public class GVUsersManager implements UsersManager {
 
         Set<User> users = new LinkedHashSet<>(); 
 
-        mongoClient.getDatabase(databaseName)
-                   .getCollection(UserBSON.COLLECTION_NAME)
+        mongodbRepository.getUserCollection()
                    .find()
                    .sort(Sorts.ascending("username"))
                    .iterator()
-                   .forEachRemaining(d ->  users.add(new UserBSON(d)));
+                   .forEachRemaining(d ->  users.add(new UserBson(d)));
         
         return users;
     }
@@ -357,11 +342,10 @@ public class GVUsersManager implements UsersManager {
         
         Set<User> resultset = new LinkedHashSet<>();
         
-        mongoClient.getDatabase(databaseName)
-                   .getCollection(UserBSON.COLLECTION_NAME)
+        mongodbRepository.getUserCollection()
                    .aggregate(pipeline)
                    .iterator()
-                   .forEachRemaining(d ->  resultset.add(new UserBSON(d)));
+                   .forEachRemaining(d ->  resultset.add(new UserBson(d)));
         
         
         result.setFounds(resultset);
@@ -420,8 +404,7 @@ public class GVUsersManager implements UsersManager {
     @Override
     public void checkManagementRequirements() {
 
-        long admins = mongoClient.getDatabase(databaseName)
-                               .getCollection(UserBSON.COLLECTION_NAME)
+        long admins = mongodbRepository.getUserCollection()
                                .countDocuments(Filters.and(Filters.eq("roles.name", Authority.ADMINISTRATOR), Filters.eq("enabled", Boolean.TRUE)));
                    
 
@@ -447,14 +430,14 @@ public class GVUsersManager implements UsersManager {
             }
 
             Set<Role> roles = new HashSet<>();
-            roles.add(new RoleBSON(Authority.ADMINISTRATOR, "Created by GV"));
+            roles.add(new RoleBson(Authority.ADMINISTRATOR, "Created by GV"));
 
             // roles required to use karaf
-            roles.add(new RoleBSON("admin", "Created by GV"));
-            roles.add(new RoleBSON("manager", "Created by GV"));
-            roles.add(new RoleBSON("viewer", "Created by GV"));
-            roles.add(new RoleBSON("systembundles", "Created by GV"));
-            roles.add(new RoleBSON("ssh", "Created by GV"));
+            roles.add(new RoleBson("admin", "Created by GV"));
+            roles.add(new RoleBson("manager", "Created by GV"));
+            roles.add(new RoleBson("viewer", "Created by GV"));
+            roles.add(new RoleBson("systembundles", "Created by GV"));
+            roles.add(new RoleBson("ssh", "Created by GV"));
 
             try {
                 updateUser("gvadmin", null, roles, true, false);
@@ -468,12 +451,11 @@ public class GVUsersManager implements UsersManager {
     @Override
     public void updateUsername(String username, String newUsername) throws UserNotFoundException, InvalidUsernameException {
 
-        UserBSON user = (UserBSON) getUser(username);
+        UserBson user = (UserBson) getUser(username);
         if (username.matches(User.USERNAME_PATTERN)) {
             AtomicInteger version = new AtomicInteger(user.getVersion());
                           
-            UpdateResult result = mongoClient.getDatabase(databaseName)
-                                             .getCollection(UserBSON.COLLECTION_NAME)
+            UpdateResult result = mongodbRepository.getUserCollection()
                                              .updateOne( Filters.and(Filters.eq("username", username), Filters.eq("version", version.get())), 
                                                          Updates.combine(Updates.set("username", newUsername),                                                                       
                                                                          Updates.set("updateTime", new Date().getTime()),
@@ -494,7 +476,7 @@ public class GVUsersManager implements UsersManager {
     public void revokeRole(String username, String role) throws UserNotFoundException {
 
         try {
-            UserBSON user = (UserBSON) getUser(username);
+            UserBson user = (UserBson) getUser(username);
             user.removeRole(role);
     
             updateUser(username, user.getUserInfo(), user.getRoles(), user.isEnabled(), user.isExpired());
@@ -512,9 +494,9 @@ public class GVUsersManager implements UsersManager {
             throwException(new InvalidRoleException(rolename));
         
         try {
-            UserBSON user = (UserBSON) getUser(username);
+            UserBson user = (UserBson) getUser(username);
 
-            Role role = Optional.ofNullable(getRole(rolename)).orElse(new RoleBSON(rolename, "Created by JAAS"));
+            Role role = Optional.ofNullable(getRole(rolename)).orElse(new RoleBson(rolename, "Created by JAAS"));
             user.addRole(role);
     
             updateUser(username, user.getUserInfo(), user.getRoles(), user.isEnabled(), user.isExpired());

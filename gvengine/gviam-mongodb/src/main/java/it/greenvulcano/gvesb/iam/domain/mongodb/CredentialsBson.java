@@ -22,7 +22,7 @@ package it.greenvulcano.gvesb.iam.domain.mongodb;
 import java.io.Serializable;
 import java.util.Date;
 
-public class CredentialsBSON extends it.greenvulcano.gvesb.iam.domain.Credentials implements Serializable {
+public class CredentialsBson extends it.greenvulcano.gvesb.iam.domain.Credentials implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 
@@ -34,9 +34,9 @@ public class CredentialsBSON extends it.greenvulcano.gvesb.iam.domain.Credential
 	
 	private Long lifeTime;
 	
-	private UserBSON client;
+	private UserBson client;
 	
-	private UserBSON resourceOwner;
+	private UserBson resourceOwner;
 	
 	@Override
 	public String getAccessToken() {
@@ -75,20 +75,20 @@ public class CredentialsBSON extends it.greenvulcano.gvesb.iam.domain.Credential
 	}
 	
 	@Override
-	public UserBSON getClient() {
+	public UserBson getClient() {
 		return client;
 	}
 		
-	public void setClient(UserBSON client) {
+	public void setClient(UserBson client) {
 		this.client = client;
 	}
 	
 	@Override
-	public UserBSON getResourceOwner() {
+	public UserBson getResourceOwner() {
 		return resourceOwner;
 	}
 	
-	public void setResourceOwner(UserBSON resourceOwner) {
+	public void setResourceOwner(UserBson resourceOwner) {
 		this.resourceOwner = resourceOwner;
 	}
 	
@@ -117,7 +117,7 @@ public class CredentialsBSON extends it.greenvulcano.gvesb.iam.domain.Credential
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		CredentialsBSON other = (CredentialsBSON) obj;
+		CredentialsBson other = (CredentialsBson) obj;
 		if (accessToken == null) {
 			if (other.accessToken != null)
 				return false;
