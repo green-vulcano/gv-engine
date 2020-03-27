@@ -3,9 +3,6 @@ package it.greenvulcano.gvesb.iam.repository.mongodb;
 import java.util.Arrays;
 
 import org.bson.Document;
-import org.bson.json.JsonMode;
-import org.bson.json.JsonWriterSettings;
-
 import com.mongodb.ConnectionString;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
@@ -14,6 +11,7 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.Indexes;
 
+import it.greenvulcano.gvesb.iam.domain.mongodb.CredentialsBson;
 import it.greenvulcano.gvesb.iam.domain.mongodb.UserBson;
 
 public class Repository {
@@ -42,6 +40,11 @@ public class Repository {
       return  mongoClient.getDatabase(databaseName)
                          .getCollection(UserBson.COLLECTION_NAME);
     }
+    
+    public MongoCollection<Document> getCredentialsCollection() {
+        return  mongoClient.getDatabase(databaseName)
+                           .getCollection(CredentialsBson.COLLECTION_NAME);
+      }
     
     public void init() {
 

@@ -1,13 +1,17 @@
 package it.greenvulcano.gvesb.iam.service.mongodb;
 
 import java.security.SecureRandom;
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.IntStream;
 
+import org.bson.Document;
 import org.osgi.framework.ServiceReference;
+
+import com.mongodb.client.model.Filters;
 
 import it.greenvulcano.gvesb.iam.domain.Credentials;
 import it.greenvulcano.gvesb.iam.domain.User;
@@ -22,6 +26,7 @@ import it.greenvulcano.gvesb.iam.exception.UnverifiableUserException;
 import it.greenvulcano.gvesb.iam.exception.UserExistException;
 import it.greenvulcano.gvesb.iam.exception.UserExpiredException;
 import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
+import it.greenvulcano.gvesb.iam.repository.mongodb.Repository;
 import it.greenvulcano.gvesb.iam.service.CredentialsManager;
 import it.greenvulcano.gvesb.iam.service.ExternalAuthenticationService;
 import it.greenvulcano.gvesb.iam.service.ExternalAutheticatedUser;
@@ -36,6 +41,8 @@ public class GVCredentialsManager implements CredentialsManager {
 
     private final SecureRandom secureRandom = new SecureRandom();
 
+    private Repository mongodbRepository;
+    
     private UsersManager usersManager;
 
     private long tokenLifeTime = 24 * 60 * 60 * 1000;
@@ -81,21 +88,41 @@ public class GVCredentialsManager implements CredentialsManager {
         credentials.setAccessToken(encryptToken(accessToken));
         credentials.setRefreshToken(encryptToken(refreshToken));
 
-        credentials.setIssueTime(new Date());
+        credentials.setIssueTime(Instant.now());
         credentials.setLifeTime(tokenLifeTime);
 
-        //credentialsRepository.add(credentials);
+        mongodbRepository.getCredentialsCollection().insertOne(Document.parse(credentials.toString()));
 
         credentials.setAccessToken(accessToken);
         credentials.setRefreshToken(refreshToken);
 
         return credentials;
     }
+    
+    private Optional<Credentials> retrieve(String accessToken) {
+        
+        Document credentials =  mongodbRepository.getCredentialsCollection()
+                                                 .find(Filters.eq("access_token", encryptToken(accessToken)))
+                                                 .first();
+        
+        if (credentials!=null) {
+            try {
+                UserBson client = (UserBson) usersManager.getUser(credentials.getString("client"));
+                UserBson resourceOwner = (UserBson) usersManager.getUser(credentials.getString("client"));
+            
+                return Optional.of(new CredentialsBson(credentials, client, resourceOwner));
+            } catch (UserNotFoundException e) {
+                return Optional.empty();
+            }
+        }
+        
+        return Optional.empty();
+    }
 
     @Override
     public Credentials check(String accessToken) throws InvalidCredentialsException, CredentialsExpiredException {
 
-        Credentials credentials = null;//credentialsRepository.get(encryptToken(accessToken)).orElseThrow(InvalidCredentialsException::new);
+        Credentials credentials = retrieve(accessToken).orElseThrow(InvalidCredentialsException::new);
 
         if (!credentials.getResourceOwner().isEnabled()) throw new InvalidCredentialsException();
         
@@ -110,7 +137,7 @@ public class GVCredentialsManager implements CredentialsManager {
     @Override
     public Credentials refresh(String refreshToken, String accessToken) throws InvalidCredentialsException {
 
-        Credentials lastCredentials = null;//credentialsRepository.get(encryptToken(accessToken)).orElseThrow(InvalidCredentialsException::new);
+        Credentials lastCredentials = retrieve(accessToken).orElseThrow(InvalidCredentialsException::new);
 
         if (lastCredentials.getResourceOwner().isEnabled() && lastCredentials.getRefreshToken().equals(encryptToken(refreshToken))) {
 
@@ -137,7 +164,7 @@ public class GVCredentialsManager implements CredentialsManager {
                                                             newcredentials.setAccessToken(encryptToken(newAccessToken));
                                                             newcredentials.setRefreshToken(encryptToken(newRefreshToken));
 
-                                                            newcredentials.setIssueTime(new Date());
+                                                            newcredentials.setIssueTime(Instant.now());
                                                             newcredentials.setLifeTime(tokenLifeTime);
 
                                                             //credentialsRepository.add(newcredentials);
@@ -199,7 +226,7 @@ public class GVCredentialsManager implements CredentialsManager {
         credentials.setAccessToken(encryptToken(accessToken));
         credentials.setRefreshToken(encryptToken(refreshToken));
 
-        credentials.setIssueTime(new Date());
+        credentials.setIssueTime(Instant.now());
         credentials.setLifeTime(tokenLifeTime);
 
         //credentialsRepository.add(credentials);
