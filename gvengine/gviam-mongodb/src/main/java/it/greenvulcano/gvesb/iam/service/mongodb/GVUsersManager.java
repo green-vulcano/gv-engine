@@ -39,7 +39,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mongodb.MongoCommandException;
 import com.mongodb.client.model.Accumulators;
 import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Filters;
@@ -53,7 +52,6 @@ import it.greenvulcano.gvesb.iam.domain.User;
 import it.greenvulcano.gvesb.iam.domain.UserInfo;
 import it.greenvulcano.gvesb.iam.domain.mongodb.RoleBson;
 import it.greenvulcano.gvesb.iam.domain.mongodb.UserBson;
-import it.greenvulcano.gvesb.iam.exception.GVSecurityException;
 import it.greenvulcano.gvesb.iam.exception.InvalidPasswordException;
 import it.greenvulcano.gvesb.iam.exception.InvalidRoleException;
 import it.greenvulcano.gvesb.iam.exception.InvalidUsernameException;
@@ -83,11 +81,11 @@ public class GVUsersManager implements UsersManager {
     public User createUser(String username, String password) throws InvalidUsernameException, InvalidPasswordException, UserExistException {
 
         if (!username.matches(User.USERNAME_PATTERN)) {
-            throwException(new InvalidUsernameException());
+           throw new InvalidUsernameException();
         }
             
         if (!password.matches(User.PASSWORD_PATTERN)) {
-            throwException(new InvalidPasswordException());
+           throw new InvalidPasswordException();
         }
             
 
@@ -97,8 +95,12 @@ public class GVUsersManager implements UsersManager {
             mongodbRepository.getUserCollection()
                              .insertOne(Document.parse(user.toString()));
 
-        } catch (MongoCommandException constraintViolationException) {
-            throwException(new UserExistException(username));
+        } catch (Exception writeException) {
+            if (writeException.getMessage().contains("E11000 duplicate key error")) {
+              throw new UserExistException(username);
+            }
+            
+            throw new SecurityException(writeException);
         }
 
         return user;
@@ -106,7 +108,7 @@ public class GVUsersManager implements UsersManager {
 
     @Override
     public Role createRole(String name, String description) throws InvalidRoleException {
-        throw new UnsupportedOperationException();
+        return new RoleBson(name, description);
     }
 
     @Override
@@ -127,9 +129,13 @@ public class GVUsersManager implements UsersManager {
             }   
         }         
 
+        Document info = new Document();
+        info.put("fullname", (userInfo!=null) ? userInfo.getFullname() : null);
+        info.put("email", (userInfo!=null) ? userInfo.getEmail() : null);
+        
         UpdateResult result = mongodbRepository.getUserCollection()
                                          .updateOne( Filters.and(Filters.eq("username", username), Filters.eq("version", version.get())), 
-                                                     Updates.combine(Updates.set("userInfo", Document.parse(userInfo.toString())),
+                                                     Updates.combine(Updates.set("userInfo", info),
                                                                      Updates.set("enabled", enabled),
                                                                      Updates.set("expired", expired),
                                                                      Updates.set("roles", BsonArray.parse(userRoles.toString())),
@@ -138,6 +144,11 @@ public class GVUsersManager implements UsersManager {
 
         if ( result.getModifiedCount()== 0) {
              new ConcurrentModificationException("Persistence state changed in the meanwhile");
+        }
+        
+        if (!enabled) {
+            mongodbRepository.getCredentialsCollection()
+                             .deleteMany(Filters.eq("resource_owner", username));
         }
       
     }
@@ -169,6 +180,9 @@ public class GVUsersManager implements UsersManager {
 
         mongodbRepository.getUserCollection()
                    .findOneAndDelete(Filters.eq("username", username));
+        
+        mongodbRepository.getCredentialsCollection()
+                         .deleteMany(Filters.eq("resource_owner", username));
                    
     }
 
@@ -193,10 +207,13 @@ public class GVUsersManager implements UsersManager {
                                             Updates.set("passwordTime", editTime.getTime()),
                                             Updates.set("updateTime", editTime.getTime()),
                                             Updates.set("version", version.incrementAndGet()) ));
-
+        
         if ( result.getModifiedCount()== 0) {
             new ConcurrentModificationException("Persistence state changed in the meanwhile");
         }
+        
+        mongodbRepository.getCredentialsCollection()
+                         .deleteMany(Filters.eq("resource_owner", username));
 
         return user;
 
@@ -227,13 +244,16 @@ public class GVUsersManager implements UsersManager {
                 .updateOne( Filters.and(Filters.eq("username", username), Filters.eq("version", version.get())), 
                             Updates.combine(Updates.set("password", DigestUtils.sha256Hex(newPassword)),
                                             Updates.set("passwordTime", editTime.getTime()),
+                                            Updates.set("expired", false),
                                             Updates.set("updateTime", editTime.getTime()),
                                             Updates.set("version", version.incrementAndGet()) ));
-
+        
         if ( result.getModifiedCount()== 0) {
             new ConcurrentModificationException("Persistence state changed in the meanwhile");
         }
-
+        
+        mongodbRepository.getCredentialsCollection()
+                         .deleteMany(Filters.eq("resource_owner", username));
         return user;
     }
 
@@ -362,9 +382,9 @@ public class GVUsersManager implements UsersManager {
             
             user.setEnabled(enable);
             updateUser(username, user.getUserInfo(), user.getRoles(), user.isEnabled(), user.isExpired());
-    
-        } catch (UserNotFoundException | InvalidRoleException e) {
-            throwException(e);
+              
+        } catch (InvalidRoleException e) {
+            throw new SecurityException(e);
         }
         
         return user;
@@ -379,8 +399,8 @@ public class GVUsersManager implements UsersManager {
             user.setExpired(expired);
             updateUser(username, user.getUserInfo(), user.getRoles(), user.isEnabled(), user.isExpired());
     
-        } catch (UserNotFoundException | InvalidRoleException e) {
-            throwException(e);
+        } catch (InvalidRoleException e) {
+            throw new SecurityException(e);
         }
 
         return user;
@@ -394,8 +414,8 @@ public class GVUsersManager implements UsersManager {
             user.setEnabled(!user.isEnabled());
             updateUser(username, user.getUserInfo(), user.getRoles(), user.isEnabled(), user.isExpired());
     
-        } catch (UserNotFoundException | InvalidRoleException e) {
-            throwException(e);
+        } catch (InvalidRoleException e) {
+            throw new SecurityException(e);
         }        
 
         return user;
@@ -481,8 +501,8 @@ public class GVUsersManager implements UsersManager {
     
             updateUser(username, user.getUserInfo(), user.getRoles(), user.isEnabled(), user.isExpired());
     
-        } catch (UserNotFoundException | InvalidRoleException e) {
-            throwException(e);
+        } catch (InvalidRoleException e) {
+            throw new SecurityException(e);
         }
     }
     
@@ -491,7 +511,7 @@ public class GVUsersManager implements UsersManager {
     public void addRole(String username, String rolename) {
 
         if (!rolename.matches(Role.ROLE_PATTERN))
-            throwException(new InvalidRoleException(rolename));
+            throw new SecurityException(new InvalidRoleException(rolename));
         
         try {
             UserBson user = (UserBson) getUser(username);
@@ -502,13 +522,10 @@ public class GVUsersManager implements UsersManager {
             updateUser(username, user.getUserInfo(), user.getRoles(), user.isEnabled(), user.isExpired());
     
         } catch (UserNotFoundException | InvalidRoleException e) {
-            throwException(e);
+            throw new SecurityException(e);
         } 
 
     }
-    
-    private void throwException(GVSecurityException cause) {
-        throw new SecurityException(cause);
-    }
+   
 
 }

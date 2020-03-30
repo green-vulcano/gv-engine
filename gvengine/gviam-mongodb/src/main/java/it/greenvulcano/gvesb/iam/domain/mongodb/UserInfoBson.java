@@ -96,8 +96,8 @@ public class UserInfoBson extends it.greenvulcano.gvesb.iam.domain.UserInfo {
     
     public JSONObject toJSONObject() {
         JSONObject info = new JSONObject();
-        info.put("fullname", fullname)
-            .put("email", email);
+        info.put("fullname", fullname!=null ? fullname : JSONObject.NULL)
+            .put("email", email !=null ? email : JSONObject.NULL);
         
         return info;
     }

@@ -65,6 +65,14 @@ public class Repository {
                    .getCollection(UserBson.COLLECTION_NAME)
                    .createIndex(Indexes.ascending("roles.name"));
         
+        mongoClient.getDatabase(databaseName)
+                   .getCollection(CredentialsBson.COLLECTION_NAME)
+                   .createIndex(Indexes.ascending("access_token"),  new IndexOptions().unique(true));
+        
+        mongoClient.getDatabase(databaseName)
+                   .getCollection(CredentialsBson.COLLECTION_NAME)
+                   .createIndex(Indexes.ascending("resource_owner"));
+        
     }
 
 }

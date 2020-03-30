@@ -2,6 +2,7 @@ package it.greenvulcano.gvesb.iam.service.mongodb;
 
 import java.security.SecureRandom;
 import java.time.Instant;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -45,29 +46,28 @@ public class GVCredentialsManager implements CredentialsManager {
     
     private UsersManager usersManager;
 
-    private long tokenLifeTime = 24 * 60 * 60 * 1000;
+    private long tokenLifeTime = 24 * 60 * 60 * 1000; //1 day
     private int maxExpiredTokens = 2;
 
     private List<ServiceReference<ExternalAuthenticationService>> externalAuthenticationServices;
 
     public void setExternalAuthenticationServices(List<ServiceReference<ExternalAuthenticationService>> externalAuthenticationServices) {
-
         this.externalAuthenticationServices = externalAuthenticationServices;
     }
 
     public void setUsersManager(UsersManager usersManager) {
-
         this.usersManager = usersManager;
     }
-
+    
+    public void setMongodbRepository(Repository mongodbRepository) {
+        this.mongodbRepository = mongodbRepository;
+    }
     
     public void setTokenLifeTime(long tokenLifeTime) {
-
         this.tokenLifeTime = tokenLifeTime;
     }
 
     public void setMaxExpiredTokens(int maxExpiredTokens) {
-
         this.maxExpiredTokens = maxExpiredTokens;
     }
 
@@ -108,7 +108,7 @@ public class GVCredentialsManager implements CredentialsManager {
         if (credentials!=null) {
             try {
                 UserBson client = (UserBson) usersManager.getUser(credentials.getString("client"));
-                UserBson resourceOwner = (UserBson) usersManager.getUser(credentials.getString("client"));
+                UserBson resourceOwner = (UserBson) usersManager.getUser(credentials.getString("resource_owner"));
             
                 return Optional.of(new CredentialsBson(credentials, client, resourceOwner));
             } catch (UserNotFoundException e) {
@@ -119,6 +119,19 @@ public class GVCredentialsManager implements CredentialsManager {
         return Optional.empty();
     }
 
+    private Set<Credentials> retrieveByResourceOwner(String username) {
+        
+        Set<Credentials> credentials = new LinkedHashSet<>();
+        
+        mongodbRepository.getCredentialsCollection()
+                         .find(Filters.eq("resource_owner", username))
+                         .iterator()
+                         .forEachRemaining(c -> credentials.add(new CredentialsBson(c, null, null)));
+       
+        
+        return credentials;
+    }
+    
     @Override
     public Credentials check(String accessToken) throws InvalidCredentialsException, CredentialsExpiredException {
 
@@ -144,13 +157,17 @@ public class GVCredentialsManager implements CredentialsManager {
             /*
              * Exprired credentilas can be used multiple times, returning last valid token
              */
-            Set<Credentials> userCredentials =  null; //credentialsRepository.getUserCredentials(lastCredentials.getResourceOwner().getUsername());
+            Set<Credentials> userCredentials =  retrieveByResourceOwner(lastCredentials.getResourceOwner().getUsername());
 
             // find current valid credentials
-            CredentialsBson credentials = userCredentials.stream()
-                                                        .filter(Credentials::isValid)
-                                                        .filter(existing -> !existing.equals(lastCredentials))
+            CredentialsBson credentials = userCredentials.stream()                    
+                                                        .filter(Credentials::isValid)                                                        
                                                         .map(CredentialsBson.class::cast)
+                                                        .peek(c -> { 
+                                                                     c.setClient((UserBson) lastCredentials.getClient()); 
+                                                                     c.setResourceOwner((UserBson) lastCredentials.getResourceOwner()); 
+                                                                   })
+                                                        .filter(existing -> !existing.equals(lastCredentials))
                                                         .findFirst()
                                                         .orElseGet(() -> {
 
@@ -166,8 +183,9 @@ public class GVCredentialsManager implements CredentialsManager {
 
                                                             newcredentials.setIssueTime(Instant.now());
                                                             newcredentials.setLifeTime(tokenLifeTime);
-
-                                                            //credentialsRepository.add(newcredentials);
+                                                            
+                                                            mongodbRepository.getCredentialsCollection()
+                                                                             .insertOne(Document.parse(newcredentials.toString()));
 
                                                             return newcredentials;
 
@@ -183,7 +201,10 @@ public class GVCredentialsManager implements CredentialsManager {
 
                 Credentials expired = userCredentials.stream().filter(c -> !c.isValid()).sorted((c1, c2) -> c1.getIssueTime().compareTo(c2.getIssueTime())).findFirst().get();
                 userCredentials.remove(expired);
-                //credentialsRepository.remove(expired);
+                
+                mongodbRepository.getCredentialsCollection()
+                                 .deleteOne(Filters.eq("access_token", expired.getAccessToken()));
+                
 
             }
 
@@ -229,7 +250,8 @@ public class GVCredentialsManager implements CredentialsManager {
         credentials.setIssueTime(Instant.now());
         credentials.setLifeTime(tokenLifeTime);
 
-        //credentialsRepository.add(credentials);
+        mongodbRepository.getCredentialsCollection()
+                         .insertOne(Document.parse(credentials.toString()));
 
         credentials.setAccessToken(accessToken);
         credentials.setRefreshToken(refreshToken);

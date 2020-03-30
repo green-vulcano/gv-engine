@@ -44,7 +44,7 @@ public class CredentialsBson extends it.greenvulcano.gvesb.iam.domain.Credential
     private UserBson resourceOwner;
     
     public CredentialsBson() {
-        
+        this.objectId = ObjectId.get();
     }
     
     public CredentialsBson(Document credentials, UserBson client, UserBson resourceOwner) {
@@ -56,8 +56,8 @@ public class CredentialsBson extends it.greenvulcano.gvesb.iam.domain.Credential
         this.accessToken = (String) credentialsJson.opt("access_token");
         this.refreshToken = (String) credentialsJson.opt("refresh_token");
         String issueTime = (String) credentialsJson.opt("issue_date");
-        this.issueTime =  Instant.from(DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(issueTime));
-        this.lifeTime = (Long) credentialsJson.opt("expires_in");
+        this.issueTime =  Instant.from(DateTimeFormatter.ISO_INSTANT.parse(issueTime));
+        this.lifeTime =  Long.valueOf(credentialsJson.optString("expires_in", "-1"));
         
         this.client = client;
         this.resourceOwner = resourceOwner;
@@ -196,7 +196,7 @@ public class CredentialsBson extends it.greenvulcano.gvesb.iam.domain.Credential
         credentials.put("_id", objectId.toHexString())
             .put("access_token", accessToken)
             .put("refresh_token", refreshToken)
-            .put("issue_date", DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(issueTime))
+            .put("issue_date", DateTimeFormatter.ISO_INSTANT.format(issueTime))
             .put("expires_in", lifeTime)
             .put("client", client.getUsername())
             .put("resource_owner", resourceOwner.getUsername());
