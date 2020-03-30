@@ -17,12 +17,13 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with GreenVulcano ESB. If not, see <http://www.gnu.org/licenses/>.
  *******************************************************************************/
-package it.greenvulcano.gvesb.iam.domain.mongodb;
+package it.greenvulcano.gvesb.gviamx.domain.mongodb;
 
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Map;
 import org.json.JSONObject;
+
 
 public class SignUpRequest extends UserActionRequest implements Serializable {
 

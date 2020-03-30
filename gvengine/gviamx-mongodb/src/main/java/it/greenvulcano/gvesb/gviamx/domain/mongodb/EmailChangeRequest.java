@@ -17,27 +17,27 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with GreenVulcano ESB. If not, see <http://www.gnu.org/licenses/>.
  *******************************************************************************/
-package it.greenvulcano.gvesb.iam.domain.mongodb;
+package it.greenvulcano.gvesb.gviamx.domain.mongodb;
 
 import java.io.Serializable;
 import java.util.Map;
 
 import org.json.JSONObject;
 
-import it.greenvulcano.gvesb.iam.domain.mongodb.UserBson;
+import it.greenvulcano.gvesb.iam.domain.User;
 
 public class EmailChangeRequest extends UserActionRequest implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private UserBson user;
+    private User user;
 
-    public UserBson getUser() {
+    public User getUser() {
 
         return user;
     }
 
-    public void setUser(UserBson user) {
+    public void setUser(User user) {
 
         this.user = user;
     }
