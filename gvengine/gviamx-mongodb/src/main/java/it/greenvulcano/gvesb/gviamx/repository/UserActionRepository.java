@@ -23,17 +23,20 @@ import java.util.Optional;
 import java.util.Set;
 
 import it.greenvulcano.gvesb.gviamx.domain.mongodb.UserActionRequest;
+import it.greenvulcano.gvesb.gviamx.domain.mongodb.UserActionRequest.NotificationStatus;
 
 public interface UserActionRepository {
-	
-	Optional<UserActionRequest> get(Long key);
-	
-	<T extends UserActionRequest> Optional<T> get(String email, Class<T> type);
-	
-	void add(UserActionRequest entity);
-	
-	Set<UserActionRequest> getAll();
-	
-	void remove(UserActionRequest entity);	
+
+    Optional<UserActionRequest> get(String key);
+
+    Optional<UserActionRequest> get(String email, UserActionRequest.Action type);
+
+    void add(UserActionRequest entity);
+
+    Set<UserActionRequest> getAll();
+
+    void updateStatus(String key, NotificationStatus status);
+
+    void remove(String key);
 
 }

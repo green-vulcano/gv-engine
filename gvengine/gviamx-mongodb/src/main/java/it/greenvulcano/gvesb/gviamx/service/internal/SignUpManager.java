@@ -20,7 +20,8 @@
 package it.greenvulcano.gvesb.gviamx.service.internal;
 
 import java.security.SecureRandom;
-import java.util.Date;
+import java.time.Instant;
+import java.util.Base64;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,7 +36,6 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import it.greenvulcano.gvesb.gviamx.domain.mongodb.SignUpRequest;
 import it.greenvulcano.gvesb.gviamx.domain.mongodb.UserActionRequest;
 import it.greenvulcano.gvesb.gviamx.domain.mongodb.UserActionRequest.NotificationStatus;
 import it.greenvulcano.gvesb.gviamx.repository.UserActionRepository;
@@ -135,10 +135,9 @@ public class SignUpManager {
             }
         }
 
-        SignUpRequest signUpRequest = signupRepository.get(email.toLowerCase(), SignUpRequest.class).orElseGet(SignUpRequest::new);
+        UserActionRequest signUpRequest = signupRepository.get(email.toLowerCase(), UserActionRequest.Action.SIGNUP).orElseGet(UserActionRequest::new);
         signUpRequest.setEmail(email.toLowerCase());
-        signUpRequest.setIssueTime(new Date());
-        signUpRequest.setExpireTime(expireTime);
+        signUpRequest.setExpiresIn(expireTime);
         signUpRequest.setRequest(request);
         signUpRequest.setNotificationStatus(NotificationStatus.PENDING);
 
@@ -152,15 +151,15 @@ public class SignUpManager {
 
     }
 
-    public SignUpRequest retrieveSignUpRequest(String email, String token) {
+    public UserActionRequest retrieveSignUpRequest(String email, String token) {
 
-        SignUpRequest signupRequest = signupRepository.get(email.toLowerCase(), SignUpRequest.class)
+        UserActionRequest signupRequest = signupRepository.get(email.toLowerCase(), UserActionRequest.Action.SIGNUP)
                                                       .orElseThrow(() -> new IllegalArgumentException("No sign-up request found for this email"));
 
         if (DigestUtils.sha256Hex(token).equals(signupRequest.getToken())) {
 
-            if (System.currentTimeMillis() > signupRequest.getIssueTime().getTime() + signupRequest.getExpireTime()) {
-                signupRepository.remove(signupRequest);
+            if (signupRequest.getIssueTime().plusMillis(signupRequest.getExpiresIn()).isBefore(Instant.now())) {
+                signupRepository.remove(signupRequest.getId());
                 throw new IllegalArgumentException("No sign-up request found for this email");
             }
 
@@ -172,11 +171,11 @@ public class SignUpManager {
 
     }
 
-    public void consumeSignUpRequest(SignUpRequest signupRequest) {
+    public void consumeSignUpRequest(UserActionRequest signupRequest) {
 
         try {
-            signupRepository.remove(signupRequest);
-            callbackServices.stream().map(c -> new CallBackService.CallBackTask(c, signupRequest.getRequest())).forEach(executor::submit);
+            signupRepository.remove(signupRequest.getId());
+            callbackServices.stream().map(c -> new CallBackService.CallBackTask(c, Base64.getDecoder().decode(signupRequest.getRequest()))).forEach(executor::submit);
 
         } catch (Exception fatalException) {
             LOG.error("Fail to process sign-up request with id " + signupRequest.getId(), fatalException);

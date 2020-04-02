@@ -20,8 +20,8 @@
 package it.greenvulcano.gvesb.gviamx.service.internal;
 
 import java.security.SecureRandom;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -30,7 +30,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import it.greenvulcano.gvesb.gviamx.domain.mongodb.PasswordResetRequest;
+import it.greenvulcano.gvesb.gviamx.domain.mongodb.UserActionRequest;
 import it.greenvulcano.gvesb.gviamx.domain.mongodb.UserActionRequest.NotificationStatus;
 import it.greenvulcano.gvesb.gviamx.repository.UserActionRepository;
 import it.greenvulcano.gvesb.gviamx.service.NotificationService;
@@ -86,11 +86,10 @@ public class PasswordResetManager {
 
         if (user.getPassword().isPresent()) {
 
-            PasswordResetRequest passwordResetRequest = repository.get(email.toLowerCase(), PasswordResetRequest.class).orElseGet(PasswordResetRequest::new);
-            passwordResetRequest.setUser(user);
+            UserActionRequest passwordResetRequest = repository.get(email.toLowerCase(), UserActionRequest.Action.RESET).orElseGet(UserActionRequest::new);
+            passwordResetRequest.setUserId(user.getId());
             passwordResetRequest.setEmail(email.toLowerCase());
-            passwordResetRequest.setIssueTime(new Date());
-            passwordResetRequest.setExpireTime(expireTime);
+            passwordResetRequest.setExpiresIn(expireTime);
             passwordResetRequest.setNotificationStatus(NotificationStatus.PENDING);
 
             String clearTextToken = secureRandom.ints(3, 11, 99).mapToObj(Integer::toString).collect(Collectors.joining());
@@ -106,15 +105,15 @@ public class PasswordResetManager {
         }
     }
 
-    public PasswordResetRequest retrievePasswordResetRequest(String email, String token) {
+    public UserActionRequest retrievePasswordResetRequest(String email, String token) {
 
-        PasswordResetRequest signupRequest = repository.get(email.toLowerCase(), PasswordResetRequest.class)
+        UserActionRequest signupRequest = repository.get(email.toLowerCase(), UserActionRequest.Action.RESET)
                                                        .orElseThrow(() -> new IllegalArgumentException("No password reset request found for this email"));
 
         if (DigestUtils.sha256Hex(token).equals(signupRequest.getToken())) {
 
-            if (System.currentTimeMillis() > signupRequest.getIssueTime().getTime() + signupRequest.getExpireTime()) {
-                repository.remove(signupRequest);
+            if (signupRequest.getIssueTime().plusMillis(signupRequest.getExpiresIn()).isBefore(Instant.now())) {
+                repository.remove(signupRequest.getId());
                 throw new SecurityException("No password reset request found for this email");
             }
 
@@ -126,11 +125,11 @@ public class PasswordResetManager {
 
     }
 
-    public void consumePasswordResetRequest(PasswordResetRequest passwordResetRequest) {
+    public void consumePasswordResetRequest(UserActionRequest passwordResetRequest) {
 
         try {
 
-            repository.remove(passwordResetRequest);
+            repository.remove(passwordResetRequest.getId());
         } catch (Exception fatalException) {
             LOG.error("Fail to process  password reset request with id " + passwordResetRequest.getId(), fatalException);
 

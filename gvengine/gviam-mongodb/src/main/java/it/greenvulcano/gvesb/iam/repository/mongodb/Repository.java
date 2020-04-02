@@ -44,7 +44,7 @@ public class Repository {
     public MongoCollection<Document> getCredentialsCollection() {
         return  mongoClient.getDatabase(databaseName)
                            .getCollection(CredentialsBson.COLLECTION_NAME);
-      }
+    }
     
     public void init() {
 

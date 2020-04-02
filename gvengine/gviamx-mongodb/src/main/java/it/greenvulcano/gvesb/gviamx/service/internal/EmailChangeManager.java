@@ -20,8 +20,8 @@
 package it.greenvulcano.gvesb.gviamx.service.internal;
 
 import java.security.SecureRandom;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -30,7 +30,6 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import it.greenvulcano.gvesb.gviamx.domain.mongodb.EmailChangeRequest;
 import it.greenvulcano.gvesb.gviamx.domain.mongodb.UserActionRequest;
 import it.greenvulcano.gvesb.gviamx.domain.mongodb.UserActionRequest.NotificationStatus;
 import it.greenvulcano.gvesb.gviamx.repository.UserActionRepository;
@@ -100,11 +99,10 @@ public class EmailChangeManager {
 
         User user = usersManager.getUser(currentEmailAddress.toLowerCase());
 
-        EmailChangeRequest request = repository.get(newEmailAddress.toLowerCase(), EmailChangeRequest.class).orElseGet(EmailChangeRequest::new);
-        request.setUser(user);
+        UserActionRequest request = repository.get(newEmailAddress.toLowerCase(), UserActionRequest.Action.UPDATE).orElseGet(UserActionRequest::new);
+        request.setUserId(user.getId());
         request.setEmail(newEmailAddress.toLowerCase());
-        request.setIssueTime(new Date());
-        request.setExpireTime(expireTime);
+        request.setExpiresIn(expireTime);
         request.setNotificationStatus(NotificationStatus.PENDING);
 
         String clearTextToken = secureRandom.ints(3, 11, 99).mapToObj(Integer::toString).collect(Collectors.joining());
@@ -117,15 +115,15 @@ public class EmailChangeManager {
 
     }
 
-    public EmailChangeRequest retrieveEmailChangeRequest(String email, String token) {
+    public UserActionRequest retrieveEmailChangeRequest(String email, String token) {
 
-        EmailChangeRequest request = repository.get(email.toLowerCase(), EmailChangeRequest.class)
+        UserActionRequest request = repository.get(email.toLowerCase(), UserActionRequest.Action.UPDATE)
                                                .orElseThrow(() -> new IllegalArgumentException("No password reset request found for this email"));
 
         if (DigestUtils.sha256Hex(token).equals(request.getToken())) {
 
-            if (System.currentTimeMillis() > request.getIssueTime().getTime() + request.getExpireTime()) {
-                repository.remove(request);
+            if (request.getIssueTime().plusMillis(request.getExpiresIn()).isBefore(Instant.now())) {
+                repository.remove(request.getId());
                 throw new SecurityException("No password reset request found for this email");
             }
 
@@ -137,11 +135,11 @@ public class EmailChangeManager {
 
     }
 
-    public void consumeEmailChangeRequest(EmailChangeRequest request) {
+    public void consumeEmailChangeRequest(UserActionRequest request) {
 
         try {
 
-            repository.remove(request);
+            repository.remove(request.getId());
         } catch (Exception fatalException) {
             LOG.error("Fail to process  password reset request with id " + request.getId(), fatalException);
 

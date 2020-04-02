@@ -48,9 +48,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import it.greenvulcano.gvesb.gviamx.domain.mongodb.EmailChangeRequest;
-import it.greenvulcano.gvesb.gviamx.domain.mongodb.PasswordResetRequest;
-import it.greenvulcano.gvesb.gviamx.domain.mongodb.SignUpRequest;
+import it.greenvulcano.gvesb.gviamx.domain.mongodb.UserActionRequest;
 import it.greenvulcano.gvesb.gviamx.service.internal.EmailChangeManager;
 import it.greenvulcano.gvesb.gviamx.service.internal.PasswordResetManager;
 import it.greenvulcano.gvesb.gviamx.service.internal.SignUpManager;
@@ -63,6 +61,7 @@ import it.greenvulcano.gvesb.iam.exception.InvalidUsernameException;
 import it.greenvulcano.gvesb.iam.exception.UnverifiableUserException;
 import it.greenvulcano.gvesb.iam.exception.UserExistException;
 import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
+import it.greenvulcano.gvesb.iam.service.UsersManager;
 import it.greenvulcano.gvesb.iam.service.UsersManager.Authority;
 import it.greenvulcano.util.crypto.CryptoHelper;
 import it.greenvulcano.util.crypto.CryptoHelperException;
@@ -76,6 +75,7 @@ public class GVAccountControllerRest {
 	private SignUpManager signupManager;
 	private PasswordResetManager passwordResetManager;
 	private EmailChangeManager emailChangeManager;
+	private UsersManager usersManager;
 		
 	public void setPasswordResetManager(PasswordResetManager passwordResetManager) {
 		this.passwordResetManager = passwordResetManager;
@@ -87,6 +87,10 @@ public class GVAccountControllerRest {
 	
 	public void setEmailChangeManager(EmailChangeManager emailChangeManager) {
 		this.emailChangeManager = emailChangeManager;
+	}
+	
+	public void setUsersManager(UsersManager usersManager) {
+	        this.usersManager = usersManager;
 	}
 	
 	@Path("/signup")
@@ -216,7 +220,7 @@ public class GVAccountControllerRest {
 			email = Optional.ofNullable(email).map(String::toLowerCase).orElseThrow(()->new IllegalArgumentException("Required parameter: email")).trim();
 			token = Optional.ofNullable(token).orElseThrow(()->new IllegalArgumentException("Required parameter: token")).trim();
 						
-			SignUpRequest signupRequest = signupManager.retrieveSignUpRequest(email, token);
+			UserActionRequest signupRequest = signupManager.retrieveSignUpRequest(email, token);
 						
 			String password = Optional.ofNullable(clearPassword).orElseGet(()->{
 				try {
@@ -234,7 +238,7 @@ public class GVAccountControllerRest {
 			user.getUserInfo().setEmail(email);
 			
 			try {
-				JSONObject object = new JSONObject(new String(signupRequest.getRequest(), "UTF-8"));
+				JSONObject object = signupRequest.getRequestObject();
 				
 				if (object.has("fullname")) {
 					user.getUserInfo().setFullname(object.getString("fullname"));
@@ -350,14 +354,14 @@ public class GVAccountControllerRest {
 			token = Optional.ofNullable(token).orElseThrow(()->new IllegalArgumentException("Required parameter: token")).trim();
 			password = Optional.ofNullable(password).orElseThrow(()->new IllegalArgumentException("Required parameter: password")).trim();
 			
-			PasswordResetRequest passwordResetRequest =  passwordResetManager.retrievePasswordResetRequest(email,token);
+			UserActionRequest passwordResetRequest =  passwordResetManager.retrievePasswordResetRequest(email,token);
 			
 			passwordResetManager.getUsersManager().resetUserPassword(email, password);
 			passwordResetManager.getUsersManager().setUserExpiration(email, false);
 			
 			passwordResetManager.consumePasswordResetRequest(passwordResetRequest);
 			
-			LOG.info("Confirmed password reset for user {}", passwordResetRequest.getUser().getId());
+			LOG.info("Confirmed password reset for user {}", passwordResetRequest.getUserId());
 			payload.put("email", email);
 			payload.put("status", "CONFIRMED");
 			response = Response.ok().entity(payload.toString()).build();
@@ -449,26 +453,28 @@ public class GVAccountControllerRest {
 			token = Optional.ofNullable(token).orElseThrow(()->new IllegalArgumentException("Required parameter: token")).trim();	
 			
 			
-			EmailChangeRequest request = emailChangeManager.retrieveEmailChangeRequest(email, token);
+			UserActionRequest request = emailChangeManager.retrieveEmailChangeRequest(email, token);
 						
-			if (request !=null && request.getUser().getUsername().equals(securityContext.getUserPrincipal().getName()) //  Any user can change its own email 
+			User user = usersManager.getUser(request.getUserId());
+			
+			if (request !=null && user.getUsername().equals(securityContext.getUserPrincipal().getName()) //  Any user can change its own email 
 			     || securityContext.isUserInRole(Authority.ADMINISTRATOR) //Administrator can change email to all
-				 || (securityContext.isUserInRole(Authority.MANAGER) && request.getUser().getRoles().stream().map(Role::getName).noneMatch(Authority.ADMINISTRATOR::equals)) // Manager cannot change email to administrator
-				 || (securityContext.isUserInRole(Authority.CLIENT) && request.getUser().getRoles().stream().map(Role::getName).noneMatch(Authority.entries::contains) && request.getUser().getRoles().stream().map(Role::getName).anyMatch(Authority.NOT_AUTHORATIVE::equals))){ // Client can change email only to apllication user
+				 || (securityContext.isUserInRole(Authority.MANAGER) && user.getRoles().stream().map(Role::getName).noneMatch(Authority.ADMINISTRATOR::equals)) // Manager cannot change email to administrator
+				 || (securityContext.isUserInRole(Authority.CLIENT) && user.getRoles().stream().map(Role::getName).noneMatch(Authority.entries::contains) && user.getRoles().stream().map(Role::getName).anyMatch(Authority.NOT_AUTHORATIVE::equals))){ // Client can change email only to apllication user
 				
 			
-				emailChangeManager.getUsersManager().updateUsername(request.getUser().getUsername(), email);
+				emailChangeManager.getUsersManager().updateUsername(user.getUsername(), email);
 								
 				try {
-					UserInfo userInfo = request.getUser().getUserInfo();
+					UserInfo userInfo = user.getUserInfo();
 					userInfo.setEmail(email);
-					emailChangeManager.getUsersManager().updateUser(email, userInfo, request.getUser().getRoles(), request.getUser().isEnabled(), request.getUser().isExpired());
+					emailChangeManager.getUsersManager().updateUser(email, userInfo, user.getRoles(), user.isEnabled(), user.isExpired());
 				} catch (Exception e) {
 					LOG.warn("Fail to update userInfo", e);
 				}
 				
 				emailChangeManager.consumeEmailChangeRequest(request);
-				LOG.info("Confirmed email change for user {}", request.getUser().getId());
+				LOG.info("Confirmed email change for user {}", user.getId());
 				payload.put("email", email);
 				payload.put("status", "CONFIRMED");
 				
