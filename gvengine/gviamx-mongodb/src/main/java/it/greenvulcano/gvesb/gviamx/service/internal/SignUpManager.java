@@ -44,7 +44,6 @@ import it.greenvulcano.gvesb.gviamx.service.NotificationService;
 import it.greenvulcano.gvesb.iam.domain.Role;
 import it.greenvulcano.gvesb.iam.exception.UserExistException;
 import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
-import it.greenvulcano.gvesb.iam.service.SearchCriteria;
 import it.greenvulcano.gvesb.iam.service.UsersManager;
 
 public class SignUpManager {
@@ -129,10 +128,7 @@ public class SignUpManager {
             usersManager.getUser(email.toLowerCase());
             throw new UserExistException(email);
         } catch (UserNotFoundException e) {
-
-            if (usersManager.searchUsers(SearchCriteria.builder().byEmail(email.toLowerCase()).limitedTo(1).build()).getTotalCount() > 0) {
-                throw new UserExistException(email);
-            }
+           
         }
 
         UserActionRequest signUpRequest = signupRepository.get(email.toLowerCase(), UserActionRequest.Action.SIGNUP).orElseGet(UserActionRequest::new);

@@ -69,7 +69,7 @@ public class EmailNotificatonManager implements NotificationService {
 	
 		try {
 			
-			Optional<Configuration> configuration = Optional.ofNullable(configAdmin.getConfiguration("it.greenvulcano.gvesb.gviamx")).filter(Objects::nonNull);
+			Optional<Configuration> configuration = Optional.ofNullable(configAdmin.getConfiguration("it.greenvulcano.gvesb.security")).filter(Objects::nonNull);
 			
 			Dictionary<String, Object> config = configuration.isPresent() ? Optional.ofNullable(configuration.get().getProperties()).orElse(new Hashtable<>()) : new Hashtable<>();
 		

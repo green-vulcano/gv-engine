@@ -84,8 +84,7 @@ public class UserActionRequestRepositoryMongoDb implements UserActionRepository 
         entity.setUpdateTime(i);
         entity.setIssueTime(i);
         getCollection().updateOne(Filters.and(Filters.eq("email", entity.getEmail()), Filters.eq("action", entity.getAction())),  
-                                  Updates.combine(Updates.set("_id", entity.getId()),
-                                                  Updates.set("userid", entity.getUserId()),
+                                  Updates.combine(Updates.set("userid", entity.getUserId()),
                                                   Updates.set("data", entity.getRequest()),
                                                   Updates.set("issue_time", entity.getIssueTime()),
                                                   Updates.set("update_time", entity.getUpdateTime()),

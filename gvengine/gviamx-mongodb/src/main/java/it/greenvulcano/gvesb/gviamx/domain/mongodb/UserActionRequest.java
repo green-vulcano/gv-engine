@@ -53,12 +53,11 @@ public class UserActionRequest {
     
     
     public UserActionRequest() {
-        this.id = UUID.randomUUID().toString();
     }
     
     public UserActionRequest(Document userActionRequest) {
         
-        this.id = userActionRequest.getString("_id");
+        this.id = userActionRequest.getObjectId("_id").toHexString();
         this.email = userActionRequest.getString("email");
         this.issueTime = Instant.ofEpochMilli(userActionRequest.getLong("issue_time"));
         this.expiresIn = userActionRequest.getLong("expires_in");

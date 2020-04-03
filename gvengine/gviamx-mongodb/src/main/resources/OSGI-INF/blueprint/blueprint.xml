@@ -2,21 +2,19 @@
 <blueprint  default-activation="eager" 
             xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xmlns:tx="http://aries.apache.org/xmlns/transactions/v1.0.0"
             xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
             xmlns:jaxrs="http://cxf.apache.org/blueprint/jaxrs"                 			
-			xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
-							   http://aries.apache.org/xmlns/transactions/v1.0.0 http://aries.apache.org/xmlns/transactions/v1.0.0
+			xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd							   
 							   http://cxf.apache.org/blueprint/jaxrs http://cxf.apache.org/schemas/blueprint/jaxrs.xsd
 							   http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd">
   
-  <reference id="hibernateSessionFactory" interface="org.hibernate.SessionFactory" activation="eager" availability="mandatory"/>  
   <reference id="usersManager" interface="it.greenvulcano.gvesb.iam.service.UsersManager" activation="eager" availability="mandatory"/>
   <reference id="configAdmin" interface="org.osgi.service.cm.ConfigurationAdmin" availability="mandatory" />
   
   
-  <cm:property-placeholder persistent-id="it.greenvulcano.gvesb.gviamx" update-strategy="none">
-      <cm:default-properties>      	
+  <cm:property-placeholder persistent-id="it.greenvulcano.gvesb.security" update-strategy="none">
+      <cm:default-properties>
+          <cm:property name="gviam.mongodb.database" value="gviam" />      	
           <cm:property name="gviamx.mail.host" value="localhost"/>
           <cm:property name="gviamx.mail.port" value="25"/>
           <cm:property name="gviamx.mail.username" value="username"/>
@@ -34,9 +32,9 @@
       </cm:default-properties>
   </cm:property-placeholder>
   
-  <bean id="userActionRepositoryHibernate" class="it.greenvulcano.gvesb.gviamx.repository.hibernate.UserActionRepositoryHibernate">
-  		<property name="sessionFactory" ref="hibernateSessionFactory"/>
-		<tx:transaction method="*" value="Required"/>
+  <bean id="userActionRepository" init-method="init" class="it.greenvulcano.gvesb.gviamx.repository.mongodb.UserActionRequestRepositoryMongoDb">
+  		<property name="mongodbURI" value="${gviam.mongodb.uri}"/>
+        <property name="databaseName" value="${gviam.mongodb.database}"/>
   </bean> 
   
   <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
@@ -83,7 +81,7 @@
 			</list>
 		</property>
   		<property name="usersManager" ref="usersManager"/>  			
-  		<property name="repository" ref="userActionRepositoryHibernate"/>
+  		<property name="repository" ref="userActionRepository"/>
   		<property name="expireTime" value="${gviamx.signup.life}"/>
   		<property name="defaultRoles" value="${gviamx.signup.roles}"/>
   </bean> 
@@ -95,7 +93,7 @@
 			</list>
 		</property>
   		<property name="usersManager" ref="usersManager"/>  			
-  		<property name="repository" ref="userActionRepositoryHibernate"/>
+  		<property name="repository" ref="userActionRepository"/>
   		<property name="expireTime" value="${gviamx.reset.life}"/>
   </bean>
   
@@ -106,12 +104,13 @@
 			</list>
 		</property>
   		<property name="usersManager" ref="usersManager"/>  			
-  		<property name="repository" ref="userActionRepositoryHibernate"/>
+  		<property name="repository" ref="userActionRepository"/>
   		<property name="expireTime" value="${gviamx.reset.life}"/>
   </bean>
   
   <bean id="accountController" class="it.greenvulcano.gvesb.gviamx.api.GVAccountControllerRest">
   		<property name="signupManager" ref="signupManager"/>
+  		<property name="usersManager" ref="usersManager"/>
   		<property name="passwordResetManager" ref="passwordResetManager"/>
   		<property name="emailChangeManager" ref="emailChangeManager"/>
   </bean>
