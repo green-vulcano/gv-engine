@@ -23,9 +23,8 @@ import java.time.Instant;
 import java.util.Base64;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
-
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.json.JSONObject;
 
 public class UserActionRequest {
@@ -52,16 +51,36 @@ public class UserActionRequest {
     private Action action;
     
     
-    public UserActionRequest() {
+    private UserActionRequest() {
+            this.id = ObjectId.get().toHexString();
+    }
+    
+    public static UserActionRequest newEmailChangeRequest() {
+        UserActionRequest userActionRequest =  new UserActionRequest();
+        userActionRequest.action = Action.UPDATE;
+        return userActionRequest;
+    }
+    
+    public static UserActionRequest newPassowordResetRequest() {
+        UserActionRequest userActionRequest =  new UserActionRequest();
+        userActionRequest.action = Action.RESET;
+        return userActionRequest;
+    }
+    
+    public static UserActionRequest newSignupRequest() {
+        UserActionRequest userActionRequest =  new UserActionRequest();
+        userActionRequest.action = Action.SIGNUP;
+        return userActionRequest;
     }
     
     public UserActionRequest(Document userActionRequest) {
         
-        this.id = userActionRequest.getObjectId("_id").toHexString();
+        this.id = userActionRequest.getString("_id");
         this.email = userActionRequest.getString("email");
         this.issueTime = Instant.ofEpochMilli(userActionRequest.getLong("issue_time"));
         this.expiresIn = userActionRequest.getLong("expires_in");
         this.token = userActionRequest.getString("token");
+        this.clearToken = null;
         this.updateTime = Instant.ofEpochMilli(userActionRequest.getLong("update_time"));
         this.notificationStatus = NotificationStatus.valueOf(userActionRequest.getString("status"));
         this.action = Action.valueOf(userActionRequest.getString("action"));
@@ -104,14 +123,18 @@ public class UserActionRequest {
     }
     
     public String getToken() {
-        return clearToken != null ? clearToken : token;
+        return token;
     }
 
-    public void setToken(String token) {
+    public void setToken(String token) {        
         this.token = token;
     }
-
-    public void setClearToken(String clearToken) {
+    
+    public String getClearToken() {
+        return clearToken;
+    }
+    
+    public void setClearToken(String clearToken) {        
         this.clearToken = clearToken;
     }
 
@@ -134,12 +157,7 @@ public class UserActionRequest {
     public Action getAction() {
         return action;
     }
-    
-    
-    public void setAction(Action action) {
-        this.action = action;
-    }
-    
+        
     public String getRequest() {
         return request;
     }
@@ -182,7 +200,8 @@ public class UserActionRequest {
     public JSONObject toJSONObject() {
 
         JSONObject userRequest = new JSONObject();
-        userRequest.put("email", email)
+        userRequest.put("_id", id)
+                   .put("email", email)
                    .put("token", Optional.ofNullable(clearToken).orElse(token))
                    .put("issue_time", issueTime.toEpochMilli())
                    .put("update_time", updateTime.toEpochMilli())
@@ -190,7 +209,7 @@ public class UserActionRequest {
                    .put("status", notificationStatus.toString())
                    .put("action", action.toString())
                    .put("data", request)
-                   .put("userid", userid);    
+                   .put("userid", userid);
         
         return userRequest;
     }

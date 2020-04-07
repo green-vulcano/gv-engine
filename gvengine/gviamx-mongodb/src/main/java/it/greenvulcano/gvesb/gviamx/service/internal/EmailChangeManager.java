@@ -99,7 +99,7 @@ public class EmailChangeManager {
 
         User user = usersManager.getUser(currentEmailAddress.toLowerCase());
 
-        UserActionRequest request = repository.get(newEmailAddress.toLowerCase(), UserActionRequest.Action.UPDATE).orElseGet(UserActionRequest::new);
+        UserActionRequest request = repository.get(newEmailAddress.toLowerCase(), UserActionRequest.Action.UPDATE).orElseGet(UserActionRequest::newEmailChangeRequest);
         request.setUserId(user.getId());
         request.setEmail(newEmailAddress.toLowerCase());
         request.setExpiresIn(expireTime);

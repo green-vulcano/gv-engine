@@ -149,6 +149,7 @@
                         	  org.slf4j,
                             org.bson,
                             org.bson.conversions,
+                            org.bson.types,
                             com.mongodb,
                             com.mongodb.client,
                             com.mongodb.client.model,

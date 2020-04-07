@@ -83,11 +83,14 @@ public class UserActionRequestRepositoryMongoDb implements UserActionRepository 
         Instant i = Instant.now();
         entity.setUpdateTime(i);
         entity.setIssueTime(i);
-        getCollection().updateOne(Filters.and(Filters.eq("email", entity.getEmail()), Filters.eq("action", entity.getAction())),  
-                                  Updates.combine(Updates.set("userid", entity.getUserId()),
+      
+        getCollection().updateOne(Filters.eq("_id", entity.getId()),  
+                                  Updates.combine(Updates.set("email", entity.getEmail()),
+                                                  Updates.set("action", entity.getAction().toString()),
+                                                  Updates.set("userid", entity.getUserId()),
                                                   Updates.set("data", entity.getRequest()),
-                                                  Updates.set("issue_time", entity.getIssueTime()),
-                                                  Updates.set("update_time", entity.getUpdateTime()),
+                                                  Updates.set("issue_time", entity.getIssueTime().toEpochMilli()),
+                                                  Updates.set("update_time", entity.getUpdateTime().toEpochMilli()),
                                                   Updates.set("expires_in", entity.getExpiresIn()),
                                                   Updates.set("token", entity.getToken()),
                                                   Updates.set("status", entity.getNotificationStatus().toString())), 
@@ -98,7 +101,7 @@ public class UserActionRequestRepositoryMongoDb implements UserActionRepository 
     @Override
     public void updateStatus(String key, NotificationStatus status) {
         
-        getCollection().updateOne(Filters.eq("_id", key), Updates.set("status", status.toString()));
+        getCollection().updateOne(Filters.eq("_id", key), Updates.combine(Updates.set("update_time", Instant.now().toEpochMilli()), Updates.set("status", status.toString())));
     }
 
     @Override

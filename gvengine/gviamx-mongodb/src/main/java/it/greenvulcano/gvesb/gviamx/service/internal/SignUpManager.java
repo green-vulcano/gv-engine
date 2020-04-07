@@ -131,7 +131,7 @@ public class SignUpManager {
            
         }
 
-        UserActionRequest signUpRequest = signupRepository.get(email.toLowerCase(), UserActionRequest.Action.SIGNUP).orElseGet(UserActionRequest::new);
+        UserActionRequest signUpRequest = signupRepository.get(email.toLowerCase(), UserActionRequest.Action.SIGNUP).orElseGet(UserActionRequest::newSignupRequest);
         signUpRequest.setEmail(email.toLowerCase());
         signUpRequest.setExpiresIn(expireTime);
         signUpRequest.setRequest(request);

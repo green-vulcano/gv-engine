@@ -86,7 +86,7 @@ public class PasswordResetManager {
 
         if (user.getPassword().isPresent()) {
 
-            UserActionRequest passwordResetRequest = repository.get(email.toLowerCase(), UserActionRequest.Action.RESET).orElseGet(UserActionRequest::new);
+            UserActionRequest passwordResetRequest = repository.get(email.toLowerCase(), UserActionRequest.Action.RESET).orElseGet(UserActionRequest::newPassowordResetRequest);
             passwordResetRequest.setUserId(user.getId());
             passwordResetRequest.setEmail(email.toLowerCase());
             passwordResetRequest.setExpiresIn(expireTime);
