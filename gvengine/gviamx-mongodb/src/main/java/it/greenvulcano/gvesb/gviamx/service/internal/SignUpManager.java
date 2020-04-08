@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -118,7 +119,7 @@ public class SignUpManager {
         return defaultRoles;
     }
 
-    public void createSignUpRequest(String email, byte[] request) throws UserExistException {
+    public void createSignUpRequest(String email, JSONObject request) throws UserExistException {
 
         if (email == null || !email.matches(UserActionRequest.EMAIL_PATTERN)) {
             throw new IllegalArgumentException("Invalid email: " + email);
@@ -128,7 +129,7 @@ public class SignUpManager {
             usersManager.getUser(email.toLowerCase());
             throw new UserExistException(email);
         } catch (UserNotFoundException e) {
-           
+           LOG.debug("Creating account for: "+email);
         }
 
         UserActionRequest signUpRequest = signupRepository.get(email.toLowerCase(), UserActionRequest.Action.SIGNUP).orElseGet(UserActionRequest::newSignupRequest);

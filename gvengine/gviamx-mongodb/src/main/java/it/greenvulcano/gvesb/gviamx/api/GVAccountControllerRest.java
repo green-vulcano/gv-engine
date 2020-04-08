@@ -158,7 +158,7 @@ public class GVAccountControllerRest {
 		    	}		    	
 		    }			
 		    
-			signupManager.createSignUpRequest(jsonData.optString("email"), jsonData.toString().getBytes());
+			signupManager.createSignUpRequest(jsonData.optString("email"), jsonData);
 			
 			payload.put("email", jsonData.getString("email"));
 			payload.put("status", "PENDING");

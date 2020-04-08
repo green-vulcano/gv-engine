@@ -19,10 +19,13 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb.gviamx.domain.mongodb;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.json.JSONObject;
@@ -44,8 +47,7 @@ public class UserActionRequest {
     private String clearToken;
     
     private Long userid;
-    private String request;
-    private JSONObject requestObject;
+    private JSONObject request;
     
     private NotificationStatus notificationStatus;
     private Action action;
@@ -84,10 +86,14 @@ public class UserActionRequest {
         this.updateTime = Instant.ofEpochMilli(userActionRequest.getLong("update_time"));
         this.notificationStatus = NotificationStatus.valueOf(userActionRequest.getString("status"));
         this.action = Action.valueOf(userActionRequest.getString("action"));
-        
-        this.request = userActionRequest.getString("data");
         this.userid = userActionRequest.getLong("userid");
-        
+                
+        Optional.ofNullable(userActionRequest.getString("data"))
+                .map(String::getBytes)
+                .map(Base64.getDecoder()::decode)
+                .map(requestData -> new String(requestData, StandardCharsets.UTF_8))
+                .ifPresent(this::setRequest);
+                
     }
     
     public static UserActionRequest fromDocument(Document userActionRequest) {
@@ -159,17 +165,28 @@ public class UserActionRequest {
     }
         
     public String getRequest() {
+        if (request!=null) {
+            return Base64.getEncoder().encodeToString(request.toString().getBytes(StandardCharsets.UTF_8));
+            
+        }
+        
+        return null;
+
+    }
+    
+    public JSONObject getRequestObject() {
         return request;
+    }
+    
+    public void setRequest(JSONObject request) {      
+        this.request = request;       
     }
 
     public void setRequest(String request) {
-        setRequest(request.getBytes());
+        this.request = new JSONObject(request);        
+       
     }
-    
-    public void setRequest(byte[] request) {
-        this.request = Base64.getEncoder().encodeToString(request);
-    }
-    
+       
     public Long getUserId() {
         return userid;
     }
@@ -178,37 +195,22 @@ public class UserActionRequest {
         this.userid = userid;
     }
 
-    public JSONObject getRequestObject() {
-
-        synchronized (this) {
-            if (requestObject == null) {
-                try {
-                    requestObject = new JSONObject(Base64.getDecoder().decode(request));
-                } catch (Exception e) {
-                    requestObject = new JSONObject();
-                }
-            }
-        }
-        
-        return requestObject;
-    }
-
-    public Map<String, Object> getActionData() {       
-        return getRequestObject().toMap();
+    public Map<String, Object> getActionData() {
+        return Optional.ofNullable(request)
+                       .map(JSONObject::toMap)
+                       .orElseGet(Collections::emptyMap);
     }
 
     public JSONObject toJSONObject() {
 
         JSONObject userRequest = new JSONObject();
         userRequest.put("_id", id)
-                   .put("email", email)
-                   .put("token", Optional.ofNullable(clearToken).orElse(token))
+                   .put("email", email)                   
                    .put("issue_time", issueTime.toEpochMilli())
                    .put("update_time", updateTime.toEpochMilli())
                    .put("expires_in", expiresIn)
                    .put("status", notificationStatus.toString())
-                   .put("action", action.toString())
-                   .put("data", request)
+                   .put("action", action.toString())                   
                    .put("userid", userid);
         
         return userRequest;

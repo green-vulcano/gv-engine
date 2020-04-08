@@ -37,7 +37,6 @@ import it.greenvulcano.gvesb.gviamx.service.NotificationService;
 import it.greenvulcano.gvesb.iam.domain.User;
 import it.greenvulcano.gvesb.iam.exception.UserExistException;
 import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
-import it.greenvulcano.gvesb.iam.service.SearchCriteria;
 import it.greenvulcano.gvesb.iam.service.UsersManager;
 
 public class EmailChangeManager {
@@ -91,10 +90,7 @@ public class EmailChangeManager {
             usersManager.getUser(newEmailAddress.toLowerCase());
             throw new UserExistException(newEmailAddress);
         } catch (UserNotFoundException e) {
-
-            if (usersManager.searchUsers(SearchCriteria.builder().byEmail(newEmailAddress.toLowerCase()).limitedTo(1).build()).getTotalCount() > 0) {
-                throw new UserExistException(newEmailAddress);
-            }
+            LOG.debug("Change account identity for: "+currentEmailAddress+"to "+newEmailAddress);
         }
 
         User user = usersManager.getUser(currentEmailAddress.toLowerCase());
