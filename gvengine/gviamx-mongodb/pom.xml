@@ -133,11 +133,9 @@
                         </Export-Package>
                         <Import-Package>
                             javax.mail,
-                            javax.persistence,
                             javax.ws.rs.core,
                             javax.ws.rs,
-                            javax.annotation.security,
-                            javassist.util.proxy,
+                            javax.annotation.security,                            
                             org.apache.commons.codec.digest,
                             org.apache.cxf.rs.security.cors,
                             org.apache.cxf.interceptor.security,
@@ -145,8 +143,8 @@
                             org.apache.cxf.jaxrs.utils,
                             org.apache.cxf.security,
                             org.apache.cxf.message,
-                        	  org.json,
-                        	  org.slf4j,
+                        	org.json,
+                        	org.slf4j,
                             org.bson,
                             org.bson.conversions,
                             org.bson.types,
@@ -157,14 +155,14 @@
                             org.osgi.service.cm,
                             org.springframework.mail,
                             org.springframework.mail.javamail,
-                        	  it.greenvulcano.gvesb.iam.exception,
-                        	  it.greenvulcano.gvesb.iam.service,
-                        	  it.greenvulcano.gvesb.iam.domain,
-                        	  it.greenvulcano.gvesb.iam.domain.jpa,
-                        	  it.greenvulcano.gvesb.iam.modules,
-              				      it.greenvulcano.gvesb.api.security,
-              				      it.greenvulcano.gvesb.api.docs,
-                        	  it.greenvulcano.util.crypto
+                        	it.greenvulcano.gvesb.iam.exception,
+                        	it.greenvulcano.gvesb.iam.service,
+                        	it.greenvulcano.gvesb.iam.domain,
+                        	it.greenvulcano.gvesb.iam.domain.jpa,
+                        	it.greenvulcano.gvesb.iam.modules,
+              				it.greenvulcano.gvesb.api.security,
+              				it.greenvulcano.gvesb.api.docs,
+                        	it.greenvulcano.util.crypto
                         </Import-Package>
                         <Embed-Dependency>*;scope=compile;type=jar</Embed-Dependency>
 						<Embed-Transitive>false</Embed-Transitive>
