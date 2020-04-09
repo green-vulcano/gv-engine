@@ -1,0 +1,480 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "Enabling account registration and management by email verification.",
+    "version": "1.0.0-SNAPSHOT",
+    "title": "GV IAM Extensions"
+  },
+  "basePath": "/cxf/gviamx",
+  "tags": [
+    {
+      "name": "account"
+    }
+  ],
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/account/signup": {
+      "get": {
+        "tags": [
+          "account"
+        ],
+        "summary": "Check the account status for a provided email address",
+        "operationId": "checkRegistrationStatus",
+        "security": [
+          {
+            "gviam": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "check",
+            "in": "query",
+            "description": "a valid email address to verify",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The account status for the email address",
+            "schema": {
+              "type": "object",
+              "required": [
+                "email"
+              ],
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "example": "example@example.com"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "CONFIRMED",
+                    "PENDING",
+                    "UNKNOWN"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "account"
+        ],
+        "summary": "Submit an account creation request",
+        "description": "Use this API to request the creation of an account for the specified email addess, a confirmation code will be sent to specified mailbox. The account password can be specified to permit an \"registration by invitation\" process, clear password can be sent with confirmation code using the `plain` parameter.",
+        "operationId": "submitSignUpRequest",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "plain",
+            "description": "include plain password in notification",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Account registration request",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "email"
+              ],
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Account creation request accepted"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "409": {
+            "description": "Email address already in use"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "account"
+        ],
+        "summary": "Confirm an account creation request",
+        "description": "User personal password can be included overriding password specified in account request.",
+        "operationId": "confirmSignUpRequest",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "email",
+            "type": "string",
+            "description": "email address related to an account creation request",
+            "required": true
+          },
+          {
+            "in": "formData",
+            "name": "token",
+            "type": "string",
+            "description": "confirmation code received by email",
+            "required": true
+          },
+          {
+            "in": "formData",
+            "name": "password",
+            "type": "string",
+            "description": "user personal password"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Account created"
+          },
+          "400": {
+            "description": "Invalid input"
+          }
+        }
+      }
+    },
+    "/account/restore": {
+      "post": {
+        "tags": [
+          "account"
+        ],
+        "summary": "Submit a password reset request",
+        "description": "Use this API to request the reset of the account password for the specified email addess, a confirmation code will be sent to specified mailbox.",
+        "operationId": "submitResetPasswordRequest",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "email",
+            "type": "string",
+            "description": "account related email address",
+            "required": true
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Password reset request accepted"
+          },
+          "400": {
+            "description": "Invalid email"
+          },
+          "404": {
+            "description": "Related account not found"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "account"
+        ],
+        "summary": "Confirm a password reset request",
+        "operationId": "consumeResetPasswordRequest",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "email",
+            "type": "string",
+            "description": "account related email address",
+            "required": true
+          },
+          {
+            "in": "formData",
+            "name": "token",
+            "type": "string",
+            "description": "confirmation code received by email",
+            "required": true
+          },
+          {
+            "in": "formData",
+            "name": "password",
+            "type": "string",
+            "description": "a new personal password",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Account password successfully changed"
+          },
+          "400": {
+            "description": "Invalid input"
+          }
+        }
+      }
+    },
+    "/account/update": {
+      "post": {
+        "tags": [
+          "account"
+        ],
+        "summary": "Submit a email address change request",
+        "description": "Use this API to request the change of the account related email addess, a confirmation code will be sent to specified new mailbox.",
+        "operationId": "submitChangeEmailRequest",
+        "security": [
+          {
+            "gviam": []
+          }
+        ],
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "email",
+            "type": "string",
+            "description": "the current account related email address",
+            "required": true
+          },
+          {
+            "in": "formData",
+            "name": "new_email",
+            "type": "string",
+            "description": "the new email address",
+            "required": true
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Email change accepted"
+          },
+          "400": {
+            "description": "Invalid email"
+          },
+          "404": {
+            "description": "Related account not found"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "account"
+        ],
+        "summary": "Confirm a email cheange request",
+        "operationId": "consumeChangeEmailRequest",
+        "security": [
+          {
+            "gviam": []
+          }
+        ],
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "email",
+            "type": "string",
+            "description": "new email address",
+            "required": true
+          },
+          {
+            "in": "formData",
+            "name": "token",
+            "type": "string",
+            "description": "confirmation code received by email",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Account email address successfully changed"
+          },
+          "400": {
+            "description": "Invalid input"
+          }
+        }
+      }
+    },
+    "/account/grant": {
+      "post": {
+        "tags": [
+          "account"
+        ],
+        "summary": "Grant role to an account",
+        "operationId": "grantRole",
+        "security": [
+          {
+            "gviam": []
+          }
+        ],
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "email",
+            "type": "string",
+            "description": "account related email address",
+            "required": true
+          },
+          {
+            "in": "formData",
+            "name": "role",
+            "type": "string",
+            "description": "role to be granted",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Role successfully granted"
+          },
+          "400": {
+            "description": "Invalid role name"
+          },
+          "404": {
+            "description": "Account not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "account"
+        ],
+        "summary": "Revoke a role grant to an account",
+        "operationId": "revokeRole",
+        "security": [
+          {
+            "gviam": []
+          }
+        ],
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "email",
+            "type": "string",
+            "description": "account related email address",
+            "required": true
+          },
+          {
+            "in": "formData",
+            "name": "role",
+            "type": "string",
+            "description": "role to be revoked",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Role successfully revoked"
+          },
+          "404": {
+            "description": "Account not found"
+          }
+        }
+      }
+    },
+    "/sts/exchange_token": {
+      "post": {
+        "tags": [
+          "STS"
+        ],
+        "summary": "Exchanges an externally issued authentication token for an access token",
+        "operationId": "exchangeToken",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "formData",
+            "description": "A valid authentication token issued by an external authorization provider",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "provider",
+            "in": "formData",
+            "description": "External authorization provider id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "token_type": {
+                  "type": "string",
+                  "example": "Bearer"
+                },
+                "access_token": {
+                  "type": "string",
+                  "example": "f43a1-12e1-44t5-098a"
+                },
+                "refresh_token": {
+                  "type": "string",
+                  "example": "5433-c512-8f81-9999"
+                },
+                "expires_in": {
+                  "type": "integer",
+                  "description": "token life in milliseconds",
+                  "example": 36000
+                },
+                "issue_date": {
+                  "type": "string",
+                  "format": "dateTime",
+                  "example": "2019-06-30T12:00:35.0+02:00"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "gviam": {
+      "type": "basic"
+    }
+  }
+}
