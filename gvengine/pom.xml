@@ -168,8 +168,10 @@
 		<module>gvconsole</module>
 		<module>gvdte</module>
 		<module>gviam</module>
+		<module>gviam-mongodb</module>
 		<module>gviam-db</module>
 		<module>gviamx</module>
+		<module>gviamx-mongodb</module>
 		<module>gviamx-auth-fb</module>
 		<module>gviam-karaf</module>
 		<module>gvmonitoring</module>
