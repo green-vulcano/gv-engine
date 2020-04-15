@@ -1,7 +1,7 @@
 [![N|Solid](http://www.greenvulcanotechnologies.com/wp-content/uploads/2017/04/logo_gv_FLAT-300x138.png)](http://www.greenvulcanotechnologies.com)
 # GreenVulcano GAIA ESB: Quickstart guide
 Latest [GreenVulcano] instances work on [Apache Karaf] 4.2.7.
-+ [Download Karaf 4.2.7](http://karaf.apache.org/download.html) (Select *Binary Distribution* -> *tar.gz*)
++ [Download Karaf 4.2.7](http://archive.apache.org/dist/karaf/4.2.7/apache-karaf-4.2.7.tar.gz) (Select *Binary Distribution* -> *tar.gz*)
 + Extract tar.gz into a folder in your file system.
 + */apache-karaf-4.2.7* will be the **Karaf home**.
 
