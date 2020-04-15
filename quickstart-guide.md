@@ -37,7 +37,7 @@ or specifying more options like:
 ```
 docker run --name mygaia \
            -p 18181:8181 -p 18101:8101 \
-           -e GAIA_FEATURES="gvvcl-rest, gvdatahandler, gvhttp" \
+           -e GAIA_FEATURES="gvengine, gvvcl-rest, gvdatahandler, gvhttp" \
            greenvulcano/gaia:latest
 ```
 
