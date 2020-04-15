@@ -1,7 +1,7 @@
 FROM adoptopenjdk/openjdk11:x86_64-debian-jdk-11.0.6_10
 
 ENV GAIA_VERSION 4.1.0
-ENV GAIA_FEATURES "gvvcl-rest, gvdatahandler, gvhttp"
+ENV GAIA_FEATURES "gvengine, gvvcl-rest, gvdatahandler, gvhttp"
 ENV KARAF_VERSION 4.2.7
 ENV KARAF_HOME /opt/karaf/apache-karaf-${KARAF_VERSION}
 ENV MAVEN_REPOSITORY /opt/karaf/m2/repository
