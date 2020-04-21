@@ -114,6 +114,18 @@ public class UserManagerTest {
                 Role testerA = userManager.getRole("TESTER_A");
                 Assert.assertTrue(testuser.getRoles().contains(testerA));
                 
+                userManager.createUser("testuser2", "testuser2");            
+                userManager.addRole("testuser2", "TESTER_A");
+                
+                testuser = (UserBson) userManager.getUser("testuser2");
+
+                Assert.assertEquals(1, ((UserBson)testuser).getVersion());
+                Assert.assertEquals(1, testuser.getRoles().size());                
+                Assert.assertEquals("TESTER_A", testuser.getRoles().iterator().next().getName());
+                
+                testerA = userManager.getRole("TESTER_A");
+                Assert.assertTrue(testuser.getRoles().contains(testerA));
+                
                 userManager.addRole("testuser", "TESTER_B");
                 testuser = (UserBson) userManager.getUser("testuser");
                 

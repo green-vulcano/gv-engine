@@ -307,15 +307,11 @@ public class GVUsersManager implements UsersManager {
     public Role getRole(String name) {
 
 
-       Document role = mongodbRepository.getUserCollection()
-                                  .aggregate(Arrays.asList(Aggregates.match(Filters.eq("roles.name", name)),
-                                            Aggregates.unwind("$roles"), 
-                                            Aggregates.project(Projections.fields(Projections.excludeId(), Projections.include("roles"))), 
-                                            Aggregates.group("$roles.name", Accumulators.first("role", "$roles")),
-                                            Aggregates.replaceRoot("$role")))
-                                  .first();
-        if (role!=null) {
-            return new RoleBson(role.getString("name"), role.getString("description"));
+       Document user = mongodbRepository.getUserCollection()
+                                        .find(Filters.eq("roles.name", name))
+                                        .first();
+        if (user!=null) {            
+            return new UserBson(user).getRoles().stream().filter(r -> r.getName().equals(name)).findFirst().orElseThrow();
         }
      
         return null;
@@ -344,7 +340,7 @@ public class GVUsersManager implements UsersManager {
         Optional.ofNullable(criteria.getParameters().get("username")).ifPresent(username-> filters.add(Filters.eq("username", username)) );
         Optional.ofNullable(criteria.getParameters().get("enabled")).ifPresent(enabled-> filters.add(Filters.eq("enabled", enabled)) );
         Optional.ofNullable(criteria.getParameters().get("expired")).ifPresent(expired-> filters.add(Filters.eq("expired", expired)) );
-        
+        Optional.ofNullable(criteria.getParameters().get("role")).ifPresent(role-> filters.add(Filters.eq("roles.name", role)) );
         
         List<Bson> pipeline = new LinkedList<>();
         
