@@ -165,7 +165,6 @@ public class GvServicesControllerRest extends BaseControllerRest {
 	
 	@Path("/{service}/{operation}")
 	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)	
 	public Response execute(@Context MessageContext jaxrsContext, @PathParam("service") String service, @PathParam("operation")String operation, String data) {
 		return runOperation(jaxrsContext, service, operation, data);
@@ -180,7 +179,6 @@ public class GvServicesControllerRest extends BaseControllerRest {
 
 	@Path("/{service}/{operation}")
 	@PUT
-	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)	
 	public Response modify(@Context MessageContext jaxrsContext, @PathParam("service") String service, @PathParam("operation")String operation, String data) {
 		return runOperation(jaxrsContext, service, operation, data);

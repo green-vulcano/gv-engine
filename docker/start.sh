@@ -21,10 +21,10 @@ if [ ! -f  ${KARAF_ETC}/it.greenvulcano.gvesb.cfg ]; then
   sed -i -e "s|http://repo1.maven.org|https://repo1.maven.org|g" ${KARAF_ETC}/org.ops4j.pax.url.mvn.cfg
   cat /home/gaia/log.cfg >> ${KARAF_ETC}/org.ops4j.pax.logging.cfg
 
-  echo "Starting GAIA setup"
-  /home/gaia/setup.sh
-
 fi
+
+echo "Starting GAIA setup"
+/home/gaia/setup.sh
 
 cp -r ${KARAF_HOME}/bin /home/gaia/
 /home/gaia/bin/karaf server
