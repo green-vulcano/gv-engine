@@ -40,7 +40,7 @@ public class DataSourceController {
     private static final Logger LOG = LogManager.getLogger(DataSourceController.class);
 
     private final static String JNDI_PREFIX = "osgi:service/";
-    private final static java.nio.file.Path ETC_PATH = Paths.get(System.getProperty("karaf.base"), "etc");
+    private final static java.nio.file.Path ETC_PATH = Paths.get(System.getProperty("karaf.etc"));
     private final static String CONFIG_FILENAME = "org.ops4j.datasource-%s.cfg";
     private final static Map<String, String> KNOWN_DRIVERS = new LinkedHashMap<>();
     private final static Map<String, String> VALIDATION_QUERIES = new LinkedHashMap<>();

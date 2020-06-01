@@ -44,12 +44,12 @@
         <repository>
           <id>nexus-cloud</id>
           <name>Cloud Nexus instance - RELEASES </name>
-          <url>${cloud.nexus.content}/repositories/releases</url>
+          <url>${cloud.nexus.content}</url>
         </repository>
         <snapshotRepository>
           <id>nexus-cloud</id>
           <name>Cloud Nexus instance - SNAPSHOTS</name>
-          <url>${cloud.nexus.content}/repositories/snapshots</url>
+          <url>${cloud.nexus.content}</url>
         </snapshotRepository>
     </distributionManagement>
 
