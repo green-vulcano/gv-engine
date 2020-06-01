@@ -38,7 +38,7 @@ public class Activator implements BundleActivator {
 		OperationFactory.registerSupplier("xml-validation-call", XMLValidationCallOperation::new);
 		OperationFactory.registerSupplier("gvdte-context-call", DTEServiceContextCall::new);
 		OperationFactory.registerSupplier("test-service-call", TestServiceCall::new);
-		OperationFactory.registerSupplier("json-validation-service", JSONValidationCallOperation::new);
+		OperationFactory.registerSupplier("json-validation-call", JSONValidationCallOperation::new);
 	
 	}
 
@@ -49,7 +49,7 @@ public class Activator implements BundleActivator {
 		OperationFactory.unregisterSupplier("xml-validation-call");
 		OperationFactory.unregisterSupplier("gvdte-context-call");
 		OperationFactory.unregisterSupplier("test-service-call");
-		OperationFactory.unregisterSupplier("json-validation-service");
+		OperationFactory.unregisterSupplier("json-validation-call");
 		
 		
 		LoggerFactory.getLogger(getClass()).debug("*********** VCL-Internal Stopped ");	

@@ -35,11 +35,9 @@ import org.json.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import com.github.fge.jsonschema.core.exceptions.ProcessingException;
-
 /**
  *
- * @version 3.5.0 Sep 17, 2014
+ * @version 4.1.0 Jun 01, 2020
  * @author GreenVulcano Developer Team
  *
  */
@@ -50,7 +48,9 @@ public class JSONValidationCallTestCase extends TestCase
                                                                   + "<OutputServices>"
                                                                   + "<json-validation-service critical=\"yes\" internal=\"yes\" remove-fields=\"yes\" type=\"service\">"
                                                                   + "<json-validation-call class=\"it.greenvulcano.gvesb.virtual.internal.json.JSONValidationCallOperation\""
-                                                                  + " name=\"validation\" type=\"call\" jsd-name=\"fstab.jsd\">"
+                                                                  + " name=\"validation\" type=\"call\" jsd-version=\"V4\" jsd-name=\""
+                                                                  +  JSONValidationCallTestCase.class.getClassLoader().getResource(".").getPath().toString()+"jsds/fstab.jsd"
+                                                                  + "\">"
                                                                   + "</json-validation-call>"
                                                                   + "</json-validation-service>"
                                                                   + "</OutputServices></ChangeGVBufferNode>";
@@ -90,8 +90,8 @@ public class JSONValidationCallTestCase extends TestCase
             validationCall.perform(gvBuffer);
             fail("Validation on non valid JSON successful!");
         }
-        catch (CallException exc) {
-            assertTrue(exc.getCause() instanceof ProcessingException);
+        catch (CallException exc) {            
+            assertTrue(exc.getCause() instanceof IllegalArgumentException);
         }
     }
 
@@ -107,7 +107,7 @@ public class JSONValidationCallTestCase extends TestCase
             fail("Validation on non valid JSON successful!");
         }
         catch (CallException exc) {
-        	assertTrue(exc.getCause() instanceof ProcessingException);
+        	assertTrue(exc.getCause() instanceof IllegalArgumentException);
         }
     }
 
@@ -123,7 +123,7 @@ public class JSONValidationCallTestCase extends TestCase
             fail("Validation on non valid JSON successful!");
         }
         catch (CallException exc) {
-            assertTrue(exc.getCause() instanceof ProcessingException);
+            assertTrue(exc.getCause() instanceof IllegalArgumentException);
         }
     }
 
@@ -139,7 +139,7 @@ public class JSONValidationCallTestCase extends TestCase
             fail("Validation on non valid JSON successful!");
         }
         catch (CallException exc) {        	
-            assertTrue(exc.getCause() instanceof ProcessingException);
+            assertTrue(exc.getCause() instanceof IllegalArgumentException);
         }
     }
 
