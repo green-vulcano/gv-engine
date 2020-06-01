@@ -24,6 +24,7 @@ import org.osgi.framework.BundleContext;
 import org.slf4j.LoggerFactory;
 
 import it.greenvulcano.gvesb.virtual.OperationFactory;
+import it.greenvulcano.gvesb.virtual.internal.json.JSONValidationCallOperation;
 import it.greenvulcano.gvesb.virtual.internal.xml.XMLValidationCallOperation;
 
 public class Activator implements BundleActivator {
@@ -37,6 +38,7 @@ public class Activator implements BundleActivator {
 		OperationFactory.registerSupplier("xml-validation-call", XMLValidationCallOperation::new);
 		OperationFactory.registerSupplier("gvdte-context-call", DTEServiceContextCall::new);
 		OperationFactory.registerSupplier("test-service-call", TestServiceCall::new);
+		OperationFactory.registerSupplier("json-validation-service", JSONValidationCallOperation::new);
 	
 	}
 
@@ -47,6 +49,7 @@ public class Activator implements BundleActivator {
 		OperationFactory.unregisterSupplier("xml-validation-call");
 		OperationFactory.unregisterSupplier("gvdte-context-call");
 		OperationFactory.unregisterSupplier("test-service-call");
+		OperationFactory.unregisterSupplier("json-validation-service");
 		
 		
 		LoggerFactory.getLogger(getClass()).debug("*********** VCL-Internal Stopped ");	
