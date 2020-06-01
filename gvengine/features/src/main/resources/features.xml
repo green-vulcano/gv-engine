@@ -56,6 +56,11 @@
 	<feature name="gvvcl-internal" version="${project.version}"	description="GreenVulcano VCL Internal Plugin">		  
 		<feature prerequisite="true">gvdte</feature>
 		<feature prerequisite="true">gvvcl</feature>
+		
+		<bundle start-level="80">mvn:com.fasterxml.jackson.core/jackson-core/2.9.10</bundle>
+        <bundle start-level="81">mvn:com.fasterxml.jackson.core/jackson-annotations/2.9.10</bundle>
+        <bundle start-level="82">mvn:com.fasterxml.jackson.core/jackson-databind/2.9.10</bundle>
+		
 		<bundle start-level="88">mvn:it.greenvulcano.gvesb/gvvcl-internal/${project.version}</bundle>
 	</feature>
 	
@@ -100,9 +105,6 @@
 	
 	<feature name="gvengine" version="${project.version}" description="GreenVulcano Evolution Engine">		
 		
-		<bundle start-level="80">mvn:com.fasterxml.jackson.core/jackson-core/2.9.10</bundle>
-		<bundle start-level="81">mvn:com.fasterxml.jackson.core/jackson-annotations/2.9.10</bundle>
-		<bundle start-level="82">mvn:com.fasterxml.jackson.core/jackson-databind/2.9.10</bundle>
 		<bundle start-level="82">mvn:org.yaml/snakeyaml/1.23</bundle>
 		<bundle start-level="83">mvn:com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/2.9.10</bundle>
 				
