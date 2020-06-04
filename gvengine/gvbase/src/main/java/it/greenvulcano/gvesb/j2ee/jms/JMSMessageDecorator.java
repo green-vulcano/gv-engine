@@ -53,12 +53,7 @@ public class JMSMessageDecorator
     @SuppressWarnings("unchecked")
     public static void decorateGVBuffer(Message message, GVBuffer gvBuffer) throws JMSException, GVException
     {
-        if (message.propertyExists(GVBuffer.Field.SYSTEM.toString())) {
-            gvBuffer.setSystem(message.getStringProperty(GVBuffer.Field.SYSTEM.toString()));
-        }
-        if (message.propertyExists(GVBuffer.Field.SERVICE.toString())) {
-            gvBuffer.setService(message.getStringProperty(GVBuffer.Field.SERVICE.toString()));
-        }
+        
         if (message.propertyExists(GVBuffer.Field.ID.toString())) {
             gvBuffer.setId(new Id(message.getStringProperty(GVBuffer.Field.ID.toString())));
         }
