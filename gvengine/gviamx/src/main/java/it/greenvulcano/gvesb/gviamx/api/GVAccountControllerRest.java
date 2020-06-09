@@ -267,7 +267,7 @@ public class GVAccountControllerRest {
 			
 			signupManager.consumeSignUpRequest(signupRequest);
 			LOG.info("Confirmed signup for user {}", user.getId());
-			response = Response.created(uriInfo.getBaseUri().resolve("gviam/admin/users/"+user.getId())).build();
+			response = Response.created(uriInfo.getBaseUri().resolve("gviam/admin/users/"+user.getId())).header("x-user-id", user.getId()).build();
 		} catch (IllegalArgumentException|SecurityException e) {
 			LOG.warn("Error performing signup", e);
 			response = Response.status(Status.NOT_FOUND).build();	
