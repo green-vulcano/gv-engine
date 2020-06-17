@@ -202,15 +202,15 @@
 		<bundle start-level="94">mvn:it.greenvulcano.gvesb.vcl/gvvcl-jms/${project.version}</bundle>		
 	</feature>
 	
-	<feature name="gvvcl-ws" description="GreenVulcano ws-call http-call extensions" version="${project.version}">		  
+	<feature name="gvvcl-ws" description="GreenVulcano ws-call http-call extension" version="${project.version}">		  
 		<bundle start-level="94">mvn:it.greenvulcano.gvesb.vcl/gvvcl-ws/${project.version}</bundle>		
 	</feature>
 	
-	<feature name="gvvcl-excel" description="GreenVulcano excel-call excelreader-call extensions" version="${project.version}">		  
+	<feature name="gvvcl-excel" description="GreenVulcano excel-call excelreader-call extension" version="${project.version}">		  
 		<bundle start-level="94">mvn:it.greenvulcano.gvesb.vcl/gvvcl-excel/${project.version}</bundle>		
 	</feature>		
 	
-	<feature name="gvvcl-qrcodex" description="GreenVulcano qr-encode-call extensions" version="${project.version}">		  
+	<feature name="gvvcl-qrcodex" description="GreenVulcano qr-encode-call extension" version="${project.version}">		  
 		<bundle start-level="94">mvn:it.greenvulcano.gvesb.adapter/gvqrcodex/${project.version}</bundle>		
 	</feature>		
 	
@@ -222,9 +222,12 @@
 		<bundle start-level="96">mvn:it.greenvulcano.gvesb.adapter/gvvcl-file/${project.version}</bundle>
 	</feature>
 	
-	<feature name="gvvcl-mongodb" description="GreenVulcano mongodb-call extensions" version="${project.version}">         
+	<feature name="gvvcl-mongodb" description="GreenVulcano mongodb-call extension" version="${project.version}">         
         <bundle start-level="80">mvn:org.mongodb/mongo-java-driver/3.11.0</bundle>
         <bundle start-level="96">mvn:it.greenvulcano.gvesb.adapter/gvvcl-mongo/${project.version}</bundle>      
-    </feature>			
-	
+    </feature>
+    
+    <feature name="gvvcl-html2pdf" description="GreenVulcano html2pdf-call extension" version="${project.version}">
+        <bundle start-level="96">mvn:it.greenvulcano.gvesb.adapter/gv-adapter-pdf/${project.version}</bundle>  			
+	</feature>
 </features>
