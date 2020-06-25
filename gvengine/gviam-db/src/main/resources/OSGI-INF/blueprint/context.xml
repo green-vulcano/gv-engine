@@ -27,7 +27,8 @@
     
     <bean id="gvUsersManager" class="it.greenvulcano.gvesb.iam.service.internal.GVUsersManager">
 		<property name="userRepository" ref="userRepositoryHibernate"/>
-    	<property name="roleRepository" ref="roleRepositoryHibernate"/>    
+    	<property name="roleRepository" ref="roleRepositoryHibernate"/>
+    	<property name="credentialsRepository" ref="credentialsRepositoryHibernate"/>    
 	</bean>    
     
     <service id="usersManager" ref="gvUsersManager" interface="it.greenvulcano.gvesb.iam.service.UsersManager">
@@ -38,14 +39,20 @@
         
 	<cm:property-placeholder persistent-id="it.greenvulcano.gvesb.security" update-strategy="none">
 			<cm:default-properties>
-				<cm:property name="token.lifetime" value="43200000" />				
+				<cm:property name="token.lifetime" value="43200000" />
+				<cm:property name="token.expired.max" value="2" />				
 			</cm:default-properties>
 	</cm:property-placeholder>	
+	
+	<reference-list id="externalAuthenticationServiceReferences" interface="it.greenvulcano.gvesb.iam.service.ExternalAuthenticationService" 
+                    member-type="service-reference" availability="optional"/>
 	
 	<bean id="gvCredentialsManager" class="it.greenvulcano.gvesb.iam.service.internal.GVCredentialsManager">
 		<property name="usersManager" ref="gvUsersManager"/>
     	<property name="credentialsRepository" ref="credentialsRepositoryHibernate"/>
     	<property name="tokenLifeTime" value="${token.lifetime}"/>
+    	<property name="maxExpiredTokens" value="${token.expired.max}"/>
+    	<property name="externalAuthenticationServices" ref="externalAuthenticationServiceReferences"/>
 	</bean>
 	
 	<service id="credentialsManager" ref="gvCredentialsManager" interface="it.greenvulcano.gvesb.iam.service.CredentialsManager"/>

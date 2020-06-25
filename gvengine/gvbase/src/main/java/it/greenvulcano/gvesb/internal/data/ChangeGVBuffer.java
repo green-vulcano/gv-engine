@@ -249,7 +249,7 @@ public class ChangeGVBuffer
             }
             else {
                 String className = XMLConfig.get(bbNode, "@class");
-                bodyBuilder = (GVBufferBodyMaker) Class.forName(className).newInstance();
+                bodyBuilder = (GVBufferBodyMaker) Class.forName(className).getConstructor().newInstance();
                 bodyBuilder.init(bbNode);
                 bodyBuilderOn = true;
             }

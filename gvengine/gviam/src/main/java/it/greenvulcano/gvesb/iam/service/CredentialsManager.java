@@ -29,17 +29,19 @@ import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
 
 /**
  * 
- * Manage sucurity-related business operations involving a third party  actor called "client"
+ * Manage sucurity-related business operations involving a third party actor called "client"
  * 
- *   (Yes, it is for OAuth2)
+ * (Yes, it is for OAuth2)
  * 
  */
 public interface CredentialsManager {
-	
-	Credentials create(String username, String password, String clientUsername, String clientPassword) throws UserNotFoundException, UserExpiredException, PasswordMissmatchException, UnverifiableUserException;
-	
-	Credentials check(String accessToken) throws InvalidCredentialsException, CredentialsExpiredException;
-	
-	Credentials refresh(String refreshToken, String accessToken) throws InvalidCredentialsException, CredentialsExpiredException;
+
+    Credentials create(String username, String password, String clientUsername, String clientPassword) throws UserNotFoundException, UserExpiredException, PasswordMissmatchException, UnverifiableUserException;
+
+    Credentials check(String accessToken) throws InvalidCredentialsException, CredentialsExpiredException;
+
+    Credentials refresh(String refreshToken, String accessToken) throws InvalidCredentialsException, CredentialsExpiredException;
+
+    Credentials create(String accessToken, String authenticationProvider) throws UserNotFoundException, UserExpiredException, PasswordMissmatchException, UnverifiableUserException;
 
 }

@@ -31,6 +31,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import javax.persistence.ForeignKey;
 
 @Entity
@@ -39,10 +44,10 @@ public class CredentialsJPA extends it.greenvulcano.gvesb.iam.domain.Credentials
 	
 	private static final long serialVersionUID = 1L;
 
-	@Id @Column(name="access_token", nullable=false, length=64, unique=true, updatable=false)
+	@Id @Column(name="access_token", nullable=false, length=640, unique=true, updatable=false)
 	private String accessToken;
 	
-	@Column(name="refresh_token", nullable=false, length=64, updatable=false)
+	@Column(name="refresh_token", nullable=false, length=640, updatable=false)
 	private String refreshToken;
 	
 	@Temporal(TemporalType.TIMESTAMP)
@@ -54,10 +59,12 @@ public class CredentialsJPA extends it.greenvulcano.gvesb.iam.domain.Credentials
 	
 	@ManyToOne(optional=false, fetch=FetchType.EAGER)
 	@JoinColumn(name="client_id", nullable=false, foreignKey=@ForeignKey(name = "CLIENT_FK"))
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	private UserJPA client;
 	
 	@ManyToOne(optional=false, fetch=FetchType.EAGER)
 	@JoinColumn(name="resource_owner_id", nullable=false, foreignKey=@ForeignKey(name = "OWNER_FK"))
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	private UserJPA resourceOwner;
 	
 	@Override
@@ -112,6 +119,11 @@ public class CredentialsJPA extends it.greenvulcano.gvesb.iam.domain.Credentials
 	
 	public void setResourceOwner(UserJPA resourceOwner) {
 		this.resourceOwner = resourceOwner;
+	}
+	
+	@Transient
+	public boolean isValid() {
+	    return (issueTime.getTime() + lifeTime) > System.currentTimeMillis();
 	}
 
 	@Override

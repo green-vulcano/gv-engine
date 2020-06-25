@@ -28,6 +28,10 @@ public abstract class GVSecurityException extends GeneralSecurityException {
 	public GVSecurityException(String message) {
 		super(message);
 	}
+	
+	public GVSecurityException(String message, Exception cause) {
+            super(message, cause);
+        }
 
 
 }

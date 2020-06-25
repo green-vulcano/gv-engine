@@ -144,7 +144,7 @@ public class GVBufferAccess
             // RET_CODE
             //
             else if (fieldName.equals("GVBuffer.retCode")) {
-                retValue = new Integer(gvBuffer.getRetCode());
+                retValue = Integer.valueOf(gvBuffer.getRetCode());
             }
             // PROPERTIES
             else if (fieldName.equals("GVBuffer.properties")) {

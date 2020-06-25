@@ -19,30 +19,23 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb.gviamx.service;
 
-import it.greenvulcano.gvesb.gviamx.domain.UserActionRequest;
-import it.greenvulcano.gvesb.gviamx.repository.UserActionRepository;
+public interface CallBackService {
 
-public interface NotificationManager {
-
-	public void sendNotification(UserActionRequest userActionRequest, UserActionRepository userActionRepository,  String event);
+	public void performCallBack(byte[] payload);
 	
-	public static class NotificationTask implements Runnable {
-		
-		private final NotificationManager notificationManager;		
-		private final UserActionRequest userActionRequest;
-		private final UserActionRepository userActionRepository;
-		private final String event;
-			
-		public NotificationTask(NotificationManager notificationManager, UserActionRequest userActionRequest, UserActionRepository userActionRepository, String event) {
-			this.notificationManager = notificationManager;
-			this.userActionRequest = userActionRequest;
-			this.userActionRepository = userActionRepository;
-			this.event = event;
-		}
+	public static class CallBackTask implements Runnable {
 
+		private final CallBackService callback;
+		private final byte[] payload;
+				
+		public CallBackTask(CallBackService callback, byte[] payload) {			
+			this.callback = callback;
+			this.payload = payload;
+		}
+		
 		@Override
 		public void run() {
-			notificationManager.sendNotification(userActionRequest, userActionRepository,  event);
+			callback.performCallBack(payload);
 			
 		}
 		

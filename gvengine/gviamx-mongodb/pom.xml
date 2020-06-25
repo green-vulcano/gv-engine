@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <!--
+        Licensed to the Apache Software Foundation (ASF) under one or more
+        contributor license agreements.  See the NOTICE file distributed with
+        this work for additional information regarding copyright ownership.
+        The ASF licenses this file to You under the Apache License, Version 2.0
+        (the "License"); you may not use this file except in compliance with
+        the License.  You may obtain a copy of the License at
+
+            http://www.apache.org/licenses/LICENSE-2.0
+
+        Unless required by applicable law or agreed to in writing, software
+        distributed under the License is distributed on an "AS IS" BASIS,
+        WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+        See the License for the specific language governing permissions and
+        limitations under the License.
+    -->
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+      <artifactId>gvengine</artifactId>
+      <groupId>it.greenvulcano.gvesb</groupId>
+      <version>4.1.0</version>
+    </parent>
+
+    <artifactId>gviamx-mongodb</artifactId>
+    <packaging>bundle</packaging>
+
+    <name>GreenVulcano IAM Extension - MongoDB implementation</name>
+
+    <dependencies>
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.core</artifactId>
+			<version>${version.osgi}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.compendium</artifactId>
+			<version>${version.osgi}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>it.greenvulcano.gvesb</groupId>
+			<artifactId>gvbase</artifactId>
+			<version>${project.version}</version>
+			<type>bundle</type>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>it.greenvulcano.gvesb</groupId>
+			<artifactId>gviam</artifactId>
+			<version>${project.version}</version>
+			<type>bundle</type>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.6.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+	      <groupId>org.apache.cxf</groupId>
+	      <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+	      <version>3.2.6</version>
+	      <scope>provided</scope>
+	    </dependency>
+	    <dependency>
+	      <groupId>org.apache.cxf</groupId>
+	      <artifactId>cxf-rt-rs-security-cors</artifactId>
+	      <version>3.2.6</version>
+	      <scope>provided</scope>
+	    </dependency>
+	    <dependency>
+	    	<groupId>org.springframework</groupId>
+	    	<artifactId>spring-context-support</artifactId>
+	    	<version>4.3.5.RELEASE</version>
+	    	<scope>provided</scope>
+	    </dependency>
+	    <dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.6</version>
+			<scope>provided</scope>
+		</dependency>
+	    <dependency>
+	    	<groupId>javax.mail</groupId>
+	    	<artifactId>mailapi</artifactId>
+	    	<version>1.4.3</version>
+	    	 <scope>provided</scope>
+	    </dependency>
+	    <dependency>
+		  <groupId>com.github.spullara.mustache.java</groupId>
+		  <artifactId>compiler</artifactId>
+		  <version>0.9.2</version>
+		</dependency>
+
+    <dependency>
+        <groupId>org.mongodb</groupId>
+        <artifactId>mongo-java-driver</artifactId>
+        <version>3.11.0</version>
+        <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+        <groupId>de.flapdoodle.embed</groupId>
+        <artifactId>de.flapdoodle.embed.mongo</artifactId>
+        <version>2.0.0</version>
+        <scope>test</scope>
+    </dependency>
+
+	</dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>3.3.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Version>${project.version}</Bundle-Version>
+                        <Export-Package>
+                        	it.greenvulcano.gvesb.gviamx.service
+                        </Export-Package>
+                        <Import-Package>
+                            javax.mail,
+                            javax.ws.rs.core,
+                            javax.ws.rs,
+                            javax.annotation.security,                            
+                            org.apache.commons.codec.digest,
+                            org.apache.cxf.rs.security.cors,
+                            org.apache.cxf.interceptor.security,
+                            org.apache.cxf.jaxrs.security,
+                            org.apache.cxf.jaxrs.utils,
+                            org.apache.cxf.security,
+                            org.apache.cxf.message,
+                        	org.json,
+                        	org.slf4j,
+                            org.bson,
+                            org.bson.conversions,
+                            org.bson.types,
+                            com.mongodb,
+                            com.mongodb.client,
+                            com.mongodb.client.model,
+                            com.mongodb.client.result,
+                            org.osgi.service.cm,
+                            org.springframework.mail,
+                            org.springframework.mail.javamail,
+                        	it.greenvulcano.gvesb.iam.exception,
+                        	it.greenvulcano.gvesb.iam.service,
+                        	it.greenvulcano.gvesb.iam.domain,
+                        	it.greenvulcano.gvesb.iam.domain.jpa,
+                        	it.greenvulcano.gvesb.iam.modules,
+              				it.greenvulcano.gvesb.api.security,
+              				it.greenvulcano.gvesb.api.docs,
+                        	it.greenvulcano.util.crypto
+                        </Import-Package>
+                        <Embed-Dependency>*;scope=compile;type=jar</Embed-Dependency>
+						<Embed-Transitive>false</Embed-Transitive>
+                    </instructions>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <maxmem>256M</maxmem>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

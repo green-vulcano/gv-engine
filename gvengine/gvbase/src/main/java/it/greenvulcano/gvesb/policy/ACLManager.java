@@ -47,6 +47,17 @@ public class ACLManager implements ConfigurationListener
         }
         return false;
     }
+    
+    public static boolean requiresAuthentication(ResourceKey key) {
+        
+        try {
+            return ACLManager.instance().getACL().requiresAuthentication(key);
+        } catch (Exception e) {            
+            e.printStackTrace();
+        }
+        
+        return false;
+    }
 
     private ACLManager() throws ACLException
     {
@@ -86,7 +97,7 @@ public class ACLManager implements ConfigurationListener
         try {
             Node node = XMLConfig.getNode(CFG_FILE_NAME, "/GVPolicy/*[@type='acl-manager']");
             String clazz = XMLConfig.get(node, "@class");
-            acl = (ACL) Class.forName(clazz).newInstance();
+            acl = (ACL) Class.forName(clazz).getConstructor().newInstance();
             acl.init(node);
         }
         catch (Exception exc) {

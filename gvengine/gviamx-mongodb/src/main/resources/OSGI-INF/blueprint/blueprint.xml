@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint  default-activation="eager" 
+            xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+            xmlns:jaxrs="http://cxf.apache.org/blueprint/jaxrs"                 			
+			xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd							   
+							   http://cxf.apache.org/blueprint/jaxrs http://cxf.apache.org/schemas/blueprint/jaxrs.xsd
+							   http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd">
+  
+  <reference id="usersManager" interface="it.greenvulcano.gvesb.iam.service.UsersManager" activation="eager" availability="mandatory"/>
+  <reference id="configAdmin" interface="org.osgi.service.cm.ConfigurationAdmin" availability="mandatory" />
+  
+  
+  <cm:property-placeholder persistent-id="it.greenvulcano.gvesb.security" update-strategy="none">
+      <cm:default-properties>
+          <cm:property name="gviam.mongodb.database" value="gviam" />      	
+          <cm:property name="gviamx.mail.host" value="localhost"/>
+          <cm:property name="gviamx.mail.port" value="25"/>
+          <cm:property name="gviamx.mail.username" value="username"/>
+          <cm:property name="gviamx.mail.password" value="password"/>
+          <cm:property name="gviamx.mail.protocol" value="smtp"/>
+          <cm:property name="gviamx.mail.auth" value="false"/>
+          <cm:property name="gviamx.mail.ssl" value="false"/>
+          <cm:property name="gviamx.mail.starttls" value="false"/>
+          <cm:property name="gviamx.mail.timeout" value="30000"/>
+          <cm:property name="gviamx.signup.life" value="3600000"/>
+          <cm:property name="gviamx.signup.callback.url" value="" />
+          <cm:property name="gviamx.signup.callback.auth" value="" />
+          <cm:property name="gviamx.reset.life" value="3600000"/>
+          <cm:property name="gviamx.update.life" value="3600000"/>
+      </cm:default-properties>
+  </cm:property-placeholder>
+  
+  <bean id="userActionRepository" init-method="init" class="it.greenvulcano.gvesb.gviamx.repository.mongodb.UserActionRequestRepositoryMongoDb">
+  		<property name="mongodbURI" value="${gviam.mongodb.uri}"/>
+        <property name="databaseName" value="${gviam.mongodb.database}"/>
+  </bean> 
+  
+  <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+      <property name="host" value="${gviamx.mail.host}" />
+      <property name="port" value="${gviamx.mail.port}" />
+      <property name="username" value="${gviamx.mail.username}" />
+      <property name="password" value="${gviamx.mail.password}" />
+     
+      <property name="javaMailProperties">
+        <props>
+          <prop key="mail.transport.protocol">${gviamx.mail.protocol}</prop>
+          <prop key="mail.smtps.auth">${gviamx.mail.auth}</prop>
+          <prop key="mail.smtps.ssl.enable">${gviamx.mail.ssl}</prop>
+          <prop key="mail.smtp.starttls.enable">${gviamx.mail.starttls}</prop>
+          <prop key="mail.smtp.connectiontimeout">${gviamx.mail.timeout}</prop>
+          <prop key="mail.smtp.timeout">${gviamx.mail.timeout}</prop>
+          <prop key="mail.smtp.writetimeout">${gviamx.mail.timeout}</prop>           
+          <prop key="mail.smtps.connectiontimeout">${gviamx.mail.timeout}</prop>
+          <prop key="mail.smtps.timeout">${gviamx.mail.timeout}</prop>
+          <prop key="mail.smtps.writetimeout">${gviamx.mail.timeout}</prop>                           
+        </props>
+      </property>
+  </bean>  
+  
+  <bean id="emailNotificationManager" class="it.greenvulcano.gvesb.gviamx.service.internal.EmailNotificatonManager">
+  		<property name="configAdmin" ref="configAdmin"/>  		
+  		<property name="mailSender" ref="mailSender"/>
+  </bean>
+  
+  <bean id="signupCallBackManager" class="it.greenvulcano.gvesb.gviamx.service.internal.HttpCallBackManager">
+  		<argument value="${gviamx.signup.callback.url}"/>
+  		<argument value="${gviamx.signup.callback.auth}"/>
+  </bean> 
+  
+  <bean id="signupManager" class="it.greenvulcano.gvesb.gviamx.service.internal.SignUpManager">
+  		<property name="notificationServices"> 
+			<list>
+				<ref component-id="emailNotificationManager" />				
+			</list>
+		</property>
+		<property name="callbackServices"> 
+			<list>
+				<ref component-id="signupCallBackManager" />				
+			</list>
+		</property>
+  		<property name="usersManager" ref="usersManager"/>  			
+  		<property name="repository" ref="userActionRepository"/>
+  		<property name="expireTime" value="${gviamx.signup.life}"/>
+  		<property name="defaultRoles" value="${gviamx.signup.roles}"/>
+  </bean> 
+  
+  <bean id="passwordResetManager" class="it.greenvulcano.gvesb.gviamx.service.internal.PasswordResetManager">
+  		<property name="notificationServices"> 
+			<list>
+				<ref component-id="emailNotificationManager" />				
+			</list>
+		</property>
+  		<property name="usersManager" ref="usersManager"/>  			
+  		<property name="repository" ref="userActionRepository"/>
+  		<property name="expireTime" value="${gviamx.reset.life}"/>
+  </bean>
+  
+  <bean id="emailChangeManager" class="it.greenvulcano.gvesb.gviamx.service.internal.EmailChangeManager">
+  		<property name="notificationServices"> 
+			<list>
+				<ref component-id="emailNotificationManager" />				
+			</list>
+		</property>
+  		<property name="usersManager" ref="usersManager"/>  			
+  		<property name="repository" ref="userActionRepository"/>
+  		<property name="expireTime" value="${gviamx.reset.life}"/>
+  </bean>
+  
+  <bean id="accountController" class="it.greenvulcano.gvesb.gviamx.api.GVAccountControllerRest">
+  		<property name="signupManager" ref="signupManager"/>
+  		<property name="usersManager" ref="usersManager"/>
+  		<property name="passwordResetManager" ref="passwordResetManager"/>
+  		<property name="emailChangeManager" ref="emailChangeManager"/>
+  </bean>
+  
+  <reference id="gvCredentialsManager" interface="it.greenvulcano.gvesb.iam.service.CredentialsManager" activation="eager" availability="optional" timeout="500"/>
+  
+  <bean id="externalAccountController" class="it.greenvulcano.gvesb.gviamx.api.GVExternalAccountControllerRest">        
+        <property name="credentialsManager" ref="gvCredentialsManager"/>
+        <property name="signupManager" ref="signupManager"/>    
+  </bean>
+  
+  <reference-list id="securityModulesReferences" interface="it.greenvulcano.gvesb.iam.modules.SecurityModule" 
+			   		member-type="service-reference" availability="mandatory"/>
+		
+  <bean id="gvAuthenticationFilter" class="it.greenvulcano.gvesb.api.security.GVSecurityFilter">        
+        <property name="gvSecurityModulesReferences" ref="securityModulesReferences"/>    
+  </bean>
+    
+  <bean id="cors-filter" class="org.apache.cxf.rs.security.cors.CrossOriginResourceSharingFilter"/> 
+  
+  <bean id="authorizationInterceptor" class="org.apache.cxf.interceptor.security.SecureAnnotationsInterceptor">
+  		<property name="allowAnonymousUsers" value="true" />
+  		<property name="checkConfiguredRolesOnly" value="false" />
+  		<property name="securedObject" ref="accountController"/>
+  </bean>
+  
+  <bean id="authorizationFilter" class="org.apache.cxf.jaxrs.security.SimpleAuthorizingFilter">	   
+    <property name="interceptor" ref="authorizationInterceptor"/>
+  </bean>
+  
+  <bean id="swaggerController" class="it.greenvulcano.gvesb.api.docs.SwaggerController"/>
+   			
+  <jaxrs:server address="/gviamx" id="gviamx">
+       <jaxrs:serviceBeans>            
+          <ref component-id="accountController" />
+          <ref component-id="externalAccountController"/>
+          <ref component-id="swaggerController" />                   
+       </jaxrs:serviceBeans> 
+       <jaxrs:providers>
+          <ref component-id="gvAuthenticationFilter"/>
+          <ref component-id="authorizationFilter"/>                         
+       	  <ref component-id="cors-filter" />
+       </jaxrs:providers> 
+  </jaxrs:server>
+
+</blueprint>

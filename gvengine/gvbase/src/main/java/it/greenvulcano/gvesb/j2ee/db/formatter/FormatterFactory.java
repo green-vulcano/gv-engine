@@ -63,7 +63,7 @@ public final class FormatterFactory
         try {
             className = XMLConfig.get(confNode, "@class");
             logger.debug("create formatter: " + className);
-            responseFormatter = (ResponseFormatter) Class.forName(XMLConfig.get(confNode, "@class")).newInstance();
+            responseFormatter = (ResponseFormatter) Class.forName(XMLConfig.get(confNode, "@class")).getConstructor().newInstance();
             logger.debug("init formatter...");
             responseFormatter.init(confNode);
         }

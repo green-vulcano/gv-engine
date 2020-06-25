@@ -150,7 +150,7 @@ public class LocalFileSystemMonitor implements FileSystemMonitor
             }
 
             Node fsStatus = XMLConfig.getNode(node, "*[@type='fs-monitor-status']");
-            monitorStatus = (FileSystemStatus) Class.forName(XMLConfig.get(fsStatus, "@class")).newInstance();
+            monitorStatus = (FileSystemStatus) Class.forName(XMLConfig.get(fsStatus, "@class")).getConstructor().newInstance();
             monitorStatus.init(fsStatus, "LocalFileSystemMonitor#" + analysisDir + "#" + fileFilter.toString());
 
             currentAnalysisFileSet = null;

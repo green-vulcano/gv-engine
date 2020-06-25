@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2016 GreenVulcano ESB Open Source Project.
+. * Copyright (c) 2009, 2016 GreenVulcano ESB Open Source Project.
  * All rights reserved.
  *
  * This file is part of GreenVulcano ESB.
@@ -30,6 +30,7 @@ import it.greenvulcano.gvesb.j2ee.db.resolver.ResolverFactory;
 import it.greenvulcano.gvesb.j2ee.db.utils.ResultSetEnumeration;
 import it.greenvulcano.gvesb.log.GVBufferDump;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -160,7 +161,7 @@ public class GVDBOperation
             connectionClassName = XMLConfig.get(connectionNode, "@class");
 
             Class<?> connectionClass = Class.forName(connectionClassName);
-            dataBaseConnection = (DataBaseConnection) connectionClass.newInstance();
+            dataBaseConnection = (DataBaseConnection) connectionClass.getConstructor().newInstance();
             dataBaseConnection.init(connectionNode);
             dataBaseConnection.setLogger(GVDBOperation.logger);
 
@@ -178,7 +179,7 @@ public class GVDBOperation
             throw new GVDBException("J2EE_CLASS_NOT_FOUND_ERROR", new String[][]{{"className", connectionClassName}},
                     exc);
         }
-        catch (InstantiationException exc) {
+        catch (SecurityException|NoSuchMethodException|IllegalArgumentException|InvocationTargetException|InstantiationException exc) {
             logger.error("INIT DBOperations - Error instantiating the requested class : ", exc);
             throw new GVDBException("J2EE_INSTANTIATION_ERROR", new String[][]{{"className", connectionClassName}}, exc);
         }

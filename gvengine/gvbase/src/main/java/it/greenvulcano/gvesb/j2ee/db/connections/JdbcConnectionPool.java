@@ -24,6 +24,8 @@ import it.greenvulcano.configuration.ConfigurationListener;
 import it.greenvulcano.configuration.XMLConfig;
 import it.greenvulcano.configuration.XMLConfigException;
 import it.greenvulcano.gvesb.j2ee.db.GVDBException;
+
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -131,21 +133,21 @@ public final class JdbcConnectionPool implements ConfigurationListener
                     String initType = XMLConfig.get(driverNode, "@initType", "static");
                     logger.debug("JdbcConnectionPool initTYpe = " + initType);
                     if (initType.equals("instance")) {
-                        classDriver.newInstance();
+                        classDriver.getConstructor().newInstance();
                     }
                 }
-                catch (ClassNotFoundException exc) {
+                catch (ClassNotFoundException|InvocationTargetException exc) {
                     logger.error("INIT JdbcConnectionPool - Error loading the jdbc Driver: ", exc);
                     throw new GVDBException("J2EE_CLASS_NOT_FOUND_ERROR", new String[][]{{"className", className}}, exc);
                 }
-                catch (InstantiationException exc) {
+                catch (SecurityException|NoSuchMethodException|IllegalArgumentException|InstantiationException exc) {
                     logger.error("INIT JdbcConnectionPool - Error loading the jdbc Driver: ", exc);
                     throw new GVDBException("J2EE_INSTANTIATION_ERROR", new String[][]{{"className", className}}, exc);
                 }
                 catch (IllegalAccessException exc) {
                     logger.error("INIT JdbcConnectionPool - Error loading the jdbc Driver: " + exc);
                     throw new GVDBException("J2EE_INSTANTIATION_ERROR", new String[][]{{"className", className}}, exc);
-                }
+                } 
             }
 
             nodeList = XMLConfig.getNodeList(CONFIGURATION_FILE,

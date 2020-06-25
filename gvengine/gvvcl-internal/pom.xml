@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>it.greenvulcano.gvesb</groupId>
 		<artifactId>gvengine</artifactId>
-    <version>4.0.1</version>
+    <version>4.1.0</version>
 	</parent>
 
 	<artifactId>gvvcl-internal</artifactId>
@@ -35,12 +35,6 @@
 			<type>bundle</type>
 			<scope>provided</scope>
 		</dependency>
-	    <dependency>
-			<groupId>org.json</groupId>
-			<artifactId>json</artifactId>
-			<version>20151123</version>
-			<scope>provided</scope>
-		</dependency>
 		<dependency>
 			<groupId>xml-resolver</groupId>
 			<artifactId>xml-resolver</artifactId>
@@ -55,9 +49,10 @@
 		</dependency>
 
 	    <dependency>
-            <groupId>com.github.fge</groupId>
+            <groupId>com.networknt</groupId>
             <artifactId>json-schema-validator</artifactId>
-            <version>2.2.6</version>
+            <version>1.0.40</version>
+            <scope>compile</scope>
 	    </dependency>
 
 	</dependencies>
@@ -67,7 +62,7 @@
 			<plugin>
 				<groupId>org.apache.felix</groupId>
 				<artifactId>maven-bundle-plugin</artifactId>
-				<version>${maven-bundle-plugin.version}</version>
+				<version>4.2.1</version>
 				<extensions>true</extensions>
 				<configuration>
 					<instructions>
@@ -82,6 +77,9 @@
 										org.osgi.framework;version="[1.7,2)",
 										org.osgi.service.blueprint;version="[1.0.0,2.0.0)",
 										org.json,
+										org.xml.sax,
+										com.fasterxml.jackson.databind,
+										com.fasterxml.jackson.databind.node,
 										it.greenvulcano.configuration,
 										it.greenvulcano.gvesb.buffer,
 										it.greenvulcano.gvesb.gvdp,

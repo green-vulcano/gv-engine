@@ -61,7 +61,7 @@ public abstract class RemoteManager
     /**
      *
      */
-    protected int               port;
+    protected String            port;
     /**
      *
      */
@@ -101,7 +101,7 @@ public abstract class RemoteManager
     {
         try {
             hostname = XMLConfig.get(configNode, "@hostname");
-            port = XMLConfig.getInteger(configNode, "@port", -1);
+            port = XMLConfig.get(configNode, "@port", "-1");
             username = XMLConfig.get(configNode, "@username");
             password = XMLConfig.getDecrypted(configNode, "@password");
             isAutoconnect = XMLConfig.getBoolean(configNode, "@autoConnect", false);
@@ -162,7 +162,7 @@ public abstract class RemoteManager
      * 
      * @return the port
      */
-    public int getPort()
+    public String getPort()
     {
         return port;
     }

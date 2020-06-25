@@ -58,132 +58,134 @@ import it.greenvulcano.gvesb.iam.service.UsersManager;
  * 
  * @see {@link AbstractKarafLoginModule}
  */
-public class GVLoginModule extends AbstractKarafLoginModule{
+public class GVLoginModule extends AbstractKarafLoginModule {
 
-	private final static Logger LOG = LoggerFactory.getLogger(GVLoginModule.class);
-	
-	public final static Map<String, Object> ENCRYPTION_SETTINGS = new HashMap<>();
-	static {
-		ENCRYPTION_SETTINGS.put("encryption.enabled","true");
-		ENCRYPTION_SETTINGS.put("encryption.name","basic");
-		ENCRYPTION_SETTINGS.put("encryption.algorithm","SHA-256");		
-		ENCRYPTION_SETTINGS.put("encryption.encoding","hexadecimal");
-		ENCRYPTION_SETTINGS.put(BundleContext.class.getName(), FrameworkUtil.getBundle(GVLoginModule.class).getBundleContext());
-		
-		
-		Collections.unmodifiableMap(ENCRYPTION_SETTINGS);
-	}
-	
+    private final static Logger LOG = LoggerFactory.getLogger(GVLoginModule.class);
 
-	@Override
-	public void initialize(Subject subject, CallbackHandler callbackHandler, Map<String, ?> sharedState, Map<String, ?> options) {
-		Map<String, Object> allOptions = new HashMap<>(options);	
-		allOptions.putAll(GVLoginModule.ENCRYPTION_SETTINGS);
-		
-		super.initialize(subject, callbackHandler, allOptions);
+    public final static Map<String, Object> ENCRYPTION_SETTINGS = new HashMap<>();
+    static {
+        ENCRYPTION_SETTINGS.put("encryption.enabled", "true");
+        ENCRYPTION_SETTINGS.put("encryption.name", "basic");
+        ENCRYPTION_SETTINGS.put("encryption.algorithm", "SHA-256");
+        ENCRYPTION_SETTINGS.put("encryption.encoding", "hexadecimal");
+        ENCRYPTION_SETTINGS.put(BundleContext.class.getName(), FrameworkUtil.getBundle(GVLoginModule.class).getBundleContext());
 
-	}
+        Collections.unmodifiableMap(ENCRYPTION_SETTINGS);
+    }
 
-	@Override
-	public boolean login() throws LoginException {
-		LOG.info("Login for user "+user);
-		Callback[] callbacks = new Callback[2];
-		callbacks[0] = new NameCallback("Username: ");
-		callbacks[1] = new PasswordCallback("Password: ", false);
-				
-		try {
-			callbackHandler.handle(callbacks);
-		} catch (IOException ioe) {
-			throw new LoginException(ioe.getMessage());
-		} catch (UnsupportedCallbackException uce) {
-			throw new LoginException(uce.getMessage() + " not available to obtain information from user");
-		}
+    @Override
+    public void initialize(Subject subject, CallbackHandler callbackHandler, Map<String, ?> sharedState, Map<String, ?> options) {
 
-		user = ((NameCallback) callbacks[0]).getName();
+        Map<String, Object> allOptions = new HashMap<>(options);
+        allOptions.putAll(GVLoginModule.ENCRYPTION_SETTINGS);
 
-		char[] tmpPassword = ((PasswordCallback) callbacks[1]).getPassword();
-		if (tmpPassword == null) {
-			tmpPassword = new char[0];
-		}
+        super.initialize(subject, callbackHandler, allOptions);
 
-		String password = new String(tmpPassword);
-		principals = new HashSet<>();
-		
-		try {
-			User loggingUser = getUsersManager().validateUser(user, password);
-			
-				           
-			if (loggingUser.isEnabled()) {				
-			
-				principals.add(new UserPrincipal(user));
-				List<RolePrincipal> roles = loggingUser.getRoles().stream()
-													   .map(Role::getName)
-													   .map(RolePrincipal::new)
-													   .collect(Collectors.toList());
-				
-				principals.addAll(roles);
-			
-			} else {
-				LOG.warn("Login failed for user "+user+ ": disabled");
-	        	throw new LoginException("User disabled");	             
-	        }	
-	 
-			
-		} catch (UserNotFoundException userNotFoundException) {
-			LOG.warn("Login failed for user "+user+ ": "+userNotFoundException.getMessage());
-			throw new LoginException("User " + user + " does not exist");
-			
-		} catch (UnverifiableUserException|PasswordMissmatchException passwordMissmatchException) {
-			LOG.warn("Login failed for user "+user+ ": "+passwordMissmatchException.getMessage());
-			throw new LoginException("Password for " + user + " does not match");
-			
-		} catch (UserExpiredException e) {
-			LOG.warn("Login failed for user "+user+ ": "+e.getMessage());
-			throw new LoginException("User expired");
-		}
-				
-		LOG.info("Login succes for user "+user);
-		return true;
-	}	
-	
+    }
 
-	@Override
-	public boolean abort() throws LoginException {
-	    return true;
-	}
-	
-	@Override
-	public boolean logout() throws LoginException {
-	    subject.getPrincipals().removeAll(principals);
-	    principals.clear();
-	    if (debug) {
-	        LOG.debug("logout");
-	    }
-	    return true;
-	}
-	
-	private UsersManager getUsersManager() throws LoginException {
-		BundleContext context = FrameworkUtil.getBundle(GVLoginModule.class).getBundleContext();
+    @Override
+    public boolean login() throws LoginException {
 
-		ServiceReference<?>[] serviceReference;
-		try {
-			serviceReference = context.getServiceReferences(UsersManager.class.getName(), null);
-			
-			if (serviceReference!=null && serviceReference.length>0) {
-				
-				UsersManager userManager = (UsersManager) context.getService(serviceReference[0]);				
-				return userManager;
-			} else {
-				throw new LoginException("Required it.greenvulcano.gvesb.iam.service.UsersManager instance not found");
-			}
-			
-		
-		} catch (InvalidSyntaxException e) {
-			LOG.error("Error getting service reference ",e);
-		}
-		
-		return null;
-		
-	}
+        Callback[] callbacks = new Callback[2];
+        callbacks[0] = new NameCallback("Username: ");
+        callbacks[1] = new PasswordCallback("Password: ", false);
+
+        try {
+            callbackHandler.handle(callbacks);
+        } catch (IOException ioe) {
+            throw new LoginException(ioe.getMessage());
+        } catch (UnsupportedCallbackException uce) {
+            throw new LoginException(uce.getMessage() + " not available to obtain information from user");
+        }
+
+        user = ((NameCallback) callbacks[0]).getName();
+
+        LOG.info("Login for user " + user);
+
+        char[] tmpPassword = ((PasswordCallback) callbacks[1]).getPassword();
+        if (tmpPassword == null) {
+            tmpPassword = new char[0];
+        }
+
+        String password = new String(tmpPassword);
+        principals = new HashSet<>();
+
+        try {
+            User loggingUser = getUsersManager().validateUser(user, password);
+
+            if (loggingUser.isEnabled()) {
+
+                LOG.info("User " + user+" validated");
+                principals.add(new UserPrincipal(user));
+                List<RolePrincipal> roles = loggingUser.getRoles().stream().map(Role::getName)
+                                                                           .peek(r-> LOG.debug("Adding role " + r))
+                                                                           .map(RolePrincipal::new)
+                                                                           .collect(Collectors.toList());
+
+                principals.addAll(roles);
+
+            } else {
+                LOG.warn("Login failed for user " + user + ": disabled");
+                throw new LoginException("User disabled");
+            }
+
+        } catch (UserNotFoundException userNotFoundException) {
+            LOG.warn("Login failed for user " + user + ": " + userNotFoundException.getMessage());
+            throw new LoginException("User " + user + " does not exist");
+
+        } catch (UnverifiableUserException | PasswordMissmatchException passwordMissmatchException) {
+            LOG.warn("Login failed for user " + user + ": " + passwordMissmatchException.getMessage());
+            throw new LoginException("Password for " + user + " does not match");
+
+        } catch (UserExpiredException e) {
+            LOG.warn("Login failed for user " + user + ": " + e.getMessage());
+            throw new LoginException("User expired");
+        }
+
+        LOG.info("Login succeeded for user " + user);
+        succeeded = true;
+        return true;
+    }
+
+    @Override
+    public boolean abort() throws LoginException {
+
+        return true;
+    }
+
+    @Override
+    public boolean logout() throws LoginException {
+
+        subject.getPrincipals().removeAll(principals);
+        principals.clear();
+        if (debug) {
+            LOG.debug("logout");
+        }
+        return true;
+    }
+
+    private UsersManager getUsersManager() throws LoginException {
+
+        BundleContext context = FrameworkUtil.getBundle(GVLoginModule.class).getBundleContext();
+
+        ServiceReference<?>[] serviceReference;
+        try {
+            serviceReference = context.getServiceReferences(UsersManager.class.getName(), null);
+
+            if (serviceReference != null && serviceReference.length > 0) {
+
+                UsersManager userManager = (UsersManager) context.getService(serviceReference[0]);
+                return userManager;
+            } else {
+                throw new LoginException("Required it.greenvulcano.gvesb.iam.service.UsersManager instance not found");
+            }
+
+        } catch (InvalidSyntaxException e) {
+            LOG.error("Error getting service reference ", e);
+        }
+
+        return null;
+
+    }
 
 }

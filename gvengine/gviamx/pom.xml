@@ -23,7 +23,7 @@
     <parent>
       <artifactId>gvengine</artifactId>
       <groupId>it.greenvulcano.gvesb</groupId>
-      <version>4.0.1</version>
+      <version>4.1.0</version>
     </parent>
 
     <artifactId>gviamx</artifactId>    
@@ -78,21 +78,15 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.json</groupId>
-			<artifactId>json</artifactId>
-			<version>20160810</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 	      <groupId>org.apache.cxf</groupId>
 	      <artifactId>cxf-rt-frontend-jaxrs</artifactId>
-	      <version>3.1.13</version>
+	      <version>3.2.6</version>
 	      <scope>provided</scope>
 	    </dependency>
 	    <dependency>
 	      <groupId>org.apache.cxf</groupId>
 	      <artifactId>cxf-rt-rs-security-cors</artifactId>
-	      <version>3.1.13</version>
+	      <version>3.2.6</version>
 	      <scope>provided</scope>
 	    </dependency>	    
 	    <dependency>

@@ -66,7 +66,7 @@ public abstract class SubjectBuilder
         }
 
         try {
-            SubjectBuilder sBuilder = (SubjectBuilder) Class.forName(sBuilderClass).newInstance();
+            SubjectBuilder sBuilder = (SubjectBuilder) Class.forName(sBuilderClass).getConstructor().newInstance();
             sBuilder.init(node);
             return sBuilder;
         }
@@ -101,7 +101,7 @@ public abstract class SubjectBuilder
         }
 
         try {
-            SubjectBuilder sBuilder = (SubjectBuilder) Class.forName(sBuilderClass).newInstance();
+            SubjectBuilder sBuilder = (SubjectBuilder) Class.forName(sBuilderClass).getConstructor().newInstance();
             sBuilder.init(properties);
             return sBuilder;
         }

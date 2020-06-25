@@ -60,8 +60,8 @@ public class GVBackingEngine implements BackingEngine, BackingEngineFactory {
 	@Override
 	public void addUser(String username, String password) {
 		
-		if (!username.matches(User.USERNAME_PATTERN)) throwException(new InvalidUsernameException(username));
-		if (!password.matches(User.PASSWORD_PATTERN)) throwException(new InvalidPasswordException(password));
+		if (!username.matches(User.USERNAME_PATTERN)) throwException(new InvalidUsernameException());
+		if (!password.matches(User.PASSWORD_PATTERN)) throwException(new InvalidPasswordException());
 					
 						
 		try {
@@ -181,6 +181,20 @@ public class GVBackingEngine implements BackingEngine, BackingEngineFactory {
 	public BackingEngine build(Map<String, ?> options) {		
 		return this;
 	}
+
+    @Override
+    public UserPrincipal lookupUser(String username) {
+
+        try {
+            userManager.getUser(username);
+            return new UserPrincipal(username);
+        
+        } catch (UserNotFoundException e) {
+            return null;
+            
+        }
+        
+    }
 
 		
 

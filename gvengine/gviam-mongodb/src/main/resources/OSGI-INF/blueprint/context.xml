@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint  default-activation="eager" 
+            xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"           
+            xmlns:tx="http://aries.apache.org/xmlns/transactions/v1.0.0"
+            xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"                 			
+			xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+							   http://aries.apache.org/xmlns/transactions/v1.0.0 http://aries.apache.org/xmlns/transactions/v1.0.0							  
+							   http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd">
+	
+	
+	
+	<cm:property-placeholder persistent-id="it.greenvulcano.gvesb.security" update-strategy="none">
+            <cm:default-properties>
+                <cm:property name="gviam.mongodb.database" value="gviam" />
+                <cm:property name="token.lifetime" value="43200000" />
+                <cm:property name="token.expired.max" value="2" />              
+            </cm:default-properties>
+    </cm:property-placeholder>	
+	
+	<bean id="mongodbRepository" init-method="init" class="it.greenvulcano.gvesb.iam.repository.mongodb.Repository">
+        <property name="mongodbURI" value="${gviam.mongodb.uri}"/>
+        <property name="databaseName" value="${gviam.mongodb.database}"/>          
+    </bean>	
+	    
+    <bean id="gvUsersManager"  class="it.greenvulcano.gvesb.iam.service.mongodb.GVUsersManager">
+		<property name="mongodbRepository" ref="mongodbRepository"/>    	    
+	</bean>   
+    
+    <service id="usersManager" ref="gvUsersManager" interface="it.greenvulcano.gvesb.iam.service.UsersManager">
+    	<service-properties>
+    		<entry key="name" value="GVUsersManager"/>
+    	</service-properties>
+    </service>
+	
+	<reference-list id="externalAuthenticationServiceReferences" interface="it.greenvulcano.gvesb.iam.service.ExternalAuthenticationService" 
+                    member-type="service-reference" availability="optional"/>
+	
+	<bean id="gvCredentialsManager" class="it.greenvulcano.gvesb.iam.service.mongodb.GVCredentialsManager">
+	    <property name="mongodbRepository" ref="mongodbRepository"/>
+		<property name="usersManager" ref="gvUsersManager"/>    	
+    	<property name="tokenLifeTime" value="${token.lifetime}"/>
+    	<property name="maxExpiredTokens" value="${token.expired.max}"/>
+    	<property name="externalAuthenticationServices" ref="externalAuthenticationServiceReferences"/>
+	</bean>
+	
+	<service id="credentialsManager" ref="gvCredentialsManager" interface="it.greenvulcano.gvesb.iam.service.CredentialsManager"/>
+	
+</blueprint>

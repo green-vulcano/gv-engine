@@ -23,6 +23,7 @@ import it.greenvulcano.configuration.XMLConfig;
 import it.greenvulcano.configuration.XMLConfigException;
 import it.greenvulcano.gvesb.j2ee.xmlRegistry.Proxy;
 
+import java.lang.reflect.InvocationTargetException;
 import java.net.PasswordAuthentication;
 import java.util.HashSet;
 import java.util.Properties;
@@ -234,9 +235,13 @@ public class RegistryConnection
      * Costruisce la ConnectionFactory. Se � configurato l'attributo
      * <code>@connection-factory</code> usa la classe specificata, altrimenti
      * usa il metodo <code>ConnectionFactory.newInstance()</code>.
+     * @throws SecurityException 
+     * @throws NoSuchMethodException 
+     * @throws InvocationTargetException 
+     * @throws  
      */
     private ConnectionFactory getConnectionFactory() throws JAXRException, InstantiationException,
-            IllegalAccessException
+            IllegalAccessException, InvocationTargetException, NoSuchMethodException
     {
         logger.debug("BEGIN getConnectionFactory()");
         if (classFactory == null) {
@@ -246,7 +251,7 @@ public class RegistryConnection
         else {
             logger.debug("Load class connection factory impl from configuration file");
             logger.debug("END getConnectionFactory()");
-            return (ConnectionFactory) classFactory.newInstance();
+            return (ConnectionFactory) classFactory.getConstructor().newInstance();
         }
     }
 

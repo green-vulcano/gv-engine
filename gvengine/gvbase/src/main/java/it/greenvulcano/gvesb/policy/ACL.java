@@ -30,6 +30,10 @@ public interface ACL
     public void init(Node node) throws ACLException;
 
     public boolean canAccess(ResourceKey key) throws ACLException;
+    
+    default public boolean requiresAuthentication(ResourceKey key) {
+        return false;
+    }
 
     public void destroy();
 

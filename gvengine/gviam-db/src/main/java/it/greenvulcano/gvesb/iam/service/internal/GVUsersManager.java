@@ -51,6 +51,7 @@ import it.greenvulcano.gvesb.iam.exception.UnverifiableUserException;
 import it.greenvulcano.gvesb.iam.exception.UserExistException;
 import it.greenvulcano.gvesb.iam.exception.UserExpiredException;
 import it.greenvulcano.gvesb.iam.exception.UserNotFoundException;
+import it.greenvulcano.gvesb.iam.repository.hibernate.CredentialsRepositoryHibernate;
 import it.greenvulcano.gvesb.iam.repository.hibernate.RoleRepositoryHibernate;
 import it.greenvulcano.gvesb.iam.repository.hibernate.UserRepositoryHibernate;
 import it.greenvulcano.gvesb.iam.service.SearchCriteria;
@@ -61,7 +62,7 @@ public class GVUsersManager implements UsersManager{
 	
 	private UserRepositoryHibernate userRepository;
 	private RoleRepositoryHibernate roleRepository;
-	
+	private CredentialsRepositoryHibernate credentialsRepository;
 	
 	public void setUserRepository(UserRepositoryHibernate userRepository) {
 		this.userRepository = userRepository;
@@ -70,6 +71,10 @@ public class GVUsersManager implements UsersManager{
 	public void setRoleRepository(RoleRepositoryHibernate roleRepository) {
 		this.roleRepository = roleRepository;
 	}
+	
+	public void setCredentialsRepository(CredentialsRepositoryHibernate credentialsRepository) {
+	        this.credentialsRepository = credentialsRepository;
+        }
 			
 	@Override
 	public User createUser(String username, String password)
@@ -154,6 +159,8 @@ public class GVUsersManager implements UsersManager{
 		user.setPasswordTime(new Date());
 		user.setExpired(true);
 		userRepository.add(user);
+		credentialsRepository.removeByUser(user.getId());
+		 
 		return user;
 
 	}
@@ -173,6 +180,7 @@ public class GVUsersManager implements UsersManager{
 		user.setExpired(false);
 		
 		userRepository.add(user);
+		 credentialsRepository.removeByUser(user.getId());
 		
 		return user;
 	}
@@ -251,9 +259,15 @@ public class GVUsersManager implements UsersManager{
 
 	@Override
 	public User enableUser(String username, boolean enable) throws UserNotFoundException {
-		User user = userRepository.get(username).orElseThrow(()->new UserNotFoundException(username));
+	 
+	        User user = userRepository.get(username).orElseThrow(()->new UserNotFoundException(username));
 		user.setEnabled(enable);
+		
 		userRepository.add(user);
+		
+		if(!user.isEnabled()) {		   
+		    credentialsRepository.removeByUser(user.getId());
+		}
 		
 		return user;
 	}
@@ -272,6 +286,10 @@ public class GVUsersManager implements UsersManager{
 		User user = userRepository.get(username).orElseThrow(()->new UserNotFoundException(username));
 		user.setEnabled(!user.isEnabled());
 		userRepository.add(user);
+		
+		if(!user.isEnabled()) {
+                    credentialsRepository.removeByUser(user.getId());
+                }
 		
 		return user;
 	}

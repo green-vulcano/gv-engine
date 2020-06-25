@@ -19,16 +19,16 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb.gviamx.service;
 
-public interface CallBackManager {
+public interface CallBackService {
 
 	public void performCallBack(byte[] payload);
 	
 	public static class CallBackTask implements Runnable {
 
-		private final CallBackManager callback;
+		private final CallBackService callback;
 		private final byte[] payload;
 				
-		public CallBackTask(CallBackManager callback, byte[] payload) {			
+		public CallBackTask(CallBackService callback, byte[] payload) {			
 			this.callback = callback;
 			this.payload = payload;
 		}

@@ -1,6 +1,8 @@
 package it.greenvulcano.gvesb.osgi.commands;
 
 import java.util.Optional;
+import java.util.Scanner;
+
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.Option;
@@ -13,34 +15,41 @@ import it.greenvulcano.util.crypto.CryptoHelper;
 @Command(scope = "gvesb", name = "encrypt", description = "Encrypt a string")
 @Service
 public class GVEncrypt implements Action {
-	
-	private final Logger LOG = LoggerFactory.getLogger(getClass());
 
-	@Option(name="-s", aliases="--show-input",description="Use this option in you want to see in clear text the input inserted for encryption" )
-	private boolean showInput = false;
-	
-	@Option(name="-k", aliases="--key-id", description=" The ID of key to use for encryption " )
-	private String keyId = null;
-	
-	@Override
-	public Object execute() throws Exception {
-		String out;
-		try {
-						
-			char[] input = System.console().readPassword("%s", "Insert text to encrypt: ");
-						
-			if (showInput){
-				System.out.println("Input clear text: "+String.valueOf(input));
-			}		
-			
-			out = CryptoHelper.encrypt(Optional.ofNullable(keyId).orElse(CryptoHelper.DEFAULT_KEY_ID), String.valueOf(input), true);
-			System.out.print("Encrypted output: ");
-		} catch (Exception exc) {
-			LOG.error("GVEncrypt - Deploy configuration failed", exc);
-			out = "Encrypt fail: "+exc.getMessage();
-		}
-		return out;
+    private final Logger LOG = LoggerFactory.getLogger(getClass());
 
-	}
+    @Option(name = "-s", aliases = "--show-input", description = "Use this option in you want to see in clear text the input inserted for encryption")
+    private boolean showInput = false;
+
+    @Option(name = "-k", aliases = "--key-id", description = " The ID of key to use for encryption ")
+    private String keyId = null;
+
+    @Override
+    public Object execute() throws Exception {
+
+        String out;
+        try (Scanner scanner = new Scanner(System.in)) {
+
+            String input;
+            if (System.console() != null) {
+                input = String.valueOf(System.console().readPassword("%s", "Insert text to encrypt: "));
+            } else {
+                
+                input = scanner.nextLine();    
+            }
+            
+            if (showInput) {
+                System.out.println("Input clear text: " + input);
+            }
+
+            out = CryptoHelper.encrypt(Optional.ofNullable(keyId).orElse(CryptoHelper.DEFAULT_KEY_ID), String.valueOf(input), true);
+            System.out.print("Encrypted output: ");
+        } catch (Exception exc) {
+            LOG.error("GVEncrypt - Encryption failed", exc);
+            out = "Encrypt fail: " + exc.getMessage();
+        }
+        return out;
+
+    }
 
 }

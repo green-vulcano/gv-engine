@@ -25,6 +25,7 @@ import it.greenvulcano.gvesb.utils.GVESBPropertyHandler;
 import it.greenvulcano.util.metadata.properties.BeanPropertiesHandler;
 import it.greenvulcano.util.metadata.properties.ClassPropertiesHandler;
 import it.greenvulcano.util.metadata.properties.CodedPropertiesHandler;
+import it.greenvulcano.util.metadata.properties.CryptoPropertiesHandler;
 import it.greenvulcano.util.metadata.properties.InternalPropertiesHandler;
 import it.greenvulcano.util.metadata.properties.JSONPropertiesHandler;
 import it.greenvulcano.util.metadata.properties.ScriptPropertiesHandler;
@@ -55,7 +56,8 @@ public final class PropertiesHandler {
     	registerHandler(new ScriptPropertiesHandler());
     	registerHandler(new SystemPropertiesHandler());
     	registerHandler(new XPathPropertiesHandler());
-    	registerHandler(new GVESBPropertyHandler());       
+    	registerHandler(new GVESBPropertyHandler());
+    	registerHandler(new CryptoPropertiesHandler());
     }
 
     /**
