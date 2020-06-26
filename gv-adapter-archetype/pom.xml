@@ -3,13 +3,13 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>it.greenvulcano.gvesb</groupId>
 	<artifactId>gv-adapter-archetype</artifactId>
-	<version>4.0.1</version>
+	<version>4.1.0</version>
 	<name>GreenVulcano ESB adapter archetype</name>
 	<url>http://maven.apache.org</url>
 
 	<properties>
 		<osgi.version>5.0.0</osgi.version>
-		<gvesb.version>4.0.1</gvesb.version>
+		<gvesb.version>4.1.0</gvesb.version>
 		<maven-compiler-plugin.version>2.5.1</maven-compiler-plugin.version>
 		<maven-bundle-plugin.version>3.0.1</maven-bundle-plugin.version>
 		<cloud.nexus.content>http://mvn.greenvulcano.com/nexus/content</cloud.nexus.content>
@@ -30,7 +30,7 @@
 		</repository>
 		<repository>
 			<id>central</id>
-			<url>http://repo1.maven.org/maven2</url>
+			<url>https://repo1.maven.org/maven2</url>
 		</repository>
 		<repository>
 			<id>java-net2</id>
@@ -48,12 +48,12 @@
 		<repository>
 			<id>nexus-cloud</id>
 			<name>Cloud Nexus instance - RELEASES </name>
-			<url>${cloud.nexus.content}/repositories/releases</url>
+			<url>${cloud.nexus.content}</url>
 		</repository>
 		<snapshotRepository>
 			<id>nexus-cloud</id>
 			<name>Cloud Nexus instance - SNAPSHOTS</name>
-			<url>${cloud.nexus.content}/repositories/snapshots</url>
+			<url>${cloud.nexus.content}</url>
 		</snapshotRepository>
 	</distributionManagement>
 
