@@ -23,80 +23,83 @@ import it.greenvulcano.configuration.XMLConfig;
 import it.greenvulcano.configuration.XMLConfigException;
 import it.greenvulcano.gvesb.buffer.GVBuffer;
 import it.greenvulcano.gvesb.buffer.GVException;
+import it.greenvulcano.gvesb.internal.GVInternalException;
 import it.greenvulcano.util.metadata.PropertiesHandler;
 import it.greenvulcano.util.xpath.XPathFinder;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.w3c.dom.Node;
 
 /**
  * 
- * @version 3.0.0 Feb 17, 2010
+ * @version 4.1.0 Jul 01, 2020
  * @author GreenVulcano Developer Team
  * 
  * 
  */
-public class SimpleGVBufferBodyMaker implements GVBufferBodyMaker
-{
-	private static org.slf4j.Logger     logger  = org.slf4j.LoggerFactory.getLogger(SimpleGVBufferBodyMaker.class);
+public class SimpleGVBufferBodyMaker implements GVBufferBodyMaker {
+
+    private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(SimpleGVBufferBodyMaker.class);
 
     /**
      * The data to copy in the Object field of GVBuffer.
      */
-    private byte[]        body            = null;
+    private byte[] body = null;
 
     /**
      * The name of the file from which read the body.
      */
-    private String        fileName        = null;
+    private Path filePath = null;
 
     /**
      * If true the file content is cached.
      */
-    private boolean       readOnce        = true;
+    private boolean readOnce = true;
 
     /**
      * If true the file content can contains metadata to be resolved.
      */
-    private boolean       processMetadata = true;
-    
-    private String encoding  = null;
+    private boolean processMetadata = true;
+
+    private String encoding = null;
 
     /**
      * Initialize the instance.
      * 
      * @param node
-     *        the initialization node.
+     * the initialization node.
      * @throws XMLConfigException
-     *         if error occurs.
+     * if error occurs.
      */
     @Override
-    public final void init(Node node) throws Exception
-    {
-        fileName = XMLConfig.get(node, "@file-name");
+    public final void init(Node node) throws Exception {
+
+        encoding = XMLConfig.get(node, "@encoding", "UTF-8");
+        String fileName = XMLConfig.get(node, "@file-name");
+
         if (fileName == null) {
             String sBody = XMLConfig.get(node, ".");
-            encoding = XMLConfig.get(node, "@encoding", "UTF-8");
 
             if (sBody != null) {
+
                 try {
                     body = sBody.getBytes(encoding);
-                }
-                catch (Exception exc) {
-                    throw new XMLConfigException("Bad encoding type '" + encoding + "' for node "
-                            + XPathFinder.buildXPath(node), exc);
+                } catch (Exception exc) {
+                    throw new XMLConfigException("Bad encoding type '" + encoding + "' for node " + XPathFinder.buildXPath(node), exc);
                 }
             }
             logger.debug("Initialized SimpleGVBufferBodyMaker from Node");
-        }
-        else {
-            fileName = PropertiesHandler.expand(XMLConfig.get(node, "@file-name"));
+        } else {
+
+            filePath = Paths.get(PropertiesHandler.expand(fileName));
             readOnce = XMLConfig.getBoolean(node, "@read-once", true);
-            setBody();
+
+            if (readOnce) {
+                body = Files.readAllBytes(filePath);
+            }
             logger.debug("Initialized SimpleGVBufferBodyMaker from file: " + fileName);
         }
 
@@ -105,69 +108,40 @@ public class SimpleGVBufferBodyMaker implements GVBufferBodyMaker
 
     /**
      * @param currBuffer
-     *        the current GVBuffer value
+     * the current GVBuffer value
      * @return the data to be used as body of the GVBuffer.
      */
     @Override
-    public final byte[] getBuffer(GVBuffer currBuffer)
-    {
-    	
-    	try {
-			currBuffer.setProperty("OBJECT_ENCODING", encoding);
-		} catch (GVException e) { 
-			logger.error("SimpleGVDataBodyMaker - Cannot set property OBJECT_ENCODING", e);
-		}
-    	
-        if ((fileName != null) && !readOnce) {
-            setBody();
-        }
-        if (processMetadata) {
-            try {
-                return PropertiesHandler.expand(new String(body),
-                        GVBufferPropertiesHelper.getPropertiesMapSO(currBuffer, true), currBuffer).getBytes();
+    public final byte[] getBuffer(GVBuffer currBuffer) throws GVException {
+
+        try {
+
+            currBuffer.setProperty("OBJECT_ENCODING", encoding);
+            
+            if ((filePath != null) && !readOnce) {
+                body = Files.readAllBytes(filePath);
             }
-            catch (Exception exc) {
-                logger.error("SimpleGVDataBodyMaker - Cannot process buffer metadata", exc);
+            
+            if (processMetadata) {                
+                    return PropertiesHandler.expand(new String(body, encoding), GVBufferPropertiesHelper.getPropertiesMapSO(currBuffer, true), currBuffer)
+                                            .getBytes();                
             }
-            return null;
+            
+            return body;
+            
+        } catch (Exception exc) {
+            throw new GVInternalException("SIMPLE_GVBUFFER_ERROR", new String[][] { { "message", exc.getMessage() } }, exc);
         }
-        return body;
+      
     }
 
     /**
+     * readOnce
      * Perform cleanup operations. Is called after getData().
      */
     @Override
-    public final void cleanUp()
-    {
+    public final void cleanUp() {
         // do nothing
-    }
-
-    /**
-     * Read the body content from file.
-     * 
-     */
-    private void setBody()
-    {
-        try {
-            InputStream is = null;
-            if (fileName.startsWith("CP://") || fileName.startsWith("cp://")) {
-                is = this.getClass().getClassLoader().getResourceAsStream(fileName.substring(5));
-            }
-            else {
-                is = new FileInputStream(new File(fileName));
-            }
-            byte[] buffer = new byte[1024];
-            ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
-            int size;
-            while ((size = is.read(buffer)) != -1) {
-                baos.write(buffer, 0, size);
-            }
-            body = baos.toByteArray();
-        }
-        catch (Exception exc) {
-            logger.error("SimpleGVDataBodyMaker - Cannot read the specified resource (" + fileName + ")", exc);
-        }
     }
 
 }

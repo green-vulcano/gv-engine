@@ -20,6 +20,7 @@
 package it.greenvulcano.gvesb.internal.data;
 
 import it.greenvulcano.gvesb.buffer.GVBuffer;
+import it.greenvulcano.gvesb.buffer.GVException;
 
 import org.w3c.dom.Node;
 
@@ -47,7 +48,7 @@ public interface GVBufferBodyMaker
      *        the current GVBuffer value
      * @return the data to be used as body of the GVBuffer.
      */
-    byte[] getBuffer(GVBuffer currBuffer);
+    byte[] getBuffer(GVBuffer currBuffer) throws GVException;
 
     /**
      * Perform cleanup operations. Is called after getBuffer().
