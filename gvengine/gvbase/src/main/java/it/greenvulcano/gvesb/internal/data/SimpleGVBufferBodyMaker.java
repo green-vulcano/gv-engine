@@ -52,13 +52,8 @@ public class SimpleGVBufferBodyMaker implements GVBufferBodyMaker {
     /**
      * The name of the file from which read the body.
      */
-    private Path filePath = null;
-
-    /**
-     * If true the file content is cached.
-     */
-    private boolean readOnce = true;
-
+    private String fileName = null;
+    
     /**
      * If true the file content can contains metadata to be resolved.
      */
@@ -78,32 +73,21 @@ public class SimpleGVBufferBodyMaker implements GVBufferBodyMaker {
     public final void init(Node node) throws Exception {
 
         encoding = XMLConfig.get(node, "@encoding", "UTF-8");
-        String fileName = XMLConfig.get(node, "@file-name");
-
+        fileName = XMLConfig.get(node, "@file-name");       
+        processMetadata = XMLConfig.getBoolean(node, "@process-metadata", true);
+        
         if (fileName == null) {
-            String sBody = XMLConfig.get(node, ".");
-
-            if (sBody != null) {
-
-                try {
-                    body = sBody.getBytes(encoding);
-                } catch (Exception exc) {
-                    throw new XMLConfigException("Bad encoding type '" + encoding + "' for node " + XPathFinder.buildXPath(node), exc);
-                }
+            try {
+                body = XMLConfig.get(node, ".").getBytes(encoding);
+            } catch (Exception exc) {
+                throw new XMLConfigException("Bad encoding type '" + encoding + "' for node " + XPathFinder.buildXPath(node), exc);
             }
             logger.debug("Initialized SimpleGVBufferBodyMaker from Node");
-        } else {
-
-            filePath = Paths.get(PropertiesHandler.expand(fileName));
-            readOnce = XMLConfig.getBoolean(node, "@read-once", true);
-
-            if (readOnce) {
-                body = Files.readAllBytes(filePath);
-            }
+        
+        } else {            
             logger.debug("Initialized SimpleGVBufferBodyMaker from file: " + fileName);
         }
 
-        processMetadata = XMLConfig.getBoolean(node, "@process-metadata", true);
     }
 
     /**
@@ -118,16 +102,15 @@ public class SimpleGVBufferBodyMaker implements GVBufferBodyMaker {
 
             currBuffer.setProperty("OBJECT_ENCODING", encoding);
             
-            if ((filePath != null) && !readOnce) {
+            if (fileName != null) {
+                
+                Path filePath = Paths.get(PropertiesHandler.expand(fileName, currBuffer));
+                logger.debug("Loading body from file from file: " + filePath.toString());
                 body = Files.readAllBytes(filePath);
             }
             
-            if (processMetadata) {                
-                    return PropertiesHandler.expand(new String(body, encoding), GVBufferPropertiesHelper.getPropertiesMapSO(currBuffer, true), currBuffer)
-                                            .getBytes();                
-            }
+            return processMetadata ? PropertiesHandler.expand(new String(body, encoding), currBuffer).getBytes() : body;
             
-            return body;
             
         } catch (Exception exc) {
             throw new GVInternalException("SIMPLE_GVBUFFER_ERROR", new String[][] { { "message", exc.getMessage() } }, exc);
