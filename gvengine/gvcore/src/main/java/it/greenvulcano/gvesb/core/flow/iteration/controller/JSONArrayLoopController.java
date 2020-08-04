@@ -19,6 +19,7 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb.core.flow.iteration.controller;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.IntStream;
@@ -74,6 +75,8 @@ public class JSONArrayLoopController extends JSONObjectLoopController {
 		try {
 		        if (Objects.isNull(gvBuffer.getObject())) {
                              return Optional.empty();		    
+		        } else if (gvBuffer.getObject() instanceof byte[]) {
+		            jsonArray = new JSONArray(new String((byte[])gvBuffer.getObject(), StandardCharsets.UTF_8));
 		        } else if (gvBuffer.getObject() instanceof JSONArray) {
 			     jsonArray = (JSONArray) gvBuffer.getObject();			
 			} else if (gvBuffer.getObject() instanceof String)  {

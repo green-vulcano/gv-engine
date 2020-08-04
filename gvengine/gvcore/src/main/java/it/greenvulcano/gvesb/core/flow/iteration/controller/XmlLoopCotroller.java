@@ -20,6 +20,7 @@
 package it.greenvulcano.gvesb.core.flow.iteration.controller;
 
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.IntStream;
@@ -90,16 +91,21 @@ public class XmlLoopCotroller extends BaseLoopController {
 				Node node = (Node) data.getObject();
 				parentNode = node.getNodeName();
 				nodeList = node.getChildNodes();
-			} else if (data.getObject() instanceof String) {
+			} else  {
 				DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 				InputSource xmlInputSource = new InputSource();
-				xmlInputSource.setCharacterStream(new StringReader(data.getObject().toString()));
+				
+				String xmlSource = (data.getObject() instanceof byte[]) ?
+				                   new String((byte[]) data.getObject(), StandardCharsets.UTF_8):
+				                   data.getObject().toString();    
+				
+				xmlInputSource.setCharacterStream(new StringReader(xmlSource));
 				
 				Document document = documentBuilder.parse(xmlInputSource);
 				parentNode = document.getDocumentElement().getTagName();
 				nodeList = document.getDocumentElement().getChildNodes();
 				
-			}
+			} 
 		} catch (Exception e) {
 			LOG.error("Invalid XML data "+data.getObject(), e);
 		}
