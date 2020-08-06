@@ -99,7 +99,9 @@
 	</feature>
 	
 	<feature name="gviam-mongodb" version="${project.version}" description="GreenVulcano IAM MongoDB">	
-	   <bundle start-level="80">mvn:org.mongodb/mongo-java-driver/3.11.0</bundle>
+	   <bundle start-level="80">mvn:org.mongodb/bson/4.1.0</bundle>
+	   <bundle start-level="81">mvn:org.mongodb/mongodb-driver-core/4.1.0</bundle>
+	   <bundle start-level="82">mvn:org.mongodb/mongodb-driver-sync/4.1.0</bundle>
 	   <bundle start-level="92">mvn:it.greenvulcano.gvesb/gviam-mongodb/${project.version}</bundle>	
 	</feature>
 	
@@ -223,7 +225,9 @@
 	</feature>
 	
 	<feature name="gvvcl-mongodb" description="GreenVulcano mongodb-call extension" version="${project.version}">         
-        <bundle start-level="80">mvn:org.mongodb/mongo-java-driver/3.11.0</bundle>
+        <bundle start-level="80">mvn:org.mongodb/bson/4.1.0</bundle>
+        <bundle start-level="81">mvn:org.mongodb/mongodb-driver-core/4.1.0</bundle>
+        <bundle start-level="82">mvn:org.mongodb/mongodb-driver-sync/4.1.0</bundle>
         <bundle start-level="96">mvn:it.greenvulcano.gvesb.adapter/gvvcl-mongo/${project.version}</bundle>      
     </feature>
     
