@@ -90,12 +90,13 @@ public class DataSourceController {
             Optional.ofNullable(config.optString("password")).ifPresent(u -> connectionProperties.put("password", u));
 
             connectionProperties.put("pool", "dbcp2");
-            connectionProperties.put("jdbc.pool.maxIdle", Integer.toString(2));
-            connectionProperties.put("jdbc.pool.minIdle", Integer.toString(1));
-            connectionProperties.put("jdbc.pool.maxTotal", Integer.toString(16));
+            connectionProperties.put("jdbc.pool.maxIdle", Integer.toString(config.optInt("maxIdle", 8)));
+            connectionProperties.put("jdbc.pool.minIdle", Integer.toString(config.optInt("minIdle", 2)));
+            connectionProperties.put("jdbc.pool.maxTotal", Integer.toString(config.optInt("maxTotal", 96)));
             connectionProperties.put("jdbc.pool.testOnBorrow", Boolean.toString(true));
             connectionProperties.put("jdbc.pool.testOnCreate", Boolean.toString(true));
             connectionProperties.put("jdbc.factory.validationQuery", VALIDATION_QUERIES.get(driverKey));
+            connectionProperties.put("jdbc.factory.validationQueryTimeout", Integer.toString(config.optInt("validationQueryTimeout", 10)));
 
             LOG.debug("Creating datasource config file in path: " + ETC_PATH);
             dspath = ETC_PATH.resolve(String.format(CONFIG_FILENAME, dataSourceName));
