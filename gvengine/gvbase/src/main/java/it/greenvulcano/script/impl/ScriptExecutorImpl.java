@@ -51,8 +51,7 @@ public class ScriptExecutorImpl extends ScriptExecutor {
 
     private String script = null;
     private boolean initialized = false;
-    private boolean externalScript = false;
-
+    
     private CompiledScript compScript = null;
     private Bindings bindings = null;
 
@@ -161,22 +160,16 @@ public class ScriptExecutorImpl extends ScriptExecutor {
 
         try {
             this.lang = lang;
-            if ((file != null) && !"".equals(file)) {
+            if ( file != null && file.trim().length()>0) {
                 this.script = cache.getScript(file);
             } else {
-                this.script = script;
-                if ((this.script == null) || "".equals(this.script)) {
-                    externalScript = true;
-                }
+                this.script = script;               
             }
-
-            if (!externalScript && ((this.script == null) || "".equals(this.script))) {
-                throw new GVScriptException("Empty configured script!");
-            }
-
+           
             if ("js".equals(lang)) {
                 Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
             }
+            
             ScriptEngine engine = getScriptEngine(lang);
             if (engine == null) {
                 throw new GVScriptException("ScriptEngine[" + this.lang + "] not found!");
@@ -186,22 +179,20 @@ public class ScriptExecutorImpl extends ScriptExecutor {
             String baseContext = BaseContextManager.instance().getBaseContextScript(lang, bcName);
             if (baseContext != null) {
                 this.script = baseContext + "\n\n" + (this.script != null ? this.script : "");
-                if (externalScript) {
-                    engine.eval(this.script, bindings);
-                }
+                
             } else if (bcName != null) {
                 throw new GVScriptException("BaseContext[" + this.lang + "/" + bcName + "] not found!");
             }
 
-            if (engine instanceof Compilable && PropertiesHandler.isExpanded(script)) {
-                String scriptKey = DigestUtils.sha256Hex(script);
+            if (engine instanceof Compilable && this.script != null && PropertiesHandler.isExpanded(this.script)) {
+                String scriptKey = DigestUtils.sha256Hex(this.script);
                 Optional<CompiledScript> cachedCompiledScript = cache.getCompiledScript(scriptKey);
 
                 if (cachedCompiledScript.isPresent()) {
                     compScript = cachedCompiledScript.get();
                 } else {
                     logger.debug("Static script[" + lang + "], can be compiled for performance");
-                    compScript = ((Compilable) engine).compile(script);
+                    compScript = ((Compilable) engine).compile(this.script);
                     cache.putCompiledScript(scriptKey, compScript);
                 }
             }
