@@ -41,7 +41,6 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -104,16 +103,9 @@ public class BaseConfigurationManager implements GVConfigurationManager {
 		Path history = getHistoryPath();
 		if (Files.exists(history)) {
 			
-			Path currentConfigArchive = getConfigurationPath(getCurrentConfigurationName());
-			Predicate<Path> currentConfig = p -> {
-				try {
-					return Files.isSameFile(p, currentConfigArchive);
-				} catch (IOException e) {
-					return false;
-				}
-			};
 			
-			return Files.list(history).filter(currentConfig.negate()).map(Path::toFile).collect(Collectors.toSet());			
+			
+			return Files.list(history).map(Path::toFile).collect(Collectors.toSet());			
 		}
 		
 		return new LinkedHashSet<>();
