@@ -146,7 +146,7 @@ angular.module('gvconsole')
 
 
 	this.addConfig = function(){
-    if (instance.configInfo.id != instance.deploy.id) {
+    
     	if (!instance.deploy.desc){
 			instance.deploy.desc = "No description";
 		}
@@ -162,10 +162,7 @@ angular.module('gvconsole')
 		        setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
 		        angular.element(".fadeout2").modal('hide');
 			});
-    } else {
-      instance.alertsAdd.push({type: 'danger', msg: 'ID already used for the current configuration'});
-      setTimeout(function(){ angular.element(".fadeout").fadeOut(); }, 3000);
-    }
+    
 
 	}
 
