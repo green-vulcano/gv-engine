@@ -27,6 +27,7 @@ import it.greenvulcano.gvesb.buffer.GVBuffer;
  */
 public interface GVBufferProperty
 {
+    public static int GVB_PROP_NOT_PRESENT   = -2;
     public static int GVB_PROP_PRESENT       = -1;
     public static int GVB_PROP_EQUAL         = 0;
     public static int GVB_PROP_LESSER        = 1;
