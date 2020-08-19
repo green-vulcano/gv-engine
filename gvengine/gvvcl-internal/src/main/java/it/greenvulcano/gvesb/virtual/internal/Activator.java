@@ -34,6 +34,7 @@ public class Activator implements BundleActivator {
 		LoggerFactory.getLogger(getClass()).debug("*********** VCL-Internal Up&Running ");
 
 		OperationFactory.registerSupplier("proxy-call", ProxyCallOperation::new);
+		OperationFactory.registerSupplier("proxy-enqueue", ProxyEnqueueOperation::new);
 		OperationFactory.registerSupplier("script-call", ScriptCallOperation::new);
 		OperationFactory.registerSupplier("xml-validation-call", XMLValidationCallOperation::new);
 		OperationFactory.registerSupplier("gvdte-context-call", DTEServiceContextCall::new);
@@ -45,6 +46,7 @@ public class Activator implements BundleActivator {
 	@Override
 	public void stop(BundleContext context) throws Exception {
 		OperationFactory.unregisterSupplier("proxy-call");
+		OperationFactory.unregisterSupplier("proxy-enqueue");
 		OperationFactory.unregisterSupplier("script-call");
 		OperationFactory.unregisterSupplier("xml-validation-call");
 		OperationFactory.unregisterSupplier("gvdte-context-call");
