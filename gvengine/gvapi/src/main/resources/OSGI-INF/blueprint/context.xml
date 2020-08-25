@@ -114,6 +114,34 @@
 	    </jaxrs:providers>        
     </jaxrs:server>
     
+    <reference id="gvPropertyManager" interface="it.greenvulcano.gvesb.iam.service.PropertyManager" availability="optional" />
+    
+    <bean id="storeController" class="it.greenvulcano.gvesb.api.controller.GvStoreControllerRest">
+        <property name="propertyManager" ref="gvPropertyManager"/>
+    </bean>
+    
+    <bean id="storeAuthorizationInterceptor" class="org.apache.cxf.interceptor.security.SecureAnnotationsInterceptor">
+        <property name="allowAnonymousUsers" value="false" />
+        <property name="checkConfiguredRolesOnly" value="false" />
+        <property name="securedObject" ref="storeController"/>          
+    </bean>
+    
+    <bean id="storeAuthorizationFilter" class="org.apache.cxf.jaxrs.security.SimpleAuthorizingFilter">    
+       <property name="interceptor" ref="storeAuthorizationInterceptor"/>
+    </bean>
+    
+    <jaxrs:server address="/gvstore" id="gvstoreapi">
+        <jaxrs:serviceBeans>            
+            <ref component-id="storeController" />                
+        </jaxrs:serviceBeans> 
+        <jaxrs:providers>
+            <ref component-id="gvAuthenticationFilter"/>
+            <ref component-id="storeAuthorizationFilter"/>             
+            <ref component-id="cors-filter" />
+            <ref component-id="correlation-filter" />     
+        </jaxrs:providers>        
+    </jaxrs:server> 
+    
     <bean id="gvWebService" class="it.greenvulcano.gvesb.api.ws.soap.GVWebServiceSoap"/>
     
     <bean id="gvAuthenticationInterceptor" class="it.greenvulcano.gvesb.api.security.GVSecurityInterceptor">        

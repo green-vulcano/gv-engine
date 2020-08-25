@@ -50,7 +50,8 @@ public class UserManagerTest {
 		mongoClient = MongoClients.create();
 		
 		Repository mongodbRepository = new Repository();
-		mongodbRepository.setDatabaseName("gviam");
+		mongodbRepository.setGviamDatabaseName("gviam");
+		mongodbRepository.setGvstoreDatabaseName("gviam");
 		mongodbRepository.setMongodbURI("mongodb://localhost:27017");
 		mongodbRepository.init();
 		

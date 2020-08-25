@@ -13,6 +13,7 @@
 	<cm:property-placeholder persistent-id="it.greenvulcano.gvesb.security" update-strategy="none">
             <cm:default-properties>
                 <cm:property name="gviam.mongodb.database" value="gviam" />
+                <cm:property name="gvstore.mongodb.database" value="${gviam.mongodb.database}" />
                 <cm:property name="token.lifetime" value="43200000" />
                 <cm:property name="token.expired.max" value="2" />              
             </cm:default-properties>
@@ -20,7 +21,8 @@
 	
 	<bean id="mongodbRepository" init-method="init" class="it.greenvulcano.gvesb.iam.repository.mongodb.Repository">
         <property name="mongodbURI" value="${gviam.mongodb.uri}"/>
-        <property name="databaseName" value="${gviam.mongodb.database}"/>          
+        <property name="gviamDatabaseName" value="${gviam.mongodb.database}"/>
+        <property name="gvstoreDatabaseName" value="${gvstore.mongodb.database}"/>          
     </bean>	
 	    
     <bean id="gvUsersManager"  class="it.greenvulcano.gvesb.iam.service.mongodb.GVUsersManager">
@@ -46,4 +48,17 @@
 	
 	<service id="credentialsManager" ref="gvCredentialsManager" interface="it.greenvulcano.gvesb.iam.service.CredentialsManager"/>
 	
+	<bean id="gvPropertiesManager"  class="it.greenvulcano.gvesb.iam.service.mongodb.GVPropertiesManager">
+        <property name="mongodbRepository" ref="mongodbRepository"/>
+        <property name="usersManager" ref="gvUsersManager"/>            
+    </bean>
+    
+    <service id="mongoDbStorePropertiesManager" ref="gvPropertiesManager" interface="it.greenvulcano.gvesb.iam.service.PropertyManager"/>
+    
+    <bean id="mongoDbStorePropertiesHandler"  class="it.greenvulcano.util.metadata.properties.MongoDbStorePropertiesHandler">
+        <property name="propertiesManager" ref="gvPropertiesManager"/>                   
+    </bean>
+    
+    <service id="mongoDbStorePropertiesHandlerService" ref="mongoDbStorePropertiesHandler" interface="it.greenvulcano.util.metadata.PropertyHandler"/>
+    
 </blueprint>

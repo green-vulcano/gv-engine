@@ -72,11 +72,8 @@
 					<instructions>
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
 						<Bundle-Version>${project.version}</Bundle-Version>
-						<Export-Package>
-							it.greenvulcano.gvesb.iam.domain.jpa,
-						</Export-Package>
-						<Import-Package>*</Import-Package>
-						
+						<Export-Package/>							
+						<Import-Package>*</Import-Package>						
 					</instructions>
 				</configuration>
 			</plugin>
