@@ -11,7 +11,7 @@
         <id>B</id>
         <int>67890</int>
         <intStr>67890</intStr>
-        <string>some other &lt;value&gt;</string>
+        <string/>
         <float>456.123</float>text child
 second row</elem>
     <elemA/>

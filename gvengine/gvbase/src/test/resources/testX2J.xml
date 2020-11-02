@@ -1,6 +1,6 @@
 <root>
     <elem id="A" string="some &amp; value" int="12345" intStr="12345" float="123.456"/>
-    <elem id="B" string="some other &lt;value&gt;" int="67890" intStr="67890" float="456.123">text child
+    <elem id="B" string="" int="67890" intStr="67890" float="456.123">text child
 second row</elem>
     <elemA/>
     <elemB string="some &amp; &apos; &quot; value" int="12345" intStr="12345">

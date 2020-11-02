@@ -148,6 +148,7 @@ public class JSONUtilsTestCase extends XMLTestCase
         forceAttributes.add("float");
         forceAttributes.add("boolean");
         forceAttributes.add("nullVal");
+        forceAttributes.add("emptyVal");
 
         Node xml= JSONUtils.jsonToXml(readFileFromCP("testJ2X.json"), forceAttributes);
         String dom = XMLUtils.serializeDOM_S((Node) xml);
@@ -231,7 +232,7 @@ public class JSONUtilsTestCase extends XMLTestCase
         outJSON.put("objB", obj);
         
         JSONObject json= JSONUtils.xmlToJson(readFileFromCP("testJ2X_noroot.xml"));
-        //System.out.println("\ntestXML2JSON_noroot: " + json);
+        System.out.println("\ntestXML2JSON_noroot: " + json);
         JSONAssert.assertEquals(outJSON.toString(), json, true);
     }
     

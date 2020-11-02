@@ -12,7 +12,7 @@
         "id": "B",
         "int": 67890,
         "intStr": "67890",
-        "string": "some other <value>",
+        "string": "",
         "float": 456.123,
         "contentText": "text child\nsecond row"
       }
