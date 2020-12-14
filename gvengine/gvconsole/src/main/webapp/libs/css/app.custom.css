@@ -1382,3 +1382,25 @@ span.round-tab:hover {
 .wizard h3 {
   margin-top: 0;
 }
+.sub-info {
+  font-size: 11px;
+    color: #9b1a18;
+    margin-left: 0px;
+}
+.pre-style {
+  background-color: rgba(218, 233, 239, 0.3);
+  border: none;
+  border-radius: 5px;
+}
+.open-info-button {
+  background-color: transparent;
+  color: #009fc8;
+  border: none;
+  font-size: 16px;
+}
+.open-info-button:hover {
+  color: #31b0d5;
+  background-color: #31b0d5;
+  border: none;
+  background-color:rgba(218, 233, 239, 0.5);
+}
