@@ -139,6 +139,18 @@ angular.module('gvconsole')
 		});
   }
 
+  this.showScheduelrInfo = function(id) {
+    SchedulerService.get(id).then(function(response){
+      instance.scheduleLoading = true;
+      angular.element(`#infoModal${id}`).modal('show');
+      instance.schedulerInfo = response.data;
+      instance.schedulerInfo['formattedCronExpression'] = cronstrue.toString(instance.schedulerInfo.cronExpression, { verbose: true });
+      instance.scheduleLoading = false;
+		},function(response){
+			instance.loadList();
+		});
+  }
+
   instance.loadList();       // schedules[search]    schedules[search].description
 
   $scope.searchFor = "id";

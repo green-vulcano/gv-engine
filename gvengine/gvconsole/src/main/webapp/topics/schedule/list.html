@@ -41,15 +41,78 @@
          <table class="table table-hover col-md-12">
             <thead style="background:transparent">
                <tr>
+                  <th class="col-sm-1"></th>
                   <th class="col-sm-4"><h4>Id</h4></th>
                   <th class="col-sm-3"><h4>Operation</h4></th>
                   <th class="col-sm-2"><h4>Pattern</h4></th>
                   <th class="col-sm-1"><h4>Status</h4></th>
                   <th class="col-sm-1 text-right"><h4>Action</h4></th>
                </tr>
-            </thead>
+            </thead>                
             <tbody>
                <tr data-ng-repeat="(id,entry) in ctrl.schedules | toArray:false | filter: search" class="tableTd" style="background:transparent;">
+                  <td class="col-sm-1" style="padding:0px;background:transparent">
+                    <div class="col-md-12 tdTableDivLeft">
+                      <span class="tableSpan">
+                        <button type=" button" class="btn btn-info open-info-button" data-toggle="modal" data-ng-click="ctrl.showScheduelrInfo(entry.id)"><i class="fa fa-info-circle" aria-hidden="true"></i></button>
+                      </span>
+                    </div>
+                    <div id="infoModal{{entry.id}}" class="modal fadeout2" data-ng-if="!ctrl.scheduleLoading">
+                      <div class="modal-content" style="width:70%">
+                        <div class="modal-header">
+                          <div id="headerTopic" class="col-md-6">
+                            <h2 class="pull-left">Scheduler info</h2></div>
+                        </div>
+                        <div class="modal-body">
+                          <div class="col-sm-12 col-xs-12" id="marginFix">
+                            <label class="col-sm-2 col-xs-12" style="text-align:left">ID</label>
+                            <div class="col-sm-8 col-xs-12" style="text-align:left">
+                              {{ctrl.schedulerInfo.id}}
+                            </div>
+                          </div>
+                          <div class="col-sm-12 col-xs-12 col-md-12" id="marginFix">
+                            <label class="col-sm-2 col-xs-12" style="text-align:left">Operation</label>
+                            <div class="col-sm-8 col-xs-12" style="text-align:left">
+                              {{ctrl.schedulerInfo.description}}
+                            </div>
+                          </div>
+                          <div class="col-sm-12 col-xs-12 col-md-12" id="marginFix">
+                            <label class="col-sm-2 col-xs-12" style="text-align:left">Pattern</label>
+                            <div class="col-sm-8 col-xs-12" style="text-align:left">
+                              {{ctrl.schedulerInfo.cronExpression}}
+                              <div class="sub-info">
+                                {{ctrl.schedulerInfo.formattedCronExpression}}
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-sm-12 col-xs-12 col-md-12" id="marginFix">
+                            <label class="col-sm-2 col-xs-12" style="text-align:left">Body</label>
+                            <div class="col-sm-12 form-group" style="text-align:left">
+                              <pre class="col-sm-offset-1 col-sm-10 pre-style" rows="5">{{ctrl.schedulerInfo.object}}</pre>
+                           </div>
+                          </div>
+                          <div class="col-sm-12 col-xs-12 col-md-12" id="marginFix">
+                            <label class="col-sm-2 col-xs-12" style="text-align:left">Properties</label>
+                            <div class="col-sm-12 form-group" style="text-align:left">
+                              <div ng-repeat="(key,param) in ctrl.schedulerInfo.properties">
+                                <div class="form-group clearfix">
+                                  <div id="propertiesLeft" class="col-sm-offset-1 col-sm-5 col-xs-6"><strong>{{key}}</strong></div>
+                                  <div id="propertiesRight" class="col-sm-5 col-xs-6">
+                                    {{param}}
+                                  </div>
+                                </div>
+                              </div>
+                           </div>
+                          </div>
+                        </div>
+                        <div class="modal-footer">
+                          <div class="col-sm-12 col-xs-12 text-right footerModal">
+                            <button type="reset" class="btn btn-warning" data-dismiss="modal"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button>
+                          </div>
+                        </div>
+                      </div>
+                  </div>
+                  </td>
                   <td class="col-sm-4" style="padding:0px;background:transparent"><div class="col-md-12 tdTableDivLeft"><span class="tableSpan">{{entry.id}}</span></div></td>
                   <td class="col-sm-3" style="padding:0px;background:transparent"><div class="col-md-12 tdTableDivCentre"><span class="tableSpan">{{entry.description}}</span></div></td>
                   <td class="col-sm-2" style="padding:0px;background:transparent"><div class="col-md-12 tdTableDivCentre"><span class="tableSpan">{{entry.cronExpression}}</span></div></td>
