@@ -28,7 +28,7 @@
 		<version.junit>4.11</version.junit>
 		<version.json>20190722</version.json>
 		<version.karaf>4.2.6</version.karaf>
-		<version.jackson>2.9.10</version.jackson>
+		<version.jackson>2.9.10.7</version.jackson>
 
 		<cloud.nexus.content>http://mvn.greenvulcano.com/nexus/content</cloud.nexus.content>
 	</properties>
