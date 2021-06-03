@@ -1,4 +1,4 @@
-#!/opt/java/openjdk/bin/java --source 11
+#!/usr/local/openjdk-11/bin/java --source 11
 
 public class GaiaConfigurator {
 

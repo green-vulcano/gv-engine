@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk11:x86_64-debian-jdk-11.0.6_10
+FROM openjdk:11.0.10-jdk-slim 
 
 ENV GAIA_VERSION 4.1.0
 ENV GAIA_FEATURES "gvengine, gvvcl-rest, gvdatahandler, gvhttp"
@@ -8,7 +8,8 @@ ENV KARAF_ETC /etc/karaf
 ENV KARAF_LOG /var/log/karaf
 ENV MAVEN_REPOSITORY /opt/karaf/m2/repository
 
-ENV EXTRA_JAVA_OPTS="-XshowSettings:vm -XX:MinRAMPercentage=50 -XX:MaxRAMPercentage=80 -XX:MinHeapFreeRatio=20 -XX:MaxHeapFreeRatio=40 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dkaraf.log.console=INFO"
+ENV JAVA_OPTS="-XX:MinRAMPercentage=50 -XX:MaxRAMPercentage=80 -XX:MinHeapFreeRatio=20 -XX:MaxHeapFreeRatio=40"
+ENV EXTRA_JAVA_OPTS="-XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -XshowSettings:vm -Dkaraf.log.console=INFO"
 
 #******** Download and install karaf
 ADD http://archive.apache.org/dist/karaf/4.2.7/apache-karaf-4.2.7.tar.gz /tmp
