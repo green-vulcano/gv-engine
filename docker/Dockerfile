@@ -1,6 +1,8 @@
-FROM adoptopenjdk/openjdk11:x86_64-debian-jdk-11.0.6_10
+#FROM adoptopenjdk/openjdk11:x86_64-debian-jdk-11.0.6_10
+#FROM adoptopenjdk/openjdk11:jdk-11.0.12_7-ubuntu-slim
+FROM eclipse-temurin:11.0.12_7-jdk-focal
 
-ENV GAIA_VERSION 4.1.0
+ENV GAIA_VERSION 4.1.2
 ENV GAIA_FEATURES "gvengine, gvvcl-rest, gvdatahandler, gvhttp"
 ENV KARAF_VERSION 4.2.7
 ENV KARAF_HOME /opt/karaf/apache-karaf-${KARAF_VERSION}
@@ -8,10 +10,13 @@ ENV KARAF_ETC /etc/karaf
 ENV KARAF_LOG /var/log/karaf
 ENV MAVEN_REPOSITORY /opt/karaf/m2/repository
 
-ENV EXTRA_JAVA_OPTS="-XshowSettings:vm -XX:MinRAMPercentage=50 -XX:MaxRAMPercentage=80 -XX:MinHeapFreeRatio=20 -XX:MaxHeapFreeRatio=40 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dkaraf.log.console=INFO"
+ENV EXTRA_JAVA_OPTS="-XshowSettings:vm -XX:+AggressiveHeap -XX:ThreadStackSize=128k -XX:MinRAMPercentage=50 -XX:MaxRAMPercentage=80 -XX:MinHeapFreeRatio=20 -XX:MaxHeapFreeRatio=40 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dkaraf.log.console=INFO"
 
 #******** Download and install karaf
-ADD http://archive.apache.org/dist/karaf/4.2.7/apache-karaf-4.2.7.tar.gz /tmp
+ADD http://archive.apache.org/dist/karaf/${KARAF_VERSION}/apache-karaf-${KARAF_VERSION}.tar.gz /tmp
+
+RUN apt-get update -y \
+ && apt-get install --no-install-recommends --no-install-suggests -y vim less procps
 
 RUN mkdir -p /home/gaia \
  && tar xzf /tmp/apache-karaf-${KARAF_VERSION}.tar.gz -C /home/gaia \
