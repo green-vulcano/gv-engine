@@ -44,7 +44,7 @@ public abstract class ScriptExecutor
     private static Logger                logger          = org.slf4j.LoggerFactory.getLogger(ScriptExecutor.class);
 
     private static ScriptEngineManager globalScriptEngineManager      = new ScriptEngineManager(ClassLoader.getSystemClassLoader());
-    private static ScriptEngineManager localSriptEngineManager      = new ScriptEngineManager(ScriptExecutor.class.getClassLoader());
+    private static ScriptEngineManager localScriptEngineManager       = new ScriptEngineManager(ScriptExecutor.class.getClassLoader());
 
     protected String                     lang            = null;
     protected String                     scriptName      = null;
@@ -56,7 +56,7 @@ public abstract class ScriptExecutor
     protected static ScriptEngine getScriptEngine(String lang) {
     	
     	if (!engines.containsKey(lang)) {
-    		ScriptEngine engine = Optional.ofNullable(localSriptEngineManager.getEngineByName(lang)).orElseGet(()->globalScriptEngineManager.getEngineByName(lang));
+    		ScriptEngine engine = Optional.ofNullable(localScriptEngineManager.getEngineByName(lang)).orElseGet(()->globalScriptEngineManager.getEngineByName(lang));
     		engines.putIfAbsent(lang, engine);
     		
     		return engine;
@@ -220,8 +220,10 @@ public abstract class ScriptExecutor
      * @throws GVScriptException
      */
     public static Object execute(String lang, String script, Map<String, Object> bindings, String bcName) throws GVScriptException {
-        try {
-            ScriptEngine engine = getScriptEngine(lang);
+    	ScriptEngine engine = null;
+    	Bindings b = null; 
+    	try {
+            engine = getScriptEngine(lang);
             if (engine == null) {
                 throw new GVScriptException("ScriptEngine[" + lang + "] not found!");
             }
@@ -232,7 +234,7 @@ public abstract class ScriptExecutor
             else if (bcName != null) {
                 throw new GVScriptException("BaseContext[" + lang + "/" + bcName + "] not found!");
             }
-            Bindings b = engine.createBindings();
+            b = engine.createBindings();
             b.putAll(bindings);
             //return engine.eval(script, b);
             Object res = engine.eval(script, b);
@@ -246,6 +248,11 @@ public abstract class ScriptExecutor
         catch (Exception exc) {
             logger.error("Error executing script[" + lang + "]:\n" + script, exc);
             throw new GVScriptException("Error executing script[" + lang + "]", exc);
+        }
+        finally {
+        	if (b != null) {
+        		b.clear();
+        	}
         }
     }
 

@@ -73,11 +73,8 @@ public class ScriptExecutorImpl extends ScriptExecutor {
      * @throws GVScriptException
      */
     public void init(Node node) throws GVScriptException {
-
         ClassLoader initialContextClassLoader = Thread.currentThread().getContextClassLoader();
-
         try {
-
             name = XMLConfig.get(node.getParentNode(), "@name");
             logger.debug("init script node " + name);
             lang = XMLConfig.get(node, "@lang", "js");
@@ -155,9 +152,7 @@ public class ScriptExecutorImpl extends ScriptExecutor {
      * @throws GVScriptException
      */
     public void init(String lang, String script, String file, String bcName) throws GVScriptException {
-
         ClassLoader initialContextClassLoader = Thread.currentThread().getContextClassLoader();
-
         try {
             this.lang = lang;
             if ( file != null && file.trim().length()>0) {
@@ -219,7 +214,6 @@ public class ScriptExecutorImpl extends ScriptExecutor {
      * @throws GVScriptException
      */
     public void putProperty(String name, Object value) throws GVScriptException {
-
         isInitialized();
         bindings.put(name, value);
     }
@@ -232,7 +226,6 @@ public class ScriptExecutorImpl extends ScriptExecutor {
      * @throws GVScriptException
      */
     public void putAllProperties(Map<String, Object> props) throws GVScriptException {
-
         isInitialized();
         bindings.putAll(props);
     }
@@ -246,7 +239,6 @@ public class ScriptExecutorImpl extends ScriptExecutor {
      * @throws GVScriptException
      */
     public Object getProperty(String name) throws GVScriptException {
-
         isInitialized();
         return bindings.get(name);
     }
@@ -260,7 +252,6 @@ public class ScriptExecutorImpl extends ScriptExecutor {
      * @throws GVScriptException
      */
     public Object removeProperty(String name) throws GVScriptException {
-
         isInitialized();
         return bindings.remove(name);
     }
@@ -277,9 +268,7 @@ public class ScriptExecutorImpl extends ScriptExecutor {
      * @throws GVScriptException
      */
     public Object execute(Map<String, Object> properties, Object object) throws GVScriptException {
-
         isInitialized();
-
         ClassLoader initialContextClassLoader = Thread.currentThread().getContextClassLoader();
 
         long start = System.currentTimeMillis();
@@ -338,9 +327,7 @@ public class ScriptExecutorImpl extends ScriptExecutor {
      * @throws GVScriptException
      */
     public Object execute(String script, Map<String, Object> properties, Object object) throws GVScriptException {
-
         isInitialized();
-        
         ClassLoader initialContextClassLoader = Thread.currentThread().getContextClassLoader();
 
         long start = System.currentTimeMillis();
@@ -389,8 +376,9 @@ public class ScriptExecutorImpl extends ScriptExecutor {
      * Clean-up the script environment after every execution
      */
     public void cleanUp() {
-
-        // do nothing
+    	if (bindings != null) {
+    		bindings.clear();
+    	}
     }
 
     /**
@@ -398,11 +386,13 @@ public class ScriptExecutorImpl extends ScriptExecutor {
      * instance can't be reused.
      */
     public void destroy() {
-
         initialized = false;
         lang = null;
         script = null;
         compScript = null;
+    	if (bindings != null) {
+    		bindings.clear();
+    	}
         bindings = null;
     }
 
