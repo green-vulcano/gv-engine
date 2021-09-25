@@ -72,7 +72,7 @@ import org.w3c.dom.NodeList;
  *
  */
 public class JSON2XMLTransformer implements DTETransformer {
-	private static Logger logger = org.slf4j.LoggerFactory.getLogger(XML2JSONTransformer.class);
+	private static Logger logger = org.slf4j.LoggerFactory.getLogger(JSON2XMLTransformer.class);
 
     private String                 name;
     private String                 validationType;
@@ -89,8 +89,12 @@ public class JSON2XMLTransformer implements DTETransformer {
 
     private Map<String, Templates> templHashMap = null;
 
-    private List<TransformerHelper> helpers = new ArrayList<TransformerHelper>();
-    
+    private boolean                 cacheTransformer = true;
+
+    private Transformer             transformer = null;
+
+    private final List<TransformerHelper> helpers = new ArrayList<TransformerHelper>();
+
     private ConversionPolicy        policy          = ConversionPolicy.SIMPLE;
     
     private String             		forceAttributes = "";
@@ -113,6 +117,7 @@ public class JSON2XMLTransformer implements DTETransformer {
             name = XMLConfig.get(nodo, "@name", "NO_NAME");
             xslMapName = XMLConfig.get(nodo, "@OutputXSLMapName");
             dataSourceSet = XMLConfig.get(nodo, "@DataSourceSet", "Default");
+            cacheTransformer = XMLConfig.getBoolean(nodo, "@CacheTransformer", true);
             
             transformerFactory = XMLConfig.get(nodo, "@TransformerFactory", "");
             
@@ -253,7 +258,7 @@ public class JSON2XMLTransformer implements DTETransformer {
     public Object transform(Object input, Object buffer, Map<String, Object> mapParam) throws DTETransfException, 
             InterruptedException {
         logger.debug("Transform start");
-        Transformer transformer = null;
+        Transformer localTransformer = null;
         try {
             Document docXML = null; 
             if (policy == ConversionPolicy.SIMPLE) {
@@ -267,16 +272,24 @@ public class JSON2XMLTransformer implements DTETransformer {
                 docXML = (Document) JSONUtils.jsonToXml_BadgerFish(input);
             }
             if (xslMapName != null) {
-                transformer = getTransformer(mapParam);
-                setParams(transformer, mapParam);
+            	if (cacheTransformer) {
+                    if (transformer == null) {
+                    	transformer = getTransformer(mapParam);
+                    }
+                    localTransformer = this.transformer;
+                }
+                else {
+                    localTransformer = getTransformer(mapParam);
+                }
+                setParams(localTransformer, mapParam);
                 Source theSource = new DOMSource(docXML);
-                String outputType = transformer.getOutputProperty(OutputKeys.METHOD);
+                String outputType = localTransformer.getOutputProperty(OutputKeys.METHOD);
                 if (outputType == null) {
                     outputType = "xml";
                 }
                 if (outputType.equals("xml")) {
                     DOMResult theDOMResult = new DOMResult();
-                    transformer.transform(theSource, theDOMResult);
+                    localTransformer.transform(theSource, theDOMResult);
                     Document docValidation = (Document) theDOMResult.getNode();
                     if (validate()) {
                         executeValidation(docValidation, mapParam);
@@ -286,7 +299,7 @@ public class JSON2XMLTransformer implements DTETransformer {
                 }
                 ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
                 StreamResult theStreamResult = new StreamResult(byteOutputStream);
-                transformer.transform(theSource, theStreamResult);
+                localTransformer.transform(theSource, theStreamResult);
                 byte[] byteResult = byteOutputStream.toByteArray();
 
                 logger.debug("Transform stop");
@@ -315,8 +328,8 @@ public class JSON2XMLTransformer implements DTETransformer {
             throw new DTETransfException("GVDTE_GENERIC_ERROR", new String[][] { { "msg", "Unexpected error." } }, exc);
         }
         finally {
-            if (transformer != null) {
-                transformer.clearParameters();
+            if (localTransformer != null) {
+            	localTransformer.clearParameters();
             }
         }
     }

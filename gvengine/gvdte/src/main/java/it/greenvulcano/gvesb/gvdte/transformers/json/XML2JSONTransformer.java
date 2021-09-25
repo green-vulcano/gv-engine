@@ -119,8 +119,12 @@ public class XML2JSONTransformer implements DTETransformer {
 
     private Map<String, Templates> templHashMap = null;
 
-    private List<TransformerHelper> helpers = new ArrayList<TransformerHelper>();
-    
+    private boolean                 cacheTransformer = true;
+
+    private Transformer             transformer = null;
+
+    private final List<TransformerHelper> helpers = new ArrayList<TransformerHelper>();
+
     private ConversionPolicy        policy             	= ConversionPolicy.SIMPLE;
     private String 					forceElementsArray 	= "";
     private Set<String>             forceElementsArraySet = new HashSet<String>();
@@ -144,6 +148,7 @@ public class XML2JSONTransformer implements DTETransformer {
             name = XMLConfig.get(nodo, "@name", "NO_NAME");
             xslMapName = XMLConfig.get(nodo, "@InputXSLMapName");
             dataSourceSet = XMLConfig.get(nodo, "@DataSourceSet", "Default");
+            cacheTransformer = XMLConfig.getBoolean(nodo, "@CacheTransformer", true);
             
             transformerFactory = XMLConfig.get(nodo, "@TransformerFactory", "");
             
@@ -288,19 +293,27 @@ public class XML2JSONTransformer implements DTETransformer {
     public Object transform(Object input, Object buffer, Map<String, Object> mapParam) throws DTETransfException, 
             InterruptedException {
         logger.debug("Transform start");
-        Transformer transformer = null;
+        Transformer localTransformer = null;
         try {
             Node docXML = null;
             if (xslMapName != null) {
-                transformer = getTransformer(mapParam);
-                setParams(transformer, mapParam);
-                Source theSource = convertInputFormatToXSL(input);
-                String outputType = transformer.getOutputProperty(OutputKeys.METHOD);
+            	if (cacheTransformer) {
+                    if (transformer == null) {
+                    	transformer = getTransformer(mapParam);
+                    }
+                    localTransformer = transformer;
+                }
+                else {
+                    localTransformer = getTransformer(mapParam);
+                }
+                setParams(localTransformer, mapParam);
+                Source theSource = convertInputFormat(input);
+                String outputType = localTransformer.getOutputProperty(OutputKeys.METHOD);
                 if (outputType == null) {
                     outputType = "xml";
                 }
                 DOMResult theDOMResult = new DOMResult();
-                transformer.transform(theSource, theDOMResult);
+                localTransformer.transform(theSource, theDOMResult);
                 docXML = theDOMResult.getNode();
             }
             else {
@@ -344,8 +357,8 @@ public class XML2JSONTransformer implements DTETransformer {
             throw new DTETransfException("GVDTE_GENERIC_ERROR", new String[][] { { "msg", "Unexpected error." } }, exc);
         }
         finally {
-            if (transformer != null) {
-                transformer.clearParameters();
+            if (localTransformer != null) {
+            	localTransformer.clearParameters();
             }
         }
     }
@@ -407,7 +420,7 @@ public class XML2JSONTransformer implements DTETransformer {
      * @throws UtilsException
      *             if any error occurs while converting input object.
      */
-    private Source convertInputFormatToXSL(Object input) throws UtilsException {
+    private Source convertInputFormat(Object input) throws UtilsException {
         Source inputSrc = null;
         try {
             if (input instanceof Node) {
@@ -436,7 +449,7 @@ public class XML2JSONTransformer implements DTETransformer {
                         inputSrc = new StreamSource(byteArrayInputStream);
                     }
                     else {
-                        inputSrc = new StreamSource(new ByteArrayInputStream(XMLUtils.serializeDOMToByteArray_S((Node) input)));
+                        inputSrc = new DOMSource(((Node) input).cloneNode(true));
                     }
                 }
             }

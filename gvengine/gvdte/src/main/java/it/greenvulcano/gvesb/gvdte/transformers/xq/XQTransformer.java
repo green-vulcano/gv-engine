@@ -442,8 +442,7 @@ public class XQTransformer implements DTETransformer
                         inputSrc = new StreamSource(bis);
                     }
                     else {
-                        inputSrc = new StreamSource(new ByteArrayInputStream(
-                                XMLUtils.serializeDOMToByteArray_S((Node) input)));
+                        inputSrc = new DOMSource(((Node) input).cloneNode(true));
                     }
                 }
             }

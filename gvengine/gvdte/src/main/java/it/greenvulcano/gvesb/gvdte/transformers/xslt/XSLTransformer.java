@@ -92,6 +92,10 @@ public class XSLTransformer implements DTETransformer
 
     private List<TransformerHelper> helpers = new ArrayList<TransformerHelper>();
 
+    private boolean                 cacheTransformer = true;
+
+    private Transformer             transformer = null;
+
     public XSLTransformer()
     {
         // do nothing
@@ -110,7 +114,8 @@ public class XSLTransformer implements DTETransformer
             name = XMLConfig.get(node, "@name", "NO_NAME");
             xslMapName = XMLConfig.get(node, "@XSLMapName");
             dataSourceSet = XMLConfig.get(node, "@DataSourceSet", "Default");
-            
+            cacheTransformer = XMLConfig.getBoolean(node, "@CacheTransformer", true);
+
             transformerFactory = XMLConfig.get(node, "@TransformerFactory", "");
 
             String validateXSL = XMLConfig.get(node, "@validate");
@@ -248,18 +253,26 @@ public class XSLTransformer implements DTETransformer
     public Object transform(Object input, Object buffer, Map<String, Object> mapParam) throws DTETransfException, 
             InterruptedException {
         logger.debug("Transform start");
-        Transformer transformer = null;
+        Transformer localTransformer = null;
         try {
-            transformer = getTransformer(mapParam);
-            setParams(transformer, mapParam);
+            if (cacheTransformer) {
+                if (transformer == null) {
+                	transformer = getTransformer(mapParam);
+                }
+                localTransformer = transformer;
+            }
+            else {
+                localTransformer = getTransformer(mapParam);
+            }
+            setParams(localTransformer, mapParam);
             Source theSource = convertInputFormat(input);
-            String outputType = transformer.getOutputProperty(OutputKeys.METHOD);
+            String outputType = localTransformer.getOutputProperty(OutputKeys.METHOD);
             if (outputType == null) {
                 outputType = "xml";
             }
             if (outputType.equals("xml")) {
                 DOMResult theDOMResult = new DOMResult();
-                transformer.transform(theSource, theDOMResult);
+                localTransformer.transform(theSource, theDOMResult);
                 Document docValidation = (Document) theDOMResult.getNode();
                 if (validate() && (validateDirection.indexOf("out") != -1)) {
                     executeValidation(docValidation, mapParam);
@@ -269,7 +282,7 @@ public class XSLTransformer implements DTETransformer
             }
             ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
             StreamResult theStreamResult = new StreamResult(byteOutputStream);
-            transformer.transform(theSource, theStreamResult);
+            localTransformer.transform(theSource, theStreamResult);
             byte[] byteResult = byteOutputStream.toByteArray();
 
             logger.debug("Transform stop");
@@ -293,8 +306,8 @@ public class XSLTransformer implements DTETransformer
             throw new DTETransfException("GVDTE_GENERIC_ERROR", new String[][]{{"msg", "Unexpected error"}}, exc);
         }
         finally {
-            if (transformer != null) {
-                transformer.clearParameters();
+            if (localTransformer != null) {
+                localTransformer.clearParameters();
             }
         }
     }
@@ -424,7 +437,7 @@ public class XSLTransformer implements DTETransformer
                         inputSrc = new StreamSource(byteArrayInputStream);
                     }
                     else {
-                        inputSrc = new StreamSource(new ByteArrayInputStream(XMLUtils.serializeDOMToByteArray_S((Node) input)));
+                        inputSrc = new DOMSource(((Node) input).cloneNode(true));
                     }
                 }
             }
