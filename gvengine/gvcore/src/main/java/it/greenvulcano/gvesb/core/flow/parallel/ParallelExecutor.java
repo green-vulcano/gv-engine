@@ -249,10 +249,10 @@ public class ParallelExecutor
                                 return results;
                             }
                             break;
-					    case NORMAL_END:
-						case TIMEOUT:
-						default:
-						break;
+                        case NORMAL_END:
+                        case TIMEOUT:
+                        default:
+                            break;
                     }
                 }
             }

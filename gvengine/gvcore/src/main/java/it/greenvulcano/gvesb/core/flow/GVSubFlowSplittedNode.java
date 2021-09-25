@@ -375,7 +375,7 @@ public class GVSubFlowSplittedNode extends BaseParallelNode
                         logger.debug("currInput= " + currInput.toString());
                     }
                     
-                    tasks.add(new SubFlowTask(subFlowPool, currInput, onDebug, changeLogContext, logContext, null));
+                    tasks.add(new SubFlowTask(subFlowPool, currInput, onDebug, changeLogContext, logContext, null, resultProcessor.needsOutput()));
                 }
 
                 checkInterrupted("GVSubFlowSplittedNode", logger);

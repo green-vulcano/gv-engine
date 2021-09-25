@@ -19,6 +19,17 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb.core.flow.parallel.spawn;
 
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
+import org.slf4j.Logger;
+
 import it.greenvulcano.event.util.shutdown.ShutdownEvent;
 import it.greenvulcano.event.util.shutdown.ShutdownEventLauncher;
 import it.greenvulcano.event.util.shutdown.ShutdownEventListener;
@@ -26,19 +37,6 @@ import it.greenvulcano.gvesb.buffer.Id;
 import it.greenvulcano.gvesb.core.flow.parallel.Result;
 import it.greenvulcano.gvesb.core.flow.parallel.SubFlowTask;
 import it.greenvulcano.util.thread.BaseThreadFactory;
-
-import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
-import org.slf4j.Logger;
 
 /**
  * 
@@ -48,48 +46,32 @@ import org.slf4j.Logger;
  */
 public class SpawnExecutor implements ShutdownEventListener
 {
-    private class TaskCanceler implements Runnable {
-        private Future<Result> future;
-        private long timeout;
-        private TimeUnit unit;
+    /*
+     * Check if a task is still active, then cancel the task
+     */
+    private class TaskCanceler extends TimerTask {
+        private final Future<Result> future;
+        private final String id;
 
-        public TaskCanceler(Future<Result> future, long timeout, TimeUnit unit) {
+        public TaskCanceler(Future<Result> future, String id) {
             this.future = future;
-            this.timeout = timeout;
-            this.unit = unit;
+            this.id = id;
         }
 
         @Override
         public void run() {
-            try {
-                future.get(timeout, unit);
-            }
-            catch (InterruptedException exc) {
-                // do nothing
-            }
-            catch (ExecutionException exc) {
-                // do nothing
-            }
-            catch (CancellationException exc) {
-                // do nothing
-            }
-            catch (TimeoutException exc) {
-                // do nothing
-            }
-            catch (Exception exc) {
-                // do nothing
-            }
-            finally {
-                future.cancel(true);
-            }
+        	if (!(this.future.isDone() || this.future.isCancelled())) {
+        		logger.debug("Cancelling Spawned task: " + this.id);
+        		this.future.cancel(true);
+        	}
         }
     }
 
     private static final Logger  logger      = org.slf4j.LoggerFactory.getLogger(SpawnExecutor.class);
 
     private static SpawnExecutor instance    = null;
-    private ThreadFactory        cancelerTF  = new BaseThreadFactory("SpawnExecutor#TaskCanceler", true);
-    private int                  threadMax   = 5;
+    private Timer           cancelerTimer    = new Timer("SpawnExecutor#TaskCanceler", true);
+    private final int                  threadMax   = 10;
 
     /**
      * Executor of SubFlowTask instances.
@@ -145,6 +127,8 @@ public class SpawnExecutor implements ShutdownEventListener
     public void destroy() {
         executor.shutdownNow();
         executor = null;
+        cancelerTimer.cancel();
+        cancelerTimer = null;
     }
 
     @Override
@@ -164,8 +148,7 @@ public class SpawnExecutor implements ShutdownEventListener
         task.setSpawnedName("SpawnExecutor#" + owner + "#" + ownerId.toString());
 
         Future<Result> future = executor.submit(task);
-        Thread cth = cancelerTF.newThread(new TaskCanceler(future, timeout, TimeUnit.SECONDS));
-        cth.start();
+        this.cancelerTimer.schedule(new TaskCanceler(future, task.getSpawnedName()), timeout * 1000);
     }
 
 }

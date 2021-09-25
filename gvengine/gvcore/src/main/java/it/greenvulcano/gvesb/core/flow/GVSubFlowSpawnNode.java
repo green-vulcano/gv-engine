@@ -19,6 +19,16 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb.core.flow;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 import it.greenvulcano.configuration.XMLConfig;
 import it.greenvulcano.configuration.XMLConfigException;
 import it.greenvulcano.gvesb.buffer.GVBuffer;
@@ -27,21 +37,13 @@ import it.greenvulcano.gvesb.core.exc.GVCoreConfException;
 import it.greenvulcano.gvesb.core.exc.GVCoreException;
 import it.greenvulcano.gvesb.core.exc.GVCoreSkippedException;
 import it.greenvulcano.gvesb.core.flow.parallel.FlowDef;
+import it.greenvulcano.gvesb.core.flow.parallel.GVSubFlowPool;
 import it.greenvulcano.gvesb.core.flow.parallel.SubFlowTask;
 import it.greenvulcano.gvesb.core.flow.parallel.spawn.SpawnExecutor;
 import it.greenvulcano.gvesb.log.GVFormatLog;
 import it.greenvulcano.gvesb.virtual.CallException;
 import it.greenvulcano.log.NMDC;
 import it.greenvulcano.util.xpath.XPathFinder;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /**
  * GVSubFlowSpawnNode class.
@@ -68,8 +70,11 @@ public class GVSubFlowSpawnNode extends GVFlowNode
     /**
      * The SubFlow reference to invoke.
      */
-    private List<FlowDef>                    flowDefs         = new ArrayList<FlowDef>();
-    private Node                             defNode          = null;
+    private final List<FlowDef>              flowDefs         = new ArrayList<FlowDef>();
+    /**
+     * The SubFlowPool instances.
+     */
+    private Map<String, GVSubFlowPool>       subFlowPool      = new HashMap<String, GVSubFlowPool>();
     /**
      * the input services
      */
@@ -92,7 +97,6 @@ public class GVSubFlowSpawnNode extends GVFlowNode
         super.init(defNode);
 
         try {
-            this.defNode = defNode;
             defaultId = XMLConfig.get(defNode, "@default-id", "");
             if (defaultId.equals("")) {
                 throw new GVCoreConfException("GVCORE_MISSED_CFG_PARAM_ERROR", new String[][]{{"name", "'default-id'"},
@@ -110,6 +114,7 @@ public class GVSubFlowSpawnNode extends GVFlowNode
             if (intSvcNode != null) {
                 inputServices.init(intSvcNode, this, true);
             }
+            initSubFlowPool(defNode);
         }
         catch (Exception exc) {
             throw new GVCoreConfException("GVCORE_INIT_ERROR", new String[][]{{"id", getId()},
@@ -225,6 +230,13 @@ public class GVSubFlowSpawnNode extends GVFlowNode
     @Override
     public void destroy() throws GVCoreException {
         inputServices = null;
+        if (subFlowPool != null) {
+            for (GVSubFlowPool sfp : subFlowPool.values()) {
+                sfp.destroy();
+            }
+            subFlowPool.clear();
+        }
+        subFlowPool = null;
     }
 
 
@@ -258,23 +270,24 @@ public class GVSubFlowSpawnNode extends GVFlowNode
     }
 
     /**
-     * @param flowDef
-     *        the flow name
+     * @param defNode
+     *        the flow node definition
      * @throws CoreConfigException
      *         if errors occurs
      */
-    private GVSubFlow getSubFlow(FlowDef flowDef) throws GVCoreConfException {
+    private void initSubFlowPool(Node defNode) throws GVCoreConfException {
         try {
-            Node sfNode = XMLConfig.getNode(defNode, "ancestor::Operation/SubFlow[@name='" + 
-                    flowDef.getSubflow() + "']");
-            if (sfNode == null) {
-                throw new GVCoreConfException("GVCORE_INVALID_CFG_ERROR", new String[][]{{"message", 
-                        "missing SubFlow[" + flowDef.getSubflow() + "]"},
-                        {"node", XPathFinder.buildXPath(defNode)}});
+            for (FlowDef fd : this.flowDefs) {
+                Node sfNode = XMLConfig.getNode(defNode, "ancestor::Operation/SubFlow[@name='" + fd.getSubflow() + "']");
+                if (sfNode == null) {
+                    throw new GVCoreConfException("GVCORE_INVALID_CFG_ERROR", new String[][]{{"message",
+                            "missing SubFlow[" + fd.getSubflow() + "]"},
+                            {"node", XPathFinder.buildXPath(defNode)}});
+                }
+                GVSubFlowPool sfp = new GVSubFlowPool();
+                sfp.init(defNode, sfNode);
+                subFlowPool.put(sfp.getSubFlowName(), sfp);
             }
-            GVSubFlow subFlow = new GVSubFlow();
-            subFlow.init(sfNode, false);
-            return subFlow;
         }
         catch (XMLConfigException exc) {
             throw new GVCoreConfException("GVCORE_SUB_FLOW_SEARCH_ERROR", new String[][]{{"id", getId()},
@@ -303,7 +316,7 @@ public class GVSubFlowSpawnNode extends GVFlowNode
                     logger.debug("currInput[" + fd.getName() + "]= " + currInput.toString());
                 }
                 if (fd.check(currInput)) {
-                    tasks.add(new SubFlowTask(getSubFlow(fd), currInput, onDebug, changeLogContext, logContext, fd.getInputRefDP()));
+                    tasks.add(new SubFlowTask(subFlowPool.get(fd.getSubflow()), currInput, onDebug, changeLogContext, logContext, fd.getInputRefDP(), false));
                 }
             }
 

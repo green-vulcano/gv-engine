@@ -87,7 +87,11 @@ public class GVSubFlowPool
             throw new GVCoreConfException("GVSubFlowPool initialization error", exc);
         }
 
-        if (initialSize < 0) {
+        this.maximumSize = XMLConfig.getInteger(node, "@max-thread", 20);
+        this.maximumCreation = this.maximumSize + 2;
+        this.initialSize = this.maximumSize / 2;
+
+        if (this.initialSize < 0) {
             throw new GVCoreConfException("GVSubFlowPool initialSize < 0");
         }
         if ((maximumSize > 0) && (initialSize > maximumSize)) {
@@ -217,13 +221,10 @@ public class GVSubFlowPool
         if (subFlow == null) {
             return;
         }
-
-        logger.debug("GVSubFlowPool - releasing instance(" + pool.size() + "/" + created + "/"
-                + maximumCreation + ")");
-
         synchronized (this) {
             try {
                 if (assignedSF.remove(subFlow)) {
+                    logger.debug("GVSubFlowPool - releasing instance(" + pool.size() + "/" + created + "/" + maximumCreation + ")");
                     if ((maximumSize == -1) || ((pool != null) && (pool.size() < maximumSize))) {
                         pool.addFirst(subFlow);
                         return;
@@ -236,8 +237,7 @@ public class GVSubFlowPool
                         subFlow = pool.removeLast();*/
                     }
                     destroySubFlow(subFlow);
-                    logger.debug("GVSubFlowPool - destroying instance(" + pool.size() + "/" + created
-                            + "/" + maximumCreation + ")");
+                    logger.debug("GVSubFlowPool - destroying instance(" + pool.size() + "/" + created + "/" + maximumCreation + ")");
                 }
                 else {
                     logger.debug("GVSubFlowPool - instance not created by this pool, destroing it");

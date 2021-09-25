@@ -370,7 +370,7 @@ public class GVSubFlowParallelNode extends BaseParallelNode
                     logger.debug("currInput[" + fd.getName() + "]= " + currInput.toString());
                 }
                 if (fd.check(currInput)) {
-                    tasks.add(new SubFlowTask(subFlowPool.get(fd.getSubflow()), currInput, onDebug, changeLogContext, logContext, fd.getInputRefDP()));
+                    tasks.add(new SubFlowTask(subFlowPool.get(fd.getSubflow()), currInput, onDebug, changeLogContext, logContext, fd.getInputRefDP(), resultProcessor.needsOutput()));
                 }
             }
 

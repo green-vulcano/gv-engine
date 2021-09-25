@@ -47,7 +47,7 @@ public class ResultProcessor
 {
     public enum ProcessorInput {
         PROCESS_ONLY_OBJECT("Process Only Object"), PROCESS_OBJECT_ERROR("Process Object and Error"), PROCESS_ONLY_GVBUFFER(
-                "Process Only GVBuffer"), PROCESS_GVBUFFER_ERROR("Process GVBuffer and Error");
+                "Process Only GVBuffer"), PROCESS_GVBUFFER_ERROR("Process GVBuffer and Error"), PROCESS_NOTHING("Process nothing");
 
         private String desc;
 
@@ -75,6 +75,9 @@ public class ResultProcessor
             }
             if ("gvbuffer-and-error".equals(name)) {
                 return PROCESS_GVBUFFER_ERROR;
+            }
+            if ("nothing".equals(name)) {
+                return PROCESS_NOTHING;
             }
             return null;
         }
@@ -116,6 +119,13 @@ public class ResultProcessor
                     {"name", "'Script'"}, {"node", XPathFinder.buildXPath(node)}}, exc);
         }
 
+        if (processorInput == ProcessorInput.PROCESS_NOTHING) {
+        	if ((aggregateRoot != null) || (script != null)) {
+        		throw new GVCoreConfException("GVCORE_BAD_CFG_ERROR", new String[][]{
+                        {"name", "'processor-input'"}, {"message", "If processor-input=nothing cannot be configured a specific output processor"}});
+        	}
+        }
+
         logger.debug("Configured " + toString());
     }
 
@@ -130,6 +140,10 @@ public class ResultProcessor
         }
         logger.debug("Using Default Processor");
         return defaultProcessor(input, results);
+    }
+
+    public boolean needsOutput() {
+    	return processorInput != ProcessorInput.PROCESS_NOTHING;
     }
 
     @Override
@@ -185,6 +199,9 @@ public class ResultProcessor
                             toProcess.add(((GVBuffer) d).getObject());
                         }
                     }
+                    break;
+                case PROCESS_NOTHING :
+                    // do nothing
                     break;
             }
         }
@@ -269,6 +286,9 @@ public class ResultProcessor
         catch (Exception exc) {
             ThreadUtils.checkInterrupted(exc);
             throw new GVCoreException("GVCORE_PARALLEL_JS_AGGREGATE_ERROR", new String[][]{{"message", "" + exc}}, exc);
+        }
+        finally {
+            script.cleanUp();
         }
         return input;
     }

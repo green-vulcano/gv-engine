@@ -53,6 +53,15 @@ public class Result
     private Object   output;
     private GVBuffer input;
 
+    public Result(State state) {
+        this.state = state;
+    }
+
+    public Result(State state, Object output) {
+        this.state = state;
+        this.output = output;
+    }
+
     public Result(State state, GVBuffer input, Object output) {
         this.state = state;
         this.input = input;
