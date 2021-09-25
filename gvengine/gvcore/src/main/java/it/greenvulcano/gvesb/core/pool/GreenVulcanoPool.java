@@ -19,6 +19,14 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb.core.pool;
 
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.w3c.dom.Node;
+
 import it.greenvulcano.configuration.XMLConfig;
 import it.greenvulcano.event.util.shutdown.ShutdownEvent;
 import it.greenvulcano.event.util.shutdown.ShutdownEventLauncher;
@@ -29,17 +37,8 @@ import it.greenvulcano.gvesb.core.GreenVulcano;
 import it.greenvulcano.gvesb.core.exc.GVCoreException;
 import it.greenvulcano.gvesb.log.GVBufferMDC;
 import it.greenvulcano.jmx.JMXEntryPoint;
-
+import it.greenvulcano.log.NMDC;
 import it.greenvulcano.util.Stats;
-import it.greenvulcano.util.thread.ThreadMap;
-
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Set;
-
-import org.slf4j.Logger;
-import org.w3c.dom.Node;
 
 /**
  * Object Pool <code>GreenVulcano</code>.
@@ -58,15 +57,15 @@ public class GreenVulcanoPool implements ShutdownEventListener
 
     public static final int          DEFAULT_INITIAL_SIZE      = 1;
 
-    public static final int          DEFAULT_MAXIMUM_SIZE      = 8;
+    public static final int          DEFAULT_MAXIMUM_SIZE      = 10;
 
-    public static final int          DEFAULT_MAXIMUM_CREATION  = 32;
+    public static final int          DEFAULT_MAXIMUM_CREATION  = 50;
 
     private static final Logger      logger                    = org.slf4j.LoggerFactory.getLogger(GreenVulcanoPool.class);
     /**
      * Pool of GreenVulcano instances.
      */
-    private final LinkedList<GreenVulcano> pool                      = new LinkedList<GreenVulcano>();
+    private LinkedList<GreenVulcano> pool                      = new LinkedList<GreenVulcano>();
     /**
      * Set instance pool assigned.
      */
@@ -171,7 +170,6 @@ public class GreenVulcanoPool implements ShutdownEventListener
         init(initialSizeL, maximumSizeL, maximumCreationL, subsystemL);
         setDefaultTimeout(XMLConfig.getLong(config, "@default-timeout", DEFAULT_TIMEOUT));
         setShrinkDelayTime(XMLConfig.getLong(config, "@shrink-timeout", DEFAULT_SHRINK_DELAY_TIME));
-        
         logger.debug("Initialized GreenVulcanoPool instance: subsystem= " + subsystem + ", initialSize= " + initialSize 
                 + ", maximumSize= " + maximumSize + ", maximumCreation= " + maximumCreation + ", defaultTimeout= " 
                 + defaultTimeout + ", shrinkDelayTime= " + shrinkDelayTime);
@@ -439,8 +437,6 @@ public class GreenVulcanoPool implements ShutdownEventListener
         if (gvesb == null) {
             return;
         }
-        
-        ThreadMap.clean();
 
         logger.debug("Releasing GreenVulcano[" + gvesb.isValid() + "] instance " + gvesb);
         logger.debug("subsystem=" + subsystem + " - releasing instance(" + pool.size() + "/" + created + "/"
@@ -495,6 +491,7 @@ public class GreenVulcanoPool implements ShutdownEventListener
         logger.debug("subsystem=" + subsystem + " - End destroying instances");
         assignedGV.clear();
         pool.clear();
+        pool = null;
     }
 
     /**
@@ -522,14 +519,17 @@ public class GreenVulcanoPool implements ShutdownEventListener
      */
     public GVBuffer request(GVBuffer gvBuffer) throws GVPublicException, GreenVulcanoPoolException
     {
-       
+        NMDC.push();
+        GVBufferMDC.put(gvBuffer);
+        NMDC.setServer(serverName);
+        NMDC.setSubSystem(subsystem);
         GreenVulcano gvesb = internalGetGreenVulcano(gvBuffer);
         try {
             return gvesb.request(gvBuffer);
         }
         finally {
             releaseGreenVulcano(gvesb);
-           
+            NMDC.pop();
         }
     }
 
@@ -547,16 +547,17 @@ public class GreenVulcanoPool implements ShutdownEventListener
      */
     public GVBuffer requestReply(GVBuffer gvBuffer) throws GVPublicException, GreenVulcanoPoolException
     {
-      
+        NMDC.push();
         GVBufferMDC.put(gvBuffer);
-    
+        NMDC.setServer(serverName);
+        NMDC.setSubSystem(subsystem);
         GreenVulcano gvesb = internalGetGreenVulcano(gvBuffer);
         try {
             return gvesb.requestReply(gvBuffer);
         }
         finally {
             releaseGreenVulcano(gvesb);
-            
+            NMDC.pop();
         }
     }
 
@@ -574,16 +575,17 @@ public class GreenVulcanoPool implements ShutdownEventListener
      */
     public GVBuffer getRequest(GVBuffer gvBuffer) throws GVPublicException, GreenVulcanoPoolException
     {
-        
+        NMDC.push();
         GVBufferMDC.put(gvBuffer);
-       
+        NMDC.setServer(serverName);
+        NMDC.setSubSystem(subsystem);
         GreenVulcano gvesb = internalGetGreenVulcano(gvBuffer);
         try {
             return gvesb.getRequest(gvBuffer);
         }
         finally {
             releaseGreenVulcano(gvesb);
-           
+            NMDC.pop();
         }
     }
 
@@ -601,16 +603,17 @@ public class GreenVulcanoPool implements ShutdownEventListener
      */
     public GVBuffer getReply(GVBuffer gvBuffer) throws GVPublicException, GreenVulcanoPoolException
     {
-
+        NMDC.push();
         GVBufferMDC.put(gvBuffer);
-     
+        NMDC.setServer(serverName);
+        NMDC.setSubSystem(subsystem);
         GreenVulcano gvesb = internalGetGreenVulcano(gvBuffer);
         try {
             return gvesb.getReply(gvBuffer);
         }
         finally {
             releaseGreenVulcano(gvesb);
-           
+            NMDC.pop();
         }
     }
 
@@ -628,16 +631,17 @@ public class GreenVulcanoPool implements ShutdownEventListener
      */
     public GVBuffer sendReply(GVBuffer gvBuffer) throws GVPublicException, GreenVulcanoPoolException
     {
-      
+        NMDC.push();
         GVBufferMDC.put(gvBuffer);
-       
+        NMDC.setServer(serverName);
+        NMDC.setSubSystem(subsystem);
         GreenVulcano gvesb = internalGetGreenVulcano(gvBuffer);
         try {
             return gvesb.sendReply(gvBuffer);
         }
         finally {
             releaseGreenVulcano(gvesb);
-           
+            NMDC.pop();
         }
     }
 
@@ -657,15 +661,17 @@ public class GreenVulcanoPool implements ShutdownEventListener
      */
     public GVBuffer forward(GVBuffer gvBuffer, String forwardName) throws GVPublicException, GreenVulcanoPoolException
     {
-        
-           
+        NMDC.push();
+        GVBufferMDC.put(gvBuffer);
+        NMDC.setServer(serverName);
+        NMDC.setSubSystem(subsystem);
         GreenVulcano gvesb = internalGetGreenVulcano(gvBuffer);
         try {
             return gvesb.forward(gvBuffer, forwardName);
         }
         finally {
             releaseGreenVulcano(gvesb);
-          
+            NMDC.pop();
         }
     }
 
@@ -728,9 +734,16 @@ public class GreenVulcanoPool implements ShutdownEventListener
             throw new GVCoreException("Error initializing GreenVulcanoPool", exc);
         }
 
-       
-        for (int i = 0; i < initialSize; ++i) {
-            pool.add(createGreenVulcano());
+        NMDC.push();
+        NMDC.setServer(serverName);
+        NMDC.setSubSystem(subsystem);
+        try {
+            for (int i = 0; i < initialSize; ++i) {
+                pool.add(createGreenVulcano());
+            }
+        }
+        finally {
+            NMDC.pop();
         }
     }
 

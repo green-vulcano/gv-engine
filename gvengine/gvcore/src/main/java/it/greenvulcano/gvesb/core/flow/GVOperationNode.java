@@ -195,7 +195,7 @@ public class GVOperationNode extends GVFlowNode
         data = environment.get(input);
         if (Throwable.class.isInstance(data)) {
             environment.put(output, data);
-            logger.debug("END - Execute GVOperationNode '" + getId() + "'");
+            logger.info("END - Skip Execute GVOperationNode '" + getId() + "'");
             return nextNodeId;
         }
 

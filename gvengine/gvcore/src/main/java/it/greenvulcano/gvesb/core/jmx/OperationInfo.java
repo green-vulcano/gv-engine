@@ -19,17 +19,8 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb.core.jmx;
 
-import it.greenvulcano.configuration.XMLConfig;
-import it.greenvulcano.configuration.XMLConfigException;
-import it.greenvulcano.gvesb.core.config.GreenVulcanoConfig;
-import it.greenvulcano.jmx.JMXEntryPoint;
-import it.greenvulcano.jmx.JMXUtils;
-import it.greenvulcano.management.DomainAction;
-import it.greenvulcano.util.MapUtils;
-import it.greenvulcano.util.Stats;
-import it.greenvulcano.util.thread.ThreadUtils;
-
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -39,6 +30,16 @@ import org.apache.log4j.Level;
 import org.slf4j.Logger;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import it.greenvulcano.configuration.XMLConfig;
+import it.greenvulcano.configuration.XMLConfigException;
+import it.greenvulcano.gvesb.core.config.GreenVulcanoConfig;
+import it.greenvulcano.jmx.JMXEntryPoint;
+import it.greenvulcano.jmx.JMXUtils;
+import it.greenvulcano.management.DomainAction;
+import it.greenvulcano.util.MapUtils;
+import it.greenvulcano.util.Stats;
+import it.greenvulcano.util.thread.ThreadUtils;
 
 /**
  * OperationInfo class.
@@ -62,7 +63,7 @@ public class OperationInfo
     /**
      * the status of the currently running associated flow, by ID and Thread
      */
-    private Map<String, Map<String, String>> flowsStatusMap          = new ConcurrentHashMap<String, Map<String, String>>();
+    private Map<String, Map<String, OperationRunStatus>> flowsStatusMap          = new ConcurrentHashMap<String, Map<String, OperationRunStatus>>();
     /**
      * the group name
      */
@@ -459,7 +460,7 @@ public class OperationInfo
      * 
      * @return the current associated flow status
      */
-    public Map<String, Map<String, String>> getFlowsStatus()
+    public Map<String, Map<String, OperationRunStatus>> getFlowsStatus()
     {
         return Collections.unmodifiableMap(flowsStatusMap);
     }
@@ -476,13 +477,20 @@ public class OperationInfo
     {
         statNodes.hint();
         synchronized (flowsStatusMap) {
-            Map<String, String> thFlows = flowsStatusMap.get(flowId);
+            Map<String, OperationRunStatus> thFlows = flowsStatusMap.get(flowId);
             if (thFlows == null) {
-                thFlows = new ConcurrentHashMap<String, String>();
+                thFlows = new ConcurrentHashMap<String, OperationRunStatus>();
                 flowsStatusMap.put(flowId, thFlows);
             }
             String threadName = Thread.currentThread().getName();
-            thFlows.put(threadName, id);
+            
+            OperationRunStatus status = thFlows.get(threadName);
+            if (status == null) {
+            	status = new OperationRunStatus();
+                thFlows.put(threadName, status);
+            }
+            status.currNodeId = id;
+            status.currNodeTime = new Date();
         }
     }
 
@@ -496,13 +504,13 @@ public class OperationInfo
     public String getFlowStatus(String threadName, String flowId)
     {
         synchronized (flowsStatusMap) {
-            Map<String, String> thFlows = flowsStatusMap.get(flowId);
+            Map<String, OperationRunStatus> thFlows = flowsStatusMap.get(flowId);
             if (thFlows == null) {
-                thFlows = new ConcurrentHashMap<String, String>();
+                thFlows = new ConcurrentHashMap<String, OperationRunStatus>();
                 flowsStatusMap.put(flowId, thFlows);
             }
-            String flowStatus = thFlows.get(threadName);
-            return flowStatus;
+            OperationRunStatus status = thFlows.get(threadName);
+            return (status != null) ? status.currNodeId : null;
         }
     }
 
@@ -526,7 +534,7 @@ public class OperationInfo
         }
         String threadName = Thread.currentThread().getName();
         synchronized (flowsStatusMap) {
-            Map<String, String> thFlows = flowsStatusMap.get(flowId);
+            Map<String, OperationRunStatus> thFlows = flowsStatusMap.get(flowId);
             if (thFlows != null) {
                 thFlows.remove(threadName);
                 if (thFlows.isEmpty()) {
@@ -541,7 +549,7 @@ public class OperationInfo
             logger.info("Interrupting flow [" + flowId + "/" + threadName + "] on Operation [" + operation + "]");
             boolean found = false;
             synchronized (flowsStatusMap) {
-                Map<String, String> thFlows = flowsStatusMap.get(flowId);
+                Map<String, OperationRunStatus> thFlows = flowsStatusMap.get(flowId);
                 if (thFlows != null) {
                     found = thFlows.containsKey(threadName);
                 }

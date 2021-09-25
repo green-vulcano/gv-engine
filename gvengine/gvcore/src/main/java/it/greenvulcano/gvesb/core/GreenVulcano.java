@@ -289,7 +289,8 @@ public class GreenVulcano
              
                 if (logger.isDebugEnabled()) {
                     GVBufferDump dump = new GVBufferDump(gvBuffer, false);
-                    logger.debug("INPUT GVBuffer: "+dump);                        
+                    logger.info("INPUT GVBuffer: ");
+                    logger.info(dump.toString());
                 }
 
                 returnData = gvOp.recover(recoveryNode, environment);
@@ -297,7 +298,8 @@ public class GreenVulcano
 
                 if (logger.isDebugEnabled()) {
                     GVBufferDump dump = new GVBufferDump(returnData, false);
-                    logger.debug("OUTPUT GVBuffer: "+dump);                        
+                    logger.info("OUTPUT GVBuffer: ");
+                    logger.info(dump.toString());
                 }
                     
                 long endTime = System.currentTimeMillis();
@@ -495,7 +497,8 @@ public class GreenVulcano
 
                 if (logger.isDebugEnabled()) {
                     GVBufferDump dump = new GVBufferDump(gvBuffer, false);
-                    logger.debug("INPUT GVBuffer: "+dump);                        
+                    logger.info("INPUT GVBuffer: ");
+                    logger.info(dump.toString());
                 }
 
                 returnData = gvOp.perform(gvBuffer);
@@ -503,7 +506,8 @@ public class GreenVulcano
 
                 if (logger.isDebugEnabled()) {
                     GVBufferDump dump = new GVBufferDump(returnData, false);
-                    logger.debug("OUTPUT GVBuffer: "+dump);
+                    logger.info("OUTPUT GVBuffer: ");
+                    logger.info(dump.toString());
                 }                
     
                 long endTime = System.currentTimeMillis();

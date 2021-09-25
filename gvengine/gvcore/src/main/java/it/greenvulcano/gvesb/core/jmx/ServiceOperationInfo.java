@@ -328,11 +328,11 @@ public class ServiceOperationInfo
                 OperationInfo opInfo = getOperationInfo(operation, true);
                 flowsStatus += operation + ": (Success = " + opInfo.getTotalSuccess() + "; Failure = "
                         + opInfo.getTotalFailure() + ")\n";
-                Map<String, Map<String, String>> opFlow = opInfo.getFlowsStatus();
+                Map<String, Map<String, OperationRunStatus>> opFlow = opInfo.getFlowsStatus();
                 for (String id : opFlow.keySet()) {
-                    Map<String, String> thStatus = opFlow.get(id);
+                    Map<String, OperationRunStatus> thStatus = opFlow.get(id);
                     for (String th : thStatus.keySet()) {
-                        String status = thStatus.get(th);
+                        OperationRunStatus status = thStatus.get(th);
                         flowsStatus += id + " = [Th:" + th + "]:" + status + "\n";
                     }
                 }

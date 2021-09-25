@@ -19,6 +19,11 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb.core.flow;
 
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.w3c.dom.Node;
+
 import it.greenvulcano.configuration.XMLConfig;
 import it.greenvulcano.configuration.XMLConfigException;
 import it.greenvulcano.gvesb.buffer.GVBuffer;
@@ -29,6 +34,8 @@ import it.greenvulcano.gvesb.core.config.ServiceConfigManager;
 import it.greenvulcano.gvesb.core.exc.GVCoreConfException;
 import it.greenvulcano.gvesb.core.exc.GVCoreException;
 import it.greenvulcano.gvesb.core.exc.GVCoreSecurityException;
+import it.greenvulcano.gvesb.core.jmx.ServiceOperationInfo;
+import it.greenvulcano.gvesb.core.jmx.ServiceOperationInfoManager;
 import it.greenvulcano.gvesb.gvdp.DataProviderManager;
 import it.greenvulcano.gvesb.gvdp.IDataProvider;
 import it.greenvulcano.gvesb.identity.GVIdentityHelper;
@@ -40,11 +47,6 @@ import it.greenvulcano.gvesb.policy.impl.GVCoreServiceKey;
 import it.greenvulcano.log.NMDC;
 import it.greenvulcano.util.metadata.PropertiesHandler;
 import it.greenvulcano.util.xpath.XPathFinder;
-
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.w3c.dom.Node;
 
 /**
  * GVOperationNode class.
@@ -153,6 +155,13 @@ public class GVCoreCallNode extends GVFlowNode
         GVBuffer internalData = null;
         String input = getInput();
         String output = getOutput();
+        GVServiceConf gvsConfig = null;
+        String localSystem = null;
+        String localService = null;
+        String localFlowOp = null;
+        String localId = null;
+        boolean localSuccess = false;
+ 
         logger.info("Executing GVCoreCallNode '" + getId() + "'");
         checkInterrupted("GVCoreCallNode", logger);
         dumpEnvironment(logger, true, environment);
@@ -160,7 +169,7 @@ public class GVCoreCallNode extends GVFlowNode
         Object inData = environment.get(input);
         if (Throwable.class.isInstance(inData)) {
             environment.put(output, inData);
-            logger.debug("END - Execute GVCoreCallNode '" + getId() + "'");
+            logger.info("END - Skip Execute GVCoreCallNode '" + getId() + "'");
             return nextNodeId;
         }
         try {
@@ -179,9 +188,9 @@ public class GVCoreCallNode extends GVFlowNode
             logger.debug("origSystem  = " + origSystem);
             logger.debug("origService = " + origService);
 
-            String localSystem = (GVBuffer.DEFAULT_SYS.equals(system) ? origSystem : system);
-            String localService = service;
-            String localFlowOp = flowOp;
+            localSystem = (GVBuffer.DEFAULT_SYS.equals(system) ? origSystem : system);
+            localService = service;
+            localFlowOp = flowOp;
 
             if (isFlowSysSvcOpDynamic) {
                 Map<String, Object> props = GVBufferPropertiesHelper.getPropertiesMapSO(internalData, true);
@@ -191,7 +200,6 @@ public class GVCoreCallNode extends GVFlowNode
                 flowGVBuffer.setSystem(localSystem);
                 localFlowOp = PropertiesHandler.expand(localFlowOp, props, internalData);
             }
-            GVServiceConf gvsConfig = null;
             InvocationContext gvCtx = (InvocationContext) InvocationContext.getInstance();
             ServiceConfigManager svcMgr = gvCtx.getGVServiceConfigManager();
             gvsConfig = svcMgr.getGVSConfig(flowGVBuffer);
@@ -268,6 +276,7 @@ public class GVCoreCallNode extends GVFlowNode
                     internalData.setService(origService);
                 }
             }
+            localSuccess = true;
             environment.put(output, internalData);
             if (logger.isDebugEnabled() || isDumpInOut()) {
                 logger.info(GVFormatLog.formatOUTPUT(internalData, false, false).toString());
@@ -279,6 +288,17 @@ public class GVCoreCallNode extends GVFlowNode
         }
         catch (Exception exc) {
             environment.put(output, exc);
+        }
+
+        if (gvsConfig != null) {
+            try {
+                ServiceOperationInfo serviceInfo = ServiceOperationInfoManager.instance().getServiceOperationInfo(
+                gvsConfig.getServiceName(), true);
+                serviceInfo.flowTerminated(localFlowOp, localId, localSuccess);
+            }
+            catch(Exception exc) {
+                logger.error("Error cleaning-up Flow JMX status", exc);
+            }
         }
 
         dumpEnvironment(logger, false, environment);
