@@ -46,5 +46,10 @@ public class MongoDbStorePropertiesHandler implements PropertyHandler {
     public List<String> getManagedTypes() {
         return Collections.unmodifiableList(Arrays.asList("gvstore"));
     }
+    
+    @Override
+    public void cleanupResources() {
+    	// do nothing
+    }
 
 }

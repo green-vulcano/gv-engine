@@ -37,6 +37,11 @@ public class SystemPropertiesHandler implements PropertyHandler {
 	public List<String> getManagedTypes() {		
 		return types;
 	}
+
+    @Override
+    public void cleanupResources() {
+    	// do nothing
+    }
 	
 	@Override
 	public String expand(String type, String str, Map<String, Object> inProperties, Object object, Object extra) throws PropertiesHandlerException {

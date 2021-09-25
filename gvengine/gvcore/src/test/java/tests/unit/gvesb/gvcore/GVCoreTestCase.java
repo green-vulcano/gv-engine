@@ -330,6 +330,28 @@ public class GVCoreTestCase extends TestCase
         assertEquals("PLUTO", gvBufferout.getProperty("PIPPO"));
         assertEquals("PIPPO", gvBufferout.getProperty("PLUTO"));
     }
+    
+    /**
+     * @throws Exception
+     */
+    public void testGVCoreScriptEnvService() throws Exception
+    {
+        String SYSTEM_NAME = "GVESB";
+        String SERVICE_NAME = "TOUPPER_SCRIPT_ENV";
+        String TEST_BUFFER = "test test test test";
+        Id id = new Id();
+        GVBuffer gvBuffer = new GVBuffer(SYSTEM_NAME, SERVICE_NAME, id);
+        gvBuffer.setObject(TEST_BUFFER);
+        GreenVulcano greenVulcano = new GreenVulcano();
+        GVBuffer gvBufferout = greenVulcano.requestReply(gvBuffer);
+        assertEquals(SYSTEM_NAME, gvBufferout.getSystem());
+        assertEquals(SERVICE_NAME, gvBufferout.getService());
+        assertEquals(id, gvBufferout.getId());
+        assertEquals("PLUTO", gvBufferout.getProperty("PIPPO"));
+        assertEquals("PIPPO", gvBufferout.getProperty("PLUTO"));
+        assertEquals("OK", gvBufferout.getProperty("INPUT_TOUPPER"));
+        assertEquals("KO", gvBufferout.getProperty("OUTPUT_TOUPPER"));
+    }
 
     /**
      * @throws Exception

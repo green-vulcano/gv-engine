@@ -1146,12 +1146,64 @@ public final class DateUtils
      *        the offset value
      * @return the modified date
      */
+    public static Date addTime(String date, String format, String tZone, int type, int value)
+    {
+        Calendar cal = createCalendar();
+        cal.setTime(stringToDate(date, format, tZone));
+        cal.add(type, value);
+        return cal.getTime();
+    }
+
+    /**
+     * Change the date/time represented as {@link java.lang.String} in the given
+     * format. The parameters <code>type</code> and <code>value</code> must be
+     * the same of {@link java.util.Calendar}.
+     * 
+     * @param date
+     *        the date/time to change
+     * @param format
+     *        the date/time conversion pattern
+     * @param type
+     *        the field to change
+     * @param value
+     *        the offset value
+     * @return the modified date
+     */
     public static String addTime(String date, String format, String type, String value)
     {
         Date d = addTime(date, format, Integer.parseInt(type), Integer.parseInt(value));
         return dateToString(d, format);
     }
 
+    /**
+     * Change the date/time represented as {@link java.lang.String} in the given
+     * format. The parameters <code>type</code> and <code>value</code> must be
+     * the same of {@link java.util.Calendar}.
+     * 
+     * @param date
+     *        the date/time to change
+     * @param formatIn
+     *        the date/time conversion pattern
+     * @param formatOut
+     *        the date/time conversion pattern
+     * @param type
+     *        the field to change
+     * @param value
+     *        the offset value
+     * @return the modified date
+     */
+    public static String convertAddTime(String date, String formatIn, String formatOut, String type, String value)
+    {
+        Date d = addTime(date, formatIn, Integer.parseInt(type), Integer.parseInt(value));
+        return dateToString(d, formatOut);
+    }
+
+    public static String convertAddTime(String date, String formatIn, String tZoneIn, String formatOut, String tZoneOut, String type, String value)
+    {
+        Date d = addTime(date, formatIn, tZoneIn, Integer.parseInt(type), Integer.parseInt(value));
+        return dateToString(d, formatOut, tZoneOut);
+    }
+    
     /**
      * Change the date/time represented as {@link java.util.Date}. The
      * parameters <code>type</code> and <code>value</code> must be the same of
@@ -2163,6 +2215,30 @@ public final class DateUtils
             dateFormatter.put(format, sdf);
         }
         return sdf;
+    }
+
+    private static long toSystemTime(Object input)
+    {
+        if (input instanceof Date) {
+            return ((Date) input).getTime();
+        }
+        if (input instanceof Calendar) {
+            return ((Calendar) input).getTimeInMillis();
+        }
+        return Long.parseLong((String) input);
+    }
+
+    private static Calendar systemTimeToCalendar(String input)
+    {
+        Calendar cal = createCalendar();
+        cal.setTimeInMillis(Long.parseLong(input));
+        cal.getTime();
+        return cal;
+    }
+
+    private static Date systemTimeToDate(String input)
+    {
+        return new Date(Long.parseLong(input));
     }
 
     /**

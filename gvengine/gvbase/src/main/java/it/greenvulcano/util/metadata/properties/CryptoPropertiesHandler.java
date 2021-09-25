@@ -39,6 +39,11 @@ public class CryptoPropertiesHandler implements PropertyHandler {
     }
 
     @Override
+    public void cleanupResources() {
+    	// do nothing
+    }
+
+    @Override
     public String expand(String type, String str, Map<String, Object> inProperties, Object object, Object extra) throws PropertiesHandlerException {
 
         String value = str;

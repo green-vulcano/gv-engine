@@ -19,6 +19,15 @@
  *******************************************************************************/
 package it.greenvulcano.util.metadata;
 
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
+
 import it.greenvulcano.gvesb.buffer.GVBuffer;
 import it.greenvulcano.gvesb.internal.data.GVBufferPropertiesHelper;
 import it.greenvulcano.gvesb.utils.GVESBPropertyHandler;
@@ -32,8 +41,6 @@ import it.greenvulcano.util.metadata.properties.ScriptPropertiesHandler;
 import it.greenvulcano.util.metadata.properties.SystemPropertiesHandler;
 import it.greenvulcano.util.metadata.properties.XPathPropertiesHandler;
 import it.greenvulcano.util.thread.ThreadMap;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Helper class for metadata substitution in strings.
@@ -45,6 +52,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class PropertiesHandler {
 	private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(PropertiesHandler.class);	
     private final static Map<String, PropertyHandler> propHandlers = new ConcurrentHashMap<String, PropertyHandler>();
+    private static Set<PropertyHandler> propHandlersSet = new HashSet<PropertyHandler>();
+    private static HashSet<String>                  propSet      = new HashSet<String>();
         
     static {
     	registerHandler(new BasicPropertyHandler());
@@ -73,9 +82,11 @@ public final class PropertiesHandler {
      * @param handler the property handler to register
      */
     public static void registerHandler(PropertyHandler handler){
-    	handler.getManagedTypes().forEach(type->{        	
-    		LOG.debug("PropertiesHandler.registerHandler: registering "+type+" -> "+handler.getClass().getName());
-        	propHandlers.put(type, handler);	      
+        handler.getManagedTypes().forEach(type->{        	
+            LOG.debug("PropertiesHandler.registerHandler: registering "+type+" -> "+handler.getClass().getName());
+            propHandlers.put(type, handler);
+            propHandlersSet.add(handler);
+            propSet.add(type);
         });
     }
 
@@ -85,9 +96,11 @@ public final class PropertiesHandler {
      */
     public static void unregisterHandler(PropertyHandler handler) {
         handler.getManagedTypes().forEach(type->{          
+            propSet.remove(type);
             propHandlers.remove(type);
             LOG.debug("PropertiesHandler.unregisterHandler: unregistered "+type+" -> "+handler.getClass().getName());
         });
+        propHandlersSet.remove(handler);
     }
 
     /**
@@ -329,6 +342,59 @@ public final class PropertiesHandler {
     public static boolean isExceptionOnErrors()
     {
         return "true".equals(ThreadMap.get(PropertyHandler.THROWS_EXCEPTION));
+    }
+
+    /**
+     * Enable the external resource (like DB connection) local storage, for the current thread.
+     *
+     * Example:
+     *
+     * <pre>
+     *
+     *     ...
+     *     PropertiesHandler.enableResourceLocalStorage();
+     *     try {
+     *        ...
+     *        String value = PropertiesHandler.expand(...);
+     *        ...
+     *     }
+     *     catch (PropertiesHandlerException exc) {
+     *        ...
+     *     }
+     *     finally {
+     *        PropertiesHandler.disableResourceLocalStorage();
+     *     }
+     *
+     * </pre>
+     */
+    public static void enableResourceLocalStorage()
+    {
+        ThreadMap.put(PropertyHandler.RESOURCE_STORAGE, "true");
+    }
+
+    /**
+     * Disable the external resource local storage, for the current thread.
+     *
+     */
+    public static void disableResourceLocalStorage()
+    {
+    	for (PropertyHandler ph : propHandlersSet) {
+    		ph.cleanupResources();
+		}
+        ThreadMap.remove(PropertyHandler.RESOURCE_STORAGE);
+    }
+
+    /**
+     * Check if the exception throwing on errors is enabled for the current
+     * thread.
+     *
+     * @return if the exception throwing on errors is enabled for the current
+     *         thread.
+     *
+     */
+    public static boolean isResourceLocalStorage()
+    {
+        return "true".equals(ThreadMap.get(PropertyHandler.RESOURCE_STORAGE));
     }
 
     /**

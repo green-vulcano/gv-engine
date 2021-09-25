@@ -19,30 +19,40 @@
  *******************************************************************************/
 package it.greenvulcano.gvesb.internal.data;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
+
+import org.apache.commons.io.IOUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 import it.greenvulcano.configuration.XMLConfig;
 import it.greenvulcano.configuration.XMLConfigException;
 import it.greenvulcano.expression.ExpressionEvaluatorException;
 import it.greenvulcano.gvesb.buffer.GVBuffer;
 import it.greenvulcano.gvesb.buffer.GVException;
 import it.greenvulcano.gvesb.internal.GVInternalException;
-
 import it.greenvulcano.script.ScriptExecutor;
 import it.greenvulcano.script.ScriptExecutorFactory;
 import it.greenvulcano.util.crypto.CryptoHelper;
 import it.greenvulcano.util.metadata.PropertiesHandler;
 import it.greenvulcano.util.thread.ThreadUtils;
+import it.greenvulcano.util.txt.TextUtils;
+import it.greenvulcano.util.xml.XMLUtils;
 import it.greenvulcano.util.xpath.XPathFinder;
 import it.greenvulcano.util.zip.ZipHelper;
-
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /**
  * 
@@ -53,7 +63,7 @@ import org.w3c.dom.NodeList;
  */
 public class ChangeGVBuffer
 {
-	private static org.slf4j.Logger     logger  = org.slf4j.LoggerFactory.getLogger(ChangeGVBuffer.class);
+    private static org.slf4j.Logger     logger  = org.slf4j.LoggerFactory.getLogger(ChangeGVBuffer.class);
     /**
      * define the crypto operation "none".
      */
@@ -66,6 +76,14 @@ public class ChangeGVBuffer
      * define the crypto operation "decrypt".
      */
     public static final String      CRYPTO_OP_DECRYPT         = "decrypt";
+    /**
+     * define the compress algorithm "zip".
+     */
+    public static final String      COMPRESS_TYPE_ZIP         = "zip";
+    /**
+     * define the compress algorithm "gzip".
+     */
+    public static final String      COMPRESS_TYPE_GZIP        = "gzip";
     /**
      * define the compress operation "none".
      */
@@ -136,6 +154,10 @@ public class ChangeGVBuffer
      */
     private boolean                 compressOpZip             = false;
     /**
+     * the value to use as compression algorithm.
+     */
+    private String                  compressionType          = "zip";
+    /**
      * the value to use as compression level level.
      */
     private String                  compressionLevel          = "";
@@ -159,6 +181,9 @@ public class ChangeGVBuffer
      * The script executor instance.
      */
     private ScriptExecutor          script                    = null;
+    
+    private List<String>            scriptEnvElements         = null;
+    private boolean                 scriptLogger              = true;
     /**
      * The GVBuffer body builder.
      */
@@ -212,6 +237,7 @@ public class ChangeGVBuffer
             }
 
             String compressOp = XMLConfig.get(node, "@compress-op", COMPRESS_OP_NONE);
+            compressionType = XMLConfig.get(node, "@compress-type", COMPRESS_TYPE_ZIP);
             compressionLevel = XMLConfig.get(node, "@compress-level", ZipHelper.DEFAULT_COMPRESSION_S);
 
             if (compressOp.equals(COMPRESS_OP_NONE)) {
@@ -221,8 +247,10 @@ public class ChangeGVBuffer
                 compressOn = true;
                 operations++;
                 compressOpZip = compressOp.equals(COMPRESS_OP_COMPRESS);
-                zipHelper = new ZipHelper();
-                zipHelper.setCompressionLevel(compressionLevel);
+                if (compressionType.equals(COMPRESS_TYPE_ZIP)) {
+                    zipHelper = new ZipHelper();
+                    zipHelper.setCompressionLevel(this.compressionLevel);
+                }
             }
 
             String base64Op = XMLConfig.get(node, "@base64-op", BASE64_OP_NONE);
@@ -238,6 +266,16 @@ public class ChangeGVBuffer
 
             Node scriptNode = XMLConfig.getNode(node, "Script");
             if (scriptNode != null) {
+                String env = XMLConfig.get(scriptNode, "@environment", "");
+                if (!"".equals(env)) {
+                	if ("EMPTY".equalsIgnoreCase(env)) {
+                		scriptEnvElements = new ArrayList<String>();
+                	}
+                	else {
+                		scriptEnvElements = TextUtils.splitByStringSeparator(env, ";");
+                	}
+                }
+                scriptLogger = XMLConfig.getBoolean(scriptNode, "@logger", true);
                 script = ScriptExecutorFactory.createSE(scriptNode);
                 scriptOn = true;
                 operations++;
@@ -326,6 +364,7 @@ public class ChangeGVBuffer
 
         try {
             PropertiesHandler.enableExceptionOnErrors();
+            PropertiesHandler.enableResourceLocalStorage();
             Map<String, Object> params = GVBufferPropertiesHelper.getPropertiesMapSO(gvBuffer, true);
             for (String fName : propertiesList) {
                 if (overwriteBodyWithProperty.equals(fName)) {
@@ -348,6 +387,7 @@ public class ChangeGVBuffer
                     exc);
         }
         finally {
+            PropertiesHandler.disableResourceLocalStorage();
             PropertiesHandler.disableExceptionOnErrors();
         }
 
@@ -384,11 +424,52 @@ public class ChangeGVBuffer
     private void handleCompression(GVBuffer gvBuffer) throws GVInternalException
     {
         try {
-            if (compressOpZip) {
-                gvBuffer.setObject(zipHelper.zip((byte[]) gvBuffer.getObject()));
+            if (this.compressionType.equals(COMPRESS_TYPE_ZIP)) {
+                if (this.compressOpZip) {
+                    gvBuffer.setObject(this.zipHelper.zip(toBytes(gvBuffer.getObject())));
+                }
+                else {
+                    gvBuffer.setObject(this.zipHelper.unzip(toBytes(gvBuffer.getObject())));
+                }
             }
             else {
-                gvBuffer.setObject(zipHelper.unzip((byte[]) gvBuffer.getObject()));
+                InputStream in = null;
+                OutputStream out = null;
+                ByteArrayOutputStream outBA = new ByteArrayOutputStream();
+                try {
+                    if (this.compressOpZip) {
+                        in = new ByteArrayInputStream(toBytes(gvBuffer.getObject()));
+                        out = new GZIPOutputStream(outBA);
+                        IOUtils.copy(in, out);
+                        out.flush();
+                    }
+                    else {
+                        outBA = new ByteArrayOutputStream();
+                        out = outBA;
+                        in = new GZIPInputStream(new ByteArrayInputStream(toBytes(gvBuffer.getObject())));
+                        IOUtils.copy(in, out);
+                        out.flush();
+                    }
+                }
+                finally {
+                    if (in != null) {
+                        try {
+                            in.close();
+                        }
+                        catch (Exception exc) {
+                            // do nothing
+                        }
+                    }
+                    if (out != null) {
+                        try {
+                            out.close();
+                        }
+                        catch (Exception exc) {
+                            // do nothing
+                        }
+                    }
+                }
+                gvBuffer.setObject(outBA.toByteArray());
             }
         }
         catch (Exception exc) {
@@ -406,10 +487,10 @@ public class ChangeGVBuffer
     {
         try {
             if (cryptoOpEncrypt) {
-                gvBuffer.setObject(CryptoHelper.encrypt(keyId, (byte[]) gvBuffer.getObject(), false));
+                gvBuffer.setObject(CryptoHelper.encrypt(keyId, toBytes(gvBuffer.getObject()), false));
             }
             else {
-                gvBuffer.setObject(CryptoHelper.decrypt(keyId, (byte[]) gvBuffer.getObject(), false));
+                gvBuffer.setObject(CryptoHelper.decrypt(keyId, toBytes(gvBuffer.getObject()), false));
             }
         }
         catch (Exception exc) {
@@ -428,10 +509,10 @@ public class ChangeGVBuffer
     {
         try {
             if (base64OpEncode) {
-                gvBuffer.setObject(Base64.getEncoder().encode((byte[]) gvBuffer.getObject()));
+                gvBuffer.setObject(Base64.getEncoder().encode(toBytes(gvBuffer.getObject())));
             }
             else {
-                gvBuffer.setObject(Base64.getDecoder().decode((byte[]) gvBuffer.getObject()));
+                gvBuffer.setObject(Base64.getDecoder().decode(toBytes(gvBuffer.getObject())));
             }
         }
         catch (Exception exc) {
@@ -450,16 +531,54 @@ public class ChangeGVBuffer
     private void handleScript(GVBuffer gvBuffer, Map<String, Object> environment) throws GVInternalException, InterruptedException
     {
         try {
-            script.putProperty("environment", environment);
+            if (scriptEnvElements == null) {
+                script.putProperty("environment", environment);
+            }
+            else {
+            	logger.debug("Copy into script 'environmet' only the following mappings: " + scriptEnvElements);
+                Map<String, Object> locEnvironment = new HashMap<String, Object>();
+                scriptEnvElements.forEach(el -> locEnvironment.put(el, environment.get(el)));
+
+                script.putProperty("environment", locEnvironment);
+            }
+            if (scriptLogger) {
+            	script.putProperty("logger", logger);
+            }
             script.putProperty("data", gvBuffer);
-            script.putProperty("logger", logger);
             script.execute(GVBufferPropertiesHelper.getPropertiesMapSO(gvBuffer, true), gvBuffer);
+
+            // SHOULD COPY BACK into environment objects created into locEnvironmnet?
         }
         catch (Exception exc) {
             ThreadUtils.checkInterrupted(exc);
             throw new GVInternalException("SCRIPT_ERROR", new String[][]{{"engine", script.getEngineName()},
                     {"script", script.getScriptName()}, {"message", exc.toString()}}, exc);
         }
+        finally {
+            script.cleanUp(); // fast clean-up
+        }
+    }
+
+    private byte[] toBytes(Object obj) throws Exception {
+        if (obj == null) {
+            return null;
+        }
+        if (obj instanceof byte[]) {
+            return (byte[]) obj;
+        }
+        if (obj instanceof String) {
+            return ((String) obj).getBytes("UTF-8");
+        }
+        if (obj instanceof Node) {
+            return XMLUtils.serializeDOMToByteArray_S((Node) obj);
+        }
+        if (obj instanceof JSONObject) {
+            return ((JSONObject) obj).toString().getBytes("UTF-8");
+        }
+        if (obj instanceof JSONArray) {
+            return ((JSONArray) obj).toString().getBytes("UTF-8");
+        }
+        return null;
     }
 
     /**

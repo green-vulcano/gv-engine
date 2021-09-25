@@ -45,6 +45,11 @@ public interface PropertyHandler
     public static final String THROWS_EXCEPTION = "PropertyHandler.THROWS_EXCEPTION";
 
     /**
+     * ThreadMap key to enable the external resource local storage.
+     */
+    public static final String RESOURCE_STORAGE = "PropertyHandler.RESOURCE_STORAGE";
+
+    /**
      * This method insert the correct values for the dynamic parameter found in
      * the input string.
      *
@@ -69,4 +74,5 @@ public interface PropertyHandler
     
     List<String> getManagedTypes();
 
+    public void cleanupResources();
 }

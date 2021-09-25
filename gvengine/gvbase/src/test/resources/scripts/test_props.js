@@ -17,21 +17,9 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with GreenVulcano ESB. If not, see <http://www.gnu.org/licenses/>.
  *******************************************************************************/
-load("nashorn:mozilla_compat.js");
-importPackage(Packages.it.greenvulcano.gvesb.buffer);
-importPackage(Packages.it.greenvulcano.gvesb.utils);
-importPackage(Packages.it.greenvulcano.util.metadata);
-importPackage(Packages.it.greenvulcano.util.txt);
-importPackage(Packages.it.greenvulcano.util.xml);
-importPackage(Packages.it.greenvulcano.util.xpath);
-importPackage(Packages.it.greenvulcano.configuration);
-importPackage(Packages.org.zeromq);
-importPackage(Packages.java.lang);
-//importPackage(Packages.java.util);
+var props = new java.util.HashMap();
+props.put("pippo", "pluto");
+props.put("topolino", "paperoga");
 
-/**
- Remove leading and tailing spaces from str
- */
-function trim(str) {
-    return str.replace(/^\s*/, "").replace(/\s*$/, "");
-}
+var src = "..@{{pippo}}..@{{topolino}}";
+PropertiesHandler.expand(src, props);

@@ -44,6 +44,11 @@ public class ScriptPropertiesHandler implements PropertyHandler {
 		return types;
 	}
 
+    @Override
+    public void cleanupResources() {
+    	// do nothing
+    }
+
 	@Override
 	public String expand(String type, String str, Map<String, Object> inProperties, Object object, Object extra)
 			throws PropertiesHandlerException {

@@ -19,14 +19,16 @@
  *******************************************************************************/
 package it.greenvulcano.util.metadata;
 
-import it.greenvulcano.util.txt.DateUtils;
-import it.greenvulcano.util.txt.TextUtils;
-import it.greenvulcano.util.xml.XMLUtils;
-
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import it.greenvulcano.util.file.cache.FileCache;
+import it.greenvulcano.util.txt.DateUtils;
+import it.greenvulcano.util.txt.TextUtils;
+import it.greenvulcano.util.xml.XMLUtils;
 
 /**
  * Helper class for basic metadata substitution in strings.
@@ -44,6 +46,8 @@ public class BasicPropertyHandler implements PropertyHandler {
 		
 		managedTypes.add("timestamp");
 		managedTypes.add("dateformat");
+		managedTypes.add("dateAdd");
+		managedTypes.add("dateformatAdd");
 		managedTypes.add("decode");
 		managedTypes.add("decodeL");		
 		managedTypes.add("escJS");
@@ -52,6 +56,7 @@ public class BasicPropertyHandler implements PropertyHandler {
 		managedTypes.add("replace");
 		managedTypes.add("urlEnc");
 		managedTypes.add("urlDec");
+		managedTypes.add("file");
 		managedTypes.add("xmlp");
 
 		Collections.unmodifiableList(managedTypes);
@@ -112,6 +117,10 @@ public class BasicPropertyHandler implements PropertyHandler {
 	 * - urlDec{{string}}   : decode URL encoded characters from 'string'
 	 * - enc{{format::string}}   : encode the 'string' in the specified format between base64 (default), hex, url
 	 * - dec{{format::string}}   : decode the 'string' from the specified format between base64 (default), hex, url
+	 * - file{{path[::cached[::format]]}}   : return the content of file 'path' encoded as 'format', and set the content in cache if 'cache' = Y (default, cached entries are cleared 5 minutes after last access)
+	 *                                        possible format value are:
+	 *                                        - text (default): the file is assumed to contain UTF-8 text
+	 *                                        - base64 : the file content is encoded as base 64 string
 	 * </pre>
 	 * 
 	 * @param type
@@ -131,8 +140,12 @@ public class BasicPropertyHandler implements PropertyHandler {
 			throws PropertiesHandlerException {
 		if (type.startsWith("timestamp")) {
 			return expandTimestamp(str, inProperties, object, extra);
+		} else if (type.startsWith("dateformatAdd")) {
+			return expandDateFormatAdd(str, inProperties, object, extra);
 		} else if (type.startsWith("dateformat")) {
 			return expandDateFormat(str, inProperties, object, extra);
+		} else if (type.startsWith("dateAdd")) {
+			return expandDateAdd(str, inProperties, object, extra);
 		} else if (type.startsWith("decodeL")) {
 			return expandDecodeL(str, inProperties, object, extra);
 		} else if (type.startsWith("decode")) {
@@ -149,12 +162,19 @@ public class BasicPropertyHandler implements PropertyHandler {
 			return expandUrlEnc(str, inProperties, object, extra);
 		} else if (type.startsWith("urlDec")) {
 			return expandUrlDec(str, inProperties, object, extra);
+		} else if (type.startsWith("file")) {
+			return expandFile(str, inProperties, object, extra);
 		} else if (type.startsWith("xmlp")) {
 			// DUMMY replacement - Must be handled by XMLConfig
 			return "xmlp" + PROP_START + str + PROP_END;
 		}
 		return str;
 	}
+
+    @Override
+    public void cleanupResources() {
+    	// do nothing
+    }
 
 	private String expandTimestamp(String str, Map<String, Object> inProperties, Object object, Object extra)
 			throws PropertiesHandlerException {
@@ -222,6 +242,121 @@ public class BasicPropertyHandler implements PropertyHandler {
 			return "dateformat" + PROP_START + str + PROP_END;
 		}
 	}
+
+    private String expandDateAdd(String str, Map<String, Object> inProperties, Object object, 
+            Object extra) throws PropertiesHandlerException
+    {
+        try {
+            if (!PropertiesHandler.isExpanded(str)) {
+                str = PropertiesHandler.expand(str, inProperties, object, extra);
+            }
+            String intType = "";
+            List<String> parts = TextUtils.splitByStringSeparator(str, "::");
+            String date = parts.get(0);
+            String sourcePattern = parts.get(1);
+            String type = parts.get(2);
+            if ("s".equals(type)) {
+            	intType = String.valueOf(Calendar.SECOND);
+            }
+            else if ("m".equals(type)) {
+            	intType = String.valueOf(Calendar.MINUTE);
+            }
+            else if ("h".equals(type)) {
+            	intType = String.valueOf(Calendar.HOUR_OF_DAY);
+            }
+            else if ("d".equals(type)) {
+            	intType = String.valueOf(Calendar.DAY_OF_MONTH);
+            }
+            else if ("M".equals(type)) {
+            	intType = String.valueOf(Calendar.MONTH);
+            }
+            else if ("y".equals(type)) {
+            	intType = String.valueOf(Calendar.YEAR);
+            }
+            else {
+            	throw new PropertiesHandlerException("Invalid value[" + type + "] for 'type'");
+            }
+            String value = parts.get(3);
+            String paramValue = DateUtils.addTime(date, sourcePattern, intType, value);
+            if (paramValue == null) {
+                throw new PropertiesHandlerException("Error handling 'dateAdd' metadata '" + str
+                        + "'. Invalid format.");
+            }
+            return paramValue;
+        }
+        catch (Exception exc) {
+            System.out.println("Error handling 'dateAdd' metadata '" + str + "': " + exc);
+            exc.printStackTrace();
+            if (PropertiesHandler.isExceptionOnErrors()) {
+                if (exc instanceof PropertiesHandlerException) {
+                    throw (PropertiesHandlerException) exc;
+                }
+                throw new PropertiesHandlerException("Error handling 'dateAdd' metadata '" + str + "'", exc);
+            }
+            return "dateAdd" + PROP_START + str + PROP_END;
+        }
+    }
+
+    private String expandDateFormatAdd(String str, Map<String, Object> inProperties, Object object, 
+            Object extra) throws PropertiesHandlerException
+    {
+        try {
+            if (!PropertiesHandler.isExpanded(str)) {
+                str = PropertiesHandler.expand(str, inProperties, object, extra);
+            }
+            String intType = "";
+            List<String> parts = TextUtils.splitByStringSeparator(str, "::");
+            String sourceTZone = DateUtils.getDefaultTimeZone().getID();
+            String destTZone = sourceTZone;
+            String date = parts.get(0);
+            String sourcePattern = parts.get(1);
+            String destPattern = parts.get(2);
+            String type = parts.get(3);
+            if ("s".equals(type)) {
+            	intType = String.valueOf(Calendar.SECOND);
+            }
+            else if ("m".equals(type)) {
+            	intType = String.valueOf(Calendar.MINUTE);
+            }
+            else if ("h".equals(type)) {
+            	intType = String.valueOf(Calendar.HOUR_OF_DAY);
+            }
+            else if ("d".equals(type)) {
+            	intType = String.valueOf(Calendar.DAY_OF_MONTH);
+            }
+            else if ("M".equals(type)) {
+            	intType = String.valueOf(Calendar.MONTH);
+            }
+            else if ("y".equals(type)) {
+            	intType = String.valueOf(Calendar.YEAR);
+            }
+            else {
+            	throw new PropertiesHandlerException("Invalid value[" + type + "] for 'type'");
+            }
+            String value = parts.get(4);
+            if (parts.size() > 5) {
+                sourceTZone = parts.get(5);
+                destTZone = parts.get(6);
+            }
+            String paramValue = DateUtils.convertAddTime(date, sourcePattern, sourceTZone, destPattern, destTZone, intType, value);
+            if (paramValue == null) {
+                throw new PropertiesHandlerException("Error handling 'dateformatAdd' metadata '" + str
+                        + "'. Invalid format.");
+            }
+            return paramValue;
+        }
+        catch (Exception exc) {
+            System.out.println("Error handling 'dateformatAdd' metadata '" + str + "': " + exc);
+            exc.printStackTrace();
+            if (PropertiesHandler.isExceptionOnErrors()) {
+                if (exc instanceof PropertiesHandlerException) {
+                    throw (PropertiesHandlerException) exc;
+                }
+                throw new PropertiesHandlerException("Error handling 'dateformatAdd' metadata '" + str + "'", exc);
+            }
+            return "dateformatAdd" + PROP_START + str + PROP_END;
+        }
+    }
 
 	private String expandDecode(String str, Map<String, Object> inProperties, Object object, Object extra)
 			throws PropertiesHandlerException {
@@ -439,6 +574,43 @@ public class BasicPropertyHandler implements PropertyHandler {
 				throw new PropertiesHandlerException("Error handling 'urlDec' metadata '" + str + "'", exc);
 			}
 			return "urlDec" + PROP_START + str + PROP_END;
+		}
+	}
+	
+
+	/**
+	 * @param str
+	 *            the string to valorize
+	 * @return the expanded string
+	 */
+	private String expandFile(String str, Map<String, Object> inProperties, Object object, Object extra)
+			throws PropertiesHandlerException {
+		try {
+			if (!PropertiesHandler.isExpanded(str)) {
+				str = PropertiesHandler.expand(str, inProperties, object, extra);
+			}
+			List<String> parts = TextUtils.splitByStringSeparator(str, "::");
+			String path = parts.get(0);
+			String type = "text";
+			boolean cached = true;
+			if (parts.size() > 1) {
+				cached = "Y".equalsIgnoreCase(parts.get(1));
+			}
+			if (parts.size() > 2) {
+				type = parts.get(2);
+			}
+			String data = (String) FileCache.getContent(path, FileCache.Type.valueOf(type.toUpperCase()), cached);
+			return data;
+		} catch (Exception exc) {
+			System.out.println("Error handling 'file' metadata '" + str + "': " + exc);
+			exc.printStackTrace();
+			if (PropertiesHandler.isExceptionOnErrors()) {
+				if (exc instanceof PropertiesHandlerException) {
+					throw (PropertiesHandlerException) exc;
+				}
+				throw new PropertiesHandlerException("Error handling 'file' metadata '" + str + "'", exc);
+			}
+			return "file" + PROP_START + str + PROP_END;
 		}
 	}
 

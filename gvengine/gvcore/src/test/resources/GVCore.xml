@@ -230,6 +230,54 @@
           </Flow>
         </Operation>
       </Service>
+      <Service group-name="DEFAULT_GRP" id-service="TOUPPER_SCRIPT_ENV" service-activation="on">
+        <Operation name="RequestReply" operation-activation="on" out-check-type="sys-svc-id" 
+                   type="operation" class="it.greenvulcano.gvesb.core.flow.GVFlowWF">
+          <Description>VulCon generated Operation</Description>
+          <Participant id-channel="TEST_CHANNEL" id-system="GVESB" />
+          <Flow first-node="request" point-x="50" point-y="150">
+            <GVOperationNode class="it.greenvulcano.gvesb.core.flow.GVOperationNode" id="request" id-system="GVESB" id-channel="TEST_CHANNEL"
+              input="input_toupper" next-node-id="script" op-type="call" operation-name="toupper_call" output="output_toupper"
+              point-x="200" point-y="150" type="flow-node">
+              <InputServices>
+                <script-service type="service" internal="yes" critical="yes">
+                    <script-call name="test_js_service_IN" class="it.greenvulcano.gvesb.virtual.internal.ScriptCallOperation"
+                                      type="call">
+                         <Script lang="js">data.setProperty('PIPPO', 'PIPPO'); data.setProperty('PLUTO', 'PLUTO');</Script>
+                    </script-call>
+                </script-service>
+              </InputServices>
+              <OutputServices>
+                <script-service type="service" internal="yes" critical="yes">
+                    <script-call name="test_js_service_OUT" class="it.greenvulcano.gvesb.virtual.internal.ScriptCallOperation"
+                                      type="call">
+                         <Script lang="js">var appo=data.getProperty('PIPPO'); data.setProperty('PIPPO', data.getProperty('PLUTO')); data.setProperty('PLUTO', appo);</Script>
+                    </script-call>
+                </script-service>
+              </OutputServices>
+            </GVOperationNode>
+            <ChangeGVBufferNode class="it.greenvulcano.gvesb.core.flow.ChangeGVBufferNode"
+                                id="script" input="output_toupper"
+                                next-node-id="check_status"
+                                op-type="change GVBuffer" point-x="629"
+                                point-y="150" type="flow-node">
+                <ChangeGVBuffer clear-data="false">
+                    <Script lang="js" base-context="gvesb" environment="input_toupper"><![CDATA[var input = environment.get("input_toupper");
+var output = environment.get("output_toupper");
+data.setProperty("INPUT_TOUPPER", input != null ? "OK" : "KO");
+data.setProperty("OUTPUT_TOUPPER", output != null ? "OK" : "KO");
+]]></Script>
+                </ChangeGVBuffer>
+            </ChangeGVBufferNode>
+            <GVNodeCheck class="it.greenvulcano.gvesb.core.flow.GVNodeCheck" default-id="return_status" id="check_status"
+              input="output_toupper" on-exception-id="return_error" op-type="check" point-x="350" point-y="150" type="flow-node" />
+            <GVEndNode class="it.greenvulcano.gvesb.core.flow.GVEndNode" id="return_status" op-type="end" output="output_toupper"
+              point-x="700" point-y="50" type="flow-node" end-business-process="yes"/>
+            <GVEndNode class="it.greenvulcano.gvesb.core.flow.GVEndNode" id="return_error" op-type="end" output="output_toupper"
+              point-x="700" point-y="250" type="flow-node" end-business-process="yes"/>
+          </Flow>
+        </Operation>
+      </Service>
       <Service group-name="DEFAULT_GRP" id-service="TOUPPER_CRYPTO" service-activation="on">
          <Operation name="RequestReply" operation-activation="on" out-check-type="sys-svc-id" 
                     type="operation" class="it.greenvulcano.gvesb.core.flow.GVFlowWF">

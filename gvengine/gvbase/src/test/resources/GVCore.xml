@@ -157,6 +157,16 @@ RESULT = "1" == services.get("@{{SVC}}","0")]]></Script>
             </ChangeGVBufferNode>
 
             <ChangeGVBufferNode class="it.greenvulcano.gvesb.core.flow.ChangeGVBufferNode"
+                                dump-in-out="true" id="test_PH_JS_file"
+                                input="data" next-node-id="end"
+                                op-type="change GVBuffer" point-x="150"
+                                point-y="151" type="flow-node">
+              <ChangeGVBuffer clear-data="false">
+                <Script lang="js" file="test_props.js"/>
+              </ChangeGVBuffer>
+            </ChangeGVBufferNode>
+
+            <ChangeGVBufferNode class="it.greenvulcano.gvesb.core.flow.ChangeGVBufferNode"
                                 dump-in-out="true" id="testJS_file"
                                 input="data" next-node-id="end"
                                 op-type="change GVBuffer" point-x="150"
