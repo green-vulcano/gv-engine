@@ -163,12 +163,14 @@
 	<feature name="gviamx" version="${project.version}" description="GreenVulcano IAM extensions">
 		<feature>gvengine</feature>
 		<feature>spring</feature>
+        <bundle start-level="93">mvn:com.sun.mail/javax.mail/1.6.2/jar</bundle> 
 		<bundle start-level="94">mvn:it.greenvulcano.gvesb/gviamx/${project.version}</bundle>		
 	</feature>
 	
 	<feature name="gviamx-mongodb" version="${project.version}" description="GreenVulcano IAM Extensions MongoDB"> 
         <feature>gvengine-mongodb</feature>
         <feature>spring</feature>
+        <bundle start-level="93">mvn:com.sun.mail/javax.mail/1.6.2/jar</bundle> 
         <bundle start-level="94">mvn:it.greenvulcano.gvesb/gviamx-mongodb/${project.version}</bundle> 
     </feature>
 	
