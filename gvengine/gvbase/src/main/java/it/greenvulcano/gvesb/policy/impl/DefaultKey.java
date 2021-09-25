@@ -52,6 +52,14 @@ public class DefaultKey implements ResourceKey
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof DefaultKey)) {
+            return false;
+        }
+        return getKey().equals(((DefaultKey)obj).getKey());
+    }
+
+    @Override
     public int hashCode()
     {
         return getKey().hashCode();

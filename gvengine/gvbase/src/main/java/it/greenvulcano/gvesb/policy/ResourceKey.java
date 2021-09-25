@@ -34,5 +34,8 @@ public interface ResourceKey
     @Override
     public int hashCode();
 
+    @Override
+    boolean equals(Object obj);
+
     public boolean match(ResourceKey resource);
 }

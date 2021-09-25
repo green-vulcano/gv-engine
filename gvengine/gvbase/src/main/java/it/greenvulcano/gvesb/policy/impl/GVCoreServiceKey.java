@@ -75,6 +75,14 @@ public class GVCoreServiceKey implements ResourceKey
         return getKey().hashCode();
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof GVCoreServiceKey)) {
+            return false;
+        }
+        return getKey().equals(((GVCoreServiceKey)obj).getKey());
+    }
+
     /* (non-Javadoc)
      * @see it.greenvulcano.gvesb.policy.ResourceKey#match(it.greenvulcano.gvesb.policy.ResourceKey)
      */

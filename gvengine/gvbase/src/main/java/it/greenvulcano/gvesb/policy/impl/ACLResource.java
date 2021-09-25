@@ -40,7 +40,7 @@ public class ACLResource implements ACLEntry
 {
     private Set<String>                 roles       = new HashSet<>();
     private Set<String>                 addresses   = new HashSet<>();
-    private Set<String> 				addressMask = new HashSet<>();
+    private Set<String> 	            addressMask = new HashSet<>();
 
     ACLResource()
     {

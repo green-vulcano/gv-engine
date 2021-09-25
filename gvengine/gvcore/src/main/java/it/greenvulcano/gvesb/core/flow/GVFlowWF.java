@@ -382,63 +382,70 @@ public class GVFlowWF implements GVFlow
         environment.put(flowNode.getInput(), gvBuffer);
         String nextNode = firstNode;
 
-        if (onDebug) {
-            ExecutionInfo info = new ExecutionInfo(serviceName, flowName, nextNode, null, environment);
-            DebugSynchObject synchObj = DebugSynchObject.getSynchObject(inID, info);
-            if (synchObj == null) {
-                synchObj = DebugSynchObject.createNew(Thread.currentThread().getName(), inID, info);
-            }
-            while (!nextNode.equals("") && !isInterrupted()) {
-                operationInfo.setFlowStatus(inID, nextNode);
-                flowNode = flowNodes.get(nextNode);
-                if (flowNode == null) {
-                    logger.error("FlowNode " + nextNode + " not configured. Check configuration.");
-                    throw new GVCoreException("GVCORE_MISSED_FLOW_NODE_ERROR", new String[][]{{"operation", flowName},
-                            {"flownode", nextNode}});
-                }
-                GVFlowNodeIF proxy = DebuggingInvocationHandler.getProxy(GVFlowNodeIF.class, flowNode, synchObj);
-                nextNode = proxy.execute(environment, onDebug);
-            }
-            synchObj.terminated();
+        try {
+	        if (onDebug) {
+	            ExecutionInfo info = new ExecutionInfo(serviceName, flowName, nextNode, null, environment);
+	            DebugSynchObject synchObj = DebugSynchObject.getSynchObject(inID, info);
+	            if (synchObj == null) {
+	                synchObj = DebugSynchObject.createNew(Thread.currentThread().getName(), inID, info);
+	            }
+	            while (!nextNode.equals("") && !isInterrupted()) {
+	                operationInfo.setFlowStatus(inID, nextNode);
+	                flowNode = flowNodes.get(nextNode);
+	                if (flowNode == null) {
+	                    logger.error("FlowNode " + nextNode + " not configured. Check configuration.");
+	                    throw new GVCoreException("GVCORE_MISSED_FLOW_NODE_ERROR", new String[][]{{"operation", flowName},
+	                            {"flownode", nextNode}});
+	                }
+	                GVFlowNodeIF proxy = DebuggingInvocationHandler.getProxy(GVFlowNodeIF.class, flowNode, synchObj);
+	                nextNode = proxy.execute(environment, onDebug);
+	            }
+	            synchObj.terminated();
+	        }
+	        else {
+	            while (!nextNode.equals("") && !isInterrupted()) {
+	                if (operationInfo != null) {
+	                    operationInfo.setFlowStatus(inID, nextNode);
+	                }
+	                flowNode = flowNodes.get(nextNode);
+	                if (flowNode == null) {
+	                    logger.error("FlowNode " + nextNode + " not configured. Check configuration.");
+	                    throw new GVCoreException("GVCORE_MISSED_FLOW_NODE_ERROR", new String[][]{{"operation", flowName},
+	                            {"flownode", nextNode}});
+	                }
+	                nextNode = flowNode.execute(environment);
+	            }
+	        }
+	
+	        if (isInterrupted()) {
+	            logger.error("GVFlowWF[" + flowName + "] interrupted.");
+	            throw new InterruptedException("GVFlowWF[" + flowName + "] interrupted.");
+	        }
+	
+	        Object output = environment.get(flowNode.getOutput());
+	        businessFlowTerminated = flowNode.isBusinessFlowTerminated();
+	
+	        if (output instanceof Throwable) {
+	            if (output instanceof GVCoreException) {
+	                throw (GVCoreException) output;
+	            }
+	            throw new GVCoreException("GVCORE_FLOW_EXCEPTION_ERROR", new String[][]{{"operation", flowName}, 
+	                    {"message", "" + output}}, (Throwable) output);
+	        }
+	
+	        performOutputCheck(output);
+	
+	        if (logger.isDebugEnabled()) {
+	            logger.debug(GVFormatLog.formatEND(flowName, (GVBuffer) output).toString());
+	        }
+	
+	        return (GVBuffer) output;
         }
-        else {
-            while (!nextNode.equals("") && !isInterrupted()) {
-                if (operationInfo != null) {
-                    operationInfo.setFlowStatus(inID, nextNode);
-                }
-                flowNode = flowNodes.get(nextNode);
-                if (flowNode == null) {
-                    logger.error("FlowNode " + nextNode + " not configured. Check configuration.");
-                    throw new GVCoreException("GVCORE_MISSED_FLOW_NODE_ERROR", new String[][]{{"operation", flowName},
-                            {"flownode", nextNode}});
-                }
-                nextNode = flowNode.execute(environment);
-            }
-        }
-
-        if (isInterrupted()) {
-            logger.error("GVFlowWF[" + flowName + "] interrupted.");
-            throw new InterruptedException("GVFlowWF[" + flowName + "] interrupted.");
-        }
-
-        Object output = environment.get(flowNode.getOutput());
-        businessFlowTerminated = flowNode.isBusinessFlowTerminated();
-
-        if (output instanceof Throwable) {
-            if (output instanceof GVCoreException) {
-                throw (GVCoreException) output;
-            }
-            throw new GVCoreException("GVCORE_FLOW_EXCEPTION_ERROR", new String[][]{{"operation", flowName}, 
-                    {"message", "" + output}}, (Throwable) output);
-        }
-
-        performOutputCheck(output);
-
-        if (logger.isDebugEnabled()) {
-            logger.debug(GVFormatLog.formatEND(flowName, (GVBuffer) output).toString());
-        }
-
-        return (GVBuffer) output;
+        finally {
+			if (environment != null) {
+				environment.clear();
+			}
+		}
     }
 
     /**

@@ -75,6 +75,14 @@ public class VCLOperationKey implements ResourceKey
         return getKey().hashCode();
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof VCLOperationKey)) {
+            return false;
+        }
+        return getKey().equals(((VCLOperationKey)obj).getKey());
+    }
+
     /* (non-Javadoc)
      * @see it.greenvulcano.gvesb.policy.ResourceKey#match(it.greenvulcano.gvesb.policy.ResourceKey)
      */

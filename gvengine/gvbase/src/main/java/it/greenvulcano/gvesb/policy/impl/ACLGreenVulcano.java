@@ -43,8 +43,8 @@ import org.w3c.dom.NodeList;
 public class ACLGreenVulcano implements ACL
 {
     private List<ResourceKey>                                keys    = new ArrayList<ResourceKey>();
-    private Map<String, ACLResource>                    aclCfg  = new HashMap<String, ACLResource>();
-    private ConcurrentHashMap<String, Set<ResourceKey>> aclMain = new ConcurrentHashMap<String, Set<ResourceKey>>();
+    private Map<ResourceKey, ACLResource>                    aclCfg  = new HashMap<ResourceKey, ACLResource>();
+    private ConcurrentHashMap<ResourceKey, Set<ResourceKey>> aclMain = new ConcurrentHashMap<ResourceKey, Set<ResourceKey>>();
     private ResourceKey                                      defKey  = null;
 
 
@@ -62,7 +62,7 @@ public class ACLGreenVulcano implements ACL
                 keys.add(key);
                 ACLResource res = new ACLResource();
                 res.init(n);
-                aclCfg.put(key.getKey(), res);
+                aclCfg.put(key, res);
             }
         }
         catch (XMLConfigException exc) {
@@ -78,7 +78,7 @@ public class ACLGreenVulcano implements ACL
                 keys.add(key);
                 ACLResource res = new ACLResource();
                 res.init(n);
-                aclCfg.put(key.getKey(), res);
+                aclCfg.put(key, res);
             }
         }
         catch (XMLConfigException exc) {
@@ -92,7 +92,7 @@ public class ACLGreenVulcano implements ACL
             defKey.init(n);
             ACLResource res = new ACLResource();
             res.init(n);
-            aclCfg.put(defKey.getKey(), res);
+            aclCfg.put(defKey, res);
         }
         catch (XMLConfigException exc) {
             throw new ACLException("Error initializing ACLGreenVulcano[DefaultRes]", new String[][]{{"exc", "" + exc}});
@@ -102,7 +102,7 @@ public class ACLGreenVulcano implements ACL
     @Override
     public boolean canAccess(ResourceKey key) throws ACLException
     {   	
-        Set<ResourceKey> locKeys = aclMain.get(key.getKey());
+        Set<ResourceKey> locKeys = aclMain.get(key);
         if (locKeys == null) {
             locKeys = new HashSet<ResourceKey>();
             for (ResourceKey keyL : keys) {
@@ -113,12 +113,12 @@ public class ACLGreenVulcano implements ACL
             if (locKeys.size() == 0) {
                 locKeys.add(defKey);
             }
-            aclMain.putIfAbsent(key.getKey(), locKeys);
+            aclMain.putIfAbsent(key, locKeys);
         }
 
         boolean canAccess = false;
         for (ResourceKey keyL : locKeys) {
-            ACLResource res = aclCfg.get(keyL.getKey());
+            ACLResource res = aclCfg.get(keyL);
             canAccess = res.canAccess();
             if (!canAccess) {
                 break;
