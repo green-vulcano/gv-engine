@@ -27,6 +27,7 @@ import org.json.JSONObject;
 import it.greenvulcano.gvesb.buffer.GVBuffer;
 import it.greenvulcano.gvesb.buffer.GVException;
 import it.greenvulcano.gvesb.core.flow.iteration.LoopController;
+import static it.greenvulcano.util.LambdaExceptionUtil.*;
 
 /**
  * A {@link LoopController} implementation that handle a JSON iterating over key.
@@ -44,7 +45,7 @@ public class JSONObjectLoopController extends BaseLoopController {
 	private JSONObject jsonObject = null; 
 		
 	@Override
-	protected GVBuffer doLoop(GVBuffer inputCollection) throws GVException{
+	protected GVBuffer doLoop(GVBuffer inputCollection) throws GVException, InterruptedException{
 		inputBuffer = inputCollection;
 		jsonObject = parseGVBuffer(inputCollection).orElseThrow(() -> {
 			return new GVException("GVCORE_UNPARSABLE_JSON_DATA", new String[][]{{"name", "'collection-type'"},
@@ -58,7 +59,7 @@ public class JSONObjectLoopController extends BaseLoopController {
 					.map(this::buildLoopGVBuffer)
 					.filter(Optional::isPresent)
 					.map(Optional::get)
-					.map(this::performAction)
+					.map(rethrowFunction(this::performAction))
 					.reduce(new JSONObject(), this::bindResults,  this::mergeResults);
 		
 		outputData.setObject(result);			
@@ -122,5 +123,11 @@ public class JSONObjectLoopController extends BaseLoopController {
 		otherJsonResult.keySet().stream().forEach(k-> merged.put(k, otherJsonResult.get(k)));
 		return merged;
 	}
+
+    @Override
+    public void cleanup() {
+    	inputBuffer = null;
+    	jsonObject = null;
+    }
 
 }

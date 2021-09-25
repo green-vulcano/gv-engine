@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import it.greenvulcano.gvesb.buffer.GVBuffer;
 import it.greenvulcano.gvesb.buffer.GVException;
 import it.greenvulcano.gvesb.core.flow.iteration.LoopController;
+import static it.greenvulcano.util.LambdaExceptionUtil.*;
 
 /**
  * A {@link LoopController} implementation that handle well-formed {@link Collection} iterating over its elements.
@@ -41,7 +42,7 @@ public class CollectionLoopController extends BaseLoopController {
     private GVBuffer inputBuffer;
 
     @Override
-    protected GVBuffer doLoop(GVBuffer inputCollection) throws GVException {
+    protected GVBuffer doLoop(GVBuffer inputCollection) throws GVException, InterruptedException {
 
         inputBuffer = inputCollection;
         if (inputCollection.getObject() instanceof Collection<?>) {
@@ -51,7 +52,7 @@ public class CollectionLoopController extends BaseLoopController {
                                                                      .map(this::buildLoopGVBuffer)
                                                                      .filter(Optional::isPresent)
                                                                      .map(Optional::get)
-                                                                     .map(this::performAction)
+                                                                     .map(rethrowFunction(this::performAction))
                                                                      .map(GVBuffer::getObject)
                                                                      .collect(Collectors.toList());
 
@@ -76,4 +77,8 @@ public class CollectionLoopController extends BaseLoopController {
         return Optional.ofNullable(itemData);
     }
 
+    @Override
+    public void cleanup() {
+    	inputBuffer = null;
+    }
 }

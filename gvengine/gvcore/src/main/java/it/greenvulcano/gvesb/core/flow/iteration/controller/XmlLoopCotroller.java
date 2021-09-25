@@ -37,6 +37,7 @@ import org.xml.sax.InputSource;
 import it.greenvulcano.gvesb.buffer.GVBuffer;
 import it.greenvulcano.gvesb.buffer.GVException;
 import it.greenvulcano.gvesb.core.flow.iteration.LoopController;
+import static it.greenvulcano.util.LambdaExceptionUtil.*;
 
 /**
  * A {@link LoopController} implementation that handle well-formed XML iterating over root childs.
@@ -56,7 +57,7 @@ public class XmlLoopCotroller extends BaseLoopController {
 	private String parentNode = "GVIterationResults";
 	
 	@Override
-	protected GVBuffer doLoop(GVBuffer inputCollection) throws GVException {
+	protected GVBuffer doLoop(GVBuffer inputCollection) throws GVException, InterruptedException {
 		inputBuffer = inputCollection;
 		NodeList nodeList =  parseGVBuffer(inputCollection).orElseThrow(() -> {
 			return new GVException("GVCORE_UNPARSABLE_XML_DATA", new String[][]{{"name", "'collection-type'"},
@@ -70,7 +71,7 @@ public class XmlLoopCotroller extends BaseLoopController {
 									 .map(this::buildLoopGVBuffer)
 									 .filter(Optional::isPresent)
 									 .map(Optional::get)
-									 .map(this::performAction)
+									 .map(rethrowFunction(this::performAction))
 									 .reduce(buildResultsDocument(), this::bindResult, this::mergeResults);
 		
 		outputData.setObject(response);
@@ -179,9 +180,13 @@ public class XmlLoopCotroller extends BaseLoopController {
 		IntStream.range(0, nodeList.getLength())
 					.mapToObj(nodeList::item)
 					.forEach(result.getDocumentElement()::appendChild);
-		
-		
+	
 		return result;
 	}
+
+    @Override
+    public void cleanup() {
+    	inputBuffer = null;
+    }
 
 }

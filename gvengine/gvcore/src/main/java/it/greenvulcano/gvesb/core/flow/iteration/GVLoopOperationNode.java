@@ -47,17 +47,17 @@ import it.greenvulcano.util.xpath.XPathFinder;
  */
 public class GVLoopOperationNode extends GVFlowNode {
 
-	private static final Logger LOG = LoggerFactory.getLogger(GVLoopOperationNode.class);
-	
-	private String nextNodeId = "";
-	private LoopController loopController;
-	
-	/**
-	 * Required attributes are: 
-	 * <ul>
-	 * <li><b>next-node-id</b>: the next node in the flow</li>
-	 * <li><b>collection-type</b>: map a {@link LoopController} implementation </li>
-	 * </ul>
+    private static final Logger LOG = LoggerFactory.getLogger(GVLoopOperationNode.class);
+
+    private String nextNodeId = "";
+    private LoopController loopController;
+
+    /**
+     * Required attributes are:
+     * <ul>
+     * <li><b>next-node-id</b>: the next node in the flow</li>
+     * <li><b>collection-type</b>: map a {@link LoopController} implementation </li>
+     * </ul>
      *
      * @see GVFlowNode#init(org.w3c.dom.Node)
      */
@@ -71,71 +71,74 @@ public class GVLoopOperationNode extends GVFlowNode {
                     {"node", XPathFinder.buildXPath(defNode)}});
         }
         try {
-	        String collectionTypeId = XMLConfig.get(defNode, "@collection-type", "invalid");
-	        LoopController.Type collectionType = LoopController.Type.getById(collectionTypeId).orElseThrow(NoSuchElementException::new); 
+            String collectionTypeId = XMLConfig.get(defNode, "@collection-type", "invalid");
+            LoopController.Type collectionType = LoopController.Type.getById(collectionTypeId).orElseThrow(NoSuchElementException::new);
         
-        	loopController = BaseLoopController.create(collectionType, defNode);
+            loopController = BaseLoopController.create(collectionType, defNode);
         } catch (Exception e) {
-        	throw new GVCoreConfException("GVCORE_MISSED_CFG_PARAM_ERROR", new String[][]{{"name", "'collection-type'"},
+            throw new GVCoreConfException("GVCORE_MISSED_CFG_PARAM_ERROR", new String[][]{{"name", "'collection-type'"},
                 {"node", XPathFinder.buildXPath(defNode)}});
         }
        
-    }	
-	
-	@Override
-	public String getDefaultNextNodeId() {	
-		return nextNodeId;
-	}
+    }
 
-	@Override
-	public String execute(Map<String, Object> environment, boolean onDebug)	throws GVCoreException, InterruptedException {
-		 long startTime = System.currentTimeMillis();
-	        Object data = null;
-	        String input = getInput();
-	        String output = getOutput();
-	        LOG.info("Executing OperationNode '" + getId() + "'");
-	        checkInterrupted("OperationNode", LOG);
-	        dumpEnvironment(LOG, true, environment);
+    @Override
+    public String getDefaultNextNodeId() {
+        return nextNodeId;
+    }
 
-	        data = environment.get(input);
-	        if (Throwable.class.isInstance(data)) {
-	            environment.put(output, data);
-	            LOG.debug("END - Execute OperationNode '" + getId() + "'");
-	            return nextNodeId;
-	        }
+    @Override
+    public String execute(Map<String, Object> environment, boolean onDebug)    throws GVCoreException, InterruptedException {
+         long startTime = System.currentTimeMillis();
+            Object data = null;
+            String input = getInput();
+            String output = getOutput();
+            LOG.info("Executing OperationNode '" + getId() + "'");
+            checkInterrupted("OperationNode", LOG);
+            dumpEnvironment(LOG, true, environment);
 
-	        try {
-	            GVBuffer internalData = null;
-	            if (input.equals(output)) {
-	                internalData = (GVBuffer) data;
-	            }
-	            else {
-	                internalData = new GVBuffer((GVBuffer) data);
-	            }
-	            
-	            internalData = loopController.executeLoop(internalData, onDebug);
-	           
-	            environment.put(output, internalData);
-	        } catch (Exception exc) {
-	            environment.put(output, exc);
-	        }
+            data = environment.get(input);
+            if (Throwable.class.isInstance(data)) {
+                environment.put(output, data);
+                LOG.debug("END - Execute OperationNode '" + getId() + "'");
+                return nextNodeId;
+            }
 
-	        dumpEnvironment(LOG, false, environment);
-	        long endTime = System.currentTimeMillis();
-	        LOG.info("END - Execute OperationNode '" + getId() + "' - ExecutionTime (" + (endTime - startTime) + ")");
-	        return nextNodeId;
-	}
+            try {
+                GVBuffer internalData = null;
+                if (input.equals(output)) {
+                    internalData = (GVBuffer) data;
+                }
+                else {
+                    internalData = new GVBuffer((GVBuffer) data);
+                }
 
-	@Override
-	public void cleanUp() throws GVCoreException {
-		// do nothing
+                internalData = loopController.executeLoop(internalData, onDebug);
 
-	}
+                environment.put(output, internalData);
+            } catch (Exception exc) {
+                environment.put(output, exc);
+            }
+            finally {
+                loopController.cleanup();
+            }
 
-	@Override
-	public void destroy() throws GVCoreException {
-		// do nothing
+            dumpEnvironment(LOG, false, environment);
+            long endTime = System.currentTimeMillis();
+            LOG.info("END - Execute OperationNode '" + getId() + "' - ExecutionTime (" + (endTime - startTime) + ")");
+            return nextNodeId;
+    }
 
-	}
+    @Override
+    public void cleanUp() throws GVCoreException {
+        if (loopController != null) {
+            loopController.cleanup();
+        }
+    }
 
+    @Override
+    public void destroy() throws GVCoreException {
+        cleanUp();
+        loopController = null;
+    }
 }

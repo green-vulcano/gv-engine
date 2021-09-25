@@ -180,12 +180,12 @@ public abstract class BaseLoopController implements LoopController {
 	}
 
 	@Override
-	public GVBuffer executeLoop(GVBuffer inputData, boolean onDebug) throws GVException{
+	public GVBuffer executeLoop(GVBuffer inputData, boolean onDebug) throws GVException, InterruptedException{
 		this.onDebug = onDebug;
 		return doLoop(inputData);
 	}
 			
-	protected abstract GVBuffer doLoop(GVBuffer inputCollection) throws GVException;
+	protected abstract GVBuffer doLoop(GVBuffer inputCollection) throws GVException, InterruptedException;
 	
 	/**
 	 * Perform the requested call on a collection item.
@@ -194,7 +194,7 @@ public abstract class BaseLoopController implements LoopController {
 	 * @param inputCollectionItem a GVBuffer builded over the collection item
 	 * @return A GVBuffer for the result
 	 */
-	protected GVBuffer performAction(GVBuffer inputCollectionItem) {
+	protected GVBuffer performAction(GVBuffer inputCollectionItem) throws InterruptedException {
 		GVBuffer currIterOutput = null;
 		try {      
 
@@ -213,7 +213,7 @@ public abstract class BaseLoopController implements LoopController {
 
 		} catch (Exception exc) {
 			LOG.error("Performing iteration  caused a " + exc.getClass().getName());
-
+            ThreadUtils.checkInterrupted(exc);
 		}
 
 		return currIterOutput;

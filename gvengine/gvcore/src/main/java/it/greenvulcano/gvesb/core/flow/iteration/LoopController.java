@@ -76,6 +76,7 @@ public interface LoopController {
 
 	}
 	
-	GVBuffer executeLoop(GVBuffer inputData, boolean onDebug) throws GVException;
+	GVBuffer executeLoop(GVBuffer inputData, boolean onDebug) throws GVException, InterruptedException;
 
+	void cleanup();
 }
