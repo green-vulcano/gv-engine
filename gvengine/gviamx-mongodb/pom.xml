@@ -23,7 +23,7 @@
     <parent>
       <artifactId>gvengine</artifactId>
       <groupId>it.greenvulcano.gvesb</groupId>
-      <version>4.1.0</version>
+      <version>4.1.2</version>
     </parent>
 
     <artifactId>gviamx-mongodb</artifactId>
@@ -89,12 +89,12 @@
 			<version>1.6</version>
 			<scope>provided</scope>
 		</dependency>
-	    <dependency>
-	    	<groupId>javax.mail</groupId>
-	    	<artifactId>mailapi</artifactId>
-	    	<version>1.4.3</version>
-	    	 <scope>provided</scope>
-	    </dependency>
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>javax.mail-api</artifactId>
+            <version>1.6.2</version>
+             <scope>provided</scope>
+        </dependency>
 	    <dependency>
 		  <groupId>com.github.spullara.mustache.java</groupId>
 		  <artifactId>compiler</artifactId>
