@@ -1528,7 +1528,7 @@ public final class XMLConfig {
      * Returns a boolean parameter.
      * <p>
      * The value returned is <b>true</b> if and only if the parameter red is
-     * equal, ignoring case, to "true" or "yes" or "on". Otherwise, it returns
+     * equal, ignoring case, to "true" or "y" or "yes" or "on". Otherwise, it returns
      * <b>false</b>.
      * <p>
      * 
@@ -1545,7 +1545,7 @@ public final class XMLConfig {
     {
         try {
             String s = get(node, xpath);
-            return (s.equalsIgnoreCase("true") || s.equalsIgnoreCase("yes") || s.equalsIgnoreCase("on"));
+            return (s.equalsIgnoreCase("true") || s.equalsIgnoreCase("y") || s.equalsIgnoreCase("yes") || s.equalsIgnoreCase("on"));
         }
         catch (XMLConfigException exc) {
             throw exc;
