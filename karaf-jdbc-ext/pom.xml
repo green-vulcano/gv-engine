@@ -25,6 +25,8 @@
 
 	<properties>
 		<cloud.nexus.content>http://mvn.greenvulcano.com/nexus/content</cloud.nexus.content>
+		<sonar.organization>green-vulcano</sonar.organization>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 	</properties>
 	<repositories>
 		<repository>
