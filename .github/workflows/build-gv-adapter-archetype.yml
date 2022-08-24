@@ -3,8 +3,12 @@ on:
   push:
     branches:
       - master
+    paths:
+      - gv-adapter-archetype/**
   pull_request:
     types: [opened, synchronize, reopened]
+    paths:
+      - gv-adapter-archetype/**
   workflow_dispatch:
 jobs:
   build:
@@ -34,4 +38,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B -f gv-adapter-archetype verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=green-vulcano_gv-engine
+        run: mvn -B -f gv-adapter-archetype verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=green-vulcano_gv-adapter-archetype
