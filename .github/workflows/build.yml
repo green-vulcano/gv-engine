@@ -29,9 +29,18 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
-      - name: Build and analyze
+      - name: Build and analyze gv-adapter-archetype
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: echo "building gvengine" && 
-             mvn -B -f gvengine verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=green-vulcano_gv-engine
+        run: mvn -B -f gv-adapter-archetype verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=green-vulcano_gv-engine
+      - name: Build and analyze gvengine
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: mvn -B -f gvengine verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=green-vulcano_gv-engine
+      - name: Build and analyze karaf-jdbc-ext
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: mvn -B -f karaf-jdbc-ext verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=green-vulcano_gv-engine
