@@ -35,9 +35,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          echo ">>>>>>>>>>>>>>>>>> Build and analyze gv-adapter-archetype"
-          mvn -B -f gv-adapter-archetype verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=green-vulcano_gv-engine
+          # echo ">>>>>>>>>>>>>>>>>> Build and analyze gv-adapter-archetype"
+          # mvn -B -f gv-adapter-archetype verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=green-vulcano_gv-engine
           echo ">>>>>>>>>>>>>>>>>> Build and analyze gvengine"
           mvn -B -f gvengine verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=green-vulcano_gv-engine
-          echo ">>>>>>>>>>>>>>>>>> Build and analyze karaf-jdbc-ext"
-          mvn -B -f karaf-jdbc-ext verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=green-vulcano_gv-engine
+          # echo ">>>>>>>>>>>>>>>>>> Build and analyze karaf-jdbc-ext"
+          # mvn -B -f karaf-jdbc-ext verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=green-vulcano_gv-engine
