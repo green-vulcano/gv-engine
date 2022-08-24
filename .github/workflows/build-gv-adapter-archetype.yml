@@ -1,4 +1,4 @@
-name: Build
+name: Build gv-adapter-archetype
 on:
   push:
     branches:

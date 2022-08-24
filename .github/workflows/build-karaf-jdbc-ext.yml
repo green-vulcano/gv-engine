@@ -1,4 +1,4 @@
-name: Build
+name: Build karaf-jdbc-ext
 on:
   push:
     branches:
