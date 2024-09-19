@@ -8,13 +8,19 @@ Latest [GreenVulcano] instances work on [Apache Karaf] 4.2.7.
 ## Installation
 Before to run karaf, you have to configure GreenVulcano Maven repository:
 update <karaf_home>/etc/**org.ops4j.pax.url.mvn.cfg** file and add to key **org.ops4j.pax.url.mvn.repositories** following row:
-   > http://mvn.greenvulcano.com/nexus/content/groups/public@id=gv@snapshots, \
+   > http://mvn.greenvulcano.com/nexus/content/groups/public@id=gv, \
+
+Please check that in /etc/**org.ops4j.pax.url.mvn.cfg** file the following repositories listed in key **org.ops4j.pax.url.mvn.repositories** use https protocol, otherwise the download of artifacts from these repositories will not work
+```
+    https://repo1.maven.org/maven2@id=central, \
+    https://repository.apache.org/content/groups/snapshots-group@id=apache@snapshots@noreleases, \
+```
 
 Then start Karaf (Open a terminal in **#KarafHome** */bin* and write *./karaf*)
 
 Install feature repository and install gvegine
 ```sh
-gvadmin@root()> feature:repo-add mvn:it.greenvulcano.gvesb/features/4.1.0/xml/features
+gvadmin@root()> feature:repo-add mvn:it.greenvulcano.gvesb/features/4.1.2/xml/features
 gvadmin@root()> feature:install gvengine
 ```
 To open GV Console go to http://localhost:8181/gvconsole/#/login and log with *gvadmin gvadmin*
